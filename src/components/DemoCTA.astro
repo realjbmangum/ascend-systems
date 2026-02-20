@@ -1,0 +1,27 @@
+---
+import config from '../data/site-config.json';
+---
+
+<section class="section-dark grain section-padding relative overflow-hidden">
+  <div class="absolute inset-0" style="background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(59, 107, 138, 0.06), transparent);"></div>
+  <div class="container-narrow text-center relative z-10">
+    <p class="stat-label text-gray-400 mb-4 reveal">Try it right now</p>
+    <h2 class="text-white mb-4 reveal" style="font-size: clamp(1.625rem, 4vw, 2.25rem);">Hear It For Yourself</h2>
+    <p class="text-gray-400 text-lg mb-10 max-w-xl mx-auto reveal">
+      Call this number and hear an AI assistant answer as if it were your business. Takes 60 seconds.
+    </p>
+    <a
+      href={`tel:${config.phone.demo.replace(/[^0-9+]/g, '')}`}
+      class="block font-mono text-4xl md:text-5xl font-medium tracking-tight mb-6 transition-colors reveal stat-glow"
+      style="color: #D4632C;"
+    >
+      {config.phone.demo}
+    </a>
+    <a
+      href={`tel:${config.phone.demo.replace(/[^0-9+]/g, '')}`}
+      class="btn-primary text-lg !px-10 !py-4 reveal"
+    >
+      Call the Demo Now
+    </a>
+  </div>
+</section>

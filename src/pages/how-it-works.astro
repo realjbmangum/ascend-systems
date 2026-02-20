@@ -1,0 +1,182 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DemoCTA from '../components/DemoCTA.astro';
+import FinalCTA from '../components/FinalCTA.astro';
+import config from '../data/site-config.json';
+---
+
+<BaseLayout title="How It Works" description="From missed call to booked job in 60 seconds. See how Ascend Systems AI phone answering works for your business.">
+
+  <!-- Hero — Dark -->
+  <section class="hero-gradient grain section-padding !pb-12 relative overflow-hidden">
+    <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse 40% 40% at 70% 30%, rgba(59, 107, 138, 0.04), transparent);"></div>
+    <div class="container-narrow text-center relative z-10">
+      <p class="stat-label text-center mb-4 reveal" style="color: #D4632C;">How It Works</p>
+      <h1 class="text-white mb-6 reveal">From Missed Call to<br />Booked Job in 60 Seconds</h1>
+      <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto reveal">
+        No apps to install. No hardware to buy. No staff to train. Just a phone that finally gets answered.
+      </p>
+    </div>
+  </section>
+
+  <!-- Before / After Scenario -->
+  <section class="section-padding !pt-12" style="background: #EDF2F7;">
+    <div class="container-narrow max-w-3xl">
+      <p class="text-gray-500 text-lg text-center mb-12 reveal">
+        Say you're a plumber in Mint Hill. It's 9pm on a Tuesday. A homeowner's water heater just burst. They Google "plumber near me" and call your number.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card reveal reveal-delay-1" style="border-color: rgba(239, 68, 68, 0.2);">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <p class="text-sm font-semibold text-red-500 uppercase tracking-wider">Without {config.brand}</p>
+          </div>
+          <ul class="space-y-3 text-gray-500 mb-6">
+            <li class="flex items-center gap-2"><span class="text-gray-300">&rarr;</span> Phone rings &rarr; Voicemail</li>
+            <li class="flex items-center gap-2"><span class="text-gray-300">&rarr;</span> Caller hangs up</li>
+            <li class="flex items-center gap-2"><span class="text-gray-300">&rarr;</span> Calls your competitor</li>
+            <li class="flex items-center gap-2"><span class="text-gray-300">&rarr;</span> You never know it happened</li>
+          </ul>
+          <p class="text-3xl font-bold text-red-500 tracking-tight">-$1,500 lost</p>
+        </div>
+
+        <div class="card reveal reveal-delay-2" style="border-color: rgba(34, 197, 94, 0.3);">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5" style="color: #22C55E;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            <p class="text-sm font-semibold uppercase tracking-wider" style="color: #22C55E;">With {config.brand}</p>
+          </div>
+          <ul class="space-y-3 text-gray-500 mb-6">
+            <li class="flex items-center gap-2"><span style="color: #22C55E;">&rarr;</span> Phone rings &rarr; AI answers instantly</li>
+            <li class="flex items-center gap-2"><span style="color: #22C55E;">&rarr;</span> Natural conversation</li>
+            <li class="flex items-center gap-2"><span style="color: #22C55E;">&rarr;</span> Appointment booked</li>
+            <li class="flex items-center gap-2"><span style="color: #22C55E;">&rarr;</span> You get a text with details</li>
+          </ul>
+          <p class="text-3xl font-bold tracking-tight" style="color: #22C55E;">+$1,500 earned</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4-Step Walkthrough -->
+  <section class="section-padding" style="background: #E2E8F0;">
+    <div class="container-narrow max-w-2xl">
+      <p class="stat-label text-center mb-4 reveal" style="color: #D4632C;">Step by step</p>
+      <h2 class="text-center mb-16 reveal">What Happens When Someone Calls</h2>
+
+      <div class="space-y-12">
+        {[
+          {
+            step: '1',
+            title: 'AI Answers Instantly',
+            desc: 'The caller hears a friendly, natural voice:',
+            quote: '"Hi, thanks for calling [Your Business]! This is Sarah. How can I help you tonight?"',
+            note: 'Not a robot. Not a menu. A natural-sounding assistant.',
+            icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z',
+          },
+          {
+            step: '2',
+            title: 'AI Has a Real Conversation',
+            desc: 'Your AI asks the right questions:',
+            quote: '"I\'m sorry to hear about your water heater. Let me get a few details so we can get someone out to you."',
+            note: 'Captures name, phone, what they need, address, and availability.',
+            icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
+          },
+          {
+            step: '3',
+            title: 'Appointment Gets Booked',
+            desc: '',
+            quote: '"I\'ve got you scheduled for tomorrow morning between 8 and 10. You\'ll get a confirmation text shortly."',
+            note: 'The caller hangs up feeling taken care of. They\'re not calling anyone else.',
+            icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+          },
+        ].map(({ step, title, desc, quote, note, icon }) => (
+          <div class="card !p-8 reveal">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="icon-box">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={icon} />
+                </svg>
+              </div>
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-xs font-bold" style="background: #D4632C;">{step}</span>
+              <h3 class="text-xl font-semibold">{title}</h3>
+            </div>
+            {desc && <p class="text-gray-500 mb-4">{desc}</p>}
+            <blockquote class="pl-5 text-charcoal italic text-lg mb-3" style="border-left: 2px solid rgba(212, 99, 44, 0.3);">
+              {quote}
+            </blockquote>
+            <p class="text-gray-400 text-sm">{note}</p>
+          </div>
+        ))}
+
+        <!-- Step 4 — Text notification mockup -->
+        <div class="card !p-8 reveal">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="icon-box">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+            </div>
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-xs font-bold" style="background: #D4632C;">4</span>
+            <h3 class="text-xl font-semibold">You Get a Text — Instantly</h3>
+          </div>
+          <div class="rounded-xl p-5 text-sm font-mono ring-1 ring-white/5" style="background: #1E2A32; color: #9CA3AF;">
+            <p class="font-semibold text-white mb-3">New Lead from {config.brand}</p>
+            <div class="space-y-1.5">
+              <p><span class="text-gray-500">Name:</span> <span class="text-gray-300">Mike Thompson</span></p>
+              <p><span class="text-gray-500">Phone:</span> <span class="text-gray-300">(704) 555-0187</span></p>
+              <p><span class="text-gray-500">Needs:</span> <span class="text-gray-300">Water heater burst — emergency</span></p>
+              <p><span class="text-gray-500">Address:</span> <span class="text-gray-300">123 Oak St, Mint Hill NC</span></p>
+              <p><span class="text-gray-500">Booked:</span> <span style="color: #22C55E;">Tomorrow, 8-10am</span></p>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm mt-3">The job is already booked. You just need to show up.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup Timeline -->
+  <section class="section-padding" style="background: #EDF2F7;">
+    <div class="container-narrow text-center">
+      <p class="stat-label text-center mb-4 reveal" style="color: #D4632C;">Setup</p>
+      <h2 class="mb-16 reveal">Setup Is Stupid Simple</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto mb-10">
+        {[
+          { time: '10 min', label: 'Book a demo', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
+          { time: '15 min', label: 'Train your AI', icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
+          { time: '2 min', label: 'Forward calls', icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z' },
+          { time: 'GO', label: "You're live!", icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+        ].map(({ time, label, icon }, i) => (
+          <div class={`card text-center reveal reveal-delay-${i + 1}`}>
+            <div class="icon-box mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={icon} />
+              </svg>
+            </div>
+            <p class="stat-number text-3xl mb-1">{time}</p>
+            <p class="text-sm text-gray-500">{label}</p>
+          </div>
+        ))}
+      </div>
+      <p class="text-gray-500 reveal">Total: under 30 minutes from "yes" to live.</p>
+    </div>
+  </section>
+
+  <!-- Integrations -->
+  <section class="section-padding" style="background: #E2E8F0;">
+    <div class="container-narrow text-center">
+      <h2 class="mb-4 reveal">Works With Your Existing Tools</h2>
+      <p class="text-gray-500 text-lg mb-10 max-w-xl mx-auto reveal">
+        {config.brand} plugs right in. No new software to learn.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3 reveal">
+        {['Google Calendar', 'Calendly', 'Jobber', 'ServiceTitan', 'HousecallPro', 'Your Phone Number'].map((tool) => (
+          <span class="card !p-0 !px-5 !py-2.5 text-sm text-gray-600 !rounded-full">{tool}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <DemoCTA />
+  <FinalCTA />
+
+</BaseLayout>

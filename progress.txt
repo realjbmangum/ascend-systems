@@ -1,0 +1,129 @@
+## Session - Feb 19, 2026 (Color Migration, Logo, Content Broadening)
+
+**Completed:**
+- Selected "full-mountain" color variant as final palette and applied site-wide across 15+ files
+- Color palette: blue-charcoal darks (#1E2A32, #162028, #263540, #2E4050), icy blue-white lights (#EDF2F7, #E2E8F0, #CBD5E0), burnt orange accent (#D4632C), blue atmospheric glows rgba(59, 107, 138, ...)
+- Created AI image generation prompts for logo (stylized A with subtle negative-space cross) and hero background (geometric mountain ridgelines)
+- Applied hero-bg.jpg with gradient overlay (left-to-right opacity fade)
+- Restructured hero into 2-column grid: copy left, activity dashboard mockup right
+- Added real logo (transparent PNG) — displayed large above hero headline
+- **Broadened entire homepage messaging** from phone-only to full platform:
+  - Hero: "Run your business. We'll run the rest."
+  - Features: 6 tiles — AI Phone, CRM & Pipeline, Automated Follow-Ups, Reputation Management, Social Media, Website & Funnels
+  - Problem section: addresses missed calls, admin waste, reputation gaps
+  - How it works: "One Platform. Everything Handled." — setup, autopilot, results
+  - FAQ updated for full platform
+  - Phone mockup → activity dashboard showing calls, reviews, social, follow-ups
+- Removed redundant process strip (Phone Rings → AI Answers → Text → Booked)
+- Updated trust bar: One Platform, No Contracts, 30-Day Guarantee, Locally Owned
+- Footer email changed to hello@ascendsystems.com
+- Footer tagline: "AI-powered growth platform for local businesses"
+- Nav reverted to clean text wordmark (logo too small in header)
+
+**Files Changed:**
+- src/pages/index.astro — Major content overhaul, hero restructure, logo placement, tighter spacing
+- src/components/Nav.astro — Text wordmark (logo image removed from header)
+- src/components/Footer.astro — Logo image, updated tagline
+- src/data/site-config.json — Email changed to hello@ascendsystems.com
+- tailwind.config.mjs — Full-mountain color palette
+- src/styles/global.css — Blue-charcoal design system colors
+- src/components/DemoCTA.astro — Blue atmospheric glow
+- src/components/FinalCTA.astro — Blue atmospheric glow
+- src/components/PricingCard.astro — Updated card colors
+- src/components/MobileBottomBar.astro — Dark nav colors
+- public/images/logo.png — Real logo (transparent PNG, double-A mountains + cross + orange arrow)
+- public/images/hero-bg.jpg — Geometric mountain background
+- public/favicon.svg — Charcoal background
+- All secondary pages (about, pricing, demo, contact, how-it-works) — Light/dark section color updates
+
+**Decisions:**
+- Full-mountain palette chosen over alpine-sky, summit-gradient, snow-cap, olive, sage, burgundy, copper variants
+- Logo placed large in hero above headline (not in nav — too small there)
+- Messaging broadened: Ascend Systems is a full AI growth platform, not just phone answering
+- Phone answering is the trojan horse, full platform (CRM, automation, reputation, social, websites) is the real offering
+- Domain: ascendsystems.ai available ($100) — other .coms checked, none available
+
+**Next Steps:**
+- [ ] Purchase domain (ascendsystems.ai or keep searching .coms)
+- [ ] Update secondary pages (about, pricing, how-it-works) to match broadened messaging
+- [ ] Connect contact forms to backend
+- [ ] Deploy to Cloudflare Pages
+- [ ] Clean up variant experiment pages (8 in /variants/)
+- [ ] Build mock GHL sub-accounts for demos (Tactical Pest, Dunwellz)
+- [ ] Get social handles (@ascendsystems)
+
+**Gotchas:**
+- Playwright browser can't launch when Chrome is already open — user must view localhost directly
+- Logo PNG white background detection is unreliable in tool — appears white but may be transparent
+- Original logo filename had typo ("Acscend") and space — renamed to logo.png
+
+---
+
+## Session - Feb 18-19, 2026 (Website Build)
+
+**Completed:**
+- Complete website build for Ascend Systems — all 8 pages designed and built
+- Rebranded entire Astro project from CallSteady (blue/Apple-clean) to Ascend Systems (dark charcoal + burnt orange)
+- Applied "Dark Futuristic" aesthetic from frontend-design skill (grain textures, gradient meshes, glassmorphism, orange glow effects)
+
+**Design System Created:**
+- Tailwind config: charcoal/orange/surface color palette, Inter + JetBrains Mono fonts, orange glow shadows, fade-up animations
+- Global CSS: `.btn-primary` (orange), `.btn-secondary`, `.card`, `.card-dark`, `.icon-box`, `.stat-number` (mono orange), `.hero-gradient`, `.grain` overlay, `.dot-grid`, section-dark/section-darkest classes
+- Scroll reveal system with IntersectionObserver + staggered delays
+
+**Pages Built (8 total):**
+1. **Homepage** (index.astro) — Dark hero with mountain bg, logo, activity dashboard mockup, trust bar, problem/solution sections, 6-feature platform grid, demo CTA, testimonials, pricing preview, FAQ accordion, final CTA
+2. **Pricing** (pricing.astro) — Dark hero, 3 pricing cards ($199/$299/$499), plan selector guide, competitor comparison table, 30-day guarantee, FAQ
+3. **About** (about.astro) — Dark hero "Built in Charlotte. For Charlotte.", Brian's origin story, values grid, trust signals
+4. **How It Works** (how-it-works.astro) — Before/after scenario, 4-step walkthrough, text notification mockup, setup timeline, integrations
+5. **Demo** (demo.astro) — Dark hero with giant phone number (JetBrains Mono), "What to expect" steps, post-call lead form
+6. **Contact** (contact.astro) — 3 contact options (Book a Time/Send a Message/Call Brian), full contact form with business type dropdown
+7. **Privacy** (privacy.astro) — Updated link colors to orange
+8. **Terms** (terms.astro) — Updated link colors to orange
+
+**Components (6):**
+- Nav.astro — Dark glassmorphic, text wordmark
+- Footer.astro — Darkest bg, logo image, hello@ascendsystems.com
+- DemoCTA.astro — Orange phone number with blue glow
+- FinalCTA.astro — Dark with orange CTA, blue glow
+- PricingCard.astro — Orange accents, mono pricing
+- MobileBottomBar.astro — Dark with orange buttons
+
+**Build:** All 16 pages compile cleanly (~640ms). 8 variant experiment pages still in /variants/.
+
+---
+
+## Session - Feb 18, 2026
+
+**Context:**
+Brian decided to go all-in on the AI phone answering / business automation service as his primary side hustle. This is the tech business he wants to build — similar to the MSP he grew previously.
+
+**Key Strategic Decisions:**
+
+1. **GHL over Telnyx** — Brian overrode the master plan's Telnyx recommendation. GHL is the platform. The bigger play is selling the full GHL ecosystem (AI phone, CRM, automation, social, reputation management), not just phone answering. AI phone is the trojan horse, full platform is the revenue engine.
+
+2. **Mock Business Strategy** — Building 2-3 fully functional GHL sub-accounts as demo/showcase businesses:
+   - **Tactical Pest & Termite Solutions** (Gary Wojciechowicz) — Mint Hill pest control, (704) 954-8455. Phone-dependent, owner on jobs, perfect AI phone use case.
+   - **Dunwellz Custom Kitchen & Pour House** — Mint Hill restaurant, (704) 545-1505. Reservations, catering, events, after-hours calls. Different vertical to show range.
+
+3. **Business Name: Ascend Systems** — Arrived at through extensive naming exploration:
+   - Started with functional names (CallSteady, etc.) — too phone-specific
+   - Explored [Noun] + Technologies pattern — too generic
+   - Explored BrightFlow-style compound names — didn't resonate
+   - Explored abstract tech names (Polaris, Aperture, ArcLight, Cairn)
+   - Added faith-based layer (Crown, Cornerstone, Covenant, Pillar)
+   - Landed on **Ascend Systems** — triple meaning: faith (spiritual ascension), business (helping clients evolve/grow), tech (systems that elevate operations)
+   - DBA under Lighthouse 27 LLC
+   - Brand vibe: professional but not corporate, location-neutral, faith-inspired foundation
+
+4. **Logo Direction** — Generated AI image prompts for high-tech minimalist logo with subtle faith elements (hidden cross in negative space, structural not decorative). Brand philosophy: "The faith is in the foundation, not the facade."
+
+**Two Tracks Identified:**
+- Track 1: Build the Ascend Systems brand/website (site-ai-tech-co folder)
+- Track 2: Build out 2-3 mock GHL sub-accounts for demos (Tactical Pest, Dunwellz)
+
+**Gotchas:**
+- Previous brand strategy docs are phone-answering focused — need updating for broader automation/CRM/social/reputation positioning
+- Master plan (tasks/ai-phone-service-master-plan.md) recommends Telnyx — Brian overrode this in favor of all-GHL approach
+- "Aperture Labs" is from Portal video game — avoided
+- Polaris is used by many companies — avoided as primary

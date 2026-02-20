@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import config from '../data/site-config.json';
+---
+
+<BaseLayout title="Terms of Service" description={`Terms of Service for ${config.brand} by ${config.company}`}>
+
+  <section class="section-padding">
+    <div class="container-narrow max-w-2xl">
+      <h1 class="text-4xl mb-2 reveal">Terms of Service</h1>
+      <p class="text-gray-500 mb-12 reveal">Last updated: February 2026</p>
+
+      <div class="space-y-8 text-gray-500 leading-relaxed reveal">
+        <p>These Terms govern your use of the {config.brand} AI phone answering service provided by {config.company}.</p>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Service Description</h2>
+          <p>{config.brand} provides AI-powered phone answering, appointment booking, and lead capture services for businesses.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Subscription & Billing</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>Services are billed monthly in advance.</li>
+            <li>All plans are month-to-month with no long-term contracts.</li>
+            <li>Cancel at any time. Cancellation takes effect at the end of the current billing period.</li>
+            <li>Overage minutes are billed at a per-minute rate communicated at signup.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">30-Day Money-Back Guarantee</h2>
+          <p>Full refund within the first 30 days if unsatisfied. Contact <a href={`mailto:${config.email}`} class="transition-colors hover:underline" style="color: #D4632C;">{config.email}</a>.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Your Responsibilities</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>Provide accurate business information for AI training.</li>
+            <li>Comply with applicable call recording disclosure laws.</li>
+            <li>Do not use the service for illegal or deceptive purposes.</li>
+            <li>Maintain the confidentiality of your account credentials.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Limitations</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>AI may not handle all caller scenarios perfectly.</li>
+            <li>We do not guarantee specific business outcomes or revenue increases.</li>
+            <li>Service availability depends on infrastructure providers.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Limitation of Liability</h2>
+          <p>{config.company} shall not be liable for indirect, incidental, special, or consequential damages arising from your use of {config.brand}.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Governing Law</h2>
+          <p>These Terms are governed by the laws of the State of North Carolina.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Contact</h2>
+          <p>
+            {config.company}<br />
+            {config.location}<br />
+            <a href={`mailto:${config.email}`} class="transition-colors hover:underline" style="color: #D4632C;">{config.email}</a><br />
+            <a href={`tel:${config.phone.brian.replace(/[^0-9+]/g, '')}`} class="transition-colors hover:underline" style="color: #D4632C;">{config.phone.brian}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

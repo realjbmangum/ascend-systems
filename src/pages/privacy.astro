@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import config from '../data/site-config.json';
+---
+
+<BaseLayout title="Privacy Policy" description={`Privacy Policy for ${config.brand} by ${config.company}`}>
+
+  <section class="section-padding">
+    <div class="container-narrow max-w-2xl">
+      <h1 class="text-4xl mb-2 reveal">Privacy Policy</h1>
+      <p class="text-gray-500 mb-12 reveal">Last updated: February 2026</p>
+
+      <div class="space-y-8 text-gray-500 leading-relaxed reveal">
+        <p>{config.company} ("us", "we", or "our") operates the {config.brand} website and AI phone answering service. This page informs you of our policies regarding the collection, use, and disclosure of personal information.</p>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Information We Collect</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><strong class="text-gray-900">Contact Information:</strong> Name, phone number, email address, and business name.</li>
+            <li><strong class="text-gray-900">Call Data:</strong> Phone call recordings, transcripts, and metadata.</li>
+            <li><strong class="text-gray-900">Usage Data:</strong> Basic analytics about website interaction.</li>
+            <li><strong class="text-gray-900">Business Information:</strong> Business type, services, hours, and training details.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">How We Use Your Information</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>To provide and maintain our AI phone answering service</li>
+            <li>To configure and train your AI assistant</li>
+            <li>To send you lead notifications and call summaries</li>
+            <li>To respond to your inquiries and provide customer support</li>
+            <li>To improve our service and develop new features</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Call Recording Disclosure</h2>
+          <p>Our AI assistant records calls for quality assurance and your review. Recordings are stored securely and accessible only to you and our team. North Carolina is a one-party consent state.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Data Sharing</h2>
+          <p class="mb-3">We do not sell your personal information. We may share data with:</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><strong class="text-gray-900">Telnyx:</strong> Our voice AI infrastructure provider.</li>
+            <li><strong class="text-gray-900">Service providers:</strong> Tools for email, analytics, and customer management.</li>
+            <li><strong class="text-gray-900">Legal requirements:</strong> When required by law.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Data Security</h2>
+          <p>We use industry-standard security measures including encryption in transit and at rest.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Your Rights</h2>
+          <p>You may request to access, correct, or delete your personal information at any time by contacting us at <a href={`mailto:${config.email}`} class="transition-colors hover:underline" style="color: #D4632C;">{config.email}</a>.</p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Contact</h2>
+          <p>
+            {config.company}<br />
+            {config.location}<br />
+            <a href={`mailto:${config.email}`} class="transition-colors hover:underline" style="color: #D4632C;">{config.email}</a><br />
+            <a href={`tel:${config.phone.brian.replace(/[^0-9+]/g, '')}`} class="transition-colors hover:underline" style="color: #D4632C;">{config.phone.brian}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

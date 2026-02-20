@@ -1,0 +1,42 @@
+---
+import config from '../data/site-config.json';
+---
+
+<div
+  id="mobile-bottom-bar"
+  class="fixed bottom-0 left-0 right-0 z-40 md:hidden translate-y-full transition-transform duration-300"
+  style="padding-bottom: env(safe-area-inset-bottom, 0px);"
+>
+  <div class="px-4 py-3 flex gap-3" style="background: rgba(30, 42, 50, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(46, 64, 80, 0.5);">
+    <a
+      href={`tel:${config.phone.demo.replace(/[^0-9+]/g, '')}`}
+      class="flex-1 flex items-center justify-center gap-2 py-3 font-semibold text-sm rounded-md transition-colors"
+      style="color: #D4632C; background: rgba(212, 99, 44, 0.1); border: 1px solid rgba(212, 99, 44, 0.2);"
+    >
+      Call Demo
+    </a>
+    <a
+      href="/contact"
+      class="flex-1 flex items-center justify-center gap-2 py-3 text-white font-semibold text-sm rounded-md transition-all duration-150"
+      style="background: #D4632C;"
+    >
+      Get Started
+    </a>
+  </div>
+</div>
+
+<script>
+  const bar = document.getElementById('mobile-bottom-bar');
+  const hero = document.querySelector('section:first-of-type');
+
+  if (bar && hero) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        bar.classList.toggle('translate-y-full', entry.isIntersecting);
+        bar.classList.toggle('translate-y-0', !entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(hero);
+  }
+</script>

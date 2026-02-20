@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import MobileBottomBar from '../components/MobileBottomBar.astro';
+import config from '../data/site-config.json';
+
+interface Props {
+  title: string;
+  description?: string;
+  minimal?: boolean;
+}
+
+const { title, description = 'AI phone answering and business automation for local businesses. Every call, handled. Starting at $199/mo.', minimal = false } = Astro.props;
+const fullTitle = title === 'Home' ? `${config.brand} — ${config.tagline}` : `${title} | ${config.brand}`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{fullTitle}</title>
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- OG Meta -->
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={config.brand} />
+</head>
+<body class="min-h-screen flex flex-col">
+  {!minimal && <Nav />}
+
+  <main class="flex-1">
+    <slot />
+  </main>
+
+  {!minimal && <Footer />}
+  {!minimal && <MobileBottomBar />}
+
+  <!-- Scroll reveal observer -->
+  <script is:inline>
+    (function() {
+      function initReveal() {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(function(el) {
+          observer.observe(el);
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initReveal);
+      } else {
+        initReveal();
+      }
+    })();
+  </script>
+</body>
+</html>

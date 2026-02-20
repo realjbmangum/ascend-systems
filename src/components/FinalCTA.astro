@@ -1,0 +1,34 @@
+---
+import config from '../data/site-config.json';
+
+interface Props {
+  headline?: string;
+  subtext?: string;
+}
+
+const {
+  headline = 'Every Missed Call Is a Customer Who Chose Someone Else',
+  subtext = `${config.brand} fixes this in 15 minutes. No hiring. No training. No contracts.`,
+} = Astro.props;
+---
+
+<section class="section-dark grain section-padding relative overflow-hidden">
+  <div class="absolute inset-0" style="background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(59, 107, 138, 0.08), transparent);"></div>
+  <div class="container-narrow text-center relative z-10">
+    <h2 class="text-white mb-4 reveal">{headline}</h2>
+    <p class="text-gray-400 text-lg mb-10 max-w-2xl mx-auto reveal">{subtext}</p>
+    <a href="/contact" class="btn-primary text-lg !px-10 !py-4 reveal">
+      Book Your Free Demo
+    </a>
+    <p class="text-gray-500 mt-6 text-sm reveal">
+      Or call Brian directly:
+      <a
+        href={`tel:${config.phone.brian.replace(/[^0-9+]/g, '')}`}
+        class="font-medium transition-colors hover:underline"
+        style="color: #D4632C;"
+      >
+        {config.phone.brian}
+      </a>
+    </p>
+  </div>
+</section>

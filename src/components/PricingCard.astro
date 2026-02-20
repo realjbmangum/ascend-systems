@@ -1,0 +1,78 @@
+---
+interface Props {
+  name: string;
+  price: number;
+  description: string;
+  minutes: string;
+  features: string[];
+  popular?: boolean;
+  ctaText?: string;
+  ctaHref?: string;
+}
+
+const {
+  name,
+  price,
+  description,
+  minutes,
+  features,
+  popular = false,
+  ctaText = 'Get Started',
+  ctaHref = '/contact',
+} = Astro.props;
+---
+
+<div class:list={[
+  'relative flex flex-col rounded-xl p-8 transition-all duration-300',
+  popular
+    ? 'text-white md:scale-105 md:z-10'
+    : 'bg-white',
+]}
+style={popular
+  ? 'background: #1E2A32; border: 1.5px solid #D4632C; box-shadow: 0 0 32px rgba(212, 99, 44, 0.12);'
+  : 'border: 1px solid #CBD5E0;'
+}
+>
+  {popular && (
+    <span class="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-xs font-semibold px-4 py-1 rounded-full" style="background: #D4632C;">
+      Most Popular
+    </span>
+  )}
+
+  <div class="mb-6">
+    <h3 class:list={['text-xl font-semibold mb-1', popular ? 'text-white' : 'text-charcoal']}>{name}</h3>
+    <p class:list={['text-sm mb-5', popular ? 'text-gray-400' : 'text-gray-500']}>{description}</p>
+    <div class="flex items-baseline gap-1">
+      <span class:list={['text-5xl tracking-tight font-mono font-medium', popular ? 'text-white' : 'text-charcoal']}>${price}</span>
+      <span class:list={[popular ? 'text-gray-400' : 'text-gray-500']}>/mo</span>
+    </div>
+    <p class:list={['text-sm mt-1', popular ? 'text-gray-400' : 'text-gray-500']}>{minutes} minutes</p>
+  </div>
+
+  <ul class="space-y-3 mb-8 flex-1">
+    {features.map((feature) => (
+      <li class:list={['flex items-start gap-2.5 text-sm', popular ? 'text-gray-300' : 'text-gray-600']}>
+        <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: #D4632C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        {feature}
+      </li>
+    ))}
+  </ul>
+
+  <a
+    href={ctaHref}
+    class:list={[
+      'w-full text-center py-3.5 font-semibold rounded-md transition-all duration-150 text-[15px]',
+      popular
+        ? 'text-white hover:shadow-orange-glow'
+        : 'text-white',
+    ]}
+    style={popular
+      ? 'background: #D4632C;'
+      : 'background: #1E2A32;'
+    }
+  >
+    {ctaText}
+  </a>
+</div>

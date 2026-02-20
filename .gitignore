@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Astro
+.astro/
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.obsidian/
+.vscode/
+.idea/
+
+# Claude
+.claude/
+
+# Screenshots (dev only)
+*.png
+
+# Playwright
+.playwright-mcp/
