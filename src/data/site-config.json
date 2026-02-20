@@ -1,7 +1,7 @@
 {
   "brand": "Ascend Systems",
   "tagline": "Every call, handled.",
-  "domain": "ascendsystems.com",
+  "domain": "ascendsystems.ai",
   "company": "Lighthouse 27 LLC",
   "location": "Charlotte, NC",
   "founder": "Brian Mangum",
@@ -10,7 +10,7 @@
     "brian": "(704) 555-0123",
     "demo": "(704) 555-0199"
   },
-  "email": "hello@ascendsystems.com",
+  "email": "hello@ascendsystems.ai",
   "calendlyUrl": "https://calendly.com/ascendsystems/demo",
   "pricing": {
     "starter": 199,

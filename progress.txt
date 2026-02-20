@@ -1,3 +1,83 @@
+## Session - Feb 20, 2026 (Domain + Messaging Broadening)
+
+**Completed:**
+- Domain finalized: **ascendsystems.ai** (purchased by Brian)
+- Updated site-config.json and astro.config.mjs to ascendsystems.ai
+- Email updated to hello@ascendsystems.ai
+- Deleted 8 variant experiment pages (/variants/)
+- Broadened secondary page messaging from phone-only to full platform:
+  - About: Added paragraph bridging phone origin story to full platform vision
+  - How It Works: New hero ("One Platform. Everything Handled."), added "Beyond the Phone" section with 4 platform features
+  - Contact: Hero changed from "Get Your Phone Answered" to "Get Your Business Running Itself"
+  - Pricing: Updated meta description to mention full platform
+  - Demo: Left as-is (phone demo IS the sales hook)
+- Clean build: 8 pages in 539ms
+
+**Files Changed:**
+- src/data/site-config.json — domain + email to ascendsystems.ai
+- astro.config.mjs — site URL to ascendsystems.ai
+- src/pages/about.astro — broader ending, platform mention
+- src/pages/how-it-works.astro — new hero, "Beyond the Phone" section
+- src/pages/contact.astro — broader hero headline
+- src/pages/pricing.astro — broader meta description
+
+**Files Deleted:**
+- src/pages/variants/ (8 files: alpine-sky, burgundy, copper, full-mountain, olive, sage, snow-cap, summit-gradient)
+
+**Decisions:**
+- ascendsystems.ai is the production domain (weruntherest.com retired)
+- Phone story stays as trojan horse / origin story — secondary pages just broaden the framing
+- Pricing structure left as-is until GHL pricing is finalized
+
+**Next Steps:**
+- [ ] Connect ascendsystems.ai to Cloudflare Pages as custom domain
+- [ ] Set up email forwarding for hello@ascendsystems.ai
+- [ ] Connect contact/demo forms to a backend (Web3Forms or GHL)
+- [ ] Build first GHL vertical demo (Record Store)
+- [ ] Get social handles (@ascendsystems)
+- [ ] Add real phone numbers to site-config.json (currently placeholder 555 numbers)
+
+---
+
+## Session - Feb 19, 2026 (Evening — Repo, Deploy, GHL Architecture, Domain)
+
+**Completed:**
+- Created standalone GitHub repo: github.com/realjbmangum/ascend-systems
+- Deployed to Cloudflare Pages: ascend-systems.pages.dev (LIVE)
+- Built comprehensive GHL architecture blueprint (ghl-architecture.md)
+- Domain secured: **weruntherest.com** (matches hero headline)
+
+**GHL Architecture (4 tiers):**
+1. **HQ** — Ascend HQ sub-account (Brian's sales CRM, all prospects from all sources)
+2. **Directory Outreach** — 1 per directory site (RecordStops, Pharmacy), directory-branded
+3. **Vertical Demos** — 1 per vertical (Ascend-branded), contains AI phone agent + full template
+4. **Client Accounts** — 1 per paying client, cloned from demo template
+
+**Key decisions:**
+- Directories are lead gen, Ascend is the product — two different brands, two different layers
+- Directory outreach stays directory-branded (credibility), Ascend pitch is human/in-person
+- Every vertical demo serves triple duty: live phone demo, visual sales demo, clone template
+- Naming convention: TYPE-VERTICAL-NAME (e.g., DEMO-pest-tactical-pest)
+- Priority build order: Record Store → Pharmacy → Pest Control
+
+**Files created:**
+- ghl-architecture.md — Master blueprint for all GHL structure
+- .gitignore — Clean gitignore for standalone repo
+
+**Domain:**
+- weruntherest.com — purchased, matches "Run your business. We'll run the rest."
+- ascendsystems.ai was available ($100) but went with phrase domain instead
+
+**Next steps (tomorrow):**
+- [ ] Connect weruntherest.com to Cloudflare Pages as custom domain
+- [ ] Build first GHL vertical demo (start with Record Store or Pharmacy)
+- [ ] I provide knowledge base, AI prompts, sample data — Brian configures in GHL
+- [ ] Test AI phone agent by calling it
+- [ ] Update secondary pages (about, pricing, how-it-works) for broader platform messaging
+- [ ] Update site-config.json domain to weruntherest.com
+
+---
+
 ## Session - Feb 19, 2026 (Color Migration, Logo, Content Broadening)
 
 **Completed:**
