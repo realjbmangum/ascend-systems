@@ -115,8 +115,9 @@ export default function LeadDetail() {
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Manage Lead</h2>
           <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+              <label htmlFor="lead-status" className="block text-xs font-medium text-gray-500 mb-1">Status</label>
               <select
+                id="lead-status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
@@ -130,8 +131,9 @@ export default function LeadDetail() {
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-xs font-medium text-gray-500 mb-1">Notes</label>
+            <label htmlFor="lead-notes" className="block text-xs font-medium text-gray-500 mb-1">Notes</label>
             <textarea
+              id="lead-notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}

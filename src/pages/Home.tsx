@@ -1,25 +1,30 @@
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 import ServiceCard from '../components/ServiceCard';
 import CaseStudyCard from '../components/CaseStudyCard';
 
 export default function Home() {
   return (
     <>
+      <SEO
+        title="Ascend Systems | Custom Software Development & AI Solutions"
+        description="Ship your next product in weeks, not months. Custom software, AI integrations, and business automation for mid-market companies. Based in Charlotte, NC."
+      />
       {/* Hero */}
       <section className="bg-charcoal py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
-            We build software that moves<br className="hidden sm:block" /> businesses forward.
+            Ship your next product in weeks,<br className="hidden sm:block" /> not months.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Custom development, AI integrations, and business automation for mid-market companies that need to ship fast and scale smart.
+            Custom software, AI integrations, and automation for mid-market companies — built by the same engineer you talk to on day one.
           </p>
           <div className="mt-10">
             <Link
               to="/contact"
               className="inline-block bg-orange hover:bg-orange-dark text-white text-lg font-semibold px-8 py-4 rounded-lg transition-colors shadow-orange-glow hover:shadow-orange-glow-lg"
             >
-              Let's Talk
+              Book a Free Discovery Call
             </Link>
           </div>
         </div>
@@ -44,7 +49,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-4">What we build</h2>
           <p className="text-gray-500 text-center max-w-xl mx-auto mb-12">
-            End-to-end solutions from concept to production, built by the same person you talk to.
+            From first conversation to production deploy — one engineer handles your entire project.
           </p>
           <div className="grid sm:grid-cols-2 gap-6">
             <ServiceCard
@@ -54,7 +59,7 @@ export default function Home() {
                 </svg>
               }
               title="Web & App Development"
-              description="Custom websites, web applications, PWAs, and dashboards built for performance and scale."
+              description="Websites, web apps, PWAs, and dashboards that load fast, work on every device, and grow with your business."
               linkTo="/services"
             />
             <ServiceCard
@@ -64,7 +69,7 @@ export default function Home() {
                 </svg>
               }
               title="AI Integrations"
-              description="Phone bots, chatbots, document processing, and workflow AI that actually works in production."
+              description="AI phone agents, chatbots, and document processing that handle real work — not demos that fall apart under load."
               linkTo="/services"
             />
             <ServiceCard
@@ -74,7 +79,7 @@ export default function Home() {
                 </svg>
               }
               title="Business Automation"
-              description="CRM integrations, automated workflows, data pipelines, and notification systems that save hours daily."
+              description="Connect your CRM, automate reports, trigger alerts — and stop paying people to copy-paste between systems."
               linkTo="/services"
             />
             <ServiceCard
@@ -84,7 +89,7 @@ export default function Home() {
                 </svg>
               }
               title="AI Phone Solutions"
-              description="24/7 intelligent call handling, appointment booking, and lead capture that never misses a call."
+              description="Your phones answered 24/7 — appointments booked, leads captured, customers helped — without hiring another person."
               linkTo="/services"
             />
           </div>
@@ -116,25 +121,25 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-4">Recent Work</h2>
           <p className="text-gray-500 text-center max-w-xl mx-auto mb-12">
-            Real products, live in production, generating results.
+            Live products with real users and real revenue — not mockups in a pitch deck.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <CaseStudyCard
               name="RecordStops"
               url="recordstops.com"
-              description="Directory platform serving 296 record stores across 5 states. 683 monthly active users, 16 city guides, newsletter system."
+              description="Built a directory of 296 record stores across 5 states with real-time search, 16 city guides, and a newsletter — 683 monthly users and growing."
               techTags={['Astro', 'Supabase', 'Cloudflare']}
             />
             <CaseStudyCard
               name="SCDMV Alerts"
               url="scdmvappointments.com"
-              description="Real-time SC DMV appointment monitoring with instant alerts. Stripe-powered subscriptions with 3-tier pricing."
+              description="Monitors SC DMV appointments every 15 minutes and alerts subscribers the moment a slot opens. Three paid tiers, powered by Stripe."
               techTags={['Astro', 'D1', 'Workers', 'Stripe']}
             />
             <CaseStudyCard
               name="LoveNotes"
               url="sendmylove.app"
-              description="Personalized messaging platform with 2,500+ messages delivered. Subscription model with automated delivery."
+              description="A subscription messaging app that has delivered 2,500+ personalized messages on automated schedules. Paying subscribers from week one."
               techTags={['Next.js', 'Supabase', 'Twilio']}
             />
           </div>
@@ -144,15 +149,15 @@ export default function Home() {
       {/* Final CTA */}
       <section className="reveal bg-charcoal py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to build something?</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Have a project that needs to ship?</h2>
           <p className="text-gray-400 text-lg max-w-lg mx-auto mb-10">
-            Tell us what you're working on. No contracts, no pressure — just a conversation about what's possible.
+            Tell us what you're working on. We'll give you an honest assessment of timeline, cost, and approach — no strings attached.
           </p>
           <Link
             to="/contact"
             className="inline-block bg-orange hover:bg-orange-dark text-white text-lg font-semibold px-8 py-4 rounded-lg transition-colors shadow-orange-glow hover:shadow-orange-glow-lg"
           >
-            Let's Talk
+            Book a Free Discovery Call
           </Link>
         </div>
       </section>
@@ -162,7 +167,7 @@ export default function Home() {
 
 const trustItems = [
   {
-    label: 'Full-Stack Development',
+    label: 'Full-Stack Engineering',
     icon: (
       <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L12 12.75 6.429 9.75m11.142 0l4.179 2.25L12 17.25 2.25 12l4.179-2.25m11.142 0l4.179 2.25-9.75 5.25-9.75-5.25 4.179-2.25" />
@@ -170,7 +175,7 @@ const trustItems = [
     ),
   },
   {
-    label: 'AI-Powered Solutions',
+    label: 'Production-Ready AI',
     icon: (
       <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -178,7 +183,7 @@ const trustItems = [
     ),
   },
   {
-    label: 'No Contracts',
+    label: 'No Long-Term Contracts',
     icon: (
       <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -198,7 +203,7 @@ const trustItems = [
 const whyItems = [
   {
     title: 'Ship in Weeks, Not Months',
-    description: 'We move fast with lean teams and proven stacks. Most projects launch within 2-4 weeks.',
+    description: 'Lean team, proven stack, no bureaucracy. Most projects go from kickoff to production in 2-4 weeks.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
@@ -215,8 +220,8 @@ const whyItems = [
     ),
   },
   {
-    title: 'Full-Stack Capability',
-    description: 'Frontend, backend, infrastructure, AI — one team handles the entire stack.',
+    title: 'One Team, Every Layer',
+    description: 'Frontend, backend, infrastructure, AI — no juggling vendors or waiting on handoffs.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L12 12.75 6.429 9.75m11.142 0l4.179 2.25L12 17.25 2.25 12l4.179-2.25m11.142 0l4.179 2.25-9.75 5.25-9.75-5.25 4.179-2.25" />
@@ -225,7 +230,7 @@ const whyItems = [
   },
   {
     title: 'Right-Sized for Mid-Market',
-    description: 'Enterprise quality without enterprise overhead. Built for companies that need results, not red tape.',
+    description: 'Senior-level engineering without the agency markup. Built for companies doing $5M-$100M that need results, not slide decks.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21" />

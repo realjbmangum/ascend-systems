@@ -11,7 +11,12 @@ const app = new Hono<{ Bindings: Bindings }>();
 app.use(
   "/api/*",
   cors({
-    origin: ["https://ascendsystems.ai", "http://localhost:5173"],
+    origin: [
+      "https://ascendsystems.ai",
+      "https://www.ascendsystems.ai",
+      "https://ascend-systems.pages.dev",
+      "http://localhost:5173",
+    ],
     allowMethods: ["GET", "POST", "PATCH", "OPTIONS"],
     allowHeaders: ["Content-Type"],
   })

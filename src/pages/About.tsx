@@ -1,38 +1,40 @@
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const values = [
   {
-    title: 'Ship Fast, Iterate Often',
-    description: 'Weeks, not quarters. You see working software early and often.',
+    title: 'Working Software Every Week',
+    description: 'You see real progress in days, not a status update that says "on track." If it\'s not working, we know before you do.',
   },
   {
-    title: 'No Bloat, No Fluff',
-    description: 'We build what you need. Nothing more, nothing less.',
+    title: 'Build Only What Matters',
+    description: 'No features you didn\'t ask for. No architecture astronaut decisions. Every line of code earns its place.',
   },
   {
-    title: 'Work With the Builder',
-    description:
-      'No layers. No handoffs. Direct access to the person writing the code.',
+    title: 'Direct Access to the Engineer',
+    description: 'No account managers. No ticket queues. You message the person writing the code and get an answer the same day.',
   },
   {
-    title: 'Right-Sized Solutions',
-    description:
-      'Enterprise-grade engineering without the enterprise price tag or timeline.',
+    title: 'Senior Engineering, Mid-Market Pricing',
+    description: 'The same quality of work a $500/hr agency delivers — at a price that makes sense for companies that count their dollars.',
   },
 ];
 
 export default function About() {
   return (
     <>
+      <SEO
+        title="About Ascend Systems | Brian Mangum, Software Engineer | Charlotte NC"
+        description="Ascend Systems is a founder-led software studio in Charlotte, NC. Brian Mangum builds custom software, AI integrations, and automation for mid-market companies."
+      />
       {/* Hero */}
       <section className="reveal bg-charcoal text-white py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-            Built by a Builder
+            One Engineer. Ten Production Products. Zero Excuses.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-surface-200 max-w-2xl mx-auto">
-            Ascend Systems is a one-person software studio that punches above
-            its weight.
+            Ascend Systems is a software studio built on a simple idea: the person who understands your business should be the person writing the code.
           </p>
         </div>
       </section>
@@ -55,19 +57,21 @@ export default function About() {
               </h2>
               <div className="space-y-4 text-charcoal-lighter leading-relaxed">
                 <p>
-                  I'm Brian Mangum — software engineer, founder of Lighthouse 27
-                  LLC, and the person who will actually build your project.
+                  I'm Brian Mangum — a software engineer based in Charlotte, NC.
+                  I started Ascend Systems because I watched too many companies
+                  spend six figures on agencies and get mediocre results.
                 </p>
                 <p>
-                  I've shipped 10+ production products in the last year alone —
-                  from directory platforms and monitoring SaaS to messaging apps
-                  and AI phone systems. I work with modern tools (React, Astro,
-                  Cloudflare, AI APIs) and I move fast.
+                  In the past year, I've shipped 10+ production products —
+                  directory platforms, monitoring SaaS, messaging apps, AI phone
+                  systems. Real products with real users paying real money. I
+                  build with React, Astro, Cloudflare, and AI APIs, and I move
+                  fast because there's no one between me and the code.
                 </p>
                 <p>
-                  When you work with Ascend, you're not getting a project manager
-                  who relays messages to offshore developers. You're getting the
-                  engineer — directly.
+                  When you hire Ascend, you don't get a project manager who
+                  relays your requirements to a team you'll never meet. You get
+                  me — the person who scopes it, writes the code, and deploys it.
                 </p>
               </div>
 
@@ -102,7 +106,7 @@ export default function About() {
       <section className="reveal bg-surface py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-14">
-            What We Stand For
+            How We Work
           </h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {values.map((v) => (
@@ -124,25 +128,26 @@ export default function About() {
 
       {/* Tech Philosophy */}
       <section className="reveal bg-white py-20 sm:py-28">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal mb-8">
-            How We Think About Technology
+            Our Take on Technology
           </h2>
           <div className="space-y-5 text-charcoal-lighter leading-relaxed">
             <p>
-              We're pragmatic engineers, not technology evangelists. The right
-              tool depends on the problem — not on what's trending on Hacker
-              News.
+              We pick tools based on what solves your problem, not what's
+              trending on Hacker News. The "best" technology is the one that
+              ships your product on time and keeps it running at 3 AM.
             </p>
             <p>
-              Our default stack is modern, battle-tested, and cost-effective:
-              React or Astro for frontends, Cloudflare for infrastructure, and AI
-              where it actually adds value. But we'll use whatever gets you to
-              market fastest.
+              Our default stack is modern, battle-tested, and cheap to run:
+              React or Astro for frontends, Cloudflare for infrastructure, and
+              AI where it delivers measurable value. But if your problem calls
+              for something else, we'll use that instead.
             </p>
             <p>
-              Speed to market matters more than architectural perfection. We ship
-              MVPs that work, then iterate based on real user feedback.
+              We believe in shipping first and refactoring later. A working MVP
+              in your customers' hands teaches you more than six months of
+              architecture planning ever will.
             </p>
           </div>
         </div>
@@ -151,14 +156,17 @@ export default function About() {
       {/* CTA */}
       <section className="reveal bg-charcoal py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Ready to work with a builder?
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Skip the sales process. Talk to the engineer.
           </h2>
+          <p className="text-gray-400 text-lg max-w-lg mx-auto mb-8">
+            30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.
+          </p>
           <Link
             to="/contact"
             className="inline-block bg-orange hover:bg-orange-dark text-white font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
           >
-            Let's Talk
+            Book a Free Discovery Call
           </Link>
         </div>
       </section>

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import SEO from '../components/SEO';
 import { siteConfig } from '../config/site';
 import { api } from '../lib/api';
 
@@ -64,14 +65,18 @@ export default function Contact() {
 
   return (
     <>
+      <SEO
+        title="Contact Ascend Systems | Start Your Project Today"
+        description="Ready to build custom software or integrate AI into your business? Contact Ascend Systems for a free discovery call. Based in Charlotte, NC."
+      />
       {/* Hero */}
       <section className="reveal bg-charcoal py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight">
-            Tell Us What You're Building
+            Get a Straight Answer in 24 Hours
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Every great project starts with a conversation. Tell us what you need and we'll figure out the best path forward — together.
+            Describe your project below. We'll reply within one business day with an honest take on timeline, approach, and whether we're the right fit.
           </p>
         </div>
       </section>

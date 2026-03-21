@@ -24,7 +24,7 @@ export default function CaseStudyCard({ name, url, description, techTags }: Case
         {techTags.map((tag) => (
           <span
             key={tag}
-            className="text-xs font-mono font-medium bg-surface px-2.5 py-1 rounded-md text-charcoal-lighter"
+            className="text-xs font-mono font-medium bg-surface px-2.5 py-1 rounded-md text-charcoal"
           >
             {tag}
           </span>

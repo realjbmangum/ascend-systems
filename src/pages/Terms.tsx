@@ -1,6 +1,13 @@
+import SEO from '../components/SEO';
+
 export default function Terms() {
   return (
-    <div className="bg-white py-20 sm:py-28">
+    <>
+      <SEO
+        title="Terms of Service | Ascend Systems"
+        description="Terms of service for Ascend Systems. Custom software development and consulting engagement terms."
+      />
+      <div className="bg-white py-20 sm:py-28">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-charcoal mb-2">
           Terms of Service
@@ -112,5 +119,6 @@ export default function Terms() {
         </div>
       </div>
     </div>
+    </>
   );
 }

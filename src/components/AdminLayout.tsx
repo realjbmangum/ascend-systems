@@ -59,6 +59,7 @@ export default function AdminLayout() {
             <Link
               key={link.to}
               to={link.to}
+              aria-label={link.label}
               className={`p-2 rounded-lg ${isActive(link.to) ? 'text-orange' : 'text-gray-400'}`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

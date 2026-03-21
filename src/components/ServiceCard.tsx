@@ -16,7 +16,7 @@ export default function ServiceCard({ icon, title, description, linkTo }: Servic
       </div>
       <h3 className="text-lg font-semibold text-charcoal mb-2">{title}</h3>
       <p className="text-sm text-gray-600 leading-relaxed mb-4">{description}</p>
-      <Link to={linkTo} className="text-sm font-medium text-orange hover:text-orange-dark transition-colors">
+      <Link to={linkTo} className="text-sm font-medium text-orange hover:text-orange-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/50 rounded">
         Learn more &rarr;
       </Link>
     </div>

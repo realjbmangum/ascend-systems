@@ -1,6 +1,13 @@
+import SEO from '../components/SEO';
+
 export default function Privacy() {
   return (
-    <div className="bg-white py-20 sm:py-28">
+    <>
+      <SEO
+        title="Privacy Policy | Ascend Systems"
+        description="Privacy policy for Ascend Systems. Learn how we collect, use, and protect your information."
+      />
+      <div className="bg-white py-20 sm:py-28">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl sm:text-4xl font-bold text-charcoal mb-2">
           Privacy Policy
@@ -105,5 +112,6 @@ export default function Privacy() {
         </div>
       </div>
     </div>
+    </>
   );
 }
