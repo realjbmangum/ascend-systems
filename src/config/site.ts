@@ -8,5 +8,5 @@ export const siteConfig = {
   phone: '(704) 555-0123',
   email: 'hello@ascendsystems.ai',
   calendlyUrl: 'https://calendly.com/ascendsystems/discovery',
-  apiUrl: '/api',
+  apiUrl: 'https://ascend-api.bmangum1.workers.dev/api',
 } as const;
