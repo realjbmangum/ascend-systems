@@ -15,10 +15,10 @@ export default function Nav() {
   return (
     <nav className="sticky top-0 z-50 bg-charcoal/95 backdrop-blur-sm border-b border-charcoal-light">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img src="/images/logo.png" alt="Ascend Systems" className="h-8" />
+            <img src="/images/logo.png" alt="Ascend Systems" className="h-10 sm:h-12" />
           </Link>
 
           {/* Desktop nav */}

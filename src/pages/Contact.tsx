@@ -70,8 +70,9 @@ export default function Contact() {
         description="Tell us about your business challenge. We will respond within 24 hours with an honest assessment. Free discovery call available. Based in Charlotte, NC."
       />
       {/* Hero */}
-      <section className="reveal bg-charcoal py-24 sm:py-32">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="reveal relative bg-charcoal py-24 sm:py-32 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
+        <div className="absolute inset-0 bg-charcoal/75" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight">
             Let's Figure Out if We're the Right Fit
           </h1>

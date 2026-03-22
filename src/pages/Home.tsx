@@ -11,10 +11,10 @@ export default function Home() {
         description="Technology that works as hard as you do. Custom software, AI solutions, and business automation for mid-market companies. Based in Charlotte, NC."
       />
       {/* Hero */}
-      <section className="relative bg-charcoal py-24 sm:py-32 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
-        <div className="absolute inset-0 bg-charcoal/70" />
+      <section className="relative bg-charcoal py-32 sm:py-44 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/80 via-charcoal/70 to-charcoal/90" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight tracking-tight">
             Technology that works<br className="hidden sm:block" /> as hard as you do.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
@@ -32,8 +32,9 @@ export default function Home() {
       </section>
 
       {/* Trust Bar */}
-      <section className="reveal bg-surface py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="reveal bg-surface py-16 relative">
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231E2A32' fill-opacity='1'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/svg%3E\")" }} />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {trustItems.map((item) => (
               <div key={item.label} className="flex flex-col items-center text-center gap-3">
@@ -103,9 +104,11 @@ export default function Home() {
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-12">
             Why growing companies choose Ascend
           </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Connecting line behind items */}
+            <div className="hidden lg:block absolute top-6 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-orange/20 to-transparent" />
             {whyItems.map((item) => (
-              <div key={item.title} className="text-center">
+              <div key={item.title} className="relative text-center">
                 <div className="w-12 h-12 bg-orange/10 rounded-full flex items-center justify-center mx-auto mb-4 text-orange">
                   {item.icon}
                 </div>

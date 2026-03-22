@@ -45,8 +45,10 @@ export default function About() {
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Photo placeholder */}
             <div className="flex justify-center md:justify-start">
-              <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center">
-                <span className="text-4xl font-bold text-orange">BM</span>
+              <div className="p-1 bg-gradient-to-br from-orange to-orange-dark rounded-2xl shadow-lg">
+                <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center">
+                  <span className="text-4xl font-bold text-orange">BM</span>
+                </div>
               </div>
             </div>
 

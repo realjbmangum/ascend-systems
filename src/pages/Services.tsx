@@ -116,84 +116,100 @@ export default function Services() {
           }`}
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2
-              className={`text-3xl sm:text-4xl font-bold tracking-tight ${
-                service.dark ? 'text-white' : 'text-charcoal'
-              }`}
-            >
-              {service.title}
-            </h2>
-            <p
-              className={`mt-4 text-lg leading-relaxed max-w-3xl ${
-                service.dark ? 'text-gray-300' : 'text-gray-600'
-              }`}
-            >
-              {service.description}
-            </p>
-
-            {/* Use Cases Grid */}
-            <div className="mt-10 grid sm:grid-cols-2 gap-4">
-              {service.useCases.map((uc) => (
-                <div
-                  key={uc}
-                  className={`flex items-start gap-3 rounded-lg p-4 ${
-                    service.dark
-                      ? 'bg-charcoal-light/50'
-                      : 'bg-white shadow-sm'
+            <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
+              {/* Left: text content */}
+              <div className="lg:col-span-3">
+                <h2
+                  className={`text-3xl sm:text-4xl font-bold tracking-tight ${
+                    service.dark ? 'text-white' : 'text-charcoal'
                   }`}
                 >
-                  <span className="mt-0.5 text-orange font-bold text-lg leading-none">
-                    &rsaquo;
-                  </span>
-                  <span
-                    className={`text-sm font-medium ${
-                      service.dark ? 'text-gray-200' : 'text-charcoal'
-                    }`}
-                  >
-                    {uc}
-                  </span>
+                  {service.title}
+                </h2>
+                <p
+                  className={`mt-4 text-lg leading-relaxed ${
+                    service.dark ? 'text-gray-300' : 'text-gray-600'
+                  }`}
+                >
+                  {service.description}
+                </p>
+
+                {/* Use Cases Grid */}
+                <div className="mt-10 grid sm:grid-cols-2 gap-4">
+                  {service.useCases.map((uc) => (
+                    <div
+                      key={uc}
+                      className={`flex items-start gap-3 rounded-lg p-4 ${
+                        service.dark
+                          ? 'bg-charcoal-light/50'
+                          : 'bg-white shadow-sm'
+                      }`}
+                    >
+                      <span className="mt-0.5 text-orange font-bold text-lg leading-none">
+                        &rsaquo;
+                      </span>
+                      <span
+                        className={`text-sm font-medium ${
+                          service.dark ? 'text-gray-200' : 'text-charcoal'
+                        }`}
+                      >
+                        {uc}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            {/* Tech Tags */}
-            {service.tech.length > 0 && (
-              <div className="mt-8 flex flex-wrap gap-2">
-                {service.tech.map((t) => (
-                  <span
-                    key={t}
-                    className={`text-xs font-mono font-semibold px-3 py-1.5 rounded-full ${
-                      service.dark
-                        ? 'bg-charcoal-lighter text-gray-300'
-                        : 'bg-surface-100 text-charcoal'
+                {/* Tech Tags */}
+                {service.tech.length > 0 && (
+                  <div className="mt-8 flex flex-wrap gap-2">
+                    {service.tech.map((t) => (
+                      <span
+                        key={t}
+                        className={`text-xs font-mono font-semibold px-3 py-1.5 rounded-full ${
+                          service.dark
+                            ? 'bg-charcoal-lighter text-gray-300'
+                            : 'bg-surface-100 text-charcoal'
+                        }`}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Example Callout */}
+                <div
+                  className={`mt-10 rounded-lg border-l-4 border-orange p-5 ${
+                    service.dark ? 'bg-charcoal-light/60' : 'bg-white'
+                  }`}
+                >
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-wider mb-2 ${
+                      service.dark ? 'text-orange-light' : 'text-orange'
                     }`}
                   >
-                    {t}
-                  </span>
-                ))}
+                    Real Example
+                  </p>
+                  <p
+                    className={`text-sm leading-relaxed ${
+                      service.dark ? 'text-gray-300' : 'text-gray-600'
+                    }`}
+                  >
+                    {service.example}
+                  </p>
+                </div>
               </div>
-            )}
 
-            {/* Example Callout */}
-            <div
-              className={`mt-10 rounded-lg border-l-4 border-orange p-5 ${
-                service.dark ? 'bg-charcoal-light/60' : 'bg-white'
-              }`}
-            >
-              <p
-                className={`text-xs font-semibold uppercase tracking-wider mb-2 ${
-                  service.dark ? 'text-orange-light' : 'text-orange'
-                }`}
-              >
-                Real Example
-              </p>
-              <p
-                className={`text-sm leading-relaxed ${
-                  service.dark ? 'text-gray-300' : 'text-gray-600'
-                }`}
-              >
-                {service.example}
-              </p>
+              {/* Right: image placeholder */}
+              <div className="lg:col-span-2 hidden lg:flex items-center justify-center">
+                <div className={`w-full h-64 rounded-xl flex items-center justify-center border border-dashed ${
+                  service.dark
+                    ? 'bg-charcoal-light/40 border-gray-400/20'
+                    : 'bg-charcoal-lighter/30 border-gray-500/30'
+                }`}>
+                  <span className={`text-sm ${service.dark ? 'text-gray-500' : 'text-gray-400'}`}>Screenshot coming soon</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>

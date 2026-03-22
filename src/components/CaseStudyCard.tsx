@@ -7,7 +7,12 @@ interface CaseStudyCardProps {
 
 export default function CaseStudyCard({ name, url, description, techTags }: CaseStudyCardProps) {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-surface-100 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-surface-100 hover:shadow-md transition-shadow overflow-hidden">
+      {/* Image placeholder */}
+      <div className="h-48 bg-charcoal-light flex items-center justify-center">
+        <span className="text-5xl font-bold text-orange/80">{name.charAt(0)}</span>
+      </div>
+      <div className="p-6">
       <div className="flex items-baseline justify-between mb-3">
         <h3 className="text-lg font-semibold text-charcoal">{name}</h3>
         <a
@@ -29,6 +34,7 @@ export default function CaseStudyCard({ name, url, description, techTags }: Case
             {tag}
           </span>
         ))}
+      </div>
       </div>
     </div>
   );
