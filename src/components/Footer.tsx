@@ -8,9 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="md:col-span-2">
-            <span className="text-xl font-bold text-white tracking-tight">
-              ASCEND<span className="text-orange"> SYSTEMS</span>
-            </span>
+            <img src="/images/logo.png" alt="Ascend Systems" className="h-10" />
             <p className="mt-3 text-sm leading-relaxed max-w-sm">
               Custom software development, AI integrations, and business automation
               for mid-market companies ready to move faster.

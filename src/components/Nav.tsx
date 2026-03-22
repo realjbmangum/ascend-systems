@@ -18,9 +18,7 @@ export default function Nav() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-white tracking-tight">
-              ASCEND<span className="text-orange"> SYSTEMS</span>
-            </span>
+            <img src="/images/logo.png" alt="Ascend Systems" className="h-8" />
           </Link>
 
           {/* Desktop nav */}

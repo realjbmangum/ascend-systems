@@ -23,8 +23,8 @@ Thumbs.db
 # Claude
 .claude/
 
-# Screenshots (dev only)
-*.png
+# Screenshots (dev only, root level)
+/*.png
 
 # Playwright
 .playwright-mcp/

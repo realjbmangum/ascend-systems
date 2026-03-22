@@ -20,8 +20,9 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className="w-64 bg-charcoal text-white flex-shrink-0 hidden md:flex flex-col">
         <div className="p-6 border-b border-charcoal-light">
-          <Link to="/admin" className="text-lg font-bold tracking-tight">
-            ASCEND<span className="text-orange"> ADMIN</span>
+          <Link to="/admin" className="flex items-center gap-2">
+            <img src="/images/logo.png" alt="Ascend Systems" className="h-7" />
+            <span className="text-sm font-bold text-orange tracking-tight">ADMIN</span>
           </Link>
         </div>
         <nav className="flex-1 p-4 space-y-1">
@@ -51,8 +52,9 @@ export default function AdminLayout() {
 
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-charcoal text-white px-4 py-3 flex items-center justify-between">
-        <Link to="/admin" className="text-lg font-bold tracking-tight">
-          ASCEND<span className="text-orange"> ADMIN</span>
+        <Link to="/admin" className="flex items-center gap-2">
+          <img src="/images/logo.png" alt="Ascend Systems" className="h-6" />
+          <span className="text-sm font-bold text-orange tracking-tight">ADMIN</span>
         </Link>
         <div className="flex gap-2">
           {sidebarLinks.map((link) => (

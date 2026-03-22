@@ -5,31 +5,31 @@ const services = [
   {
     title: 'Web & App Development',
     description:
-      'Your customers and your team deserve tools that are fast, reliable, and built for how they actually work — not a template with your logo on it.',
+      'Your customers expect a smooth experience and your team needs tools that actually help them do their jobs — not a cookie-cutter template with your logo on it.',
     useCases: [
-      'Customer-facing web apps that convert',
-      'Internal tools your team will actually use',
-      'E-commerce and marketplace platforms',
-      'Mobile-first progressive web apps',
+      'Customer portals and online tools that drive sales',
+      'Internal software your team will actually use',
+      'Online stores and marketplace platforms',
+      'Mobile-friendly apps that work on any device',
     ],
     tech: ['React', 'Astro', 'Next.js', 'Node.js', 'TypeScript', 'Cloudflare', 'Supabase'],
     example:
-      'We built RecordStops.com — a directory of 296 record stores across 5 states with real-time search, 16 city guides, and 683 monthly users.',
+      'We built RecordStops.com — a searchable directory of 296 record stores across 5 states with city guides and a weekly newsletter, attracting 683 monthly visitors.',
     dark: false,
   },
   {
     title: 'AI Integrations',
     description:
-      'AI that handles real work in production — answering phones, processing documents, running workflows — not a chatbot that says "I\'m sorry, I can\'t help with that."',
+      'AI that handles real work for your business — answering phones, processing documents, running daily tasks — trained on your data, not a generic chatbot that frustrates your customers.',
     useCases: [
       'AI phone agents that book appointments and capture leads',
-      'Support chatbots trained on your actual data',
-      'Document processing and data extraction',
-      'Workflow automation powered by LLMs',
+      'Customer support chatbots trained on your actual business',
+      'Automatic processing of documents and paperwork',
+      'Routine tasks handled by AI so your team can focus',
     ],
     tech: ['OpenAI', 'Claude', 'Voice AI', 'Twilio', 'Custom Integrations'],
     example:
-      'We built an AI phone system that answers calls 24/7, books appointments, and captures leads — doing the job of a $3,000/month answering service.',
+      'We built an AI phone system that answers calls around the clock, books appointments, and captures leads — doing the job of a $3,000/month answering service.',
     dark: true,
   },
   {
@@ -37,29 +37,29 @@ const services = [
     description:
       'Every hour your team spends copy-pasting between systems is an hour they\'re not spending on work that matters. We connect your tools so the data moves itself.',
     useCases: [
-      'CRM setup and workflow automation',
+      'CRM setup and automatic follow-ups',
       'Real-time notifications and alerts',
-      'Data pipelines and automated reporting',
+      'Automated reports delivered on schedule',
       'Payment and subscription management',
     ],
     tech: ['Cloudflare Workers', 'D1', 'Stripe', 'SendGrid', 'Twilio', 'APIs'],
     example:
-      'We built SCDMV Alerts — a system that checks DMV appointments every 15 minutes and texts subscribers the moment a slot opens.',
+      'We built SCDMV Alerts — a service that checks DMV appointments every 15 minutes and texts subscribers the moment a slot opens, with thousands of active users.',
     dark: false,
   },
   {
     title: 'Custom Solutions',
     description:
-      'Some problems don\'t fit a category. If you have a business challenge that software can solve, we\'ll scope it, build it, and ship it.',
+      'Some problems are unique to your business. If you have a challenge that technology can solve, we will map it out, build it, and put it to work for you.',
     useCases: [
-      'Niche SaaS products for underserved markets',
-      'Data analysis and reporting tools',
+      'Software products for underserved markets',
+      'Data analysis and reporting dashboards',
       'Industry-specific platforms',
-      'MVPs to validate a business idea before scaling',
+      'A working first version to test a business idea before investing more',
     ],
     tech: [],
     example:
-      'We built SendMyLove.app — a subscription messaging platform that has delivered 2,500+ personalized messages on automated schedules.',
+      'We built SendMyLove.app — a subscription messaging service that delivers personalized messages on a schedule, with over 2,500 messages sent and paying subscribers from day one.',
     dark: true,
   },
 ];
@@ -68,22 +68,22 @@ const steps = [
   {
     num: '1',
     title: 'Discovery',
-    description: 'A 30-minute call to understand your business, define the problem, and agree on what "done" looks like.',
+    description: 'A 30-minute call to understand your business, define the problem, and agree on what success looks like.',
   },
   {
     num: '2',
     title: 'Build',
-    description: 'You see working software every week — not a status report that says "on track."',
+    description: 'You see real, working progress every week — not a status report that says "on track."',
   },
   {
     num: '3',
     title: 'Launch',
-    description: 'We deploy to production, monitor for issues, and make sure real users can do real work.',
+    description: 'We put your software live, watch for issues, and make sure your team and customers can use it right away.',
   },
   {
     num: '4',
     title: 'Support',
-    description: 'Bug fixes, feature updates, and scaling — we stay as long as you need us.',
+    description: 'Fixes, updates, and improvements as your business grows — we stay as long as you need us.',
   },
 ];
 
@@ -91,17 +91,18 @@ export default function Services() {
   return (
     <>
       <SEO
-        title="Services | Web Development, AI Integration & Business Automation | Ascend Systems"
-        description="Custom web applications, AI integrations, business automation, and AI phone solutions for mid-market companies. From discovery to production in weeks."
+        title="Services | Custom Software, AI & Automation for Growing Businesses | Ascend Systems"
+        description="Custom software, AI solutions, and business automation for mid-market companies. We solve the technology problems that slow your business down."
       />
       {/* Hero */}
-      <section className="reveal bg-charcoal py-24 sm:py-32">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="reveal relative bg-charcoal py-24 sm:py-32 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
+        <div className="absolute inset-0 bg-charcoal/60" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight">
-            Software That Solves the Problem You Actually Have
+            Your Business Has a Technology Problem. We Fix It.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Custom apps, AI that works in production, and automation that pays for itself. Built for mid-market companies that can't wait six months for a vendor to deliver.
+            Custom software, AI that handles real work, and automation that pays for itself. Built for growing companies that are tired of waiting six months for a vendor to deliver.
           </p>
         </div>
       </section>
@@ -225,10 +226,10 @@ export default function Services() {
       <section className="reveal bg-charcoal py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Know what you need? Let's scope it.
+            Ready to get started? Let's talk about your project.
           </h2>
           <p className="mt-4 text-gray-400 text-lg max-w-lg mx-auto">
-            Tell us about your project and we'll come back with a timeline, cost range, and recommended approach.
+            Tell us what you are working on and we will come back with a timeline, cost range, and recommended approach.
           </p>
           <Link
             to="/contact"

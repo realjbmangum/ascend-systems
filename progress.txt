@@ -1,4 +1,4 @@
-## Session - Feb 20, 2026 (Domain + Messaging Broadening)
+## Session - Feb 20, 2026 (Domain + Full Site Messaging Overhaul)
 
 **Completed:**
 - Domain finalized: **ascendsystems.ai** (purchased by Brian)
@@ -6,17 +6,23 @@
 - Email updated to hello@ascendsystems.ai
 - Deleted 8 variant experiment pages (/variants/)
 - Broadened secondary page messaging from phone-only to full platform:
-  - About: Added paragraph bridging phone origin story to full platform vision
   - How It Works: New hero ("One Platform. Everything Handled."), added "Beyond the Phone" section with 4 platform features
   - Contact: Hero changed from "Get Your Phone Answered" to "Get Your Business Running Itself"
   - Pricing: Updated meta description to mention full platform
   - Demo: Left as-is (phone demo IS the sales hook)
-- Clean build: 8 pages in 539ms
+- **Rewrote About page from scratch** — removed fake personal story, replaced with:
+  - "The Problem" — duct tape stack, missed calls, cold leads
+  - "What It Actually Is" — platform description with all 6 tools
+  - "Who It's For" — 4 vertical cards (home services, professional, retail, solo operators)
+  - "Principles" — technology invisible, pays for itself, one platform, setup is our problem
+  - Updated trust signals (removed personal Brian references)
+- Drafted email to Neil (BHL master agent) with GHL mapping structure
+- Clean build: 8 pages, 2 commits pushed (c99e071, 6e0efd3)
 
 **Files Changed:**
 - src/data/site-config.json — domain + email to ascendsystems.ai
 - astro.config.mjs — site URL to ascendsystems.ai
-- src/pages/about.astro — broader ending, platform mention
+- src/pages/about.astro — complete rewrite (platform-focused)
 - src/pages/how-it-works.astro — new hero, "Beyond the Phone" section
 - src/pages/contact.astro — broader hero headline
 - src/pages/pricing.astro — broader meta description
@@ -26,14 +32,20 @@
 
 **Decisions:**
 - ascendsystems.ai is the production domain (weruntherest.com retired)
-- Phone story stays as trojan horse / origin story — secondary pages just broaden the framing
+- About page should NOT be about Brian personally — focus on the platform and the problem it solves
+- Phone story stays as trojan horse on other pages — secondary pages broaden the framing
 - Pricing structure left as-is until GHL pricing is finalized
 
+**Blocker:**
+- Cannot build GHL sub-accounts until Neil maps Ascend Systems as root agency account
+- Email drafted and ready to send to Neil with full mapping structure
+
 **Next Steps:**
+- [ ] Send email to Neil re: GHL root mapping (BLOCKER)
 - [ ] Connect ascendsystems.ai to Cloudflare Pages as custom domain
 - [ ] Set up email forwarding for hello@ascendsystems.ai
 - [ ] Connect contact/demo forms to a backend (Web3Forms or GHL)
-- [ ] Build first GHL vertical demo (Record Store)
+- [ ] Build first GHL vertical demo (Record Store) — after Neil sets up root
 - [ ] Get social handles (@ascendsystems)
 - [ ] Add real phone numbers to site-config.json (currently placeholder 555 numbers)
 

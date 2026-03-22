@@ -3,20 +3,20 @@ import SEO from '../components/SEO';
 
 const values = [
   {
-    title: 'Working Software Every Week',
-    description: 'You see real progress in days, not a status update that says "on track." If it\'s not working, we know before you do.',
+    title: 'Real Progress Every Week',
+    description: 'You see working results in days, not a status update that says "on track." If something is off, we catch it before you do.',
   },
   {
-    title: 'Build Only What Matters',
-    description: 'No features you didn\'t ask for. No architecture astronaut decisions. Every line of code earns its place.',
+    title: 'We Build Only What You Need',
+    description: 'No extras you did not ask for. No overcomplicating things. Every dollar you spend goes toward solving your actual problem.',
   },
   {
-    title: 'Direct Access to the Engineer',
-    description: 'No account managers. No ticket queues. You message the person writing the code and get an answer the same day.',
+    title: 'We Give You Straight Answers',
+    description: 'No account managers. No ticket queues. You message the person doing the work and get an answer the same day.',
   },
   {
-    title: 'Senior Engineering, Mid-Market Pricing',
-    description: 'The same quality of work a $500/hr agency delivers — at a price that makes sense for companies that count their dollars.',
+    title: 'Big-Agency Quality, Fair Pricing',
+    description: 'The same caliber of work a $500/hr agency delivers — at a price that makes sense for companies that count their dollars.',
   },
 ];
 
@@ -24,17 +24,17 @@ export default function About() {
   return (
     <>
       <SEO
-        title="About Ascend Systems | Brian Mangum, Software Engineer | Charlotte NC"
-        description="Ascend Systems is a founder-led software studio in Charlotte, NC. Brian Mangum builds custom software, AI integrations, and automation for mid-market companies."
+        title="About Ascend Systems | Brian Mangum | Charlotte, NC"
+        description="Ascend Systems is a founder-led technology studio in Charlotte, NC. We build custom software, AI solutions, and automation for growing businesses."
       />
       {/* Hero */}
       <section className="reveal bg-charcoal text-white py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-            One Engineer. Ten Production Products. Zero Excuses.
+            A Technology Partner You Can Actually Trust.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-surface-200 max-w-2xl mx-auto">
-            Ascend Systems is a software studio built on a simple idea: the person who understands your business should be the person writing the code.
+            Ascend Systems is a technology studio built on a simple idea: the person who understands your business should be the person building your software.
           </p>
         </div>
       </section>
@@ -57,21 +57,20 @@ export default function About() {
               </h2>
               <div className="space-y-4 text-charcoal-lighter leading-relaxed">
                 <p>
-                  I'm Brian Mangum — a software engineer based in Charlotte, NC.
+                  I'm Brian Mangum — a software professional based in Charlotte, NC.
                   I started Ascend Systems because I watched too many companies
                   spend six figures on agencies and get mediocre results.
                 </p>
                 <p>
-                  In the past year, I've shipped 10+ production products —
-                  directory platforms, monitoring SaaS, messaging apps, AI phone
-                  systems. Real products with real users paying real money. I
-                  build with React, Astro, Cloudflare, and AI APIs, and I move
-                  fast because there's no one between me and the code.
+                  In the past year, I have built and launched over 10 products that
+                  real people use and pay for — business directories, monitoring
+                  services, messaging platforms, and AI phone systems. I work
+                  quickly because there is no one between you and me.
                 </p>
                 <p>
-                  When you hire Ascend, you don't get a project manager who
-                  relays your requirements to a team you'll never meet. You get
-                  me — the person who scopes it, writes the code, and deploys it.
+                  When you hire Ascend, you do not get an account manager who
+                  passes your ideas to a team you will never meet. You get
+                  me — the person who plans it, builds it, and stands behind it.
                 </p>
               </div>
 
@@ -130,24 +129,23 @@ export default function About() {
       <section className="reveal bg-white py-20 sm:py-28">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal mb-8">
-            Our Take on Technology
+            Our Approach to Technology
           </h2>
           <div className="space-y-5 text-charcoal-lighter leading-relaxed">
             <p>
-              We pick tools based on what solves your problem, not what's
-              trending on Hacker News. The "best" technology is the one that
-              ships your product on time and keeps it running at 3 AM.
+              We choose tools based on what solves your problem, not what
+              is trendy. The best technology is the one that gets your
+              project done on time and keeps it running reliably.
             </p>
             <p>
-              Our default stack is modern, battle-tested, and cheap to run:
-              React or Astro for frontends, Cloudflare for infrastructure, and
-              AI where it delivers measurable value. But if your problem calls
-              for something else, we'll use that instead.
+              We use modern, proven platforms that are cost-effective to
+              maintain. We also know when and where AI can deliver real
+              value for your business — and when it is just a distraction.
             </p>
             <p>
-              We believe in shipping first and refactoring later. A working MVP
-              in your customers' hands teaches you more than six months of
-              architecture planning ever will.
+              We believe in getting a working version into your hands quickly.
+              Real feedback from real customers teaches you more than months
+              of planning ever will.
             </p>
           </div>
         </div>
@@ -157,7 +155,7 @@ export default function About() {
       <section className="reveal bg-charcoal py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Skip the sales process. Talk to the engineer.
+            Skip the sales process. Talk to the person who does the work.
           </h2>
           <p className="text-gray-400 text-lg max-w-lg mx-auto mb-8">
             30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.

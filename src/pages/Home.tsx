@@ -7,17 +7,18 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Ascend Systems | Custom Software Development & AI Solutions"
-        description="Ship your next product in weeks, not months. Custom software, AI integrations, and business automation for mid-market companies. Based in Charlotte, NC."
+        title="Ascend Systems | Custom Software & AI for Growing Businesses | Charlotte, NC"
+        description="Technology that works as hard as you do. Custom software, AI solutions, and business automation for mid-market companies. Based in Charlotte, NC."
       />
       {/* Hero */}
-      <section className="bg-charcoal py-24 sm:py-32">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative bg-charcoal py-24 sm:py-32 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
+        <div className="absolute inset-0 bg-charcoal/70" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
-            Ship your next product in weeks,<br className="hidden sm:block" /> not months.
+            Technology that works<br className="hidden sm:block" /> as hard as you do.
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Custom software, AI integrations, and automation for mid-market companies — built by the same engineer you talk to on day one.
+            Custom software, AI, and automation that solve the problems slowing your business down — built by the same person you talk to on day one.
           </p>
           <div className="mt-10">
             <Link
@@ -47,9 +48,9 @@ export default function Home() {
       {/* Services Overview */}
       <section className="reveal bg-white py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-4">What we build</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-4">How we help</h2>
           <p className="text-gray-500 text-center max-w-xl mx-auto mb-12">
-            From first conversation to production deploy — one engineer handles your entire project.
+            From first conversation to finished product — one person handles your entire project, start to finish.
           </p>
           <div className="grid sm:grid-cols-2 gap-6">
             <ServiceCard
@@ -59,7 +60,7 @@ export default function Home() {
                 </svg>
               }
               title="Web & App Development"
-              description="Websites, web apps, PWAs, and dashboards that load fast, work on every device, and grow with your business."
+              description="Websites, customer portals, and internal tools that load fast, work on every device, and grow with your business."
               linkTo="/services"
             />
             <ServiceCard
@@ -69,7 +70,7 @@ export default function Home() {
                 </svg>
               }
               title="AI Integrations"
-              description="AI phone agents, chatbots, and document processing that handle real work — not demos that fall apart under load."
+              description="AI that answers your phones, processes paperwork, and handles customer questions — trained on your business, not generic templates."
               linkTo="/services"
             />
             <ServiceCard
@@ -100,7 +101,7 @@ export default function Home() {
       <section className="reveal bg-surface py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-12">
-            Why companies choose Ascend
+            Why growing companies choose Ascend
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {whyItems.map((item) => (
@@ -121,25 +122,25 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-4">Recent Work</h2>
           <p className="text-gray-500 text-center max-w-xl mx-auto mb-12">
-            Live products with real users and real revenue — not mockups in a pitch deck.
+            Real businesses with real customers and real revenue — here is what we have built recently.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <CaseStudyCard
               name="RecordStops"
               url="recordstops.com"
-              description="Built a directory of 296 record stores across 5 states with real-time search, 16 city guides, and a newsletter — 683 monthly users and growing."
+              description="A directory helping music lovers find record stores across 5 states. 296 listings, 16 city guides, a weekly newsletter, and 683 monthly visitors — growing every month."
               techTags={['Astro', 'Supabase', 'Cloudflare']}
             />
             <CaseStudyCard
               name="SCDMV Alerts"
               url="scdmvappointments.com"
-              description="Monitors SC DMV appointments every 15 minutes and alerts subscribers the moment a slot opens. Three paid tiers, powered by Stripe."
+              description="Checks SC DMV appointments every 15 minutes and alerts subscribers the moment a slot opens. Three paid tiers with thousands of active users."
               techTags={['Astro', 'D1', 'Workers', 'Stripe']}
             />
             <CaseStudyCard
               name="LoveNotes"
               url="sendmylove.app"
-              description="A subscription messaging app that has delivered 2,500+ personalized messages on automated schedules. Paying subscribers from week one."
+              description="A subscription messaging service that delivers personalized messages on a schedule. Over 2,500 messages sent, with paying subscribers from the first week."
               techTags={['Next.js', 'Supabase', 'Twilio']}
             />
           </div>
@@ -149,9 +150,9 @@ export default function Home() {
       {/* Final CTA */}
       <section className="reveal bg-charcoal py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Have a project that needs to ship?</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to talk about your project?</h2>
           <p className="text-gray-400 text-lg max-w-lg mx-auto mb-10">
-            Tell us what you're working on. We'll give you an honest assessment of timeline, cost, and approach — no strings attached.
+            Tell us what challenge you are facing. We will give you an honest assessment of timeline, cost, and approach — no strings attached.
           </p>
           <Link
             to="/contact"
@@ -167,7 +168,7 @@ export default function Home() {
 
 const trustItems = [
   {
-    label: 'Full-Stack Engineering',
+    label: 'Complete Solutions',
     icon: (
       <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L12 12.75 6.429 9.75m11.142 0l4.179 2.25L12 17.25 2.25 12l4.179-2.25m11.142 0l4.179 2.25-9.75 5.25-9.75-5.25 4.179-2.25" />
@@ -175,7 +176,7 @@ const trustItems = [
     ),
   },
   {
-    label: 'Production-Ready AI',
+    label: 'AI That Works',
     icon: (
       <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -202,8 +203,8 @@ const trustItems = [
 
 const whyItems = [
   {
-    title: 'Ship in Weeks, Not Months',
-    description: 'Lean team, proven stack, no bureaucracy. Most projects go from kickoff to production in 2-4 weeks.',
+    title: 'Results in Weeks',
+    description: 'Small team, proven process, no red tape. Most projects go from first meeting to finished product in 2-4 weeks.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
@@ -211,8 +212,8 @@ const whyItems = [
     ),
   },
   {
-    title: 'Work Directly With the Builder',
-    description: 'No project managers, no handoffs. You talk to the person writing the code.',
+    title: 'One Point of Contact',
+    description: 'No account managers, no ticket queues. You talk directly to the person doing the work.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
@@ -220,8 +221,8 @@ const whyItems = [
     ),
   },
   {
-    title: 'One Team, Every Layer',
-    description: 'Frontend, backend, infrastructure, AI — no juggling vendors or waiting on handoffs.',
+    title: 'Everything Under One Roof',
+    description: 'Design, software, hosting, AI — no juggling vendors or waiting on someone else to finish their part.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L12 12.75 6.429 9.75m11.142 0l4.179 2.25L12 17.25 2.25 12l4.179-2.25m11.142 0l4.179 2.25-9.75 5.25-9.75-5.25 4.179-2.25" />
@@ -229,8 +230,8 @@ const whyItems = [
     ),
   },
   {
-    title: 'Right-Sized for Mid-Market',
-    description: 'Senior-level engineering without the agency markup. Built for companies doing $5M-$100M that need results, not slide decks.',
+    title: 'Right-Sized for Growing Companies',
+    description: 'Senior-level talent without the big-agency price tag. Built for companies doing $5M-$100M that need results, not presentations.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21" />
