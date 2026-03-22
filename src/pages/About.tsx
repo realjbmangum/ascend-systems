@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
+import PortfolioTimeline from '../components/PortfolioTimeline';
 
 const values = [
   {
@@ -20,6 +22,22 @@ const values = [
   },
 ];
 
+const valuesContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+};
+
+const valueItem = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const codeSnippets = [
+  { text: 'const result = await build();', top: '10%', left: '-15%', rotate: '-6deg' },
+  { text: 'deploy(config);', top: '65%', right: '-10%', rotate: '3deg' },
+  { text: 'if (ready) ship();', bottom: '5%', left: '-5%', rotate: '4deg' },
+];
+
 export default function About() {
   return (
     <>
@@ -28,32 +46,72 @@ export default function About() {
         description="Ascend Systems is a founder-led technology studio in Charlotte, NC. We build custom software, AI solutions, and automation for growing businesses."
       />
       {/* Hero */}
-      <section className="reveal bg-charcoal text-white py-24 sm:py-32">
+      <section className="bg-charcoal text-white py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
+          <motion.h1
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             A Technology Partner You Can Actually Trust.
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-surface-200 max-w-2xl mx-auto">
+          </motion.h1>
+          <motion.p
+            className="mt-6 text-lg sm:text-xl text-surface-200 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Ascend Systems is a technology studio built on a simple idea: the person who understands your business should be the person building your software.
-          </p>
+          </motion.p>
         </div>
       </section>
 
       {/* Founder */}
-      <section className="reveal bg-white py-20 sm:py-28">
+      <section className="bg-white py-20 sm:py-28 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Photo placeholder */}
-            <div className="flex justify-center md:justify-start">
-              <div className="p-1 bg-gradient-to-br from-orange to-orange-dark rounded-2xl shadow-lg">
-                <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center">
-                  <span className="text-4xl font-bold text-orange">BM</span>
+            {/* Photo placeholder with floating code snippets */}
+            <motion.div
+              className="flex justify-center md:justify-start"
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+            >
+              <div className="relative">
+                {/* Floating code snippets */}
+                {codeSnippets.map((snippet, i) => (
+                  <div
+                    key={i}
+                    className="absolute hidden md:block bg-charcoal rounded-lg px-3 py-1.5 font-mono text-[10px] text-orange-light shadow-md z-0 select-none"
+                    style={{
+                      top: snippet.top,
+                      left: snippet.left,
+                      right: snippet.right,
+                      bottom: snippet.bottom,
+                      transform: `rotate(${snippet.rotate})`,
+                    }}
+                  >
+                    {snippet.text}
+                  </div>
+                ))}
+
+                <div className="relative z-10 p-1 bg-gradient-to-br from-orange to-orange-dark rounded-2xl shadow-lg">
+                  <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center">
+                    <span className="text-4xl font-bold text-orange">BM</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Bio */}
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+            >
               <h2 className="text-3xl sm:text-4xl font-bold text-charcoal mb-6">
                 Meet the Founder
               </h2>
@@ -98,22 +156,38 @@ export default function About() {
                 </svg>
                 Charlotte, NC
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
+      {/* Portfolio Timeline */}
+      <PortfolioTimeline />
+
       {/* Values */}
-      <section className="reveal bg-surface py-20 sm:py-28">
+      <section className="bg-surface py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-14">
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-14"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             How We Work
-          </h2>
-          <div className="grid sm:grid-cols-2 gap-6">
+          </motion.h2>
+          <motion.div
+            className="grid sm:grid-cols-2 gap-6"
+            variants={valuesContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
             {values.map((v) => (
-              <div
+              <motion.div
                 key={v.title}
                 className="bg-white rounded-xl shadow-sm border-l-4 border-orange p-6"
+                variants={valueItem}
               >
                 <h3 className="text-lg font-semibold text-charcoal mb-2">
                   {v.title}
@@ -121,44 +195,71 @@ export default function About() {
                 <p className="text-charcoal-lighter leading-relaxed">
                   {v.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Tech Philosophy */}
-      <section className="reveal bg-white py-20 sm:py-28">
+      <section className="bg-white py-20 sm:py-28">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-charcoal mb-8">
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold text-charcoal mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             Our Approach to Technology
-          </h2>
+          </motion.h2>
           <div className="space-y-5 text-charcoal-lighter leading-relaxed">
-            <p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
               We choose tools based on what solves your problem, not what
               is trendy. The best technology is the one that gets your
               project done on time and keeps it running reliably.
-            </p>
-            <p>
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
               We use modern, proven platforms that are cost-effective to
               maintain. We also know when and where AI can deliver real
               value for your business — and when it is just a distraction.
-            </p>
-            <p>
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
               We believe in getting a working version into your hands quickly.
               Real feedback from real customers teaches you more than months
               of planning ever will.
-            </p>
+            </motion.p>
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="reveal bg-charcoal py-20 sm:py-28">
+      <section className="bg-charcoal py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold text-white mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             Skip the sales process. Talk to the person who does the work.
-          </h2>
+          </motion.h2>
           <p className="text-gray-400 text-lg max-w-lg mx-auto mb-8">
             30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.
           </p>

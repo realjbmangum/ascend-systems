@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
+import MockDashboard from '../components/MockDashboard';
+import MockPhoneUI from '../components/MockPhoneUI';
 
 const services = [
   {
@@ -16,6 +19,7 @@ const services = [
     example:
       'We built RecordStops.com — a searchable directory of 296 record stores across 5 states with city guides and a weekly newsletter, attracting 683 monthly visitors.',
     dark: false,
+    mockType: 'dashboard' as const,
   },
   {
     title: 'AI Integrations',
@@ -31,6 +35,7 @@ const services = [
     example:
       'We built an AI phone system that answers calls around the clock, books appointments, and captures leads — doing the job of a $3,000/month answering service.',
     dark: true,
+    mockType: 'phone' as const,
   },
   {
     title: 'Business Automation',
@@ -46,6 +51,7 @@ const services = [
     example:
       'We built SCDMV Alerts — a service that checks DMV appointments every 15 minutes and texts subscribers the moment a slot opens, with thousands of active users.',
     dark: false,
+    mockType: 'dashboard' as const,
   },
   {
     title: 'Custom Solutions',
@@ -61,6 +67,7 @@ const services = [
     example:
       'We built SendMyLove.app — a subscription messaging service that delivers personalized messages on a schedule, with over 2,500 messages sent and paying subscribers from day one.',
     dark: true,
+    mockType: 'phone' as const,
   },
 ];
 
@@ -87,6 +94,21 @@ const steps = [
   },
 ];
 
+const sectionVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
+const stepItem = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
 export default function Services() {
   return (
     <>
@@ -95,25 +117,39 @@ export default function Services() {
         description="Custom software, AI solutions, and business automation for mid-market companies. We solve the technology problems that slow your business down."
       />
       {/* Hero */}
-      <section className="reveal relative bg-charcoal py-24 sm:py-32 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
+      <section className="relative bg-charcoal py-24 sm:py-32 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
         <div className="absolute inset-0 bg-charcoal/60" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight">
+          <motion.h1
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             Your Business Has a Technology Problem. We Fix It.
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p
+            className="mt-6 text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Custom software, AI that handles real work, and automation that pays for itself. Built for growing companies that are tired of waiting six months for a vendor to deliver.
-          </p>
+          </motion.p>
         </div>
       </section>
 
       {/* Service Blocks */}
       {services.map((service) => (
-        <section
+        <motion.section
           key={service.title}
-          className={`reveal py-20 sm:py-24 ${
+          className={`py-20 sm:py-24 ${
             service.dark ? 'bg-charcoal text-white' : 'bg-surface text-charcoal'
           }`}
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
@@ -200,50 +236,82 @@ export default function Services() {
                 </div>
               </div>
 
-              {/* Right: image placeholder */}
+              {/* Right: mock UI */}
               <div className="lg:col-span-2 hidden lg:flex items-center justify-center">
-                <div className={`w-full h-64 rounded-xl flex items-center justify-center border border-dashed ${
-                  service.dark
-                    ? 'bg-charcoal-light/40 border-gray-400/20'
-                    : 'bg-charcoal-lighter/30 border-gray-500/30'
-                }`}>
-                  <span className={`text-sm ${service.dark ? 'text-gray-500' : 'text-gray-400'}`}>Screenshot coming soon</span>
-                </div>
+                {service.mockType === 'phone' ? <MockPhoneUI /> : <MockDashboard />}
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
       ))}
 
-      {/* How We Work */}
-      <section className="reveal bg-surface py-20 sm:py-24">
+      {/* How We Work — Interactive Timeline */}
+      <section className="bg-surface py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight text-center">
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             How We Work
-          </h2>
+          </motion.h2>
 
-          <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {steps.map((step) => (
-              <div key={step.num} className="text-center">
-                <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange text-white text-2xl font-bold">
-                  {step.num}
-                </span>
-                <h3 className="mt-5 text-lg font-bold text-charcoal">{step.title}</h3>
-                <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-            ))}
-          </div>
+          {/* Interactive horizontal timeline */}
+          <motion.div
+            className="mt-14 relative"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {/* Connecting line — desktop only */}
+            <div className="hidden lg:block absolute top-7 left-[12.5%] right-[12.5%] h-0.5 bg-charcoal/20">
+              <motion.div
+                className="h-full bg-orange origin-left"
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                transition={{ duration: 1.2, delay: 0.3 }}
+                viewport={{ once: true }}
+              />
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {steps.map((step) => (
+                <motion.div
+                  key={step.num}
+                  className="text-center relative"
+                  variants={stepItem}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <span className="relative z-10 inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange text-white text-2xl font-bold shadow-md">
+                    {step.num}
+                  </span>
+                  <h3 className="mt-5 text-lg font-bold text-charcoal">{step.title}</h3>
+                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                    {step.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="reveal bg-charcoal py-20 sm:py-24">
+      <section className="bg-charcoal py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             Ready to get started? Let's talk about your project.
-          </h2>
+          </motion.h2>
           <p className="mt-4 text-gray-400 text-lg max-w-lg mx-auto">
             Tell us what you are working on and we will come back with a timeline, cost range, and recommended approach.
           </p>
