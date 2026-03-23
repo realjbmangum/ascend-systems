@@ -5,7 +5,6 @@ import { siteConfig } from '../config/site';
 const navLinks = [
   { to: '/services', label: 'Services' },
   { to: '/about', label: 'About' },
-  { to: '/contact', label: 'Contact' },
 ];
 
 export default function Nav() {

@@ -319,25 +319,6 @@ export default function Contact() {
                 </ul>
               </div>
 
-              {/* Calendly */}
-              <div>
-                <h2 className="text-xl font-bold text-charcoal mb-4">
-                  Book a Discovery Call
-                </h2>
-                <p className="text-sm text-gray-500 mb-4">
-                  Pick a time that works for you and we'll have a quick chat about your project.
-                </p>
-                <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <iframe
-                    src={siteConfig.calendlyUrl}
-                    title="Book a Discovery Call"
-                    width="100%"
-                    height="660"
-                    frameBorder="0"
-                    className="block"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </div>
