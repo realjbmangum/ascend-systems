@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
-              <img src="/images/logo.png" alt="Ascend Systems" className="h-12" />
+              <img src="/images/logo.png" alt="Ascend Systems" className="h-[5.25rem]" />
               <span className="text-xl font-bold text-white tracking-tight">
                 ASCEND<span className="text-orange"> SYSTEMS</span>
               </span>
