@@ -17,8 +17,11 @@ export default function Nav() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/images/logo.png" alt="Ascend Systems" className="h-10 sm:h-12" />
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/images/logo.png" alt="Ascend Systems" className="h-9 sm:h-11" />
+            <span className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              ASCEND<span className="text-orange"> SYSTEMS</span>
+            </span>
           </Link>
 
           {/* Desktop nav */}
