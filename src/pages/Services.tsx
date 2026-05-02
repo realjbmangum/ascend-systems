@@ -143,7 +143,7 @@ export default function Services() {
       {services.map((service) => (
         <motion.section
           key={service.title}
-          className={`py-20 sm:py-24 ${
+          className={`py-24 sm:py-32 ${
             service.dark ? 'bg-charcoal text-white' : 'bg-surface text-charcoal'
           }`}
           variants={sectionVariants}
@@ -152,19 +152,19 @@ export default function Services() {
           viewport={{ once: true, margin: '-50px' }}
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
+            <div className="grid lg:grid-cols-5 gap-12 lg:gap-20 items-start">
               {/* Left: text content */}
               <div className="lg:col-span-3">
                 <h2
-                  className={`text-3xl sm:text-4xl font-bold tracking-tight ${
+                  className={`text-4xl sm:text-5xl font-bold tracking-tight leading-tight ${
                     service.dark ? 'text-white' : 'text-charcoal'
                   }`}
                 >
                   {service.title}
                 </h2>
                 <p
-                  className={`mt-4 text-lg leading-relaxed ${
-                    service.dark ? 'text-gray-300' : 'text-gray-600'
+                  className={`mt-6 text-lg sm:text-xl leading-relaxed ${
+                    service.dark ? 'text-gray-200' : 'text-gray-600'
                   }`}
                 >
                   {service.description}
@@ -246,10 +246,10 @@ export default function Services() {
       ))}
 
       {/* How We Work — Interactive Timeline */}
-      <section className="bg-surface py-20 sm:py-24">
+      <section className="bg-surface py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
-            className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight text-center"
+            className="text-4xl sm:text-5xl font-bold text-charcoal tracking-tight text-center mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -260,7 +260,7 @@ export default function Services() {
 
           {/* Interactive horizontal timeline */}
           <motion.div
-            className="mt-14 relative"
+            className="mt-16 relative"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
@@ -301,10 +301,10 @@ export default function Services() {
       </section>
 
       {/* CTA */}
-      <section className="bg-charcoal py-20 sm:py-24">
+      <section className="bg-charcoal py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
-            className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+            className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -312,7 +312,7 @@ export default function Services() {
           >
             Ready to get started? Let's talk about your project.
           </motion.h2>
-          <p className="mt-4 text-gray-400 text-lg max-w-lg mx-auto">
+          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             Tell us what you are working on and we will come back with a timeline, cost range, and recommended approach.
           </p>
           <Link

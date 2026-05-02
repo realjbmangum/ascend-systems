@@ -1,4 +1,7 @@
+@import url('https://rsms.me/inter/inter.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+@import "./ascend-design-system.css";
 
 @theme {
   --color-charcoal: #1E2A32;

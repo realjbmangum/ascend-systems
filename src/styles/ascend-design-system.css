@@ -1,0 +1,366 @@
+/* ============================================================
+   Ascend Systems — Design Tokens
+   Colors, typography, spacing, shadows.
+   ============================================================ */
+
+:root {
+  /* ---------- Brand colors ---------- */
+  --color-primary:         #1C1C1E;
+  --color-primary-light:   #2A2A2E;
+  --color-primary-lighter: #3A3A3F;
+  --color-primary-darker:  #141415;
+
+  --color-accent:          #C45A2C;
+  --color-accent-light:    #D4703F;
+  --color-accent-dark:     #A84820;
+  --color-accent-glow:     #FDF3ED;
+
+  /* ---------- Neutrals ---------- */
+  --color-white:           #FFFFFF;
+  --color-bg:              #FAFAF8;
+  --color-gray-100:        #F3F3F2;
+  --color-gray-200:        #E5E5E3;
+  --color-gray-400:        #9CA3AF;
+  --color-gray-600:        #6B7280;
+  --color-gray-900:        #1C1C1E;
+
+  /* ---------- Semantic ---------- */
+  --color-success:         #22C55E;
+  --color-warning:         #C45A2C;
+  --color-error:           #DC2626;
+  --color-info:            #3B82F6;
+
+  /* ---------- Typography families ---------- */
+  --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* ---------- Type scales ---------- */
+  --type-display-size:   3.5rem;
+  --type-display-weight: 800;
+  --type-display-lh:     1.1;
+  --type-display-track:  -0.03em;
+
+  --type-h1-size:   2.75rem;
+  --type-h1-weight: 700;
+  --type-h1-lh:     1.15;
+  --type-h1-track:  -0.025em;
+
+  --type-h2-size:   2.25rem;
+  --type-h2-weight: 700;
+  --type-h2-lh:     1.2;
+  --type-h2-track:  -0.02em;
+
+  --type-h3-size:   1.75rem;
+  --type-h3-weight: 600;
+  --type-h3-lh:     1.25;
+  --type-h3-track:  -0.015em;
+
+  --type-body-large-size: 1.125rem;
+  --type-body-size:       1rem;
+  --type-body-small-size: 0.875rem;
+  --type-body-lh:         1.65;
+
+  --type-caption-size:   0.75rem;
+  --type-caption-weight: 500;
+  --type-caption-track:  0.02em;
+
+  --type-stat-size:   2.25rem;
+  --type-stat-weight: 500;
+  --type-stat-lh:     1.1;
+  --type-stat-track:  -0.02em;
+
+  /* ---------- Radii ---------- */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-full: 9999px;
+
+  /* ---------- Spacing ---------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-sm:        0 1px 3px rgba(28, 28, 30, 0.06);
+  --shadow-md:        0 4px 16px rgba(28, 28, 30, 0.08);
+  --shadow-lg:        0 8px 32px rgba(28, 28, 30, 0.12);
+  --shadow-xl:        0 16px 48px rgba(28, 28, 30, 0.16);
+  --shadow-orange-glow: 0 0 24px rgba(196, 90, 44, 0.15);
+
+  /* ---------- Motion ---------- */
+  --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast:   120ms;
+  --duration-base:   160ms;
+  --duration-slow:   260ms;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-lh);
+  color: var(--color-gray-900);
+  background: var(--color-bg);
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-heading);
+  color: var(--color-gray-900);
+  text-wrap: balance;
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--type-h1-size);
+  font-weight: var(--type-h1-weight);
+  line-height: var(--type-h1-lh);
+  letter-spacing: var(--type-h1-track);
+}
+
+h2 {
+  font-size: var(--type-h2-size);
+  font-weight: var(--type-h2-weight);
+  line-height: var(--type-h2-lh);
+  letter-spacing: var(--type-h2-track);
+}
+
+h3 {
+  font-size: var(--type-h3-size);
+  font-weight: var(--type-h3-weight);
+  line-height: var(--type-h3-lh);
+  letter-spacing: var(--type-h3-track);
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --type-display-size: 2.25rem;
+    --type-h1-size: 2rem;
+    --type-h2-size: 1.625rem;
+    --type-h3-size: 1.375rem;
+    --type-stat-size: 1.75rem;
+  }
+}
+
+/* ============================================================
+   Utility Classes
+   ============================================================ */
+
+.section {
+  padding: 112px 32px;
+  position: relative;
+}
+
+.section.tight {
+  padding: 72px 32px;
+}
+
+.section-light {
+  background: var(--color-bg);
+}
+
+.section-alt {
+  background: var(--color-gray-100);
+}
+
+.section-dark {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.section-darker {
+  background: var(--color-primary-darker);
+  color: #fff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container-narrow {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.display {
+  font-size: clamp(44px, 6vw, 80px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.display-xl {
+  font-size: clamp(56px, 8vw, 128px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  display: inline-block;
+}
+
+.eyebrow.no-bar::before {
+  display: none;
+}
+
+.eyebrow-centered {
+  justify-content: center;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.muted {
+  color: var(--color-gray-600);
+}
+
+.hairline {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  padding: 14px 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 160ms var(--ease-out);
+}
+
+.btn-lg {
+  padding: 16px 28px;
+  font-size: 16px;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-light);
+  box-shadow: 0 8px 24px rgba(196, 90, 44, 0.32);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-ghost-dark {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.btn-ghost-dark:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.btn-ghost-light {
+  background: transparent;
+  color: var(--color-gray-900);
+  border: 1px solid var(--color-gray-200);
+}
+
+.btn-ghost-light:hover {
+  background: var(--color-white);
+  border-color: var(--color-gray-900);
+}
+
+/* ---------- Card ---------- */
+.card-light {
+  background: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 12px;
+  transition: all 200ms var(--ease-out);
+}
+
+.card-light:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* ---------- Grid bg ---------- */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* ---------- Marquee ---------- */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  gap: 72px;
+  align-items: center;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+@media (max-width: 900px) {
+  .section {
+    padding: 72px 20px;
+  }
+}

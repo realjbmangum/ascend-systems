@@ -46,10 +46,10 @@ export default function About() {
         description="Ascend Systems is a founder-led technology studio in Charlotte, NC. We build custom software, AI solutions, and automation for growing businesses."
       />
       {/* Hero */}
-      <section className="bg-charcoal text-white py-24 sm:py-32">
+      <section className="bg-charcoal text-white py-28 sm:py-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight"
+            className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -57,7 +57,7 @@ export default function About() {
             A Technology Partner You Can Actually Trust.
           </motion.h1>
           <motion.p
-            className="mt-6 text-lg sm:text-xl text-surface-200 max-w-2xl mx-auto"
+            className="mt-8 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -68,9 +68,9 @@ export default function About() {
       </section>
 
       {/* Founder */}
-      <section className="bg-white py-20 sm:py-28 overflow-hidden">
+      <section className="bg-white py-24 sm:py-32 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid md:grid-cols-2 gap-16 lg:gap-24 items-center">
             {/* Photo placeholder with floating code snippets */}
             <motion.div
               className="flex justify-center md:justify-start"
@@ -112,10 +112,10 @@ export default function About() {
               transition={{ duration: 0.7 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-charcoal mb-6">
+              <h2 className="text-4xl sm:text-5xl font-bold text-charcoal mb-8">
                 Meet the Founder
               </h2>
-              <div className="space-y-4 text-charcoal-lighter leading-relaxed">
+              <div className="space-y-5 text-charcoal-lighter leading-relaxed text-lg">
                 <p>
                   I'm Brian Mangum — a software professional based in Charlotte, NC.
                   I started Ascend Systems because I watched too many companies
@@ -165,10 +165,10 @@ export default function About() {
       <PortfolioTimeline />
 
       {/* Values */}
-      <section className="bg-surface py-20 sm:py-28">
+      <section className="bg-surface py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
-            className="text-3xl sm:text-4xl font-bold text-charcoal text-center mb-14"
+            className="text-4xl sm:text-5xl font-bold text-charcoal text-center mb-16 tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -177,7 +177,7 @@ export default function About() {
             How We Work
           </motion.h2>
           <motion.div
-            className="grid sm:grid-cols-2 gap-6"
+            className="grid sm:grid-cols-2 gap-8"
             variants={valuesContainer}
             initial="hidden"
             whileInView="visible"
@@ -186,10 +186,10 @@ export default function About() {
             {values.map((v) => (
               <motion.div
                 key={v.title}
-                className="bg-white rounded-xl shadow-sm border-l-4 border-orange p-6"
+                className="bg-white rounded-xl shadow-sm border-l-4 border-orange p-8"
                 variants={valueItem}
               >
-                <h3 className="text-lg font-semibold text-charcoal mb-2">
+                <h3 className="text-xl font-semibold text-charcoal mb-3">
                   {v.title}
                 </h3>
                 <p className="text-charcoal-lighter leading-relaxed">
@@ -202,10 +202,10 @@ export default function About() {
       </section>
 
       {/* Tech Philosophy */}
-      <section className="bg-white py-20 sm:py-28">
+      <section className="bg-white py-24 sm:py-32">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.h2
-            className="text-3xl sm:text-4xl font-bold text-charcoal mb-8"
+            className="text-4xl sm:text-5xl font-bold text-charcoal mb-10 tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -213,7 +213,7 @@ export default function About() {
           >
             Our Approach to Technology
           </motion.h2>
-          <div className="space-y-5 text-charcoal-lighter leading-relaxed">
+          <div className="space-y-6 text-charcoal-lighter leading-relaxed text-lg">
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -249,10 +249,10 @@ export default function About() {
       </section>
 
       {/* CTA */}
-      <section className="bg-charcoal py-20 sm:py-28">
+      <section className="bg-charcoal py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
-            className="text-3xl sm:text-4xl font-bold text-white mb-4"
+            className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -260,7 +260,7 @@ export default function About() {
           >
             Skip the sales process. Talk to the person who does the work.
           </motion.h2>
-          <p className="text-gray-400 text-lg max-w-lg mx-auto mb-8">
+          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.
           </p>
           <Link
