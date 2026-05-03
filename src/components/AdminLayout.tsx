@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 
 const sidebarLinks = [
@@ -14,7 +14,17 @@ const sidebarLinks = [
 
 export default function AdminLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [openTasks, setOpenTasks] = useState<number>(0);
+
+  const handleLogout = async () => {
+    try {
+      await api.logout();
+    } catch {
+      // logout failed, but redirect anyway
+    }
+    navigate('/');
+  };
 
   useEffect(() => {
     api
@@ -66,10 +76,16 @@ export default function AdminLayout() {
             </Link>
           ))}
         </nav>
-        <div className="p-4 border-t border-charcoal-light">
-          <Link to="/" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+        <div className="p-4 border-t border-charcoal-light space-y-2">
+          <Link to="/" className="block text-xs text-gray-500 hover:text-gray-300 transition-colors">
             &larr; Back to site
           </Link>
+          <button
+            onClick={handleLogout}
+            className="w-full text-xs text-gray-500 hover:text-gray-300 transition-colors text-left px-3 py-2 -mx-3 rounded hover:bg-charcoal-light"
+          >
+            Sign out
+          </button>
         </div>
       </aside>
 
