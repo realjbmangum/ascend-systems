@@ -45,7 +45,7 @@ auth.post("/magic-link", async (c) => {
     .run();
 
   const origin = c.env.APP_ORIGIN ?? new URL(c.req.url).origin;
-  await sendMagicLink(normalized, token, role, origin);
+  await sendMagicLink(c.env.MAILCHANNELS, normalized, token, role, origin);
 
   return c.json({ success: true });
 });

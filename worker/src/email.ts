@@ -1,9 +1,11 @@
-// Email via MailChannels API from Cloudflare Workers
+// Email via Cloudflare MailChannels service binding
 // Requires SPF/DKIM DNS records on the sending domain
+
+import type { MailChannelsSend } from "./types";
 
 const FROM_EMAIL = "noreply@mail.ascendsystems.ai";
 const FROM_NAME = "Ascend Systems";
-const MAILCHANNELS_API = "https://api.mailchannels.net/tx/v1/send";
+const ADMIN_EMAIL = "bmangum1@gmail.com";
 
 type SendArgs = {
   to: string;
@@ -12,27 +14,21 @@ type SendArgs = {
   text?: string;
 };
 
-async function sendEmail({ to, subject, html, text }: SendArgs): Promise<boolean> {
+async function sendEmail(
+  mailChannels: MailChannelsSend,
+  { to, subject, html, text }: SendArgs
+): Promise<boolean> {
   try {
-    const res = await fetch(MAILCHANNELS_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        personalizations: [{ to: [{ email: to }] }],
-        from: { email: FROM_EMAIL, name: FROM_NAME },
-        subject,
-        content: [
-          { type: "text/plain", value: text ?? stripHtml(html) },
-          { type: "text/html", value: html },
-        ],
-      }),
+    await mailChannels.send({
+      personalizations: [{ to: [{ email: to }] }],
+      from: { email: FROM_EMAIL, name: FROM_NAME },
+      subject,
+      content: [
+        { type: "text/plain", value: text ?? stripHtml(html) },
+        { type: "text/html", value: html },
+      ],
     });
 
-    if (!res.ok) {
-      const error = await res.text();
-      console.error(`[EMAIL] MailChannels error (${res.status}): ${error}`);
-      return false;
-    }
     console.log(`[EMAIL] Sent to ${to}`);
     return true;
   } catch (err) {
@@ -46,6 +42,7 @@ function stripHtml(html: string): string {
 }
 
 export async function sendMagicLink(
+  mailChannels: MailChannelsSend,
   email: string,
   token: string,
   role: "admin" | "client",
@@ -71,20 +68,20 @@ export async function sendMagicLink(
       </p>
     </div>
   `;
-  return sendEmail({ to: email, subject: "Your Ascend Systems sign-in link", html });
+  return sendEmail(mailChannels, { to: email, subject: "Your Ascend Systems sign-in link", html });
 }
 
 export async function sendSequenceStep(
+  mailChannels: MailChannelsSend,
   to: string,
   subject: string,
   bodyHtml: string
 ): Promise<boolean> {
-  return sendEmail({ to, subject, html: bodyHtml });
+  return sendEmail(mailChannels, { to, subject, html: bodyHtml });
 }
 
-const ADMIN_EMAIL = "bmangum1@gmail.com";
-
 export async function sendFormConfirmation(
+  mailChannels: MailChannelsSend,
   to: string,
   formType: "contact" | "intake",
   submitterName: string
@@ -116,7 +113,7 @@ export async function sendFormConfirmation(
       </div>
     </div>
   `;
-  return sendEmail({
+  return sendEmail(mailChannels, {
     to,
     subject:
       formType === "intake"
@@ -127,6 +124,7 @@ export async function sendFormConfirmation(
 }
 
 export async function sendAdminAlert(
+  mailChannels: MailChannelsSend,
   formData: Record<string, string | null | undefined>,
   formType: "contact" | "intake",
   leadId: number
@@ -152,7 +150,7 @@ export async function sendAdminAlert(
       </div>
     </div>
   `;
-  return sendEmail({
+  return sendEmail(mailChannels, {
     to: ADMIN_EMAIL,
     subject: `New ${formType} submission: ${formData.name ?? "unknown"} (#${leadId})`,
     html,

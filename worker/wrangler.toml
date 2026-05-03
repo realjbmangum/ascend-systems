@@ -12,6 +12,10 @@ binding = "DB"
 database_name = "ascend-db"
 database_id = "c05da0d4-e2f2-45fc-8994-30bea47fa1e8"
 
+[[services]]
+binding = "MAILCHANNELS"
+service = "mailchannels"
+
 # Drip processor — runs every 15 minutes.
 [triggers]
 crons = ["*/15 * * * *"]

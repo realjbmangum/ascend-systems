@@ -79,8 +79,9 @@ app.post("/api/contact", async (c) => {
 
   c.executionCtx.waitUntil(
     Promise.all([
-      sendFormConfirmation(body.email, "contact", body.name),
+      sendFormConfirmation(c.env.MAILCHANNELS, body.email, "contact", body.name),
       sendAdminAlert(
+        c.env.MAILCHANNELS,
         {
           name: body.name,
           email: body.email,
@@ -154,8 +155,9 @@ app.post("/api/intake", async (c) => {
 
   c.executionCtx.waitUntil(
     Promise.all([
-      sendFormConfirmation(body.email, "intake", body.name),
+      sendFormConfirmation(c.env.MAILCHANNELS, body.email, "intake", body.name),
       sendAdminAlert(
+        c.env.MAILCHANNELS,
         {
           name: body.name,
           email: body.email,
@@ -540,7 +542,7 @@ admin.post("/email-enrollments", async (c) => {
 });
 
 admin.post("/email-sequences/process", async (c) => {
-  const stats = await processEnrollments(c.env.DB);
+  const stats = await processEnrollments(c.env.DB, c.env.MAILCHANNELS);
   return c.json(stats);
 });
 
@@ -557,6 +559,6 @@ export default {
     env: Bindings,
     ctx: ExecutionContext
   ) {
-    ctx.waitUntil(processEnrollments(env.DB).then(() => undefined));
+    ctx.waitUntil(processEnrollments(env.DB, env.MAILCHANNELS).then(() => undefined));
   },
 };
