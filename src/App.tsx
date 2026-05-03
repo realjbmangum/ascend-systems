@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import AdminLayout from './components/AdminLayout';
 import PortalLayout from './components/PortalLayout';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import About from './pages/About';
@@ -23,6 +24,7 @@ import Invoices from './pages/admin/Invoices';
 import InvoiceDetail from './pages/admin/InvoiceDetail';
 import CreateInvoice from './pages/admin/CreateInvoice';
 import EmailSequences from './pages/admin/EmailSequences';
+import AdminLogin from './pages/admin/Login';
 import PortalLogin from './pages/portal/Login';
 import PortalProjects from './pages/portal/Projects';
 import PortalProjectDetail from './pages/portal/ProjectDetail';
@@ -41,8 +43,11 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
       </Route>
 
+      {/* Admin login */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+
       {/* Admin dashboard */}
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={<ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="leads" element={<Leads />} />
         <Route path="leads/create" element={<CreateLead />} />
