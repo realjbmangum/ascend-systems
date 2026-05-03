@@ -41,21 +41,29 @@ export default function Leads() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h1 className="text-2xl font-bold text-charcoal">Leads</h1>
-        <label htmlFor="lead-filter" className="sr-only">Filter by status</label>
-        <select
-          id="lead-filter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
-        >
-          {statuses.map((s) => (
-            <option key={s} value={s}>
-              {s === 'all' ? 'All statuses' : s.replace(/_/g, ' ')}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center gap-2">
+          <label htmlFor="lead-filter" className="sr-only">Filter by status</label>
+          <select
+            id="lead-filter"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+          >
+            {statuses.map((s) => (
+              <option key={s} value={s}>
+                {s === 'all' ? 'All statuses' : s.replace(/_/g, ' ')}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => navigate('/admin/leads/create')}
+            className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          >
+            + Create Lead
+          </button>
+        </div>
       </div>
 
       {loading ? (

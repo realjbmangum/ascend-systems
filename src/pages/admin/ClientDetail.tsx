@@ -6,27 +6,48 @@ export default function ClientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [client, setClient] = useState<any>(null);
-  const [notes, setNotes] = useState('');
+  const [form, setForm] = useState({
+    company_name: '',
+    contact_name: '',
+    email: '',
+    phone: '',
+    notes: '',
+  });
+  const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     api
       .getClient(Number(id))
       .then((data) => {
         setClient(data);
-        setNotes(data.notes || '');
+        setForm({
+          company_name: data.company_name || data.company || '',
+          contact_name: data.contact_name || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          notes: data.notes || '',
+        });
       })
       .catch(() => navigate('/admin/clients'))
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
+  const update = (field: string, value: string) =>
+    setForm((prev) => ({ ...prev, [field]: value }));
+
   const handleSave = async () => {
     setSaving(true);
+    setError('');
     try {
-      await api.updateClient(Number(id), { notes });
-      setClient((prev: any) => ({ ...prev, notes }));
-    } catch {}
+      await api.updateClient(Number(id), form);
+      setClient((prev: any) => ({ ...prev, ...form }));
+      setEditing(false);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save.');
+    }
     setSaving(false);
   };
 
@@ -40,39 +61,101 @@ export default function ClientDetail() {
 
   if (!client) return null;
 
+  const inputCls =
+    'w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30';
+
   return (
     <div>
       <Link to="/admin/clients" className="text-sm text-gray-500 hover:text-charcoal transition-colors mb-4 inline-block">
         &larr; Back to Clients
       </Link>
 
-      <h1 className="text-2xl font-bold text-charcoal mb-1">{client.company}</h1>
-      <p className="text-gray-500 mb-6">{client.contact_name}</p>
+      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-charcoal mb-1">
+            {client.company_name || client.company}
+          </h1>
+          <p className="text-gray-500">{client.contact_name}</p>
+        </div>
+        <button
+          onClick={() => setEditing((v) => !v)}
+          className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
+        >
+          {editing ? 'Cancel' : 'Edit'}
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-700 mb-4">
+          {error}
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Contact Info */}
         <div className="bg-white rounded-xl border border-surface-100 p-5">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Contact Info</h2>
-          <dl className="space-y-3 text-sm">
-            <div>
-              <dt className="text-gray-400">Contact Name</dt>
-              <dd className="text-charcoal font-medium">{client.contact_name}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-400">Email</dt>
-              <dd className="text-charcoal font-medium">{client.email}</dd>
-            </div>
-            {client.phone && (
+          {editing ? (
+            <div className="space-y-3 text-sm">
               <div>
-                <dt className="text-gray-400">Phone</dt>
-                <dd className="text-charcoal font-medium">{client.phone}</dd>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Company Name</label>
+                <input
+                  type="text"
+                  value={form.company_name}
+                  onChange={(e) => update('company_name', e.target.value)}
+                  className={inputCls}
+                />
               </div>
-            )}
-            <div>
-              <dt className="text-gray-400">Client Since</dt>
-              <dd className="text-charcoal font-medium">{new Date(client.created_at).toLocaleDateString()}</dd>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Contact Name</label>
+                <input
+                  type="text"
+                  value={form.contact_name}
+                  onChange={(e) => update('contact_name', e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => update('email', e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={(e) => update('phone', e.target.value)}
+                  className={inputCls}
+                />
+              </div>
             </div>
-          </dl>
+          ) : (
+            <dl className="space-y-3 text-sm">
+              <div>
+                <dt className="text-gray-400">Contact Name</dt>
+                <dd className="text-charcoal font-medium">{client.contact_name}</dd>
+              </div>
+              <div>
+                <dt className="text-gray-400">Email</dt>
+                <dd className="text-charcoal font-medium">{client.email}</dd>
+              </div>
+              {client.phone && (
+                <div>
+                  <dt className="text-gray-400">Phone</dt>
+                  <dd className="text-charcoal font-medium">{client.phone}</dd>
+                </div>
+              )}
+              <div>
+                <dt className="text-gray-400">Client Since</dt>
+                <dd className="text-charcoal font-medium">{new Date(client.created_at).toLocaleDateString()}</dd>
+              </div>
+            </dl>
+          )}
         </div>
 
         {/* Projects */}
@@ -100,20 +183,28 @@ export default function ClientDetail() {
         {/* Notes */}
         <div className="bg-white rounded-xl border border-surface-100 p-5 md:col-span-2">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Notes</h2>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={4}
-            className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30 resize-y mb-4"
-            placeholder="Add internal notes about this client..."
-          />
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {saving ? 'Saving...' : 'Save Notes'}
-          </button>
+          {editing ? (
+            <textarea
+              value={form.notes}
+              onChange={(e) => update('notes', e.target.value)}
+              rows={4}
+              className={`${inputCls} resize-y mb-4`}
+              placeholder="Add internal notes about this client..."
+            />
+          ) : (
+            <p className="text-sm text-charcoal whitespace-pre-wrap mb-4">
+              {client.notes || <span className="text-gray-400">No notes.</span>}
+            </p>
+          )}
+          {editing && (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+          )}
         </div>
       </div>
     </div>

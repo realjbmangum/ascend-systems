@@ -38,7 +38,15 @@ export default function Clients() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-charcoal mb-6">Clients</h1>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h1 className="text-2xl font-bold text-charcoal">Clients</h1>
+        <button
+          onClick={() => navigate('/admin/clients/create')}
+          className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+        >
+          + Create Client
+        </button>
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center h-64">

@@ -11,6 +11,7 @@ import sequenceRoutes, {
   processEnrollments,
 } from "./routes/email-sequences";
 import portalRoutes from "./routes/portal";
+import { sendFormConfirmation, sendAdminAlert } from "./email";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -76,6 +77,24 @@ app.post("/api/contact", async (c) => {
 
   await enrollByTrigger(c.env.DB, "lead_welcome", body.email.toLowerCase());
 
+  c.executionCtx.waitUntil(
+    Promise.all([
+      sendFormConfirmation(body.email, "contact", body.name),
+      sendAdminAlert(
+        {
+          name: body.name,
+          email: body.email,
+          company: body.company,
+          project_type: body.project_type,
+          budget_range: body.budget_range,
+          message: body.message,
+        },
+        "contact",
+        leadId
+      ),
+    ]).then(() => undefined)
+  );
+
   return c.json({ success: true, id: leadId });
 });
 
@@ -132,6 +151,27 @@ app.post("/api/intake", async (c) => {
       goals: body.goals,
     },
   });
+
+  c.executionCtx.waitUntil(
+    Promise.all([
+      sendFormConfirmation(body.email, "intake", body.name),
+      sendAdminAlert(
+        {
+          name: body.name,
+          email: body.email,
+          company: body.company,
+          project_type: body.project_type,
+          budget_range: body.budget_range,
+          timeline: body.timeline,
+          goals: body.goals,
+          current_stack: body.current_stack,
+          message: body.message,
+        },
+        "intake",
+        leadId
+      ),
+    ]).then(() => undefined)
+  );
 
   return c.json({ success: true, id: leadId });
 });

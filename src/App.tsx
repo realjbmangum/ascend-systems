@@ -11,13 +11,17 @@ import Terms from './pages/Terms';
 import Dashboard from './pages/admin/Dashboard';
 import Leads from './pages/admin/Leads';
 import LeadDetail from './pages/admin/LeadDetail';
+import CreateLead from './pages/admin/CreateLead';
 import Clients from './pages/admin/Clients';
 import ClientDetail from './pages/admin/ClientDetail';
+import CreateClient from './pages/admin/CreateClient';
 import Projects from './pages/admin/Projects';
 import ProjectDetail from './pages/admin/ProjectDetail';
+import CreateProject from './pages/admin/CreateProject';
 import Tasks from './pages/admin/Tasks';
 import Invoices from './pages/admin/Invoices';
 import InvoiceDetail from './pages/admin/InvoiceDetail';
+import CreateInvoice from './pages/admin/CreateInvoice';
 import EmailSequences from './pages/admin/EmailSequences';
 import PortalLogin from './pages/portal/Login';
 import PortalProjects from './pages/portal/Projects';
@@ -41,13 +45,17 @@ export default function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="leads" element={<Leads />} />
+        <Route path="leads/create" element={<CreateLead />} />
         <Route path="leads/:id" element={<LeadDetail />} />
         <Route path="clients" element={<Clients />} />
+        <Route path="clients/create" element={<CreateClient />} />
         <Route path="clients/:id" element={<ClientDetail />} />
         <Route path="projects" element={<Projects />} />
+        <Route path="projects/create" element={<CreateProject />} />
         <Route path="projects/:id" element={<ProjectDetail />} />
         <Route path="tasks" element={<Tasks />} />
         <Route path="invoices" element={<Invoices />} />
+        <Route path="invoices/create" element={<CreateInvoice />} />
         <Route path="invoices/:id" element={<InvoiceDetail />} />
         <Route path="email" element={<EmailSequences />} />
       </Route>

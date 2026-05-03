@@ -3,7 +3,15 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../../lib/api';
 import StatusBadge from '../../components/StatusBadge';
 
-const statuses = ['planning', 'in_progress', 'on_hold', 'completed', 'cancelled'];
+const statuses = ['planning', 'scoping', 'in_progress', 'on_hold', 'completed', 'cancelled'];
+
+const projectTypes = [
+  'Web/App Development',
+  'AI Integration',
+  'Business Automation',
+  'AI Phone Solution',
+  'Other',
+];
 
 interface Note {
   id: number;
@@ -15,6 +23,9 @@ interface Note {
   updated_at?: string;
 }
 
+// TODO(proposals): add 'proposals' tab here. See PROPOSAL-DESIGN.md §8.
+// Tab will list proposals scoped to this project + a "New Proposal" CTA
+// that opens /admin/proposals/new?client_id=X&project_id=Y.
 type Tab = 'overview' | 'notes';
 
 export default function ProjectDetail() {
@@ -23,6 +34,10 @@ export default function ProjectDetail() {
   const [project, setProject] = useState<any>(null);
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [projectType, setProjectType] = useState('');
+  const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>('overview');
@@ -44,6 +59,9 @@ export default function ProjectDetail() {
         setProject(data);
         setNotes(data.notes || '');
         setStatus(data.status);
+        setName(data.name || '');
+        setDescription(data.description || '');
+        setProjectType(data.project_type || '');
       })
       .catch(() => navigate('/admin/projects'))
       .finally(() => setLoading(false));
@@ -62,8 +80,16 @@ export default function ProjectDetail() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.updateProject(Number(id), { notes, status });
-      setProject((prev: any) => ({ ...prev, notes, status }));
+      const payload = {
+        notes,
+        status,
+        name,
+        description,
+        project_type: projectType,
+      };
+      await api.updateProject(Number(id), payload);
+      setProject((prev: any) => ({ ...prev, ...payload }));
+      setEditing(false);
     } catch {}
     setSaving(false);
   };
@@ -153,7 +179,7 @@ export default function ProjectDetail() {
         &larr; Back to Projects
       </Link>
 
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-charcoal">{project.name}</h1>
           {project.client_name && (
@@ -162,7 +188,15 @@ export default function ProjectDetail() {
             </Link>
           )}
         </div>
-        <StatusBadge status={project.status} />
+        <div className="flex items-center gap-3">
+          <StatusBadge status={project.status} />
+          <button
+            onClick={() => setEditing((v) => !v)}
+            className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
+          >
+            {editing ? 'Cancel' : 'Edit'}
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -193,30 +227,66 @@ export default function ProjectDetail() {
           {/* Details */}
           <div className="bg-white rounded-xl border border-surface-100 p-5">
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Project Details</h2>
-            <dl className="space-y-3 text-sm">
-              {project.project_type && (
+            {editing ? (
+              <div className="space-y-3 text-sm">
                 <div>
-                  <dt className="text-gray-400">Type</dt>
-                  <dd className="text-charcoal font-medium">{project.project_type}</dd>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+                  />
                 </div>
-              )}
-              {project.description && (
                 <div>
-                  <dt className="text-gray-400">Description</dt>
-                  <dd className="text-charcoal font-medium whitespace-pre-wrap">{project.description}</dd>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+                  <select
+                    value={projectType}
+                    onChange={(e) => setProjectType(e.target.value)}
+                    className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+                  >
+                    <option value="">--</option>
+                    {projectTypes.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
                 </div>
-              )}
-              {project.start_date && (
                 <div>
-                  <dt className="text-gray-400">Start Date</dt>
-                  <dd className="text-charcoal font-medium">{new Date(project.start_date).toLocaleDateString()}</dd>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={4}
+                    className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30 resize-y"
+                  />
                 </div>
-              )}
-              <div>
-                <dt className="text-gray-400">Created</dt>
-                <dd className="text-charcoal font-medium">{new Date(project.created_at).toLocaleDateString()}</dd>
               </div>
-            </dl>
+            ) : (
+              <dl className="space-y-3 text-sm">
+                {project.project_type && (
+                  <div>
+                    <dt className="text-gray-400">Type</dt>
+                    <dd className="text-charcoal font-medium">{project.project_type}</dd>
+                  </div>
+                )}
+                {project.description && (
+                  <div>
+                    <dt className="text-gray-400">Description</dt>
+                    <dd className="text-charcoal font-medium whitespace-pre-wrap">{project.description}</dd>
+                  </div>
+                )}
+                {project.start_date && (
+                  <div>
+                    <dt className="text-gray-400">Start Date</dt>
+                    <dd className="text-charcoal font-medium">{new Date(project.start_date).toLocaleDateString()}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt className="text-gray-400">Created</dt>
+                  <dd className="text-charcoal font-medium">{new Date(project.created_at).toLocaleDateString()}</dd>
+                </div>
+              </dl>
+            )}
           </div>
 
           {/* Status & Notes (legacy single field) */}

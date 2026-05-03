@@ -11,6 +11,9 @@ export default function LeadDetail() {
   const [lead, setLead] = useState<any>(null);
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('');
+  const [company, setCompany] = useState('');
+  const [message, setMessage] = useState('');
+  const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [converting, setConverting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -22,6 +25,8 @@ export default function LeadDetail() {
         setLead(data);
         setNotes(data.notes || '');
         setStatus(data.status);
+        setCompany(data.company || '');
+        setMessage(data.message || '');
       })
       .catch(() => navigate('/admin/leads'))
       .finally(() => setLoading(false));
@@ -30,8 +35,9 @@ export default function LeadDetail() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.updateLead(Number(id), { notes, status });
-      setLead((prev: any) => ({ ...prev, notes, status }));
+      await api.updateLead(Number(id), { notes, status, company, message });
+      setLead((prev: any) => ({ ...prev, notes, status, company, message }));
+      setEditing(false);
     } catch {}
     setSaving(false);
   };
@@ -62,12 +68,20 @@ export default function LeadDetail() {
         &larr; Back to Leads
       </Link>
 
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-charcoal">{lead.name}</h1>
           {lead.company && <p className="text-gray-500">{lead.company}</p>}
         </div>
-        <StatusBadge status={lead.status} />
+        <div className="flex items-center gap-3">
+          <StatusBadge status={lead.status} />
+          <button
+            onClick={() => setEditing((v) => !v)}
+            className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
+          >
+            {editing ? 'Cancel' : 'Edit'}
+          </button>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -105,9 +119,30 @@ export default function LeadDetail() {
         {/* Message */}
         <div className="bg-white rounded-xl border border-surface-100 p-5">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Message</h2>
-          <p className="text-sm text-charcoal leading-relaxed whitespace-pre-wrap">
-            {lead.message || 'No message provided.'}
-          </p>
+          {editing ? (
+            <>
+              <label htmlFor="lead-company" className="block text-xs font-medium text-gray-500 mb-1">Company</label>
+              <input
+                id="lead-company"
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30 mb-3"
+              />
+              <label htmlFor="lead-message" className="block text-xs font-medium text-gray-500 mb-1">Message</label>
+              <textarea
+                id="lead-message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={4}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30 resize-y"
+              />
+            </>
+          ) : (
+            <p className="text-sm text-charcoal leading-relaxed whitespace-pre-wrap">
+              {lead.message || 'No message provided.'}
+            </p>
+          )}
         </div>
 
         {/* Status & Notes */}

@@ -15,6 +15,8 @@ function formatMoney(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+const editableStatuses = ['draft', 'sent', 'paid', 'overdue', 'void', 'refunded'];
+
 export default function InvoiceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,17 +24,55 @@ export default function InvoiceDetail() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editForm, setEditForm] = useState({
+    description: '',
+    amount: '',
+    due_date: '',
+    status: 'draft',
+  });
 
   const load = () => {
     setLoading(true);
     api
       .getInvoice(Number(id))
-      .then(setInvoice)
+      .then((data) => {
+        setInvoice(data);
+        setEditForm({
+          description: data.description || '',
+          amount: data.amount_cents != null ? (data.amount_cents / 100).toFixed(2) : '',
+          due_date: data.due_date ? String(data.due_date).slice(0, 10) : '',
+          status: data.status || 'draft',
+        });
+      })
       .catch(() => navigate('/admin/invoices'))
       .finally(() => setLoading(false));
   };
 
   useEffect(load, [id]);
+
+  const handleSaveEdit = async () => {
+    setSaving(true);
+    setError('');
+    try {
+      const amt = Number(editForm.amount);
+      const payload: Record<string, any> = {
+        description: editForm.description,
+        due_date: editForm.due_date || null,
+        status: editForm.status,
+      };
+      if (!isNaN(amt) && editForm.amount !== '') {
+        payload.amount_cents = Math.round(amt * 100);
+      }
+      await api.updateInvoice(Number(id), payload);
+      setInvoice((prev: any) => ({ ...prev, ...payload }));
+      setEditing(false);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save invoice.');
+    }
+    setSaving(false);
+  };
 
   const handleSend = async () => {
     if (!confirm('Send this invoice to the client via Stripe?')) return;
@@ -120,8 +160,74 @@ export default function InvoiceDetail() {
               Mark paid
             </button>
           )}
+          <button
+            onClick={() => setEditing((v) => !v)}
+            className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
+          >
+            {editing ? 'Cancel' : 'Edit'}
+          </button>
         </div>
       </div>
+
+      {editing && (
+        <div className="bg-white rounded-xl border border-surface-100 p-5 mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Edit Invoice</h2>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+              <input
+                type="text"
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Amount (USD)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={editForm.amount}
+                onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Due Date</label>
+              <input
+                type="date"
+                value={editForm.due_date}
+                onChange={(e) => setEditForm({ ...editForm, due_date: e.target.value })}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+              <select
+                value={editForm.status}
+                onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+              >
+                {editableStatuses.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={handleSaveEdit}
+              disabled={saving}
+              className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-700 mb-4">

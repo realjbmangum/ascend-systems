@@ -190,10 +190,16 @@ export default function Invoices() {
             ))}
           </select>
           <button
-            onClick={() => setShowCreate(true)}
+            onClick={() => navigate('/admin/invoices/create')}
             className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
           >
-            + New Invoice
+            + Create Invoice
+          </button>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="text-charcoal hover:bg-surface text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 transition-colors"
+          >
+            + Multi-line
           </button>
         </div>
       </div>
