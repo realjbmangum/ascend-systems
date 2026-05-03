@@ -1,8 +1,21 @@
 name = "ascend-api"
 main = "src/index.ts"
 compatibility_date = "2024-06-20"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+APP_ORIGIN = "https://ascendsystems.ai"
+ADMIN_EMAILS = "bmangum1@gmail.com"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "ascend-db"
 database_id = "c05da0d4-e2f2-45fc-8994-30bea47fa1e8"
+
+# Drip processor — runs every 15 minutes.
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Secrets (set via `wrangler secret put`):
+#   STRIPE_SECRET_KEY
+#   STRIPE_WEBHOOK_SECRET

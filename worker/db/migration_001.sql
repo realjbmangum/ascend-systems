@@ -1,46 +1,4 @@
-CREATE TABLE leads (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  company TEXT,
-  project_type TEXT,
-  budget_range TEXT,
-  message TEXT,
-  status TEXT NOT NULL DEFAULT 'new',
-  notes TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE TABLE clients (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  company_name TEXT NOT NULL,
-  contact_name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  phone TEXT,
-  notes TEXT,
-  lead_id INTEGER REFERENCES leads(id),
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE TABLE projects (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  client_id INTEGER NOT NULL REFERENCES clients(id),
-  name TEXT NOT NULL,
-  description TEXT,
-  project_type TEXT,
-  status TEXT NOT NULL DEFAULT 'scoping',
-  notes TEXT,
-  started_at TEXT,
-  completed_at TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
--- ===== Migration 001: auth, tasks, notes, invoices, email sequences =====
-
-CREATE TABLE magic_links (
+CREATE TABLE IF NOT EXISTS magic_links (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL,
   token TEXT NOT NULL UNIQUE,
@@ -49,9 +7,9 @@ CREATE TABLE magic_links (
   used_at TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX idx_magic_links_token ON magic_links(token);
+CREATE INDEX IF NOT EXISTS idx_magic_links_token ON magic_links(token);
 
-CREATE TABLE sessions (
+CREATE TABLE IF NOT EXISTS sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   session_token TEXT NOT NULL UNIQUE,
   email TEXT NOT NULL,
@@ -60,9 +18,9 @@ CREATE TABLE sessions (
   expires_at TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX idx_sessions_token ON sessions(session_token);
+CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(session_token);
 
-CREATE TABLE tasks (
+CREATE TABLE IF NOT EXISTS tasks (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   type TEXT NOT NULL,
   title TEXT NOT NULL,
@@ -75,10 +33,10 @@ CREATE TABLE tasks (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   completed_at TEXT
 );
-CREATE INDEX idx_tasks_status ON tasks(status);
-CREATE INDEX idx_tasks_type ON tasks(type);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+CREATE INDEX IF NOT EXISTS idx_tasks_type ON tasks(type);
 
-CREATE TABLE project_notes (
+CREATE TABLE IF NOT EXISTS project_notes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   project_id INTEGER NOT NULL REFERENCES projects(id),
   author TEXT NOT NULL DEFAULT 'Brian',
@@ -87,9 +45,9 @@ CREATE TABLE project_notes (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX idx_project_notes_project ON project_notes(project_id);
+CREATE INDEX IF NOT EXISTS idx_project_notes_project ON project_notes(project_id);
 
-CREATE TABLE invoices (
+CREATE TABLE IF NOT EXISTS invoices (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   client_id INTEGER NOT NULL REFERENCES clients(id),
   project_id INTEGER REFERENCES projects(id),
@@ -103,10 +61,10 @@ CREATE TABLE invoices (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX idx_invoices_client ON invoices(client_id);
-CREATE INDEX idx_invoices_status ON invoices(status);
+CREATE INDEX IF NOT EXISTS idx_invoices_client ON invoices(client_id);
+CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
 
-CREATE TABLE invoice_line_items (
+CREATE TABLE IF NOT EXISTS invoice_line_items (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   invoice_id INTEGER NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
   description TEXT NOT NULL,
@@ -114,9 +72,9 @@ CREATE TABLE invoice_line_items (
   unit_price_cents INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX idx_line_items_invoice ON invoice_line_items(invoice_id);
+CREATE INDEX IF NOT EXISTS idx_line_items_invoice ON invoice_line_items(invoice_id);
 
-CREATE TABLE email_sequences (
+CREATE TABLE IF NOT EXISTS email_sequences (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   trigger TEXT NOT NULL,
@@ -124,7 +82,7 @@ CREATE TABLE email_sequences (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE TABLE email_sequence_steps (
+CREATE TABLE IF NOT EXISTS email_sequence_steps (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   sequence_id INTEGER NOT NULL REFERENCES email_sequences(id) ON DELETE CASCADE,
   subject TEXT NOT NULL,
@@ -133,9 +91,9 @@ CREATE TABLE email_sequence_steps (
   step_order INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX idx_steps_sequence ON email_sequence_steps(sequence_id);
+CREATE INDEX IF NOT EXISTS idx_steps_sequence ON email_sequence_steps(sequence_id);
 
-CREATE TABLE email_enrollments (
+CREATE TABLE IF NOT EXISTS email_enrollments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   sequence_id INTEGER NOT NULL REFERENCES email_sequences(id),
   email TEXT NOT NULL,
@@ -145,5 +103,5 @@ CREATE TABLE email_enrollments (
   completed_at TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-CREATE INDEX idx_enrollments_sequence ON email_enrollments(sequence_id);
-CREATE INDEX idx_enrollments_active ON email_enrollments(completed_at, last_sent_at);
+CREATE INDEX IF NOT EXISTS idx_enrollments_sequence ON email_enrollments(sequence_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_active ON email_enrollments(completed_at, last_sent_at);

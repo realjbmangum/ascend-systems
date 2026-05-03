@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import AdminLayout from './components/AdminLayout';
+import PortalLayout from './components/PortalLayout';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import About from './pages/About';
@@ -14,6 +15,14 @@ import Clients from './pages/admin/Clients';
 import ClientDetail from './pages/admin/ClientDetail';
 import Projects from './pages/admin/Projects';
 import ProjectDetail from './pages/admin/ProjectDetail';
+import Tasks from './pages/admin/Tasks';
+import Invoices from './pages/admin/Invoices';
+import InvoiceDetail from './pages/admin/InvoiceDetail';
+import EmailSequences from './pages/admin/EmailSequences';
+import PortalLogin from './pages/portal/Login';
+import PortalProjects from './pages/portal/Projects';
+import PortalProjectDetail from './pages/portal/ProjectDetail';
+import PortalInvoices from './pages/portal/Invoices';
 
 export default function App() {
   return (
@@ -37,6 +46,19 @@ export default function App() {
         <Route path="clients/:id" element={<ClientDetail />} />
         <Route path="projects" element={<Projects />} />
         <Route path="projects/:id" element={<ProjectDetail />} />
+        <Route path="tasks" element={<Tasks />} />
+        <Route path="invoices" element={<Invoices />} />
+        <Route path="invoices/:id" element={<InvoiceDetail />} />
+        <Route path="email" element={<EmailSequences />} />
+      </Route>
+
+      {/* Client portal — login is unguarded */}
+      <Route path="/portal/login" element={<PortalLogin />} />
+      <Route path="/portal" element={<PortalLayout />}>
+        <Route index element={<PortalProjects />} />
+        <Route path="projects" element={<PortalProjects />} />
+        <Route path="projects/:id" element={<PortalProjectDetail />} />
+        <Route path="invoices" element={<PortalInvoices />} />
       </Route>
     </Routes>
   );
