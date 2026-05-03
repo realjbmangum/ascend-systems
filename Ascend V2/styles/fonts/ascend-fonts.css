@@ -1,0 +1,142 @@
+/* ============================================================
+   Ascend Systems — Custom Font Stack
+   --------------------------------------------------------------
+   This file self-hosts the two brand faces via Google Fonts' CSS2
+   @font-face endpoint so they load deterministically, adds tuned
+   OpenType features (tabular numerals on Inter, ligatures off on
+   JetBrains Mono), sets metric overrides for fallback fonts to
+   minimize FOUT layout shift, and exposes .font-display + data
+   classes for use across the brand.
+
+   Drop this file into any page via:
+     <link rel="stylesheet" href="/fonts/ascend-fonts.css">
+   BEFORE colors_and_type.css.
+   ============================================================ */
+
+/* ---------- Inter (body + display) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ---------- JetBrains Mono (data + stats) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ---------- Fallback metric overrides ----------
+   These keep layout stable if the webfont is late or blocked.
+   ascent-override and size-adjust tuned to Inter's metrics so the
+   fallback renders at the same line-box height.
+*/
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 107%;
+}
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Menlo'), local('Consolas'), local('Courier New');
+  ascent-override: 87%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+/* ---------- Brand-tuned feature settings ---------- */
+:root {
+  /* Inter with:
+     - ss01: stylistic set 1 (single-story a)  — off, we like the double-story default
+     - cv11: alt digits
+     - cv05: alt l  (with tail) — off
+     - ss03: open digits — ON for a warmer feel on body
+  */
+  --font-feature-body: "ss03" on, "cv11" on, "calt" on;
+
+  /* Inter for display headings:
+     - ss01: single-story a — off
+     - cv02: alt g           — ON (classic)
+     - ss02: open digits alt — off
+     Tight tracking, case-sensitive punctuation.
+  */
+  --font-feature-display: "cv02" on, "case" on, "calt" on;
+
+  /* JetBrains Mono:
+     - calt: contextual alternates ON
+     - zero: slashed zero ON (critical for data legibility)
+     - ligatures OFF (we don't want programming ligatures in phone numbers)
+  */
+  --font-feature-mono: "zero" on, "tnum" on, "calt" on, "liga" off, "clig" off;
+
+  /* Tabular numerals — for stats, tables, any aligned numbers */
+  --font-feature-tabular: "tnum" on, "zero" on;
+}
+
+/* ---------- Apply features globally ---------- */
+html {
+  font-feature-settings: var(--font-feature-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: 'Inter', 'Inter Fallback', system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, .display {
+  font-feature-settings: var(--font-feature-display);
+}
+
+code, pre, .mono, .stat-num, .tabular {
+  font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, SFMono-Regular, monospace;
+  font-feature-settings: var(--font-feature-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* Tabular numerals on any number-heavy class even in body font */
+.tabular-lining, .kpi .v, .price {
+  font-feature-settings: var(--font-feature-tabular);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ============================================================
+   SLOTS for self-hosted .woff2 files (when you have them).
+   Uncomment and point `src: url()` to files in this folder.
+   Google Fonts CDN will then be bypassed.
+   ============================================================
+
+@font-face {
+  font-family: 'Ascend Sans';
+  src: url('./AscendSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ascend Sans';
+  src: url('./AscendSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ascend Sans';
+  src: url('./AscendSans-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ascend Mono';
+  src: url('./AscendMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ascend Mono';
+  src: url('./AscendMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+*/

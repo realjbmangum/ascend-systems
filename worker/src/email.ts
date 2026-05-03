@@ -1,8 +1,9 @@
-// Email helper using MailChannels (Cloudflare's free email API for Workers).
-// Requires SPF/DKIM DNS records on FROM_DOMAIN.
+// Email via MailChannels API from Cloudflare Workers
+// Requires SPF/DKIM DNS records on the sending domain
 
-const FROM_EMAIL = "noreply@ascendsystems.ai";
+const FROM_EMAIL = "noreply@mail.ascendsystems.ai";
 const FROM_NAME = "Ascend Systems";
+const MAILCHANNELS_API = "https://api.mailchannels.net/tx/v1/send";
 
 type SendArgs = {
   to: string;
@@ -12,26 +13,32 @@ type SendArgs = {
 };
 
 async function sendEmail({ to, subject, html, text }: SendArgs): Promise<boolean> {
-  const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: to }] }],
-      from: { email: FROM_EMAIL, name: FROM_NAME },
-      subject,
-      content: [
-        { type: "text/plain", value: text ?? stripHtml(html) },
-        { type: "text/html", value: html },
-      ],
-    }),
-  });
+  try {
+    const res = await fetch(MAILCHANNELS_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to }] }],
+        from: { email: FROM_EMAIL, name: FROM_NAME },
+        subject,
+        content: [
+          { type: "text/plain", value: text ?? stripHtml(html) },
+          { type: "text/html", value: html },
+        ],
+      }),
+    });
 
-  if (!res.ok) {
-    const body = await res.text();
-    console.error("MailChannels send failed", res.status, body);
+    if (!res.ok) {
+      const error = await res.text();
+      console.error(`[EMAIL] MailChannels error (${res.status}): ${error}`);
+      return false;
+    }
+    console.log(`[EMAIL] Sent to ${to}`);
+    return true;
+  } catch (err) {
+    console.error(`[EMAIL] Exception:`, err);
     return false;
   }
-  return true;
 }
 
 function stripHtml(html: string): string {
