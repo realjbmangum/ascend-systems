@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../lib/api';
+import TasksKanban from './TasksKanban';
+
+type ViewMode = 'list' | 'kanban';
 
 const statuses = ['all', 'open', 'in_progress', 'done'];
 const types = ['all', 'lead_inquiry', 'intake_submitted', 'payment_received', 'payment_failed', 'manual'];
@@ -46,6 +49,16 @@ export default function Tasks() {
   const [projectFilter, setProjectFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'priority' | 'created' | 'title'>('priority');
+  const [view, setView] = useState<ViewMode>(() => {
+    if (typeof window === 'undefined') return 'kanban';
+    return (window.localStorage.getItem('tasks.view') as ViewMode) || 'kanban';
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('tasks.view', view);
+    }
+  }, [view]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
@@ -98,6 +111,27 @@ export default function Tasks() {
     }
   };
 
+  const moveTask = async (taskId: number, newStatus: string) => {
+    const original = tasks;
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId
+          ? {
+              ...t,
+              status: newStatus,
+              completed_at: newStatus === 'done' ? new Date().toISOString() : null,
+            }
+          : t
+      )
+    );
+    try {
+      await api.updateTask(taskId, { status: newStatus });
+    } catch (err: any) {
+      setTasks(original);
+      alert('Failed to update task. ' + (err?.message || ''));
+    }
+  };
+
   const load = () => {
     setLoading(true);
     api
@@ -147,7 +181,11 @@ export default function Tasks() {
 
   const PRIORITY_ORDER: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
 
-  const visibleTasks = tasks
+  // For kanban, we want to see all statuses across columns (so we don't apply
+  // statusFilter when in kanban view — user drags between columns to change status).
+  // For list, we still apply the user's status filter.
+  // Project/type/search filters apply in both views.
+  const baseFiltered = tasks
     .filter((t) =>
       projectFilter === 'all'
         ? true
@@ -164,17 +202,17 @@ export default function Tasks() {
         (t.project_name || '').toLowerCase().includes(q) ||
         (t.client_name || '').toLowerCase().includes(q)
       );
-    })
-    .sort((a, b) => {
-      if (sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
-      if (sortBy === 'created')
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      // priority
-      const ap = PRIORITY_ORDER[a.priority] ?? 9;
-      const bp = PRIORITY_ORDER[b.priority] ?? 9;
-      if (ap !== bp) return ap - bp;
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
+
+  const visibleTasks = baseFiltered.sort((a, b) => {
+    if (sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
+    if (sortBy === 'created')
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    const ap = PRIORITY_ORDER[a.priority] ?? 9;
+    const bp = PRIORITY_ORDER[b.priority] ?? 9;
+    if (ap !== bp) return ap - bp;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 
   return (
     <div>
@@ -185,7 +223,44 @@ export default function Tasks() {
             Auto-generated from form submissions, payments, and manual entries.
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap items-center">
+          <div className="flex items-center gap-1 mr-1">
+            <button
+              type="button"
+              onClick={() => setView('list')}
+              aria-pressed={view === 'list'}
+              className={`p-2 rounded-lg border transition-colors ${
+                view === 'list'
+                  ? 'bg-orange border-orange text-white'
+                  : 'bg-white border-gray-200 text-gray-500 hover:text-charcoal'
+              }`}
+              title="List view"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="3" y1="4" x2="13" y2="4" />
+                <line x1="3" y1="8" x2="13" y2="8" />
+                <line x1="3" y1="12" x2="13" y2="12" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => setView('kanban')}
+              aria-pressed={view === 'kanban'}
+              className={`p-2 rounded-lg border transition-colors ${
+                view === 'kanban'
+                  ? 'bg-orange border-orange text-white'
+                  : 'bg-white border-gray-200 text-gray-500 hover:text-charcoal'
+              }`}
+              title="Kanban view"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2.5" y="2.5" width="4" height="4" rx="0.5" />
+                <rect x="9.5" y="2.5" width="4" height="4" rx="0.5" />
+                <rect x="2.5" y="9.5" width="4" height="4" rx="0.5" />
+                <rect x="9.5" y="9.5" width="4" height="4" rx="0.5" />
+              </svg>
+            </button>
+          </div>
           <button
             onClick={() => setShowCreate(true)}
             className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
@@ -336,6 +411,13 @@ export default function Tasks() {
         <div className="flex items-center justify-center h-64">
           <div className="w-8 h-8 border-2 border-orange border-t-transparent rounded-full animate-spin" />
         </div>
+      ) : view === 'kanban' ? (
+        <TasksKanban
+          tasks={baseFiltered}
+          onMove={moveTask}
+          onClick={(task) => openEdit(task)}
+          hideProjectChip={projectFilter !== 'all' && projectFilter !== 'none'}
+        />
       ) : visibleTasks.length === 0 ? (
         <div className="bg-white rounded-xl border border-surface-100 p-12 text-center text-gray-400">
           {search ? `No tasks match "${search}".` : 'No tasks match this filter.'}
@@ -374,9 +456,19 @@ export default function Tasks() {
                     {task.description && (
                       <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{task.description}</p>
                     )}
-                    <p className="text-[11px] text-gray-400 mt-1">
-                      {new Date(task.created_at).toLocaleString()}
-                    </p>
+                    <div className="flex items-center gap-2 mt-1 text-[11px]">
+                      {task.project_name ? (
+                        <span className="inline-flex items-center font-semibold text-orange-dark bg-orange-glow px-2 py-0.5 rounded">
+                          {task.project_name}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 italic">No project</span>
+                      )}
+                      <span className="text-gray-400">·</span>
+                      <span className="text-gray-400">
+                        {new Date(task.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
                   <span
                     className={`text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize whitespace-nowrap ${
