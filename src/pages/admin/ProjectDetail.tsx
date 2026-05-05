@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../../lib/api';
 import StatusBadge from '../../components/StatusBadge';
 import ProjectAnalyticsPanel from '../../components/ProjectAnalyticsPanel';
+import ProjectResourcesPanel from '../../components/ProjectResourcesPanel';
 
 const statuses = ['planning', 'scoping', 'in_progress', 'on_hold', 'completed', 'cancelled'];
 
@@ -24,7 +25,7 @@ interface Note {
   updated_at?: string;
 }
 
-type Tab = 'overview' | 'notes' | 'files';
+type Tab = 'overview' | 'resources' | 'notes' | 'files';
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -257,6 +258,7 @@ export default function ProjectDetail() {
       <div className="border-b border-surface-100 mb-6 flex gap-1">
         {([
           { id: 'overview', label: 'Overview' },
+          { id: 'resources', label: 'Resources' },
           { id: 'notes', label: 'Notes' },
           { id: 'files', label: 'Files' },
         ] as const).map((t) => (
@@ -605,6 +607,8 @@ export default function ProjectDetail() {
           )}
         </div>
       )}
+
+      {tab === 'resources' && <ProjectResourcesPanel projectId={Number(id)} />}
 
       {tab === 'notes' && (
         <div className="space-y-6">

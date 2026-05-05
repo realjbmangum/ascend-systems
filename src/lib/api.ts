@@ -182,6 +182,32 @@ export const api = {
   // Admin — Stats
   getStats: () => request<any>('/stats'),
 
+  // Admin — Project Resources
+  getProjectResources: (projectId: number) =>
+    request<Array<{
+      id: number;
+      project_id: number;
+      type: string;
+      title: string;
+      content_markdown: string | null;
+      url: string | null;
+      sort_order: number;
+      source_path: string | null;
+      created_at: string;
+    }>>(`/resources?project_id=${projectId}`),
+  createResource: (data: {
+    project_id: number;
+    type: string;
+    title: string;
+    content_markdown?: string;
+    url?: string;
+    source_path?: string;
+  }) => request('/resources', { method: 'POST', body: JSON.stringify(data) }),
+  updateResource: (id: number, data: Record<string, any>) =>
+    request(`/resources/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteResource: (id: number) =>
+    request(`/resources/${id}`, { method: 'DELETE' }),
+
   // Admin — Analytics
   getPortfolioAnalytics: (days = 30) =>
     request<{

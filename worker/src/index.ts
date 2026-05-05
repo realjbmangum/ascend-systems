@@ -13,6 +13,7 @@ import sequenceRoutes, {
 import portalRoutes from "./routes/portal";
 import proposalRoutes from "./routes/proposals";
 import analyticsRoutes, { refreshAllProjectAnalytics } from "./routes/analytics";
+import resourceRoutes from "./routes/resources";
 import { sendFormConfirmation, sendAdminAlert } from "./email";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -733,6 +734,7 @@ admin.post("/email-sequences/process", async (c) => {
 });
 
 admin.route("/analytics", analyticsRoutes);
+admin.route("/resources", resourceRoutes);
 
 app.route("/api", admin);
 
