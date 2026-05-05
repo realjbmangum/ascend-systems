@@ -233,6 +233,20 @@ export const api = {
       failed: number;
       errors: Array<{ project: string; error: string }>;
     }>('/analytics/refresh-all', { method: 'POST' }),
+  listCfZones: () =>
+    request<{
+      count: number;
+      zones: Array<{ id: string; name: string; status: string }>;
+    }>('/analytics/cf-zones'),
+  autoMatchCfZones: () =>
+    request<{
+      cf_zones_count: number;
+      matched: number;
+      unmatched: number;
+      matched_detail: Array<{ project: string; domain: string; zone_id: string }>;
+      unmatched_detail: Array<{ project: string; domain: string }>;
+      available_zones: string[];
+    }>('/analytics/auto-match', { method: 'POST' }),
   recordManualSnapshot: (
     projectId: number,
     data: { date?: string; pageviews: number; visitors: number; note?: string }

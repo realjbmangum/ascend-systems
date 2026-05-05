@@ -36,6 +36,22 @@ export default function PortfolioTrafficCard() {
     }
   };
 
+  const [matchResult, setMatchResult] = useState<any>(null);
+  const [matching, setMatching] = useState(false);
+  const autoMatch = async () => {
+    setMatching(true);
+    setError('');
+    try {
+      const result = await api.autoMatchCfZones();
+      setMatchResult(result);
+      load();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setMatching(false);
+    }
+  };
+
   return (
     <div className="bg-white border border-surface-200 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
@@ -45,17 +61,65 @@ export default function PortfolioTrafficCard() {
             Last 30 days · Cloudflare Analytics
           </p>
         </div>
-        <button
-          onClick={refreshAll}
-          disabled={refreshing}
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-surface-200 text-charcoal hover:bg-surface-50 transition-colors disabled:opacity-50"
-        >
-          {refreshing ? 'Refreshing…' : 'Refresh all'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={autoMatch}
+            disabled={matching}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-surface-200 text-charcoal hover:bg-surface-50 transition-colors disabled:opacity-50"
+            title="For each project with a Domain set, find the matching CF zone and auto-fill the zone tag."
+          >
+            {matching ? 'Matching…' : 'Auto-link CF zones'}
+          </button>
+          <button
+            onClick={refreshAll}
+            disabled={refreshing}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-surface-200 text-charcoal hover:bg-surface-50 transition-colors disabled:opacity-50"
+          >
+            {refreshing ? 'Refreshing…' : 'Refresh all'}
+          </button>
+        </div>
       </div>
 
       {error && (
         <div className="text-xs text-red-600 mb-3">{error}</div>
+      )}
+
+      {matchResult && (
+        <div className="text-xs bg-surface-50 border border-surface-200 rounded-lg p-3 mb-3 space-y-2">
+          <div className="font-semibold text-charcoal">
+            Matched {matchResult.matched} / {matchResult.matched + matchResult.unmatched} projects
+            ({matchResult.cf_zones_count} CF zones available)
+          </div>
+          {matchResult.matched_detail?.length > 0 && (
+            <div>
+              <div className="text-green-700 font-medium">Linked:</div>
+              <ul className="text-gray-600">
+                {matchResult.matched_detail.map((m: any) => (
+                  <li key={m.project}>✓ {m.project} → {m.domain}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {matchResult.unmatched_detail?.length > 0 && (
+            <div>
+              <div className="text-orange-dark font-medium">No CF zone match:</div>
+              <ul className="text-gray-600">
+                {matchResult.unmatched_detail.map((u: any) => (
+                  <li key={u.project}>· {u.project} ({u.domain})</li>
+                ))}
+              </ul>
+              <div className="mt-1 text-gray-500">
+                These domains aren't on Cloudflare under this account — use manual snapshots.
+              </div>
+            </div>
+          )}
+          <button
+            onClick={() => setMatchResult(null)}
+            className="text-gray-500 hover:text-charcoal"
+          >
+            Dismiss
+          </button>
+        </div>
       )}
 
       {loading ? (

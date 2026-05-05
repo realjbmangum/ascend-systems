@@ -208,6 +208,107 @@ analytics.post("/refresh-all", async (c) => {
   return c.json(stats);
 });
 
+// List all Cloudflare zones the token can see.
+analytics.get("/cf-zones", async (c) => {
+  if (!c.env.CF_API_TOKEN) {
+    return c.json({ error: "CF_API_TOKEN not configured" }, 500);
+  }
+  const zones: Array<{ id: string; name: string; status: string }> = [];
+  let page = 1;
+  while (true) {
+    const res = await fetch(
+      `https://api.cloudflare.com/client/v4/zones?per_page=50&page=${page}`,
+      {
+        headers: { Authorization: `Bearer ${c.env.CF_API_TOKEN}` },
+      }
+    );
+    if (!res.ok) {
+      return c.json(
+        {
+          error: `CF API ${res.status}`,
+          detail: await res.text(),
+          hint:
+            "Token may need 'Zone:Read' permission. Add it at dash.cloudflare.com/profile/api-tokens.",
+        },
+        502
+      );
+    }
+    const json = await res.json<{
+      success: boolean;
+      result: Array<{ id: string; name: string; status: string }>;
+      result_info: { total_pages: number; page: number };
+      errors?: Array<{ message: string }>;
+    }>();
+    if (!json.success) {
+      return c.json({ error: json.errors?.map((e) => e.message).join("; ") }, 502);
+    }
+    zones.push(...json.result);
+    if (page >= json.result_info.total_pages) break;
+    page++;
+  }
+  return c.json({ count: zones.length, zones });
+});
+
+// Auto-match CF zones to projects by analytics_domain. Updates cloudflare_zone_tag in place.
+analytics.post("/auto-match", async (c) => {
+  if (!c.env.CF_API_TOKEN) {
+    return c.json({ error: "CF_API_TOKEN not configured" }, 500);
+  }
+  // Fetch zones
+  const zones: Array<{ id: string; name: string }> = [];
+  let page = 1;
+  while (true) {
+    const res = await fetch(
+      `https://api.cloudflare.com/client/v4/zones?per_page=50&page=${page}`,
+      { headers: { Authorization: `Bearer ${c.env.CF_API_TOKEN}` } }
+    );
+    if (!res.ok) {
+      return c.json({ error: `CF API ${res.status}: ${await res.text()}` }, 502);
+    }
+    const json = await res.json<{
+      result: Array<{ id: string; name: string }>;
+      result_info: { total_pages: number };
+    }>();
+    zones.push(...json.result);
+    if (page >= json.result_info.total_pages) break;
+    page++;
+  }
+  const zoneByName = new Map(zones.map((z) => [z.name.toLowerCase(), z.id]));
+
+  // Pull all projects with analytics_domain set but no zone tag yet.
+  const { results } = await c.env.DB.prepare(
+    `SELECT id, name, analytics_domain
+     FROM projects
+     WHERE analytics_domain IS NOT NULL AND analytics_domain != ''`
+  ).all<{ id: number; name: string; analytics_domain: string }>();
+
+  const matched: Array<{ project: string; domain: string; zone_id: string }> = [];
+  const unmatched: Array<{ project: string; domain: string }> = [];
+
+  for (const p of results) {
+    const zoneId = zoneByName.get(p.analytics_domain.toLowerCase());
+    if (zoneId) {
+      await c.env.DB.prepare(
+        `UPDATE projects SET cloudflare_zone_tag = ?, updated_at = datetime('now') WHERE id = ?`
+      )
+        .bind(zoneId, p.id)
+        .run();
+      matched.push({ project: p.name, domain: p.analytics_domain, zone_id: zoneId });
+    } else {
+      unmatched.push({ project: p.name, domain: p.analytics_domain });
+    }
+  }
+
+  return c.json({
+    cf_zones_count: zones.length,
+    matched: matched.length,
+    unmatched: unmatched.length,
+    matched_detail: matched,
+    unmatched_detail: unmatched,
+    available_zones: zones.map((z) => z.name),
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Internals — exported for cron use
 // ---------------------------------------------------------------------------
