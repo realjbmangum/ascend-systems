@@ -41,21 +41,48 @@ export default function Clients() {
   }, [clients, sort]);
 
   const columns: Column<any>[] = [
-    { key: 'company', label: 'Company' },
-    { key: 'contact_name', label: 'Contact' },
-    { key: 'email', label: 'Email' },
     {
-      key: 'active_projects',
+      key: 'company_name',
+      label: 'Company',
+      sortable: true,
+      filterable: true,
+      render: (row) => row.company_name || row.company || '—',
+    },
+    { key: 'contact_name', label: 'Contact', sortable: true, filterable: true },
+    { key: 'email', label: 'Email', sortable: true, filterable: true },
+    {
+      key: 'website_url',
+      label: 'Website',
+      render: (row) =>
+        row.website_url ? (
+          <a
+            href={row.website_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-orange hover:text-orange-dark text-xs"
+          >
+            {row.website_url.replace(/^https?:\/\//, '')}
+          </a>
+        ) : (
+          <span className="text-gray-300 text-xs">—</span>
+        ),
+    },
+    {
+      key: 'project_count',
       label: 'Projects',
+      sortable: true,
+      sortValue: (row) => row.project_count ?? 0,
       render: (row) => (
         <span className="text-xs font-semibold bg-surface px-2 py-1 rounded-md">
-          {row.active_projects ?? 0}
+          {row.project_count ?? 0}
         </span>
       ),
     },
     {
       key: 'created_at',
       label: 'Created',
+      sortable: true,
       render: (row) => new Date(row.created_at).toLocaleDateString(),
     },
   ];

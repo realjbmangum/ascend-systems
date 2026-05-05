@@ -69,17 +69,40 @@ export default function Projects() {
   }, [projects, filter, sort]);
 
   const columns: Column<any>[] = [
-    { key: 'name', label: 'Project' },
-    { key: 'client_name', label: 'Client' },
+    { key: 'name', label: 'Project', sortable: true, filterable: true },
+    { key: 'client_name', label: 'Client', sortable: true, filterable: true },
     {
       key: 'status',
       label: 'Status',
+      sortable: true,
+      filterable: true,
       render: (row) => <StatusBadge status={row.status} />,
     },
-    { key: 'project_type', label: 'Type' },
+    { key: 'project_type', label: 'Type', sortable: true, filterable: true },
+    {
+      key: 'analytics_domain',
+      label: 'Domain',
+      sortable: true,
+      filterable: true,
+      render: (row) =>
+        row.analytics_domain ? (
+          <a
+            href={`https://${row.analytics_domain}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-orange hover:text-orange-dark text-xs"
+          >
+            {row.analytics_domain}
+          </a>
+        ) : (
+          <span className="text-gray-300 text-xs">—</span>
+        ),
+    },
     {
       key: 'start_date',
       label: 'Start Date',
+      sortable: true,
       render: (row) => row.start_date ? new Date(row.start_date).toLocaleDateString() : '--',
     },
   ];

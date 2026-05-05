@@ -159,12 +159,21 @@ export default function Invoices() {
     {
       key: 'id',
       label: 'Invoice',
+      sortable: true,
       render: (row) => <span className="font-mono text-xs">#{row.id}</span>,
     },
-    { key: 'client_name', label: 'Client', render: (row) => row.client_name || '--' },
+    {
+      key: 'client_name',
+      label: 'Client',
+      sortable: true,
+      filterable: true,
+      render: (row) => row.client_name || '--',
+    },
     {
       key: 'description',
       label: 'Description',
+      sortable: true,
+      filterable: true,
       render: (row) => (
         <span className="text-charcoal">
           {row.description || <span className="text-gray-400">--</span>}
@@ -174,11 +183,14 @@ export default function Invoices() {
     {
       key: 'amount_cents',
       label: 'Amount',
+      sortable: true,
       render: (row) => <span className="font-semibold">{formatMoney(row.amount_cents || 0)}</span>,
     },
     {
       key: 'status',
       label: 'Status',
+      sortable: true,
+      filterable: true,
       render: (row) => (
         <span
           className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${
@@ -192,12 +204,14 @@ export default function Invoices() {
     {
       key: 'due_date',
       label: 'Due',
+      sortable: true,
       render: (row) =>
         row.due_date ? new Date(row.due_date).toLocaleDateString() : <span className="text-gray-400">--</span>,
     },
     {
       key: 'created_at',
       label: 'Created',
+      sortable: true,
       render: (row) => new Date(row.created_at).toLocaleDateString(),
     },
   ];

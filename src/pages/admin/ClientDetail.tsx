@@ -6,12 +6,15 @@ export default function ClientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [client, setClient] = useState<any>(null);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(true);
   const [form, setForm] = useState({
     company_name: '',
     contact_name: '',
     email: '',
     phone: '',
     notes: '',
+    website_url: '',
   });
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -30,11 +33,38 @@ export default function ClientDetail() {
           email: data.email || '',
           phone: data.phone || '',
           notes: data.notes || '',
+          website_url: data.website_url || '',
         });
       })
       .catch(() => navigate('/admin/clients'))
       .finally(() => setLoading(false));
+    api
+      .getInvoices(Number(id))
+      .then(setInvoices)
+      .catch(() => setInvoices([]))
+      .finally(() => setInvoicesLoading(false));
   }, [id, navigate]);
+
+  const totalsByStatus = invoices.reduce(
+    (acc: Record<string, { count: number; amount: number }>, inv) => {
+      const s = inv.status || 'draft';
+      if (!acc[s]) acc[s] = { count: 0, amount: 0 };
+      acc[s].count++;
+      acc[s].amount += inv.amount_cents || 0;
+      return acc;
+    },
+    {}
+  );
+  const totalBilled = invoices.reduce(
+    (sum, inv) => sum + (inv.amount_cents || 0),
+    0
+  );
+  const totalPaid = invoices
+    .filter((inv) => inv.status === 'paid')
+    .reduce((sum, inv) => sum + (inv.amount_cents || 0), 0);
+  const totalOutstanding = totalBilled - totalPaid;
+  const fmtMoney = (cents: number) =>
+    `$${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
 
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -155,6 +185,16 @@ export default function ClientDetail() {
                   className={inputCls}
                 />
               </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Website URL</label>
+                <input
+                  type="url"
+                  value={form.website_url}
+                  onChange={(e) => update('website_url', e.target.value)}
+                  placeholder="https://example.com"
+                  className={inputCls}
+                />
+              </div>
             </div>
           ) : (
             <dl className="space-y-3 text-sm">
@@ -170,6 +210,21 @@ export default function ClientDetail() {
                 <div>
                   <dt className="text-gray-400">Phone</dt>
                   <dd className="text-charcoal font-medium">{client.phone}</dd>
+                </div>
+              )}
+              {client.website_url && (
+                <div>
+                  <dt className="text-gray-400">Website</dt>
+                  <dd>
+                    <a
+                      href={client.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-orange hover:text-orange-dark font-medium"
+                    >
+                      {client.website_url.replace(/^https?:\/\//, '')}
+                    </a>
+                  </dd>
                 </div>
               )}
               <div>
@@ -199,6 +254,85 @@ export default function ClientDetail() {
             </ul>
           ) : (
             <p className="text-sm text-gray-400">No projects yet.</p>
+          )}
+        </div>
+
+        {/* Invoices */}
+        <div className="bg-white rounded-xl border border-surface-100 p-5 md:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Invoices</h2>
+            <button
+              onClick={() => navigate(`/admin/invoices/create?client_id=${client.id}`)}
+              className="text-xs font-semibold text-orange hover:text-orange-dark"
+            >
+              + New Invoice
+            </button>
+          </div>
+          {invoicesLoading ? (
+            <p className="text-sm text-gray-400">Loading…</p>
+          ) : invoices.length === 0 ? (
+            <p className="text-sm text-gray-400">No invoices yet.</p>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-surface-100">
+                <div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Billed</div>
+                  <div className="text-xl font-bold text-charcoal tabular-nums">{fmtMoney(totalBilled)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Paid</div>
+                  <div className="text-xl font-bold text-green-700 tabular-nums">{fmtMoney(totalPaid)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Outstanding</div>
+                  <div className={`text-xl font-bold tabular-nums ${totalOutstanding > 0 ? 'text-orange-dark' : 'text-charcoal'}`}>
+                    {fmtMoney(totalOutstanding)}
+                  </div>
+                </div>
+              </div>
+              <ul className="divide-y divide-surface-100">
+                {invoices.map((inv) => (
+                  <li key={inv.id}>
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/admin/invoices/${inv.id}`)}
+                      className="w-full text-left flex items-center justify-between gap-3 py-2.5 hover:bg-surface/30 px-2 -mx-2 rounded transition-colors"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-semibold text-charcoal">
+                          #{inv.id} {inv.description ? `· ${inv.description}` : ''}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {inv.due_date
+                            ? `Due ${new Date(inv.due_date).toLocaleDateString()}`
+                            : 'No due date'}
+                          {' · '}
+                          Created {new Date(inv.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="text-right ml-3">
+                        <div className="font-semibold tabular-nums text-charcoal">
+                          {fmtMoney(inv.amount_cents || 0)}
+                        </div>
+                        <span
+                          className={`inline-block text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                            inv.status === 'paid'
+                              ? 'bg-green-100 text-green-700'
+                              : inv.status === 'sent'
+                              ? 'bg-blue-100 text-blue-700'
+                              : inv.status === 'overdue'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {inv.status || 'draft'}
+                        </span>
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </div>
 

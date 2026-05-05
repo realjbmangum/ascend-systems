@@ -421,6 +421,7 @@ admin.post("/clients", async (c) => {
     email?: string;
     phone?: string;
     notes?: string;
+    website_url?: string;
   }>();
   if (!body.company_name || !body.contact_name || !body.email) {
     return c.json(
@@ -429,15 +430,16 @@ admin.post("/clients", async (c) => {
     );
   }
   const result = await c.env.DB.prepare(
-    `INSERT INTO clients (company_name, contact_name, email, phone, notes)
-     VALUES (?, ?, ?, ?, ?)`
+    `INSERT INTO clients (company_name, contact_name, email, phone, notes, website_url)
+     VALUES (?, ?, ?, ?, ?, ?)`
   )
     .bind(
       body.company_name,
       body.contact_name,
       body.email,
       body.phone ?? null,
-      body.notes ?? null
+      body.notes ?? null,
+      body.website_url ?? null
     )
     .run();
   return c.json({ success: true, id: result.meta.last_row_id });
@@ -457,7 +459,7 @@ admin.delete("/clients/:id", async (c) => {
 
 admin.patch("/clients/:id", async (c) => {
   const body = await c.req.json<Record<string, string | null>>();
-  const allowed = ["company_name", "contact_name", "email", "phone", "notes"];
+  const allowed = ["company_name", "contact_name", "email", "phone", "notes", "website_url"];
   const sets: string[] = [];
   const params: (string | null)[] = [];
   for (const key of allowed) {

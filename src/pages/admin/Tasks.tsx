@@ -43,6 +43,9 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState('open');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [projectFilter, setProjectFilter] = useState<string>('all');
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'priority' | 'created' | 'title'>('priority');
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
@@ -142,6 +145,37 @@ export default function Tasks() {
     {}
   );
 
+  const PRIORITY_ORDER: Record<string, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
+
+  const visibleTasks = tasks
+    .filter((t) =>
+      projectFilter === 'all'
+        ? true
+        : projectFilter === 'none'
+        ? !t.project_id
+        : Number(t.project_id) === Number(projectFilter)
+    )
+    .filter((t) => {
+      if (!search.trim()) return true;
+      const q = search.trim().toLowerCase();
+      return (
+        (t.title || '').toLowerCase().includes(q) ||
+        (t.description || '').toLowerCase().includes(q) ||
+        (t.project_name || '').toLowerCase().includes(q) ||
+        (t.client_name || '').toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === 'title') return (a.title || '').localeCompare(b.title || '');
+      if (sortBy === 'created')
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      // priority
+      const ap = PRIORITY_ORDER[a.priority] ?? 9;
+      const bp = PRIORITY_ORDER[b.priority] ?? 9;
+      if (ap !== bp) return ap - bp;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -182,7 +216,51 @@ export default function Tasks() {
               </option>
             ))}
           </select>
+          <select
+            value={projectFilter}
+            onChange={(e) => setProjectFilter(e.target.value)}
+            className="text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+            aria-label="Filter by project"
+          >
+            <option value="all">All projects</option>
+            <option value="none">No project</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+            aria-label="Sort by"
+          >
+            <option value="priority">Sort: Priority</option>
+            <option value="created">Sort: Newest</option>
+            <option value="title">Sort: Title</option>
+          </select>
         </div>
+      </div>
+
+      <div className="mb-4 relative max-w-md">
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search title, description, project, client…"
+          className="w-full pl-9 pr-3 py-2 text-sm border border-surface-200 rounded-lg bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+        />
+        <svg
+          className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
       </div>
 
       {/* Create task modal */}
@@ -258,13 +336,13 @@ export default function Tasks() {
         <div className="flex items-center justify-center h-64">
           <div className="w-8 h-8 border-2 border-orange border-t-transparent rounded-full animate-spin" />
         </div>
-      ) : tasks.length === 0 ? (
+      ) : visibleTasks.length === 0 ? (
         <div className="bg-white rounded-xl border border-surface-100 p-12 text-center text-gray-400">
-          No tasks match this filter.
+          {search ? `No tasks match "${search}".` : 'No tasks match this filter.'}
         </div>
       ) : (
         <div className="space-y-2">
-          {tasks.map((task) => {
+          {visibleTasks.map((task) => {
             const expanded = expandedId === task.id;
             const meta = formatMeta(task.metadata_json);
             return (

@@ -117,7 +117,8 @@ export const api = {
     request(`/projects/${projectId}/notes/${noteId}`, { method: 'DELETE' }),
 
   // Admin — Invoices
-  getInvoices: () => request<any[]>('/invoices'),
+  getInvoices: (clientId?: number) =>
+    request<any[]>(`/invoices${clientId ? `?client_id=${clientId}` : ''}`),
   getInvoice: (id: number) => request<any>(`/invoices/${id}`),
   createInvoice: (data: Record<string, any>) =>
     request('/invoices', { method: 'POST', body: JSON.stringify(data) }),

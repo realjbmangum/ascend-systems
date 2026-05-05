@@ -26,10 +26,10 @@ tasks.get("/", async (c) => {
      LEFT JOIN clients c ON c.id = t.client_id
      LEFT JOIN leads l ON l.id = t.lead_id
      LEFT JOIN projects p ON p.id = t.project_id
-     ${whereSql}
+     ${whereSql ? whereSql.replace(/status =/g, "t.status =").replace(/type =/g, "t.type =") : ""}
      ORDER BY
-       CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END,
-       created_at DESC`
+       CASE t.status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END,
+       t.created_at DESC`
   )
     .bind(...params)
     .all();

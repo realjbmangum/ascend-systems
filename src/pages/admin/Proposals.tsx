@@ -42,16 +42,22 @@ export default function Proposals() {
     {
       key: 'title',
       label: 'Title',
+      sortable: true,
+      filterable: true,
       render: (row) => <span className="font-semibold text-charcoal">{row.title}</span>,
     },
     {
       key: 'client_name',
       label: 'Client',
+      sortable: true,
+      filterable: true,
       render: (row) => row.client_name || <span className="text-gray-400">--</span>,
     },
     {
       key: 'status',
       label: 'Status',
+      sortable: true,
+      filterable: true,
       render: (row) => (
         <span
           className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${
@@ -65,6 +71,7 @@ export default function Proposals() {
     {
       key: 'total_cents',
       label: 'Total',
+      sortable: true,
       render: (row) => (
         <span className="font-semibold">{formatMoney(row.total_cents || 0)}</span>
       ),
@@ -72,6 +79,7 @@ export default function Proposals() {
     {
       key: 'created_at',
       label: 'Created',
+      sortable: true,
       render: (row) => new Date(row.created_at).toLocaleDateString(),
     },
   ];

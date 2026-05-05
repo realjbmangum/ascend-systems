@@ -15,13 +15,18 @@ const invoices = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 invoices.use("*", requireAuth("admin"));
 
 invoices.get("/", async (c) => {
-  const { results } = await c.env.DB.prepare(
+  const clientId = c.req.query("client_id");
+  const where = clientId ? "WHERE i.client_id = ?" : "";
+  const stmt = c.env.DB.prepare(
     `SELECT i.*, c.company_name AS client_name, p.name AS project_name
      FROM invoices i
      JOIN clients c ON c.id = i.client_id
      LEFT JOIN projects p ON p.id = i.project_id
+     ${where}
      ORDER BY i.created_at DESC`
-  ).all();
+  );
+  const bound = clientId ? stmt.bind(clientId) : stmt;
+  const { results } = await bound.all();
   return c.json(results);
 });
 

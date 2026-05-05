@@ -48,19 +48,21 @@ export default function Leads() {
   }, [leads, sort]);
 
   const columns: Column<any>[] = [
-    { key: 'name', label: 'Name' },
-    { key: 'company', label: 'Company' },
-    { key: 'email', label: 'Email' },
-    { key: 'project_type', label: 'Type' },
-    { key: 'budget', label: 'Budget' },
+    { key: 'name', label: 'Name', sortable: true, filterable: true },
+    { key: 'company', label: 'Company', sortable: true, filterable: true },
+    { key: 'email', label: 'Email', sortable: true, filterable: true },
+    { key: 'project_type', label: 'Type', sortable: true, filterable: true },
+    { key: 'budget', label: 'Budget', sortable: true },
     {
       key: 'status',
       label: 'Status',
+      sortable: true,
       render: (row) => <StatusBadge status={row.status} />,
     },
     {
       key: 'created_at',
       label: 'Date',
+      sortable: true,
       render: (row) => new Date(row.created_at).toLocaleDateString(),
     },
   ];
