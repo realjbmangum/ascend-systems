@@ -115,7 +115,7 @@ export async function enrollByTrigger(
 }
 
 // Cron worker: send all enrollments whose next step delay has elapsed.
-export async function processEnrollments(db: D1Database, mailChannels: any): Promise<{
+export async function processEnrollments(db: D1Database, apiKey: string): Promise<{
   sent: number;
   completed: number;
 }> {
@@ -170,7 +170,7 @@ export async function processEnrollments(db: D1Database, mailChannels: any): Pro
     const hoursElapsed = dueRow?.hours_elapsed ?? 0;
 
     if (hoursElapsed >= step.delay_hours) {
-      const ok = await sendSequenceStep(mailChannels, e.email, step.subject, step.body_html);
+      const ok = await sendSequenceStep(apiKey, e.email, step.subject, step.body_html);
       if (ok) {
         await db
           .prepare(

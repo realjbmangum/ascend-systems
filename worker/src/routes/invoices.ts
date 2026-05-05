@@ -6,6 +6,7 @@ import {
   createInvoiceItem,
   createStripeInvoice,
   sendStripeInvoice,
+  createSubscription,
 } from "../stripe";
 import { createTask } from "./tasks";
 
@@ -51,6 +52,8 @@ invoices.post("/", async (c) => {
     project_id?: number;
     description?: string;
     due_date?: string;
+    billing_type?: string;
+    recurring_interval?: string;
     line_items?: Array<{
       description: string;
       quantity?: number;
@@ -64,16 +67,21 @@ invoices.post("/", async (c) => {
     (sum, li) => sum + li.unit_price_cents * (li.quantity ?? 1),
     0
   );
+  const billingType = body.billing_type === "recurring" ? "recurring" : "one_time";
+  const recurringInterval =
+    billingType === "recurring" ? body.recurring_interval ?? null : null;
   const result = await c.env.DB.prepare(
-    `INSERT INTO invoices (client_id, project_id, amount_cents, description, due_date)
-     VALUES (?, ?, ?, ?, ?)`
+    `INSERT INTO invoices (client_id, project_id, amount_cents, description, due_date, billing_type, recurring_interval)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       body.client_id,
       body.project_id ?? null,
       total,
       body.description ?? null,
-      body.due_date ?? null
+      body.due_date ?? null,
+      billingType,
+      recurringInterval
     )
     .run();
   const invoiceId = result.meta.last_row_id as number;
@@ -88,6 +96,13 @@ invoices.post("/", async (c) => {
   }
 
   return c.json({ success: true, id: invoiceId });
+});
+
+invoices.delete("/:id", async (c) => {
+  const id = c.req.param("id");
+  await c.env.DB.prepare("DELETE FROM invoice_line_items WHERE invoice_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM invoices WHERE id = ?").bind(id).run();
+  return c.json({ success: true });
 });
 
 invoices.patch("/:id", async (c) => {
@@ -121,7 +136,7 @@ invoices.post("/:id/send", async (c) => {
   }
   const id = c.req.param("id");
   const invoice = await c.env.DB.prepare(
-    `SELECT i.*, c.email AS client_email, c.contact_name
+    `SELECT i.*, c.email AS client_email, c.contact_name, c.stripe_customer_id
      FROM invoices i JOIN clients c ON c.id = i.client_id WHERE i.id = ?`
   )
     .bind(id)
@@ -130,6 +145,7 @@ invoices.post("/:id/send", async (c) => {
       client_id: number;
       client_email: string;
       contact_name: string;
+      stripe_customer_id: string | null;
       description: string | null;
     }>();
   if (!invoice) return c.json({ error: "not found" }, 404);
@@ -144,16 +160,24 @@ invoices.post("/:id/send", async (c) => {
       unit_price_cents: number;
     }>();
 
-  const customerId = await findOrCreateCustomer(
+  const customer = await findOrCreateCustomer(
     c.env.STRIPE_SECRET_KEY,
     invoice.client_email,
     invoice.contact_name
   );
 
+  if (!invoice.stripe_customer_id || invoice.stripe_customer_id !== customer.id) {
+    await c.env.DB.prepare(
+      "UPDATE clients SET stripe_customer_id = ? WHERE id = ?"
+    )
+      .bind(customer.id, invoice.client_id)
+      .run();
+  }
+
   for (const li of lineItems) {
     await createInvoiceItem(
       c.env.STRIPE_SECRET_KEY,
-      customerId,
+      customer.id,
       li.unit_price_cents * li.quantity,
       li.description
     );
@@ -161,7 +185,7 @@ invoices.post("/:id/send", async (c) => {
 
   const stripeInvoice = await createStripeInvoice(
     c.env.STRIPE_SECRET_KEY,
-    customerId,
+    customer.id,
     invoice.description ?? undefined
   );
   const sent = await sendStripeInvoice(
@@ -170,16 +194,105 @@ invoices.post("/:id/send", async (c) => {
   );
 
   await c.env.DB.prepare(
-    `UPDATE invoices SET stripe_invoice_id = ?, status = 'sent',
+    `UPDATE invoices SET stripe_invoice_id = ?, stripe_payment_url = ?, status = 'sent',
        updated_at = datetime('now') WHERE id = ?`
   )
-    .bind(stripeInvoice.id, id)
+    .bind(stripeInvoice.id, sent.hosted_invoice_url ?? null, id)
     .run();
 
   return c.json({
     success: true,
     stripe_invoice_id: stripeInvoice.id,
     hosted_invoice_url: sent.hosted_invoice_url,
+  });
+});
+
+invoices.post("/:id/push-recurring", async (c) => {
+  if (!c.env.STRIPE_SECRET_KEY) {
+    return c.json({ error: "STRIPE_SECRET_KEY not configured" }, 500);
+  }
+  const id = c.req.param("id");
+  const invoice = await c.env.DB.prepare(
+    `SELECT i.*, c.email AS client_email, c.contact_name, c.stripe_customer_id
+     FROM invoices i JOIN clients c ON c.id = i.client_id WHERE i.id = ?`
+  )
+    .bind(id)
+    .first<{
+      id: number;
+      client_id: number;
+      client_email: string;
+      contact_name: string;
+      stripe_customer_id: string | null;
+      description: string | null;
+      amount_cents: number;
+      billing_type: string | null;
+      recurring_interval: string | null;
+    }>();
+  if (!invoice) return c.json({ error: "not found" }, 404);
+  if (invoice.billing_type !== "recurring" || !invoice.recurring_interval) {
+    return c.json(
+      { error: "invoice is not configured for recurring billing" },
+      400
+    );
+  }
+
+  const interval = invoice.recurring_interval as "month" | "year" | "week";
+  if (!["month", "year", "week"].includes(interval)) {
+    return c.json({ error: "invalid recurring interval" }, 400);
+  }
+
+  const customer = await findOrCreateCustomer(
+    c.env.STRIPE_SECRET_KEY,
+    invoice.client_email,
+    invoice.contact_name
+  );
+
+  if (!invoice.stripe_customer_id || invoice.stripe_customer_id !== customer.id) {
+    await c.env.DB.prepare(
+      "UPDATE clients SET stripe_customer_id = ? WHERE id = ?"
+    )
+      .bind(customer.id, invoice.client_id)
+      .run();
+  }
+
+  const description =
+    invoice.description ?? `Invoice #${invoice.id} (recurring)`;
+  const subscription = await createSubscription(
+    c.env.STRIPE_SECRET_KEY,
+    customer.id,
+    invoice.amount_cents,
+    interval,
+    description
+  );
+
+  const hostedUrl = subscription.latest_invoice?.hosted_invoice_url ?? null;
+
+  await c.env.DB.prepare(
+    `UPDATE invoices SET stripe_subscription_id = ?, stripe_payment_url = ?,
+       status = 'sent', updated_at = datetime('now') WHERE id = ?`
+  )
+    .bind(subscription.id, hostedUrl, id)
+    .run();
+
+  await c.env.DB.prepare(
+    `INSERT INTO subscriptions (client_id, stripe_subscription_id, stripe_customer_id, status, amount_cents, interval, description)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
+  )
+    .bind(
+      invoice.client_id,
+      subscription.id,
+      customer.id,
+      subscription.status ?? "incomplete",
+      invoice.amount_cents,
+      interval,
+      description
+    )
+    .run();
+
+  return c.json({
+    success: true,
+    stripe_subscription_id: subscription.id,
+    hosted_invoice_url: hostedUrl,
   });
 });
 
@@ -207,6 +320,7 @@ export async function handleStripeWebhook(
     id?: string;
     payment_intent?: string;
     customer_email?: string;
+    status?: string;
   };
 
   if (event.type === "invoice.paid" && obj.id) {
@@ -254,6 +368,13 @@ export async function handleStripeWebhook(
         metadata: { invoice_id: row.id, event: event.type },
       });
     }
+  } else if (event.type === "customer.subscription.deleted" && obj.id) {
+    await c.env.DB.prepare(
+      `UPDATE subscriptions SET status = 'cancelled', updated_at = datetime('now')
+       WHERE stripe_subscription_id = ?`
+    )
+      .bind(obj.id)
+      .run();
   }
 
   return c.json({ received: true });

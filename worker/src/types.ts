@@ -1,19 +1,12 @@
-export type MailChannelsSend = {
-  send(message: {
-    personalizations: Array<{ to: Array<{ email: string }> }>;
-    from: { email: string; name?: string };
-    subject: string;
-    content: Array<{ type: string; value: string }>;
-  }): Promise<{ success: boolean }>;
-};
-
 export type Bindings = {
   DB: D1Database;
-  MAILCHANNELS: MailChannelsSend;
+  FILES_BUCKET: R2Bucket;
+  SENDGRID_API_KEY?: string;
   APP_ORIGIN?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   ADMIN_EMAILS?: string;
+  CF_API_TOKEN?: string;
 };
 
 export type SessionRow = {

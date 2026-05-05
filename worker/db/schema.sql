@@ -71,12 +71,14 @@ CREATE TABLE tasks (
   priority TEXT NOT NULL DEFAULT 'medium',
   client_id INTEGER REFERENCES clients(id),
   lead_id INTEGER REFERENCES leads(id),
+  project_id INTEGER REFERENCES projects(id),
   metadata_json TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   completed_at TEXT
 );
 CREATE INDEX idx_tasks_status ON tasks(status);
 CREATE INDEX idx_tasks_type ON tasks(type);
+CREATE INDEX idx_tasks_project ON tasks(project_id);
 
 CREATE TABLE project_notes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

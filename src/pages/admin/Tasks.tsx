@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../../lib/api';
 
 const statuses = ['all', 'open', 'in_progress', 'done'];
@@ -45,6 +46,54 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  const [newPriority, setNewPriority] = useState('medium');
+  const [creating, setCreating] = useState(false);
+
+  // Edit modal state
+  const [editTask, setEditTask] = useState<any | null>(null);
+  const [eTitle, setETitle] = useState('');
+  const [eDesc, setEDesc] = useState('');
+  const [ePriority, setEPriority] = useState('medium');
+  const [eType, setEType] = useState('manual');
+  const [eProjectId, setEProjectId] = useState<string>('');
+  const [eSaving, setESaving] = useState(false);
+  const [projects, setProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.getProjects().then(setProjects).catch(() => setProjects([]));
+  }, []);
+
+  const openEdit = (task: any) => {
+    setEditTask(task);
+    setETitle(task.title || '');
+    setEDesc(task.description || '');
+    setEPriority(task.priority || 'medium');
+    setEType(task.type || 'manual');
+    setEProjectId(task.project_id ? String(task.project_id) : '');
+  };
+
+  const saveEdit = async () => {
+    if (!editTask) return;
+    setESaving(true);
+    try {
+      await api.updateTask(editTask.id, {
+        title: eTitle,
+        description: eDesc,
+        priority: ePriority,
+        type: eType,
+        project_id: eProjectId ? parseInt(eProjectId, 10) : null,
+      });
+      setEditTask(null);
+      load();
+    } catch (err: any) {
+      alert(err.message || 'Save failed');
+    } finally {
+      setESaving(false);
+    }
+  };
 
   const load = () => {
     setLoading(true);
@@ -59,6 +108,17 @@ export default function Tasks() {
   };
 
   useEffect(load, [statusFilter, typeFilter]);
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Delete this task? This cannot be undone.')) return;
+    try {
+      await api.deleteTask(id);
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      if (expandedId === id) setExpandedId(null);
+    } catch {
+      // ignore
+    }
+  };
 
   const updateStatus = async (id: number, status: string) => {
     setUpdatingId(id);
@@ -92,6 +152,12 @@ export default function Tasks() {
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setShowCreate(true)}
+            className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          >
+            + Create Task
+          </button>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -118,6 +184,64 @@ export default function Tasks() {
           </select>
         </div>
       </div>
+
+      {/* Create task modal */}
+      {showCreate && (
+        <div className="fixed inset-0 z-50 bg-charcoal/60 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl border border-surface-100 w-full max-w-md shadow-xl">
+            <div className="p-5 border-b border-surface-100 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-charcoal">New Task</h2>
+              <button type="button" onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-charcoal text-2xl leading-none">&times;</button>
+            </div>
+            <div className="p-5 space-y-3">
+              <input
+                type="text"
+                placeholder="Title *"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange/30"
+              />
+              <textarea
+                placeholder="Description (optional)"
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+                rows={3}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange/30 resize-none"
+              />
+              <select
+                value={newPriority}
+                onChange={(e) => setNewPriority(e.target.value)}
+                className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange/30"
+              >
+                <option value="low">Low priority</option>
+                <option value="medium">Medium priority</option>
+                <option value="high">High priority</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+            <div className="p-5 border-t border-surface-100 flex justify-end gap-2">
+              <button type="button" onClick={() => setShowCreate(false)} className="text-sm font-semibold px-4 py-2 rounded-lg text-charcoal hover:bg-surface transition-colors">Cancel</button>
+              <button
+                type="button"
+                disabled={!newTitle.trim() || creating}
+                onClick={async () => {
+                  if (!newTitle.trim()) return;
+                  setCreating(true);
+                  try {
+                    await api.createTask({ type: 'manual', title: newTitle, description: newDesc || undefined, priority: newPriority });
+                    setNewTitle(''); setNewDesc(''); setNewPriority('medium');
+                    setShowCreate(false);
+                    load();
+                  } catch {} finally { setCreating(false); }
+                }}
+                className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {creating ? 'Saving…' : 'Create Task'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick counts */}
       {!loading && tasks.length > 0 && (
@@ -195,10 +319,18 @@ export default function Tasks() {
                         <p className="text-sm text-charcoal whitespace-pre-wrap">{task.description}</p>
                       </div>
                     )}
-                    {(task.client_id || task.lead_id) && (
-                      <div className="mt-3 flex gap-4 text-xs text-gray-500">
+                    {(task.client_id || task.lead_id || task.project_id) && (
+                      <div className="mt-3 flex gap-4 text-xs text-gray-500 flex-wrap">
                         {task.lead_id && <span>Lead #{task.lead_id}</span>}
                         {task.client_id && <span>Client #{task.client_id}</span>}
+                        {task.project_id && (
+                          <Link
+                            to={`/admin/projects/${task.project_id}`}
+                            className="text-orange hover:text-orange-dark font-medium"
+                          >
+                            View Project
+                          </Link>
+                        )}
                       </div>
                     )}
                     {meta && (
@@ -239,12 +371,118 @@ export default function Tasks() {
                           {updatingId === task.id ? 'Saving...' : 'Mark done'}
                         </button>
                       )}
+                      <button
+                        onClick={() => openEdit(task)}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-surface-200 text-charcoal hover:bg-white transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className="ml-auto text-red-500 hover:text-red-700 text-sm font-semibold"
+                        title="Delete task"
+                        aria-label="Delete task"
+                      >
+                        ×
+                      </button>
                     </div>
                   </div>
                 )}
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Edit Task modal */}
+      {editTask && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-charcoal">Edit Task</h3>
+              <button
+                onClick={() => setEditTask(null)}
+                className="text-gray-400 hover:text-charcoal"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-3 text-sm">
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Title</label>
+                <input
+                  type="text"
+                  value={eTitle}
+                  onChange={(e) => setETitle(e.target.value)}
+                  className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange/30"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Description</label>
+                <textarea
+                  value={eDesc}
+                  onChange={(e) => setEDesc(e.target.value)}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange/30 resize-y"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Priority</label>
+                  <select
+                    value={ePriority}
+                    onChange={(e) => setEPriority(e.target.value)}
+                    className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange/30"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Type</label>
+                  <input
+                    type="text"
+                    value={eType}
+                    onChange={(e) => setEType(e.target.value)}
+                    className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange/30"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Project</label>
+                <select
+                  value={eProjectId}
+                  onChange={(e) => setEProjectId(e.target.value)}
+                  className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange/30"
+                >
+                  <option value="">— No project —</option>
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button
+                onClick={() => setEditTask(null)}
+                className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveEdit}
+                disabled={eSaving}
+                className="text-sm font-semibold px-4 py-2 rounded-lg bg-orange text-white hover:bg-orange-dark transition-colors disabled:opacity-50"
+              >
+                {eSaving ? 'Saving…' : 'Save changes'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

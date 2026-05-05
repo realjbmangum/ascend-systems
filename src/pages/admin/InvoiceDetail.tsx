@@ -26,6 +26,7 @@ export default function InvoiceDetail() {
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [editForm, setEditForm] = useState({
     description: '',
     amount: '',
@@ -74,6 +75,18 @@ export default function InvoiceDetail() {
     setSaving(false);
   };
 
+  const handleDelete = async () => {
+    if (!confirm('Delete this invoice? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      await api.deleteInvoice(Number(id));
+      navigate('/admin/invoices');
+    } catch (e: any) {
+      setError(e?.message || 'Failed to delete invoice');
+      setDeleting(false);
+    }
+  };
+
   const handleSend = async () => {
     if (!confirm('Send this invoice to the client via Stripe?')) return;
     setSending(true);
@@ -83,6 +96,20 @@ export default function InvoiceDetail() {
       load();
     } catch (e: any) {
       setError(e?.message || 'Failed to send invoice');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handlePushRecurring = async () => {
+    if (!confirm('Set up recurring billing for this invoice in Stripe?')) return;
+    setSending(true);
+    setError('');
+    try {
+      await api.pushRecurringInvoice(Number(id));
+      load();
+    } catch (e: any) {
+      setError(e?.message || 'Failed to set up recurring billing');
     } finally {
       setSending(false);
     }
@@ -143,7 +170,16 @@ export default function InvoiceDetail() {
           >
             {invoice.status}
           </span>
-          {invoice.status === 'draft' && (
+          {invoice.status === 'draft' && invoice.billing_type === 'recurring' && (
+            <button
+              onClick={handlePushRecurring}
+              disabled={sending}
+              className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {sending ? 'Setting up...' : 'Set up Recurring'}
+            </button>
+          )}
+          {invoice.status === 'draft' && invoice.billing_type !== 'recurring' && (
             <button
               onClick={handleSend}
               disabled={sending}
@@ -151,6 +187,22 @@ export default function InvoiceDetail() {
             >
               {sending ? 'Sending...' : 'Send via Stripe'}
             </button>
+          )}
+          {invoice.status !== 'draft' && invoice.stripe_invoice_id && (
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              Sent to Stripe
+            </span>
+          )}
+          {invoice.stripe_subscription_id && (
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              Subscription Active
+            </span>
           )}
           {invoice.status === 'sent' && (
             <button
@@ -165,6 +217,13 @@ export default function InvoiceDetail() {
             className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
           >
             {editing ? 'Cancel' : 'Edit'}
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-red-500 hover:text-red-700 text-sm font-semibold disabled:opacity-50"
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>
@@ -340,11 +399,42 @@ export default function InvoiceDetail() {
                   </dd>
                 </div>
               )}
+              <div>
+                <dt className="text-gray-400 text-xs">Billing</dt>
+                <dd className="text-charcoal font-medium capitalize">
+                  {invoice.billing_type === 'recurring'
+                    ? `Recurring · ${invoice.recurring_interval || ''}`
+                    : 'One-time'}
+                </dd>
+              </div>
               {invoice.stripe_invoice_id && (
                 <div>
                   <dt className="text-gray-400 text-xs">Stripe Invoice</dt>
                   <dd className="text-charcoal font-mono text-xs break-all">
                     {invoice.stripe_invoice_id}
+                  </dd>
+                </div>
+              )}
+              {invoice.stripe_subscription_id && (
+                <div>
+                  <dt className="text-gray-400 text-xs">Stripe Subscription</dt>
+                  <dd className="text-charcoal font-mono text-xs break-all">
+                    {invoice.stripe_subscription_id}
+                  </dd>
+                </div>
+              )}
+              {invoice.stripe_payment_url && (
+                <div>
+                  <dt className="text-gray-400 text-xs">Payment Link</dt>
+                  <dd>
+                    <a
+                      href={invoice.stripe_payment_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-orange hover:text-orange-dark font-medium break-all"
+                    >
+                      View on Stripe &rarr;
+                    </a>
                   </dd>
                 </div>
               )}

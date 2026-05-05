@@ -15,31 +15,6 @@
 - Pages deployment: Redeployed with all new admin + portal routes
 - Integration testing: All public endpoints verified and working
 
-**Files Changed:**
-- worker/src/index.ts - Main worker with all routes mounted
-- worker/src/routes/*.ts - 6 route modules (auth, tasks, notes, invoices, portal, email-sequences)
-- worker/src/middleware.ts - Auth middleware with session management
-- worker/src/email.ts - Email sending via MailChannels
-- worker/src/stripe.ts - Stripe API utilities (signature verification, customer/invoice management)
-- worker/src/types.ts - TypeScript types for bindings and variables
-- worker/db/schema.sql - Updated with all 9 new tables
-- worker/db/migration_001.sql - Migration file for new tables (with IF NOT EXISTS)
-- worker/wrangler.toml - Added nodejs_compat flag
-- src/App.tsx - Added routes for /admin/tasks, /admin/invoices, /admin/email, /portal/*
-- src/components/AdminLayout.tsx - Added nav links for Tasks, Invoices, Email Drips
-- src/components/PortalLayout.tsx - New minimal layout for client portal
-- src/pages/admin/Tasks.tsx - Task queue with filters and actions
-- src/pages/admin/Invoices.tsx - Invoice list with create modal
-- src/pages/admin/InvoiceDetail.tsx - Detailed invoice view with line items
-- src/pages/admin/EmailSequences.tsx - Email drip sequence management
-- src/pages/admin/ProjectDetail.tsx - Added notes tab with permissions
-- src/pages/portal/Login.tsx - Magic link login page
-- src/pages/portal/Projects.tsx - Client's projects list
-- src/pages/portal/ProjectDetail.tsx - Project with visible notes
-- src/pages/portal/Invoices.tsx - Client's invoices with Stripe links
-- src/pages/Contact.tsx - Wired to create tasks and enroll in drips
-- src/lib/api.ts - Added methods for all new routes
-
 **Decisions:**
 - Used Cloudflare Email Workers (MailChannels) instead of SendGrid for email
 - Magic links expire in 15 minutes (stored in D1 with token, role, expires_at)
@@ -57,29 +32,75 @@
 - Magic link tokens must be URL-encoded when passed as query params
 - Session tokens must be validated against expires_at datetime('now') comparison
 
+---
+
+## Session - May 4, 2026
+
+**Completed:**
+- Switched email from MailChannels to SendGrid (MailChannels kept returning 401 — DNS was correct but never resolved)
+- Fixed SameSite cookie bug: changed from Strict to None to allow cross-origin cookies (frontend ascendsystems.ai ↔ API ascend-api.bmangum1.workers.dev)
+- Fixed magic link verify flow: created Verify.tsx + added /admin/auth/verify route
+- Cleaned D1 database: removed test leads/clients, kept Chris Rutherford
+- Cloudflare Zero Trust: set up Access policy on ascendsystems.ai/admin/* with one-time PIN (email: bmangum1@gmail.com)
+- Dashboard rebuild: 4 stat cards, pipeline overview, recent leads + open tasks
+- Delete buttons on all list pages (leads, clients, projects, invoices) with cascade handling
+- Task creation: modal on Tasks page + inline form on ProjectDetail
+- Task-project association: tasks now have project_id FK, project detail shows linked tasks
+- Sort/filter dropdowns on all list pages (Leads, Clients, Projects, Invoices)
+- Kanban board for Projects: list/kanban toggle, 6 status columns, color-coded
+- Email templates: all 3 templates (magic link, form confirmation, admin alert) use branded dark header + orange accent
+- R2 file uploads on Projects: Files tab, click-to-upload, download (auth-gated proxy), delete
+- Stripe one-time invoice push: "Send via Stripe" button, auto-creates Stripe customer, stores payment URL
+- Stripe recurring billing: billing_type toggle on invoice creation, "Set up Recurring" creates Stripe Subscription
+- Stripe bug fixes: replaced node:crypto with Web Crypto API, fixed customerId.id type bug
+- Subscriptions table + page: track active Stripe subscriptions, cancel from admin
+- Proposals: full CRUD, sign token generation, public sign page at /proposals/:token
+- D1 migrations: added stripe_customer_id to clients, billing_type/recurring_interval/stripe_payment_url/stripe_subscription_id to invoices, start_date to projects, created proposals + subscriptions tables
+
+**Files Changed:**
+- worker/src/stripe.ts - Replaced node:crypto with Web Crypto API, added createSubscription + cancelSubscription
+- worker/src/routes/invoices.ts - Fixed customerId bug, added billing_type/recurring_interval to INSERT, added push-recurring endpoint, stores stripe_customer_id on client
+- worker/src/routes/proposals.ts - NEW: full proposals CRUD + send endpoint
+- worker/src/index.ts - Added R2 file routes, proposal public sign routes, subscriptions CRUD, proposal routes mounted
+- worker/src/types.ts - Added FILES_BUCKET: R2Bucket binding
+- worker/src/email.ts - Full SendGrid rewrite, branded HTML templates
+- worker/wrangler.toml - Added R2 bucket binding (ascend-files)
+- worker/src/routes/auth.ts - Changed SameSite from Strict to None
+- src/pages/admin/Projects.tsx - List/Kanban toggle
+- src/pages/admin/ProjectsKanban.tsx - NEW: Kanban board component
+- src/pages/admin/ProjectDetail.tsx - Files tab, tasks inline form
+- src/pages/admin/Tasks.tsx - Create modal, delete button
+- src/pages/admin/InvoiceDetail.tsx - Send via Stripe button, recurring button, payment URL display
+- src/pages/admin/Invoices.tsx - billing_type toggle, sort/filter
+- src/pages/admin/CreateInvoice.tsx - billing_type + recurring_interval fields
+- src/pages/admin/Proposals.tsx - NEW: proposals list page
+- src/pages/admin/CreateProposal.tsx - NEW: proposal create form
+- src/pages/admin/ProposalDetail.tsx - NEW: proposal detail with send + sign URL
+- src/pages/admin/Subscriptions.tsx - NEW: subscriptions list with cancel
+- src/pages/admin/Dashboard.tsx - Rebuilt with stat cards, pipeline, recent activity
+- src/pages/ProposalSign.tsx - NEW: public client-facing sign page
+- src/App.tsx - Added proposal + subscription routes
+- src/components/AdminLayout.tsx - Added Proposals + Subscriptions nav links
+- src/lib/api.ts - Added file, proposal, subscription, recurring invoice methods
+
+**Decisions:**
+- Ascend is source of truth; Stripe is payment layer only — invoices draft in D1, push to Stripe on send
+- Recurring billing uses Stripe Subscriptions with inline prices (no product catalog needed)
+- Proposals use a unique sign_token (UUID) — no auth required to view/sign, just the link
+- R2 file downloads proxied through worker (auth-gated) rather than presigned URLs
+- STRIPE_WEBHOOK_SECRET added to Cloudflare via dashboard GUI
+
+**Infrastructure:**
+- R2 bucket: ascend-files (created this session)
+- Stripe webhook: https://ascend-api.bmangum1.workers.dev/api/webhooks/stripe
+  - Events: invoice.paid, invoice.payment_failed, invoice.marked_uncollectible, customer.subscription.deleted
+- Secrets in Cloudflare worker: SENDGRID_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+
 **Next Steps:**
-- [ ] Set Stripe secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET (wrangler secret put)
-- [ ] Configure DNS for noreply@ascendsystems.ai (SPF/DKIM for MailChannels)
-- [ ] Seed initial email sequences (lead_welcome, invoice_paid, payment_reminder)
-- [ ] Test full flow: contact form → task → magic link admin access → view task + send invoice
-- [ ] Test client flow: magic link → portal → view projects + invoices
-- [ ] Monitor task queue for form submissions
-- [ ] Set up invoice templates with company branding
-- [ ] Monitor email delivery (check Cloudflare Email Workers logs)
-
-**Testing Summary:**
-- ✓ POST /api/contact — Creates lead + task + enrollment
-- ✓ POST /api/intake — Creates qualified lead + task with metadata
-- ✓ POST /api/auth/magic-link — Generates tokens for admin and client roles
-- ✓ POST /api/leads — Legacy endpoint still working
-- ✓ D1 database — 12 tables created, queries working
-- ✓ Worker deployment — No errors, CORS configured
-- ✓ Pages deployment — Auto-deployed with new routes
-
-**Architecture:**
-- Frontend: React + TypeScript on Cloudflare Pages (ascend-systems.pages.dev)
-- Backend: Hono worker on Cloudflare Workers (ascend-api.bmangum1.workers.dev)
-- Database: SQLite via D1 with 12 tables
-- Email: Cloudflare Email Workers (MailChannels)
-- Payments: Stripe (webhooks on payment events)
-- Auth: Magic link via email (D1 tokens, session cookies)
+- [ ] Test Stripe invoice send end-to-end with a real client
+- [ ] Test recurring billing setup + first payment
+- [ ] Test proposal sign flow (create → send link → client signs)
+- [ ] Set up client portal magic link for first real client
+- [ ] Seed welcome email sequence (lead_welcome trigger)
+- [ ] Consider adding PDF export for proposals
+- [ ] Consider adding invoice PDF download

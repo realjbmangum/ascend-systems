@@ -16,6 +16,7 @@ export default function LeadDetail() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [converting, setConverting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +41,17 @@ export default function LeadDetail() {
       setEditing(false);
     } catch {}
     setSaving(false);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Delete this lead? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      await api.deleteLead(Number(id));
+      navigate('/admin/leads');
+    } catch {
+      setDeleting(false);
+    }
   };
 
   const handleConvert = async () => {
@@ -80,6 +92,13 @@ export default function LeadDetail() {
             className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
           >
             {editing ? 'Cancel' : 'Edit'}
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-red-500 hover:text-red-700 text-sm font-semibold disabled:opacity-50"
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>

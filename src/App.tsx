@@ -23,8 +23,14 @@ import Tasks from './pages/admin/Tasks';
 import Invoices from './pages/admin/Invoices';
 import InvoiceDetail from './pages/admin/InvoiceDetail';
 import CreateInvoice from './pages/admin/CreateInvoice';
+import Subscriptions from './pages/admin/Subscriptions';
+import Proposals from './pages/admin/Proposals';
+import CreateProposal from './pages/admin/CreateProposal';
+import ProposalDetail from './pages/admin/ProposalDetail';
+import ProposalSign from './pages/ProposalSign';
 import EmailSequences from './pages/admin/EmailSequences';
 import AdminLogin from './pages/admin/Login';
+import AdminVerify from './pages/admin/Verify';
 import PortalLogin from './pages/portal/Login';
 import PortalProjects from './pages/portal/Projects';
 import PortalProjectDetail from './pages/portal/ProjectDetail';
@@ -43,8 +49,12 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
       </Route>
 
-      {/* Admin login */}
+      {/* Public proposal sign page */}
+      <Route path="/proposals/:token" element={<ProposalSign />} />
+
+      {/* Admin login & verification */}
       <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/auth/verify" element={<AdminVerify />} />
 
       {/* Admin dashboard */}
       <Route path="/admin" element={<ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute>}>
@@ -62,6 +72,10 @@ export default function App() {
         <Route path="invoices" element={<Invoices />} />
         <Route path="invoices/create" element={<CreateInvoice />} />
         <Route path="invoices/:id" element={<InvoiceDetail />} />
+        <Route path="proposals" element={<Proposals />} />
+        <Route path="proposals/create" element={<CreateProposal />} />
+        <Route path="proposals/:id" element={<ProposalDetail />} />
+        <Route path="subscriptions" element={<Subscriptions />} />
         <Route path="email" element={<EmailSequences />} />
       </Route>
 

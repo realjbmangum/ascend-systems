@@ -12,6 +12,8 @@ export default function CreateInvoice() {
     description: '',
     amount: '',
     due_date: '',
+    billing_type: 'one_time',
+    recurring_interval: 'month',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<'idle' | 'submitting' | 'error'>('idle');
@@ -56,6 +58,9 @@ export default function CreateInvoice() {
         project_id: form.project_id ? Number(form.project_id) : null,
         description: form.description,
         amount_cents,
+        billing_type: form.billing_type,
+        recurring_interval:
+          form.billing_type === 'recurring' ? form.recurring_interval : null,
         line_items: [
           {
             description: form.description,
@@ -192,6 +197,55 @@ export default function CreateInvoice() {
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
             />
           </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-medium text-charcoal mb-1.5">
+              Billing Type
+            </label>
+            <div className="flex rounded-lg border border-gray-300 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => update('billing_type', 'one_time')}
+                className={`flex-1 text-sm font-semibold py-3 transition-colors ${
+                  form.billing_type === 'one_time'
+                    ? 'bg-orange text-white'
+                    : 'bg-white text-charcoal hover:bg-surface'
+                }`}
+              >
+                One-time
+              </button>
+              <button
+                type="button"
+                onClick={() => update('billing_type', 'recurring')}
+                className={`flex-1 text-sm font-semibold py-3 transition-colors border-l border-gray-300 ${
+                  form.billing_type === 'recurring'
+                    ? 'bg-orange text-white'
+                    : 'bg-white text-charcoal hover:bg-surface'
+                }`}
+              >
+                Recurring
+              </button>
+            </div>
+          </div>
+          {form.billing_type === 'recurring' && (
+            <div>
+              <label htmlFor="recurring_interval" className="block text-sm font-medium text-charcoal mb-1.5">
+                Interval
+              </label>
+              <select
+                id="recurring_interval"
+                value={form.recurring_interval}
+                onChange={(e) => update('recurring_interval', e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal bg-white focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
+              >
+                <option value="week">Weekly</option>
+                <option value="month">Monthly</option>
+                <option value="year">Annually</option>
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-3 pt-2">

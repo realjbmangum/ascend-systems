@@ -45,7 +45,11 @@ auth.post("/magic-link", async (c) => {
     .run();
 
   const origin = c.env.APP_ORIGIN ?? new URL(c.req.url).origin;
-  await sendMagicLink(c.env.MAILCHANNELS, normalized, token, role, origin);
+  if (!c.env.SENDGRID_API_KEY) {
+    console.error("[AUTH] SENDGRID_API_KEY not configured");
+    return c.json({ error: "email service not configured" }, 500);
+  }
+  await sendMagicLink(c.env.SENDGRID_API_KEY, normalized, token, role, origin);
 
   return c.json({ success: true });
 });
@@ -92,7 +96,7 @@ auth.get("/verify/:token", async (c) => {
   setCookie(c, SESSION_COOKIE, sessionToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "Strict",
+    sameSite: "None",
     path: "/",
     maxAge: SESSION_TTL_DAYS * 24 * 60 * 60,
   });
@@ -155,7 +159,7 @@ auth.post("/test-login", async (c) => {
   setCookie(c, SESSION_COOKIE, sessionToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "Strict",
+    sameSite: "None",
     path: "/",
     maxAge: 30 * 24 * 60 * 60,
   });

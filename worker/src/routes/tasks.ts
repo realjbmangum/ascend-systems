@@ -21,10 +21,11 @@ tasks.get("/", async (c) => {
   }
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
   const { results } = await c.env.DB.prepare(
-    `SELECT t.*, c.company_name AS client_name, l.name AS lead_name
+    `SELECT t.*, c.company_name AS client_name, l.name AS lead_name, p.name AS project_name
      FROM tasks t
      LEFT JOIN clients c ON c.id = t.client_id
      LEFT JOIN leads l ON l.id = t.lead_id
+     LEFT JOIN projects p ON p.id = t.project_id
      ${whereSql}
      ORDER BY
        CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END,
@@ -43,14 +44,15 @@ tasks.post("/", async (c) => {
     priority?: string;
     client_id?: number;
     lead_id?: number;
+    project_id?: number;
     metadata?: Record<string, unknown>;
   }>();
   if (!body.type || !body.title) {
     return c.json({ error: "type and title required" }, 400);
   }
   const result = await c.env.DB.prepare(
-    `INSERT INTO tasks (type, title, description, priority, client_id, lead_id, metadata_json)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO tasks (type, title, description, priority, client_id, lead_id, project_id, metadata_json)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       body.type,
@@ -59,26 +61,41 @@ tasks.post("/", async (c) => {
       body.priority ?? "medium",
       body.client_id ?? null,
       body.lead_id ?? null,
+      body.project_id ?? null,
       body.metadata ? JSON.stringify(body.metadata) : null
     )
     .run();
   return c.json({ success: true, id: result.meta.last_row_id });
 });
 
+tasks.delete("/:id", async (c) => {
+  await c.env.DB.prepare("DELETE FROM tasks WHERE id = ?").bind(c.req.param("id")).run();
+  return c.json({ success: true });
+});
+
 tasks.patch("/:id", async (c) => {
   const body = await c.req.json<{
     status?: string;
+    title?: string;
     description?: string;
     priority?: string;
+    project_id?: number | null;
+    type?: string;
   }>();
   const sets: string[] = [];
-  const params: (string | number)[] = [];
+  const params: (string | number | null)[] = [];
   if (body.status) {
     sets.push("status = ?");
     params.push(body.status);
     if (body.status === "done") {
       sets.push("completed_at = datetime('now')");
+    } else if (body.status === "open" || body.status === "in_progress") {
+      sets.push("completed_at = NULL");
     }
+  }
+  if (body.title !== undefined) {
+    sets.push("title = ?");
+    params.push(body.title);
   }
   if (body.description !== undefined) {
     sets.push("description = ?");
@@ -87,6 +104,14 @@ tasks.patch("/:id", async (c) => {
   if (body.priority) {
     sets.push("priority = ?");
     params.push(body.priority);
+  }
+  if (body.type) {
+    sets.push("type = ?");
+    params.push(body.type);
+  }
+  if (body.project_id !== undefined) {
+    sets.push("project_id = ?");
+    params.push(body.project_id);
   }
   if (sets.length === 0) return c.json({ error: "nothing to update" }, 400);
   params.push(c.req.param("id"));

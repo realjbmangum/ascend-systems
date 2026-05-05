@@ -1,15 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import DataTable, { type Column } from '../../components/DataTable';
 import StatusBadge from '../../components/StatusBadge';
 
 const statuses = ['all', 'new', 'contacted', 'qualified', 'proposal_sent', 'won', 'lost'];
+const sortOptions = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'name_asc', label: 'Name A-Z' },
+  { value: 'name_desc', label: 'Name Z-A' },
+];
 
 export default function Leads() {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
+  const [sort, setSort] = useState('newest');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,6 +27,25 @@ export default function Leads() {
       .catch(() => setLeads([]))
       .finally(() => setLoading(false));
   }, [filter]);
+
+  const sorted = useMemo(() => {
+    const arr = [...leads];
+    switch (sort) {
+      case 'oldest':
+        return arr.sort(
+          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      case 'name_asc':
+        return arr.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      case 'name_desc':
+        return arr.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+      case 'newest':
+      default:
+        return arr.sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+    }
+  }, [leads, sort]);
 
   const columns: Column<any>[] = [
     { key: 'name', label: 'Name' },
@@ -57,6 +83,19 @@ export default function Leads() {
               </option>
             ))}
           </select>
+          <label htmlFor="lead-sort" className="sr-only">Sort leads</label>
+          <select
+            id="lead-sort"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+          >
+            {sortOptions.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
           <button
             onClick={() => navigate('/admin/leads/create')}
             className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
@@ -73,7 +112,7 @@ export default function Leads() {
       ) : (
         <DataTable
           columns={columns}
-          rows={leads}
+          rows={sorted}
           onRowClick={(row) => navigate(`/admin/leads/${row.id}`)}
           emptyMessage="No leads match this filter."
         />

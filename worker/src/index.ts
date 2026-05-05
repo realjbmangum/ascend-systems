@@ -11,6 +11,8 @@ import sequenceRoutes, {
   processEnrollments,
 } from "./routes/email-sequences";
 import portalRoutes from "./routes/portal";
+import proposalRoutes from "./routes/proposals";
+import analyticsRoutes, { refreshAllProjectAnalytics } from "./routes/analytics";
 import { sendFormConfirmation, sendAdminAlert } from "./email";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -77,24 +79,26 @@ app.post("/api/contact", async (c) => {
 
   await enrollByTrigger(c.env.DB, "lead_welcome", body.email.toLowerCase());
 
-  c.executionCtx.waitUntil(
-    Promise.all([
-      sendFormConfirmation(c.env.MAILCHANNELS, body.email, "contact", body.name),
-      sendAdminAlert(
-        c.env.MAILCHANNELS,
-        {
-          name: body.name,
-          email: body.email,
-          company: body.company,
-          project_type: body.project_type,
-          budget_range: body.budget_range,
-          message: body.message,
-        },
-        "contact",
-        leadId
-      ),
-    ]).then(() => undefined)
-  );
+  if (c.env.SENDGRID_API_KEY) {
+    c.executionCtx.waitUntil(
+      Promise.all([
+        sendFormConfirmation(c.env.SENDGRID_API_KEY, body.email, "contact", body.name),
+        sendAdminAlert(
+          c.env.SENDGRID_API_KEY,
+          {
+            name: body.name,
+            email: body.email,
+            company: body.company,
+            project_type: body.project_type,
+            budget_range: body.budget_range,
+            message: body.message,
+          },
+          "contact",
+          leadId
+        ),
+      ]).then(() => undefined)
+    );
+  }
 
   return c.json({ success: true, id: leadId });
 });
@@ -153,27 +157,29 @@ app.post("/api/intake", async (c) => {
     },
   });
 
-  c.executionCtx.waitUntil(
-    Promise.all([
-      sendFormConfirmation(c.env.MAILCHANNELS, body.email, "intake", body.name),
-      sendAdminAlert(
-        c.env.MAILCHANNELS,
-        {
-          name: body.name,
-          email: body.email,
-          company: body.company,
-          project_type: body.project_type,
-          budget_range: body.budget_range,
-          timeline: body.timeline,
-          goals: body.goals,
-          current_stack: body.current_stack,
-          message: body.message,
-        },
-        "intake",
-        leadId
-      ),
-    ]).then(() => undefined)
-  );
+  if (c.env.SENDGRID_API_KEY) {
+    c.executionCtx.waitUntil(
+      Promise.all([
+        sendFormConfirmation(c.env.SENDGRID_API_KEY, body.email, "intake", body.name),
+        sendAdminAlert(
+          c.env.SENDGRID_API_KEY,
+          {
+            name: body.name,
+            email: body.email,
+            company: body.company,
+            project_type: body.project_type,
+            budget_range: body.budget_range,
+            timeline: body.timeline,
+            goals: body.goals,
+            current_stack: body.current_stack,
+            message: body.message,
+          },
+          "intake",
+          leadId
+        ),
+      ]).then(() => undefined)
+    );
+  }
 
   return c.json({ success: true, id: leadId });
 });
@@ -211,6 +217,65 @@ app.post("/api/leads", async (c) => {
 app.post("/api/webhooks/stripe", handleStripeWebhook);
 
 // ---------------------------------------------------------------------------
+// PUBLIC PROPOSAL SIGN — read + sign by token, no auth required.
+// ---------------------------------------------------------------------------
+
+app.get("/api/proposals/sign/:token", async (c) => {
+  const token = c.req.param("token");
+  const proposal = await c.env.DB.prepare(
+    `SELECT pr.id, pr.status, pr.title, pr.intro, pr.scope, pr.deliverables,
+            pr.timeline, pr.price_summary, pr.total_cents, pr.signed_at,
+            pr.signer_name, c.company_name AS client_name
+     FROM proposals pr
+     LEFT JOIN clients c ON c.id = pr.client_id
+     WHERE pr.sign_token = ?`
+  )
+    .bind(token)
+    .first();
+  if (!proposal) return c.json({ error: "not found" }, 404);
+  return c.json(proposal);
+});
+
+app.post("/api/proposals/sign/:token", async (c) => {
+  const token = c.req.param("token");
+  const body = await c.req.json<{ signer_name?: string }>();
+  const signerName = (body.signer_name ?? "").trim();
+  if (!signerName) {
+    return c.json({ error: "signer_name is required" }, 400);
+  }
+  const proposal = await c.env.DB.prepare(
+    "SELECT id, status FROM proposals WHERE sign_token = ?"
+  )
+    .bind(token)
+    .first<{ id: number; status: string }>();
+  if (!proposal) return c.json({ error: "not found" }, 404);
+  if (proposal.status !== "draft" && proposal.status !== "sent") {
+    return c.json({ error: "proposal is not signable" }, 400);
+  }
+  const ip =
+    c.req.header("cf-connecting-ip") ??
+    c.req.header("x-forwarded-for") ??
+    "unknown";
+  await c.env.DB.prepare(
+    `UPDATE proposals
+       SET status = 'accepted',
+           signed_at = datetime('now'),
+           signer_name = ?,
+           signer_ip = ?,
+           updated_at = datetime('now')
+     WHERE id = ?`
+  )
+    .bind(signerName, ip, proposal.id)
+    .run();
+  const updated = await c.env.DB.prepare(
+    "SELECT signed_at FROM proposals WHERE id = ?"
+  )
+    .bind(proposal.id)
+    .first<{ signed_at: string }>();
+  return c.json({ success: true, signed_at: updated?.signed_at });
+});
+
+// ---------------------------------------------------------------------------
 // AUTH ROUTES (public — generate / verify / logout / me)
 // ---------------------------------------------------------------------------
 app.route("/api/auth", authRoutes);
@@ -246,6 +311,13 @@ admin.get("/leads/:id", async (c) => {
     .first();
   if (!lead) return c.json({ error: "not found" }, 404);
   return c.json(lead);
+});
+
+admin.delete("/leads/:id", async (c) => {
+  const id = c.req.param("id");
+  await c.env.DB.prepare("DELETE FROM tasks WHERE lead_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM leads WHERE id = ?").bind(id).run();
+  return c.json({ success: true });
 });
 
 admin.patch("/leads/:id", async (c) => {
@@ -371,6 +443,18 @@ admin.post("/clients", async (c) => {
   return c.json({ success: true, id: result.meta.last_row_id });
 });
 
+admin.delete("/clients/:id", async (c) => {
+  const id = c.req.param("id");
+  await c.env.DB.prepare("DELETE FROM invoice_line_items WHERE invoice_id IN (SELECT id FROM invoices WHERE client_id = ?)").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM invoices WHERE client_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM project_notes WHERE project_id IN (SELECT id FROM projects WHERE client_id = ?)").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM tasks WHERE client_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM projects WHERE client_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM sessions WHERE client_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM clients WHERE id = ?").bind(id).run();
+  return c.json({ success: true });
+});
+
 admin.patch("/clients/:id", async (c) => {
   const body = await c.req.json<Record<string, string | null>>();
   const allowed = ["company_name", "contact_name", "email", "phone", "notes"];
@@ -440,6 +524,73 @@ admin.post("/projects", async (c) => {
   return c.json({ success: true, id: result.meta.last_row_id });
 });
 
+admin.delete("/projects/:id", async (c) => {
+  const id = c.req.param("id");
+  await c.env.DB.prepare("DELETE FROM invoice_line_items WHERE invoice_id IN (SELECT id FROM invoices WHERE project_id = ?)").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM invoices WHERE project_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM project_notes WHERE project_id = ?").bind(id).run();
+  await c.env.DB.prepare("UPDATE tasks SET project_id = NULL WHERE project_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM projects WHERE id = ?").bind(id).run();
+  return c.json({ success: true });
+});
+
+admin.get("/projects/:id/tasks", async (c) => {
+  const { results } = await c.env.DB.prepare(
+    "SELECT * FROM tasks WHERE project_id = ? ORDER BY created_at DESC"
+  ).bind(c.req.param("id")).all();
+  return c.json(results);
+});
+
+// ---------------------------------------------------------------------------
+// PROJECT FILES (R2)
+// ---------------------------------------------------------------------------
+
+function r2FileName(key: string): string {
+  return (key.split("/").pop() ?? key).replace(/^\d+-/, "");
+}
+
+admin.get("/projects/:id/files", async (c) => {
+  const prefix = `projects/${c.req.param("id")}/`;
+  const listed = await c.env.FILES_BUCKET.list({ prefix });
+  return c.json(
+    listed.objects.map((obj) => ({
+      key: obj.key.slice(prefix.length),
+      name: r2FileName(obj.key),
+      size: obj.size,
+      uploaded: obj.uploaded.toISOString(),
+    }))
+  );
+});
+
+admin.post("/projects/:id/files", async (c) => {
+  const formData = await c.req.formData();
+  const file = formData.get("file") as File | null;
+  if (!file || !file.name) return c.json({ error: "no file provided" }, 400);
+  const sanitized = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const filekey = `${Date.now()}-${sanitized}`;
+  const key = `projects/${c.req.param("id")}/${filekey}`;
+  await c.env.FILES_BUCKET.put(key, file.stream(), {
+    httpMetadata: { contentType: file.type || "application/octet-stream" },
+  });
+  return c.json({ key: filekey, name: file.name, size: file.size });
+});
+
+admin.get("/projects/:id/files/:filekey", async (c) => {
+  const key = `projects/${c.req.param("id")}/${c.req.param("filekey")}`;
+  const obj = await c.env.FILES_BUCKET.get(key);
+  if (!obj) return c.json({ error: "not found" }, 404);
+  const headers = new Headers();
+  headers.set("Content-Type", obj.httpMetadata?.contentType ?? "application/octet-stream");
+  headers.set("Content-Disposition", `attachment; filename="${r2FileName(key)}"`);
+  return new Response(obj.body, { headers });
+});
+
+admin.delete("/projects/:id/files/:filekey", async (c) => {
+  const key = `projects/${c.req.param("id")}/${c.req.param("filekey")}`;
+  await c.env.FILES_BUCKET.delete(key);
+  return c.json({ success: true });
+});
+
 admin.patch("/projects/:id", async (c) => {
   const body = await c.req.json<Record<string, string | null>>();
   const allowed = [
@@ -450,6 +601,9 @@ admin.patch("/projects/:id", async (c) => {
     "notes",
     "started_at",
     "completed_at",
+    "cloudflare_zone_tag",
+    "analytics_domain",
+    "analytics_source",
   ];
   const sets: string[] = [];
   const params: (string | null)[] = [];
@@ -515,10 +669,37 @@ admin.get("/stats", async (c) => {
   });
 });
 
+admin.get("/subscriptions", async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT s.*, c.company_name AS client_name
+     FROM subscriptions s
+     JOIN clients c ON c.id = s.client_id
+     ORDER BY s.created_at DESC`
+  ).all();
+  return c.json(results);
+});
+
+admin.delete("/subscriptions/:id", async (c) => {
+  const row = await c.env.DB.prepare(
+    "SELECT * FROM subscriptions WHERE id = ?"
+  )
+    .bind(c.req.param("id"))
+    .first<{ stripe_subscription_id?: string }>();
+  if (row?.stripe_subscription_id && c.env.STRIPE_SECRET_KEY) {
+    const { cancelSubscription } = await import("./stripe");
+    await cancelSubscription(c.env.STRIPE_SECRET_KEY, row.stripe_subscription_id);
+  }
+  await c.env.DB.prepare("DELETE FROM subscriptions WHERE id = ?")
+    .bind(c.req.param("id"))
+    .run();
+  return c.json({ success: true });
+});
+
 // Mount sub-routers under admin
 admin.route("/tasks", taskRoutes);
 admin.route("/projects", noteRoutes); // /projects/:id/notes
 admin.route("/invoices", invoiceRoutes);
+admin.route("/proposals", proposalRoutes);
 admin.route("/email-sequences", sequenceRoutes);
 
 // Email enrollments (admin)
@@ -542,9 +723,14 @@ admin.post("/email-enrollments", async (c) => {
 });
 
 admin.post("/email-sequences/process", async (c) => {
-  const stats = await processEnrollments(c.env.DB, c.env.MAILCHANNELS);
+  if (!c.env.SENDGRID_API_KEY) {
+    return c.json({ error: "SENDGRID_API_KEY not configured" }, 500);
+  }
+  const stats = await processEnrollments(c.env.DB, c.env.SENDGRID_API_KEY);
   return c.json(stats);
 });
+
+admin.route("/analytics", analyticsRoutes);
 
 app.route("/api", admin);
 
@@ -555,10 +741,22 @@ app.route("/api", admin);
 export default {
   fetch: app.fetch.bind(app),
   async scheduled(
-    _event: ScheduledEvent,
+    event: ScheduledEvent,
     env: Bindings,
     ctx: ExecutionContext
   ) {
-    ctx.waitUntil(processEnrollments(env.DB, env.MAILCHANNELS).then(() => undefined));
+    if (env.SENDGRID_API_KEY) {
+      ctx.waitUntil(
+        processEnrollments(env.DB, env.SENDGRID_API_KEY).then(() => undefined)
+      );
+    }
+    // Daily Cloudflare Analytics refresh — runs once per day at the 03:xx UTC slot.
+    // Cron fires every 15 min; we only do the analytics work in one of those windows.
+    const now = new Date(event.scheduledTime);
+    if (now.getUTCHours() === 3 && now.getUTCMinutes() < 15 && env.CF_API_TOKEN) {
+      ctx.waitUntil(
+        refreshAllProjectAnalytics(env).then(() => undefined)
+      );
+    }
   },
 };

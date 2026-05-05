@@ -1,5 +1,3 @@
-import crypto from "node:crypto";
-
 const STRIPE_API = "https://api.stripe.com/v1";
 
 export async function verifyStripeSignature(
@@ -7,18 +5,31 @@ export async function verifyStripeSignature(
   signature: string,
   secret: string
 ): Promise<boolean> {
-  const [timestamp, hash] = signature.split(",").map((part) => {
-    const [key, value] = part.split("=");
-    return value;
-  });
+  let timestamp: string | undefined;
+  let hash: string | undefined;
+  for (const part of signature.split(",")) {
+    const [k, v] = part.split("=");
+    if (k === "t") timestamp = v;
+    if (k === "v1") hash = v;
+  }
 
   if (!timestamp || !hash) return false;
 
-  const signedContent = `${timestamp}.${payload}`;
-  const computed = crypto
-    .createHmac("sha256", secret)
-    .update(signedContent)
-    .digest("hex");
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sigBytes = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`${timestamp}.${payload}`)
+  );
+  const computed = Array.from(new Uint8Array(sigBytes))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   return computed === hash;
 }
@@ -117,4 +128,47 @@ export async function sendStripeInvoice(
 
   const invoice = (await res.json()) as { hosted_invoice_url: string };
   return invoice;
+}
+
+export async function createSubscription(
+  secretKey: string,
+  customerId: string,
+  amountCents: number,
+  interval: "month" | "year" | "week",
+  description: string
+): Promise<{
+  id: string;
+  status: string;
+  latest_invoice?: { hosted_invoice_url?: string };
+}> {
+  const res = await fetch(`${STRIPE_API}/subscriptions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      customer: customerId,
+      "items[0][price_data][currency]": "usd",
+      "items[0][price_data][product_data][name]": description,
+      "items[0][price_data][unit_amount]": String(amountCents),
+      "items[0][price_data][recurring][interval]": interval,
+      expand: "latest_invoice.payment_intent",
+      payment_behavior: "default_incomplete",
+      "payment_settings[payment_method_types][]": "card",
+      "payment_settings[save_default_payment_method]": "on_subscription",
+    }),
+  });
+  return res.json() as Promise<any>;
+}
+
+export async function cancelSubscription(
+  secretKey: string,
+  subscriptionId: string
+): Promise<{ id: string; status: string }> {
+  const res = await fetch(`${STRIPE_API}/subscriptions/${subscriptionId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${secretKey}` },
+  });
+  return res.json() as Promise<any>;
 }

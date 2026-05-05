@@ -15,6 +15,7 @@ export default function ClientDetail() {
   });
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -51,6 +52,18 @@ export default function ClientDetail() {
     setSaving(false);
   };
 
+  const handleDelete = async () => {
+    if (!confirm('Delete this client? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      await api.deleteClient(Number(id));
+      navigate('/admin/clients');
+    } catch (e: any) {
+      setError(e?.message || 'Failed to delete.');
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -77,12 +90,21 @@ export default function ClientDetail() {
           </h1>
           <p className="text-gray-500">{client.contact_name}</p>
         </div>
-        <button
-          onClick={() => setEditing((v) => !v)}
-          className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
-        >
-          {editing ? 'Cancel' : 'Edit'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setEditing((v) => !v)}
+            className="text-sm font-semibold px-4 py-2 rounded-lg border border-surface-200 text-charcoal hover:bg-surface transition-colors"
+          >
+            {editing ? 'Cancel' : 'Edit'}
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-red-500 hover:text-red-700 text-sm font-semibold disabled:opacity-50"
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
       </div>
 
       {error && (

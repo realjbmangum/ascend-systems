@@ -42,6 +42,7 @@ export const api = {
   getLead: (id: number) => request<any>(`/leads/${id}`),
   updateLead: (id: number, data: Record<string, any>) =>
     request(`/leads/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteLead: (id: number) => request(`/leads/${id}`, { method: 'DELETE' }),
   convertLead: (id: number) =>
     request(`/leads/${id}/convert`, { method: 'POST' }),
 
@@ -52,6 +53,7 @@ export const api = {
     request('/clients', { method: 'POST', body: JSON.stringify(data) }),
   updateClient: (id: number, data: Record<string, any>) =>
     request(`/clients/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteClient: (id: number) => request(`/clients/${id}`, { method: 'DELETE' }),
 
   // Admin — Projects
   getProjects: () => request<any[]>('/projects'),
@@ -60,6 +62,29 @@ export const api = {
     request('/projects', { method: 'POST', body: JSON.stringify(data) }),
   updateProject: (id: number, data: Record<string, any>) =>
     request(`/projects/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProject: (id: number) => request(`/projects/${id}`, { method: 'DELETE' }),
+  getProjectTasks: (projectId: number) =>
+    request<any[]>(`/projects/${projectId}/tasks`),
+
+  // Admin — Project Files (R2)
+  getProjectFiles: (projectId: number) =>
+    request<any[]>(`/projects/${projectId}/files`),
+  uploadProjectFile: (projectId: number, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return fetch(`${BASE}/projects/${projectId}/files`, {
+      method: 'POST',
+      body: form,
+      credentials: 'include',
+    }).then((r) => {
+      if (!r.ok) throw new Error('Upload failed');
+      return r.json() as Promise<{ key: string; name: string; size: number }>;
+    });
+  },
+  deleteProjectFile: (projectId: number, filekey: string) =>
+    request(`/projects/${projectId}/files/${encodeURIComponent(filekey)}`, { method: 'DELETE' }),
+  getProjectFileUrl: (projectId: number, filekey: string) =>
+    `${BASE}/projects/${projectId}/files/${encodeURIComponent(filekey)}`,
 
   // Admin — Tasks
   getTasks: (params?: { status?: string; type?: string }) => {
@@ -73,6 +98,7 @@ export const api = {
     request('/tasks', { method: 'POST', body: JSON.stringify(data) }),
   updateTask: (id: number, data: Record<string, any>) =>
     request(`/tasks/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteTask: (id: number) => request(`/tasks/${id}`, { method: 'DELETE' }),
 
   // Admin — Project Notes
   getProjectNotes: (projectId: number) =>
@@ -97,8 +123,45 @@ export const api = {
     request('/invoices', { method: 'POST', body: JSON.stringify(data) }),
   updateInvoice: (id: number, data: Record<string, any>) =>
     request(`/invoices/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteInvoice: (id: number) => request(`/invoices/${id}`, { method: 'DELETE' }),
   sendInvoice: (id: number) =>
     request(`/invoices/${id}/send`, { method: 'POST' }),
+  pushRecurringInvoice: (id: number) =>
+    request(`/invoices/${id}/push-recurring`, { method: 'POST' }),
+
+  // Admin — Proposals
+  getProposals: () => request<any[]>('/proposals'),
+  getProposal: (id: number) => request<any>(`/proposals/${id}`),
+  createProposal: (data: Record<string, any>) =>
+    request<{ success: boolean; id: number; sign_token: string }>('/proposals', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateProposal: (id: number, data: Record<string, any>) =>
+    request(`/proposals/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProposal: (id: number) =>
+    request(`/proposals/${id}`, { method: 'DELETE' }),
+  sendProposal: (id: number) =>
+    request<{ success: boolean; sign_url: string }>(`/proposals/${id}/send`, {
+      method: 'POST',
+    }),
+
+  // Public — Proposal sign
+  getProposalByToken: (token: string) =>
+    request<any>(`/proposals/sign/${token}`),
+  signProposal: (token: string, signerName: string) =>
+    request<{ success: boolean; signed_at: string }>(
+      `/proposals/sign/${token}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ signer_name: signerName }),
+      }
+    ),
+
+  // Admin — Subscriptions
+  getSubscriptions: () => request<any[]>('/subscriptions'),
+  deleteSubscription: (id: number) =>
+    request(`/subscriptions/${id}`, { method: 'DELETE' }),
 
   // Admin — Email Sequences
   getEmailSequences: () => request<any[]>('/email-sequences'),
@@ -117,6 +180,67 @@ export const api = {
 
   // Admin — Stats
   getStats: () => request<any>('/stats'),
+
+  // Admin — Analytics
+  getPortfolioAnalytics: (days = 30) =>
+    request<{
+      period_days: number;
+      since: string;
+      total_pageviews: number;
+      total_visitors: number;
+      projects: Array<{
+        project_id: number;
+        project_name: string;
+        analytics_domain: string | null;
+        cloudflare_zone_tag: string | null;
+        analytics_source: string | null;
+        analytics_last_fetched_at: string | null;
+        pageviews: number | null;
+        visitors: number | null;
+        latest_date: string | null;
+      }>;
+    }>(`/analytics?days=${days}`),
+  getProjectAnalytics: (projectId: number, days = 30) =>
+    request<{
+      project: {
+        id: number;
+        name: string;
+        analytics_domain: string | null;
+        cloudflare_zone_tag: string | null;
+        analytics_source: string | null;
+        analytics_last_fetched_at: string | null;
+      };
+      period_days: number;
+      since: string;
+      totals: { pageviews: number; visitors: number };
+      daily: Array<{
+        date: string;
+        source: string;
+        pageviews: number;
+        visitors: number;
+        requests: number | null;
+      }>;
+    }>(`/analytics/projects/${projectId}?days=${days}`),
+  refreshProjectAnalytics: (projectId: number) =>
+    request<{ success: boolean; days_fetched: number }>(
+      `/analytics/projects/${projectId}/refresh`,
+      { method: 'POST' }
+    ),
+  refreshAllAnalytics: () =>
+    request<{
+      ok: boolean;
+      refreshed: number;
+      failed: number;
+      errors: Array<{ project: string; error: string }>;
+    }>('/analytics/refresh-all', { method: 'POST' }),
+  recordManualSnapshot: (
+    projectId: number,
+    data: { date?: string; pageviews: number; visitors: number; note?: string }
+  ) =>
+    request<{ success: boolean }>(`/analytics/projects/${projectId}/manual`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
   // Portal (client)
   getPortalProjects: () => request<any[]>('/portal/projects'),
