@@ -4,6 +4,7 @@ import { api } from '../../lib/api';
 import StatusBadge from '../../components/StatusBadge';
 import ProjectAnalyticsPanel from '../../components/ProjectAnalyticsPanel';
 import ProjectResourcesPanel from '../../components/ProjectResourcesPanel';
+import TaskEditModal from '../../components/TaskEditModal';
 
 const statuses = ['planning', 'scoping', 'in_progress', 'on_hold', 'completed', 'cancelled'];
 
@@ -50,6 +51,43 @@ export default function ProjectDetail() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState('medium');
   const [savingTask, setSavingTask] = useState(false);
+  const [editingTask, setEditingTask] = useState<any | null>(null);
+  const [updatingTaskId, setUpdatingTaskId] = useState<number | null>(null);
+
+  const reloadTasks = () => {
+    if (!id) return;
+    api
+      .getProjectTasks(Number(id))
+      .then(setProjectTasks)
+      .catch(() => setProjectTasks([]));
+  };
+
+  const quickToggleTaskStatus = async (
+    e: React.MouseEvent,
+    task: any,
+    nextStatus: string
+  ) => {
+    e.stopPropagation();
+    setUpdatingTaskId(task.id);
+    setProjectTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id
+          ? {
+              ...t,
+              status: nextStatus,
+              completed_at: nextStatus === 'done' ? new Date().toISOString() : null,
+            }
+          : t
+      )
+    );
+    try {
+      await api.updateTask(task.id, { status: nextStatus });
+    } catch {
+      reloadTasks();
+    } finally {
+      setUpdatingTaskId(null);
+    }
+  };
 
   // Files tab state
   const [files, setFiles] = useState<any[]>([]);
@@ -488,26 +526,84 @@ export default function ProjectDetail() {
               <p className="text-sm text-gray-400">No tasks linked to this project.</p>
             ) : (
               <ul className="space-y-2">
-                {projectTasks.map((t) => (
-                  <li
-                    key={t.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-surface-100 bg-surface/30"
-                  >
-                    <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded bg-gray-100 text-gray-600">
-                      {(t.type || 'manual').replace(/_/g, ' ')}
-                    </span>
-                    <span className="flex-1 text-sm font-medium text-charcoal truncate">{t.title}</span>
-                    <span
-                      className={`text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize whitespace-nowrap ${
-                        t.status === 'done' ? 'bg-green-100 text-green-700'
-                        : t.status === 'in_progress' ? 'bg-orange-glow text-orange-dark'
-                        : 'bg-blue-100 text-blue-700'
+                {projectTasks.map((t) => {
+                  const isDone = t.status === 'done';
+                  const isInProgress = t.status === 'in_progress';
+                  const isUpdating = updatingTaskId === t.id;
+                  return (
+                    <li
+                      key={t.id}
+                      onClick={() => setEditingTask(t)}
+                      className={`flex items-center gap-3 p-3 rounded-lg border border-surface-100 cursor-pointer hover:border-orange/40 hover:bg-surface/50 transition-colors ${
+                        isDone ? 'bg-green-50/40 opacity-70' : 'bg-surface/30'
                       }`}
+                      title="Click to edit"
                     >
-                      {(t.status || 'open').replace(/_/g, ' ')}
-                    </span>
-                  </li>
-                ))}
+                      <button
+                        type="button"
+                        onClick={(e) =>
+                          quickToggleTaskStatus(e, t, isDone ? 'open' : 'done')
+                        }
+                        disabled={isUpdating}
+                        className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          isDone
+                            ? 'bg-green-500 border-green-500 text-white'
+                            : 'border-gray-300 hover:border-orange'
+                        }`}
+                        aria-label={isDone ? 'Mark open' : 'Mark done'}
+                        title={isDone ? 'Mark open' : 'Mark done'}
+                      >
+                        {isDone && (
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                            <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </button>
+                      <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded bg-gray-100 text-gray-600">
+                        {(t.type || 'manual').replace(/_/g, ' ')}
+                      </span>
+                      <span
+                        className={`flex-1 text-sm font-medium truncate ${
+                          isDone ? 'text-gray-500 line-through' : 'text-charcoal'
+                        }`}
+                      >
+                        {t.title}
+                      </span>
+                      {t.priority && t.priority !== 'medium' && !isDone && (
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${
+                            t.priority === 'urgent' ? 'bg-red-100 text-red-700'
+                            : t.priority === 'high' ? 'bg-orange-glow text-orange-dark'
+                            : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {t.priority}
+                        </span>
+                      )}
+                      {!isDone && (
+                        <button
+                          type="button"
+                          onClick={(e) =>
+                            quickToggleTaskStatus(
+                              e,
+                              t,
+                              isInProgress ? 'open' : 'in_progress'
+                            )
+                          }
+                          disabled={isUpdating}
+                          className={`text-[10px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap transition-colors ${
+                            isInProgress
+                              ? 'bg-orange-glow text-orange-dark hover:bg-orange/20'
+                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                          }`}
+                          title={isInProgress ? 'Pause' : 'Start working'}
+                        >
+                          {isInProgress ? 'In Progress' : 'Open'}
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
@@ -743,6 +839,13 @@ export default function ProjectDetail() {
           )}
         </div>
       )}
+
+      <TaskEditModal
+        task={editingTask}
+        lockProject
+        onClose={() => setEditingTask(null)}
+        onSaved={reloadTasks}
+      />
     </div>
   );
 }
