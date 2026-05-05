@@ -18,7 +18,10 @@ export default function Projects() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<ViewMode>('list');
+  const [view, setView] = useState<ViewMode>(() => {
+    if (typeof window === 'undefined') return 'kanban';
+    return (window.localStorage.getItem('projects.view') as ViewMode) || 'kanban';
+  });
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('newest');
 
@@ -29,6 +32,25 @@ export default function Projects() {
       .catch(() => setProjects([]))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('projects.view', view);
+    }
+  }, [view]);
+
+  const handleMove = async (projectId: number, newStatus: string) => {
+    const original = projects;
+    setProjects((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, status: newStatus } : p))
+    );
+    try {
+      await api.updateProject(projectId, { status: newStatus });
+    } catch (err) {
+      setProjects(original);
+      alert('Failed to update status. ' + (err as Error).message);
+    }
+  };
 
   const visible = useMemo(() => {
     const filtered = filter === 'all' ? projects : projects.filter((p) => p.status === filter);
@@ -151,7 +173,7 @@ export default function Projects() {
           <div className="w-8 h-8 border-2 border-orange border-t-transparent rounded-full animate-spin" />
         </div>
       ) : view === 'kanban' ? (
-        <ProjectsKanban projects={projects} />
+        <ProjectsKanban projects={projects} onMove={handleMove} />
       ) : (
         <DataTable
           columns={columns}
