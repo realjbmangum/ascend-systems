@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 interface CaseStudy {
@@ -14,48 +15,40 @@ interface CaseStudy {
 
 const CASES: CaseStudy[] = [
   {
-    client: 'Meridian Freight',
-    vertical: 'Logistics · 340 employees',
-    title: 'Retired a 22-year-old dispatch system without losing a shipment.',
-    metric: '$4.2M',
-    metricLabel: 'legacy infra retired',
-    second: '0',
-    secondLabel: 'customer-visible incidents',
+    client: 'RecordStops',
+    vertical: 'Directory · Independent record stores',
+    title: 'Built the go-to directory for independent record stores — ranking in 5 states.',
+    metric: '296',
+    metricLabel: 'stores indexed',
+    second: '683',
+    secondLabel: 'organic visitors/mo',
     summary:
-      'Phased strangler-fig migration off an on-prem AS/400 to a custom TMS. 18 months, zero downtime, 3× throughput.',
-    tags: [
-      'Legacy modernization',
-      'Custom SaaS',
-      '18-month engagement',
-    ],
+      'Programmatic directory with city-guide templates targeting long-tail search. Each store gets its own SEO page. Pure organic growth, zero ad spend.',
+    tags: ['Astro', 'Cloudflare D1', 'Programmatic SEO'],
   },
   {
-    client: 'Keystone Health Partners',
-    vertical: 'Healthcare · 12 clinics',
-    title: 'AI intake agent that clinicians actually trust.',
-    metric: '42%',
-    metricLabel: 'faster intake',
-    second: '98.2%',
-    secondLabel: 'chart accuracy',
+    client: 'SC DMV Alerts',
+    vertical: 'SaaS · South Carolina',
+    title: 'Appointment alert service monitoring 65 DMV locations every 5 minutes.',
+    metric: '65',
+    metricLabel: 'locations monitored',
+    second: '<5 min',
+    secondLabel: 'alert latency',
     summary:
-      'Voice + chat intake with SOAP-note generation, HIPAA-scoped retrieval, and a human-in-the-loop review queue.',
-    tags: ['AI agents', 'Regulated', '9-month engagement'],
+      'Cloudflare Worker scrapes the SC DMV scheduler API, matches openings to subscriber preferences, and fires email alerts on the spot. Concept to paying subscribers in under three weeks.',
+    tags: ['Cloudflare Workers', 'D1', 'Stripe'],
   },
   {
-    client: 'Blackwood & Co.',
-    vertical: 'Legal · Mid-market firm',
-    title: 'Internal tooling that replaced five SaaS subscriptions.',
-    metric: '$186K',
-    metricLabel: 'annual SaaS retired',
-    second: '5 → 1',
-    secondLabel: 'tools in daily use',
+    client: 'SendMyLove',
+    vertical: 'Consumer App · Subscription',
+    title: '2,515 love notes delivered. $5/mo. Zero missed occasions.',
+    metric: '2,515',
+    metricLabel: 'messages delivered',
+    second: '$5',
+    secondLabel: 'per month',
     summary:
-      'Matter management, conflicts search, and a drafting copilot — built on one data model, owned by the firm.',
-    tags: [
-      'Internal tools',
-      'AI augmentation',
-      '6-month engagement',
-    ],
+      'Recurring subscription to send personalized love messages on a schedule. Stripe billing, email delivery, and a UX built for people who care but forget.',
+    tags: ['Consumer SaaS', 'Stripe', 'Subscriptions'],
   },
 ];
 
@@ -83,8 +76,8 @@ const CaseStudiesSection = () => {
               lineHeight: 1.05,
             }}
           >
-            Three engagements<br />
-            that changed the game.
+            Three things we built<br />
+            and shipped.
           </h2>
         </motion.div>
 
@@ -236,6 +229,31 @@ const CaseStudiesSection = () => {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          style={{ textAlign: 'center', marginTop: 48 }}
+        >
+          <Link
+            to="/portfolio"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              fontSize: 13,
+              fontWeight: 600,
+              color: 'var(--color-accent)',
+              textDecoration: 'none',
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.05em',
+            }}
+          >
+            See all 7 projects →
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

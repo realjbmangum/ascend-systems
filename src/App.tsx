@@ -27,6 +27,8 @@ import Subscriptions from './pages/admin/Subscriptions';
 import Proposals from './pages/admin/Proposals';
 import CreateProposal from './pages/admin/CreateProposal';
 import ProposalDetail from './pages/admin/ProposalDetail';
+import Portfolio from './pages/Portfolio';
+import CaseStudy from './pages/CaseStudy';
 import ProposalSign from './pages/ProposalSign';
 import EmailSequences from './pages/admin/EmailSequences';
 import AdminLogin from './pages/admin/Login';
@@ -47,6 +49,8 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio/:slug" element={<CaseStudy />} />
       </Route>
 
       {/* Public proposal sign page */}
