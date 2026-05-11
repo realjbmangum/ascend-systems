@@ -20,8 +20,8 @@ FROM clients WHERE company_name = 'Lighthouse 27 LLC (Internal)' ORDER BY id DES
 INSERT INTO tasks (type, title, description, priority, project_id) VALUES
   (
     'manual',
-    'Apply for Fanvue API access via developer Discord',
-    'Why: nothing real ships without it. Post in https://discord.com/invite/dZe3tqVTq4 (#api-access or equivalent). State: solo creator, building an AI-assist DM tool for personal account first, multi-tenant SaaS Phase 2. Ask for: OAuth client credentials, scopes (read:creator, read:fan, read:media, write:post, write:creator), webhook URL whitelist, rate limits. Note 30-day kill criterion in PRD.',
+    'Register OAuth app at fanvue.com/developers',
+    'Why: nothing real ships without OAuth credentials. Self-serve — no Discord queue. Steps: (1) confirm Fanvue creator account is KYC-verified; (2) go to https://fanvue.com/developers; (3) create new app; (4) set redirect URI to http://localhost:8787/oauth/callback for dev (and prod Worker URL later); (5) select scopes (openid, offline_access, offline are auto; pick read:self + others matching app needs); (6) copy client_id + client_secret; (7) drop into app-fanvue/.dev.vars and `npx wrangler secret put` for production. See app-fanvue/ACCESS.md for the full step list. 7-day kill criterion in PRD: if KYC stuck or app rejected within a week, something is wrong.',
     'urgent',
     (SELECT id FROM projects WHERE name = 'Fanvue Creator OS' ORDER BY id DESC LIMIT 1)
   ),
@@ -198,8 +198,8 @@ INSERT INTO tasks (type, title, description, priority, project_id) VALUES
 INSERT INTO tasks (type, title, description, priority, project_id) VALUES
   (
     'decision',
-    'KILL CHECKPOINT — Day 30: API access not granted?',
-    'Why: PRD kill criterion. If Fanvue has not approved API access 30 days after applying, kill the project. Code written against mocks is recoverable but the thesis depends on platform access.',
+    'KILL CHECKPOINT — Day 7: OAuth credentials in hand?',
+    'Why: PRD kill criterion. Self-serve developer area means credentials should be in hand within hours, not weeks. If still blocked after 7 days (KYC stuck, app rejected, scope mismatch), something is fundamentally wrong — pause the project until resolved.',
     'medium',
     (SELECT id FROM projects WHERE name = 'Fanvue Creator OS' ORDER BY id DESC LIMIT 1)
   ),
