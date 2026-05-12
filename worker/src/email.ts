@@ -251,76 +251,148 @@ export async function sendCalculatorReport(
         : `${result.payback_months_low}–${result.payback_months_high} months`
       : "—";
 
+  // Email-safe font stack — system fonts only. Google Fonts inline-load is
+  // unreliable in Gmail/Outlook. Using -apple-system + Segoe + Helvetica gets
+  // 95%+ rendering accuracy without webfont risk.
+  const FF = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  const MONO = "'SF Mono',Menlo,Consolas,monospace";
+  const LOGO_URL = "https://ascendsystems.ai/images/logo.png";
+  const SITE_URL = "https://ascendsystems.ai";
+  const CONTACT_URL = "https://ascendsystems.ai/contact";
+
   const html = `
-    <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;max-width:640px;margin:0 auto;padding:0;color:#1C1C1E;background:#FAFAF8">
-      <div style="background:#1C1C1E;padding:28px 32px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#D4703F;margin-bottom:6px">Ascend Systems · Manual Process Audit</div>
-        <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px">Your Cost Report</div>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your Manual Process Cost Report</title>
+</head>
+<body style="margin:0;padding:0;background:#EDF2F7;font-family:${FF};color:#1E2A32;">
 
-      <div style="padding:36px 32px 12px;background:#ffffff;border-top:4px solid #C45A2C">
-        <p style="font-size:16px;line-height:1.6;margin:0 0 16px;color:#1C1C1E">Hi ${escapeHtml(firstName)},</p>
-        <p style="font-size:16px;line-height:1.6;margin:0 0 16px;color:#1C1C1E">Here is the breakdown for ${
-          company ? `<strong>${escapeHtml(company)}</strong>` : "your team"
-        } based on what you entered. Numbers are estimates — the goal is order of magnitude, not decimal precision.</p>
-      </div>
+<!-- Preheader (hidden, shows in inbox preview) -->
+<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#EDF2F7;opacity:0;">
+  Your manual process is costing ${fmtMoney(result.total_annual)} a year. Here is the breakdown.
+</div>
 
-      <div style="padding:0 32px;background:#ffffff">
-        <div style="background:#1C1C1E;color:#ffffff;padding:28px 28px;border-radius:8px;margin:16px 0 28px">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#D4703F;margin-bottom:8px">Annual cost of the manual process</div>
-          <div style="font-size:42px;font-weight:700;letter-spacing:-1px;line-height:1.1;color:#ffffff">${fmtMoney(result.total_annual)}</div>
-          <div style="font-size:14px;color:#9CA3AF;margin-top:8px">~${fmtMoney(result.total_monthly)} every month, before you account for opportunity cost.</div>
-        </div>
-      </div>
+<!-- Outer wrapper for email-client centering -->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#EDF2F7;padding:24px 0;">
+  <tr><td align="center">
 
-      <div style="padding:0 32px 8px;background:#ffffff">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#6B7280;margin-bottom:10px">Your inputs</div>
-        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px">
-          <tr><td style="padding:8px 0;color:#6B7280;width:55%">Hours per week on this process</td><td style="padding:8px 0;color:#1C1C1E;font-weight:600;text-align:right">${inputs.hours_per_week} hrs</td></tr>
-          <tr><td style="padding:8px 0;color:#6B7280;border-top:1px solid #E5E5E3">Average fully-loaded hourly cost</td><td style="padding:8px 0;color:#1C1C1E;font-weight:600;text-align:right;border-top:1px solid #E5E5E3">${fmtMoney(inputs.hourly_cost)}/hr</td></tr>
-          <tr><td style="padding:8px 0;color:#6B7280;border-top:1px solid #E5E5E3">Error / rework rate</td><td style="padding:8px 0;color:#1C1C1E;font-weight:600;text-align:right;border-top:1px solid #E5E5E3">${inputs.error_rate}%</td></tr>
-          <tr><td style="padding:8px 0;color:#6B7280;border-top:1px solid #E5E5E3">Customer impact</td><td style="padding:8px 0;color:#1C1C1E;font-weight:600;text-align:right;border-top:1px solid #E5E5E3">${IMPACT_LABEL[inputs.customer_impact]}</td></tr>
-        </table>
+  <!-- Email body card -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="640" style="max-width:640px;width:100%;background:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(28,28,30,0.08);">
 
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#6B7280;margin-bottom:10px">How the number breaks down</div>
-        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:28px">
-          <tr><td style="padding:10px 0;color:#1C1C1E">Direct labor (hours × wage × 52 weeks)</td><td style="padding:10px 0;color:#1C1C1E;font-weight:600;text-align:right">${fmtMoney(result.base_waste)}</td></tr>
-          <tr><td style="padding:10px 0;color:#1C1C1E;border-top:1px solid #E5E5E3">Error and rework overhead</td><td style="padding:10px 0;color:#1C1C1E;font-weight:600;text-align:right;border-top:1px solid #E5E5E3">${fmtMoney(result.error_overhead)}</td></tr>
-          <tr><td style="padding:10px 0;color:#1C1C1E;border-top:1px solid #E5E5E3">Customer-impact multiplier (slow responses, lost deals)</td><td style="padding:10px 0;color:#1C1C1E;font-weight:600;text-align:right;border-top:1px solid #E5E5E3">${fmtMoney(result.customer_cost)}</td></tr>
-          <tr><td style="padding:12px 0;color:#1C1C1E;font-weight:700;border-top:2px solid #1C1C1E">Total annual cost</td><td style="padding:12px 0;color:#1C1C1E;font-weight:700;text-align:right;border-top:2px solid #1C1C1E">${fmtMoney(result.total_annual)}</td></tr>
-        </table>
-      </div>
+    <!-- LOGO HEADER (light bg, per brand kit) -->
+    <tr><td align="center" style="padding:36px 32px 24px;background:#FFFFFF;">
+      <a href="${SITE_URL}" style="text-decoration:none;display:inline-block;">
+        <img src="${LOGO_URL}" alt="Ascend Systems" width="200" style="display:block;border:0;width:200px;max-width:200px;height:auto;outline:none;text-decoration:none;">
+      </a>
+    </td></tr>
 
-      <div style="padding:0 32px 8px;background:#ffffff">
-        <div style="background:#FDF3ED;border-left:3px solid #C45A2C;padding:20px 24px;border-radius:0 4px 4px 0;margin-bottom:24px">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#A84820;margin-bottom:8px">Recommendation: ${BAND_LABEL[result.build_band]}</div>
-          <div style="font-size:15px;line-height:1.6;color:#1C1C1E">${escapeHtml(result.recommendation)}</div>
-        </div>
+    <!-- Orange accent strip -->
+    <tr><td style="background:#D4632C;line-height:0;font-size:0;height:4px;">&nbsp;</td></tr>
 
-        ${
-          result.build_price_low > 0
-            ? `
-        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:28px">
-          <tr><td style="padding:10px 0;color:#6B7280;width:55%">Typical build investment</td><td style="padding:10px 0;color:#1C1C1E;font-weight:600;text-align:right">${fmtMoney(result.build_price_low)} – ${fmtMoney(result.build_price_high)}</td></tr>
-          <tr><td style="padding:10px 0;color:#6B7280;border-top:1px solid #E5E5E3">Expected payback</td><td style="padding:10px 0;color:#1C1C1E;font-weight:600;text-align:right;border-top:1px solid #E5E5E3">${paybackText}</td></tr>
-        </table>
-        `
-            : ""
-        }
-      </div>
+    <!-- Eyebrow + greeting -->
+    <tr><td style="padding:36px 40px 0;background:#FFFFFF;">
+      <p style="margin:0 0 8px;font-family:${MONO};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#B85328;">Manual Process Audit</p>
+      <h1 style="margin:0 0 20px;font-family:${FF};font-size:28px;line-height:1.2;font-weight:700;color:#1E2A32;letter-spacing:-0.5px;">Your Cost Report</h1>
+      <p style="margin:0 0 14px;font-size:16px;line-height:1.6;color:#1E2A32;">Hi ${escapeHtml(firstName)},</p>
+      <p style="margin:0 0 8px;font-size:16px;line-height:1.6;color:#374151;">Here is the breakdown for ${
+        company ? `<strong style="color:#1E2A32;">${escapeHtml(company)}</strong>` : "your team"
+      } based on what you entered. Numbers are estimates — the goal is order of magnitude, not decimal precision.</p>
+    </td></tr>
 
-      <div style="padding:0 32px 32px;background:#ffffff">
-        <div style="background:#1C1C1E;color:#ffffff;padding:24px 24px;border-radius:8px;text-align:center">
-          <div style="font-size:18px;font-weight:700;color:#ffffff;margin-bottom:8px">Want a free 30-minute audit?</div>
-          <div style="font-size:14px;color:#9CA3AF;margin-bottom:20px;line-height:1.5">I will look at your specific process with you, point out the highest-leverage fix, and give you a written next-step plan. No pitch.</div>
-          <a href="https://ascendsystems.ai/contact" style="display:inline-block;background:#C45A2C;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:6px;font-size:14px">Book the audit →</a>
-        </div>
-      </div>
+    <!-- Big-number hero -->
+    <tr><td style="padding:24px 40px;background:#FFFFFF;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#1E2A32;border-radius:10px;">
+        <tr><td style="padding:32px;">
+          <p style="margin:0 0 10px;font-family:${MONO};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#E07A4F;">Annual cost of the manual process</p>
+          <p style="margin:0;font-family:${FF};font-size:48px;line-height:1;font-weight:700;color:#FFFFFF;letter-spacing:-1.5px;">${fmtMoney(result.total_annual)}</p>
+          <p style="margin:12px 0 0;font-size:14px;line-height:1.5;color:#9CA3AF;">~${fmtMoney(result.total_monthly)} every month, before opportunity cost.</p>
+        </td></tr>
+      </table>
+    </td></tr>
 
-      <div style="padding:24px 32px;background:#FAFAF8;border-top:1px solid #E5E5E3;font-size:12px;color:#6B7280;text-align:center;font-family:'JetBrains Mono',monospace">
-        Ascend Systems · Charlotte, NC · ascendsystems.ai
-      </div>
-    </div>
+    <!-- Your inputs -->
+    <tr><td style="padding:24px 40px 8px;background:#FFFFFF;">
+      <p style="margin:0 0 14px;font-family:${MONO};font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#6B7280;">Your inputs</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:14px;">
+        <tr><td style="padding:10px 0;color:#6B7280;width:60%;">Hours per week on this process</td><td style="padding:10px 0;color:#1E2A32;font-weight:600;text-align:right;">${inputs.hours_per_week} hrs</td></tr>
+        <tr><td style="padding:10px 0;color:#6B7280;border-top:1px solid #E2E8F0;">Average fully-loaded hourly cost</td><td style="padding:10px 0;color:#1E2A32;font-weight:600;text-align:right;border-top:1px solid #E2E8F0;">${fmtMoney(inputs.hourly_cost)}/hr</td></tr>
+        <tr><td style="padding:10px 0;color:#6B7280;border-top:1px solid #E2E8F0;">Error / rework rate</td><td style="padding:10px 0;color:#1E2A32;font-weight:600;text-align:right;border-top:1px solid #E2E8F0;">${inputs.error_rate}%</td></tr>
+        <tr><td style="padding:10px 0;color:#6B7280;border-top:1px solid #E2E8F0;">Customer impact</td><td style="padding:10px 0;color:#1E2A32;font-weight:600;text-align:right;border-top:1px solid #E2E8F0;">${IMPACT_LABEL[inputs.customer_impact]}</td></tr>
+      </table>
+    </td></tr>
+
+    <!-- Breakdown -->
+    <tr><td style="padding:24px 40px 8px;background:#FFFFFF;">
+      <p style="margin:0 0 14px;font-family:${MONO};font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#6B7280;">How the number breaks down</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:14px;">
+        <tr><td style="padding:12px 0;color:#1E2A32;">Direct labor (hours × wage × 52 weeks)</td><td style="padding:12px 0;color:#1E2A32;font-weight:600;text-align:right;">${fmtMoney(result.base_waste)}</td></tr>
+        <tr><td style="padding:12px 0;color:#1E2A32;border-top:1px solid #E2E8F0;">Error and rework overhead</td><td style="padding:12px 0;color:#1E2A32;font-weight:600;text-align:right;border-top:1px solid #E2E8F0;">${fmtMoney(result.error_overhead)}</td></tr>
+        <tr><td style="padding:12px 0;color:#1E2A32;border-top:1px solid #E2E8F0;">Customer impact (slow responses, lost deals)</td><td style="padding:12px 0;color:#1E2A32;font-weight:600;text-align:right;border-top:1px solid #E2E8F0;">${fmtMoney(result.customer_cost)}</td></tr>
+        <tr><td style="padding:14px 0;color:#1E2A32;font-weight:700;border-top:2px solid #1E2A32;">Total annual cost</td><td style="padding:14px 0;color:#1E2A32;font-weight:700;text-align:right;border-top:2px solid #1E2A32;font-size:16px;">${fmtMoney(result.total_annual)}</td></tr>
+      </table>
+    </td></tr>
+
+    <!-- Recommendation card -->
+    <tr><td style="padding:24px 40px 8px;background:#FFFFFF;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#FEF5F0;border-left:4px solid #D4632C;border-radius:0 8px 8px 0;">
+        <tr><td style="padding:22px 26px;">
+          <p style="margin:0 0 10px;font-family:${MONO};font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#B85328;">Recommendation · ${BAND_LABEL[result.build_band]}</p>
+          <p style="margin:0;font-size:15px;line-height:1.65;color:#1E2A32;">${escapeHtml(result.recommendation)}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    ${
+      result.build_price_low > 0
+        ? `
+    <!-- Build investment -->
+    <tr><td style="padding:24px 40px 8px;background:#FFFFFF;">
+      <p style="margin:0 0 14px;font-family:${MONO};font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#6B7280;">Typical investment for this kind of work</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:14px;">
+        <tr><td style="padding:10px 0;color:#6B7280;width:55%;">Build investment range</td><td style="padding:10px 0;color:#1E2A32;font-weight:600;text-align:right;">${fmtMoney(result.build_price_low)} – ${fmtMoney(result.build_price_high)}</td></tr>
+        <tr><td style="padding:10px 0;color:#6B7280;border-top:1px solid #E2E8F0;">Expected payback</td><td style="padding:10px 0;color:#1E2A32;font-weight:600;text-align:right;border-top:1px solid #E2E8F0;">${paybackText}</td></tr>
+      </table>
+    </td></tr>
+    `
+        : ""
+    }
+
+    <!-- CTA -->
+    <tr><td style="padding:32px 40px 40px;background:#FFFFFF;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#1E2A32;border-radius:10px;">
+        <tr><td align="center" style="padding:36px 32px;">
+          <h2 style="margin:0 0 10px;font-family:${FF};font-size:22px;line-height:1.3;font-weight:700;color:#FFFFFF;letter-spacing:-0.3px;">Want a free 30-minute audit?</h2>
+          <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#9CA3AF;max-width:420px;">I will look at your specific process with you, point out the highest-leverage fix, and give you a written next-step plan. No pitch.</p>
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td style="background:#D4632C;border-radius:6px;">
+            <a href="${CONTACT_URL}" style="display:inline-block;padding:14px 32px;font-family:${FF};font-size:15px;font-weight:600;color:#FFFFFF;text-decoration:none;letter-spacing:0.01em;">Book the audit &rarr;</a>
+          </td></tr></table>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- Sign-off -->
+    <tr><td style="padding:0 40px 32px;background:#FFFFFF;">
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#6B7280;">Reply to this email any time — it lands in my inbox.</p>
+      <p style="margin:6px 0 0;font-size:14px;line-height:1.6;color:#1E2A32;font-weight:600;">— Brian Mangum, Ascend Systems</p>
+    </td></tr>
+
+    <!-- Footer -->
+    <tr><td style="padding:24px 32px;background:#1E2A32;text-align:center;">
+      <p style="margin:0 0 6px;font-family:${MONO};font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9CA3AF;">Ascend Systems</p>
+      <p style="margin:0 0 12px;font-size:12px;color:#6B7280;">Charlotte, NC · <a href="${SITE_URL}" style="color:#E07A4F;text-decoration:none;">ascendsystems.ai</a></p>
+      <p style="margin:0;font-size:11px;color:#4B5563;">You received this report because you used the free Cost Calculator on ascendsystems.ai. We do not sell or share your email.</p>
+    </td></tr>
+
+  </table>
+
+  </td></tr>
+</table>
+
+</body>
+</html>
   `;
 
   return sendEmail(apiKey, {
