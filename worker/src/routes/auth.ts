@@ -131,45 +131,4 @@ auth.get("/me", async (c) => {
   });
 });
 
-// TEST ENDPOINT — for development only. Remove before production.
-auth.post("/test-login", async (c) => {
-  const { email, role } = await c.req.json<{ email?: string; role?: "admin" | "client" }>();
-  if (!email || !role) return c.json({ error: "email and role required" }, 400);
-
-  const normalized = email.trim().toLowerCase();
-  let clientId: number | null = null;
-
-  if (role === "client") {
-    const client = await c.env.DB.prepare(
-      "SELECT id FROM clients WHERE lower(email) = ?"
-    )
-      .bind(normalized)
-      .first<{ id: number }>();
-    clientId = client?.id ?? null;
-  }
-
-  const sessionToken = generateToken(48);
-  await c.env.DB.prepare(
-    `INSERT INTO sessions (session_token, email, role, client_id, expires_at)
-     VALUES (?, ?, ?, ?, datetime('now', '+30 days'))`
-  )
-    .bind(sessionToken, normalized, role, clientId)
-    .run();
-
-  setCookie(c, SESSION_COOKIE, sessionToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    path: "/",
-    maxAge: 30 * 24 * 60 * 60,
-  });
-
-  return c.json({
-    success: true,
-    role,
-    email: normalized,
-    client_id: clientId,
-  });
-});
-
 export default auth;
