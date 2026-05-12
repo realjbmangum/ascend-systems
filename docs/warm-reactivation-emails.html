@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Warm Reactivation Emails — Ascend Systems</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .doc { max-width: 820px; margin: 0 auto; padding: 64px 32px 96px; }
+  .doc-header {
+    display: flex; align-items: center; gap: 16px;
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px; margin-bottom: 48px;
+  }
+  .doc-header img { width: 64px; height: auto; }
+  .doc-header-text { flex: 1; }
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--orange-dark);
+    margin: 0 0 8px;
+  }
+  h1 {
+    font-size: 40px; line-height: 1.1; font-weight: 700;
+    letter-spacing: -0.02em; margin: 0; color: var(--charcoal);
+  }
+  h2 {
+    font-size: 26px; line-height: 1.25; font-weight: 700;
+    letter-spacing: -0.01em; margin: 56px 0 12px; color: var(--charcoal);
+  }
+  h3 {
+    font-size: 19px; line-height: 1.3; font-weight: 600;
+    margin: 32px 0 10px; color: var(--charcoal);
+  }
+  h4 {
+    font-size: 14px; line-height: 1.4; font-weight: 600;
+    margin: 24px 0 8px; color: var(--charcoal);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  p { margin: 0 0 16px; }
+  .lede { font-size: 19px; line-height: 1.55; color: var(--gray-600); }
+  a { color: var(--orange-dark); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--orange); }
+  strong { font-weight: 600; color: var(--charcoal); }
+  code {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+    background: var(--gray-100); padding: 2px 6px;
+    border-radius: 4px; color: var(--charcoal);
+  }
+  pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 14px;
+    background: var(--charcoal); color: #E5E5E3;
+    padding: 24px 28px; border-radius: 8px;
+    overflow-x: auto; line-height: 1.55;
+    white-space: pre-wrap; word-wrap: break-word;
+    margin: 16px 0 24px;
+  }
+  blockquote {
+    margin: 24px 0; padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow); color: var(--charcoal);
+  }
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+  hr { border: none; border-top: 1px solid var(--gray-200); margin: 48px 0; }
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 16px 0 24px; font-size: 15px;
+  }
+  th, td {
+    text-align: left; padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100); font-weight: 600;
+    color: var(--charcoal); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .callout {
+    margin: 24px 0; padding: 22px 26px;
+    background: var(--charcoal); color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+  .variant-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin: 24px 0 32px;
+    background: var(--white);
+  }
+  .variant-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .subject-list {
+    background: var(--gray-100);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--charcoal);
+  }
+  .subject-list li { margin-bottom: 4px; }
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 22px; }
+    .doc-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .doc-header img { width: 52px; }
+    .variant-card { padding: 20px; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-header">
+    <img src="https://ascendsystems.ai/images/logo.png" alt="Ascend Systems">
+    <div class="doc-header-text">
+      <p class="doc-eyebrow">Warm reactivation · Week 1 sprint</p>
+      <h1>Three Emails to Send This Weekend</h1>
+    </div>
+  </div>
+
+  <p class="lede">Three audience-specific templates for warm reactivation. Send one at a time, personalized — never broadcast. Goal: 100 sent by end of week 1, ~15 replies, 3–5 introductions, 1–3 real project leads.</p>
+
+  <div class="callout">
+    <h4>The rule that makes this work</h4>
+    <p style="margin:0">Specificity is the whole game. A two-sentence personal opener that proves you remember them moves the response rate from 8% to 40%. Don't skip it. If you can't think of one specific thing about the person, skip the person.</p>
+  </div>
+
+  <h2>How to use these templates</h2>
+
+  <ol>
+    <li><strong>Pick the right variant</strong> for the relationship (see the rubric below).</li>
+    <li><strong>Write a fresh opener.</strong> One or two sentences that prove you remember them. Examples in the "Personalization bank" section.</li>
+    <li><strong>Paste the template body</strong> after your opener. Don't rewrite the two-question structure — it's doing the work.</li>
+    <li><strong>Send from your personal Gmail</strong> (or LinkedIn DM for the dormant connections). Don't send from <code>noreply@ascendsystems.ai</code> — these are personal, not transactional.</li>
+    <li><strong>Log each send</strong> in the Ascend CRM. Tag <code>source=warm-reactivation</code>, <code>warmth=warm</code>, set <code>last-touch</code> to today.</li>
+    <li><strong>Space sends</strong> across the weekend — 15–20 per session, not 100 in one sitting. Replies will start landing within hours; you want to be present to respond.</li>
+  </ol>
+
+  <h3>Which variant to pick</h3>
+
+  <table>
+    <thead><tr><th>Relationship</th><th>Use variant</th></tr></thead>
+    <tbody>
+      <tr><td>Paid you for work in the last 24 months</td><td><strong>Variant A — Past Client</strong></td></tr>
+      <tr><td>Worked alongside you (dev, designer, partner, co-founder, ex-colleague)</td><td><strong>Variant A — Past Client</strong> (treat collaborators the same — they vouch for the work)</td></tr>
+      <tr><td>Personal friend or family member who owns / runs a business</td><td><strong>Variant B — Friend in Business</strong></td></tr>
+      <tr><td>You know them socially and they could refer one Charlotte SMB owner</td><td><strong>Variant B — Friend in Business</strong></td></tr>
+      <tr><td>LinkedIn connection, accepted 6–24 months ago, no real conversation since</td><td><strong>Variant C — Dormant LinkedIn</strong></td></tr>
+      <tr><td>Met once at an event, exchanged cards, never followed up</td><td><strong>Variant C — Dormant LinkedIn</strong></td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>Variant A — Past Client &amp; Collaborator</h2>
+
+  <div class="variant-card">
+    <span class="variant-tag">Variant A · Past Client</span>
+    <p style="margin:0 0 4px;font-size:14px;color:var(--gray-600);">Best for: anyone who paid you, anyone you shipped work alongside.</p>
+
+    <h4>Subject lines (pick one)</h4>
+    <ul class="subject-list">
+      <li>Quick update on what I'm working on</li>
+      <li>Following up after [project name]</li>
+      <li>Quick check-in + a small ask</li>
+    </ul>
+
+    <h4>Body</h4>
+<pre>Hey [Name] —
+
+[1–2 sentence personal opener — see Personalization bank
+below. Something specific about them, their business, or the
+last time you talked.]
+
+Wanted to share what I've been up to. I've turned the
+consulting work into a focused practice — Ascend Systems —
+helping Charlotte SMBs with custom CRMs, AI integrations,
+and fractional CTO work. Same scope of build we did
+on [reference past project / shared work], just more
+of it, more focused.
+
+Recent ones: shipped the EV charging dashboard for the
+City of Charlotte, built a multi-tenant ops platform for
+Stancil Services.
+
+Two questions for you:
+
+1. Anything on your "I should fix this" list that's been
+   sitting too long? Happy to look at it free, no commitment
+   — I owe you that for the work we did together.
+
+2. Do you know one Charlotte business owner I should meet?
+   Anyone running a $1M–$50M services or trades company
+   who's still on spreadsheets is exactly the right fit.
+
+Either way, good to hear what you're working on these days.
+
+— Brian
+</pre>
+
+    <h4>Why this version</h4>
+    <p style="margin:0">Past clients already know the work. The lift is mentioning the past project specifically (proves you remember the engagement, not just the name), offering free help as relationship maintenance (low pressure), and asking for one specific intro.</p>
+  </div>
+
+  <hr>
+
+  <h2>Variant B — Friend in Business</h2>
+
+  <div class="variant-card">
+    <span class="variant-tag">Variant B · Friend</span>
+    <p style="margin:0 0 4px;font-size:14px;color:var(--gray-600);">Best for: personal friends, family who run businesses, people you'd grab coffee with anyway.</p>
+
+    <h4>Subject lines (pick one)</h4>
+    <ul class="subject-list">
+      <li>What I'm focused on now</li>
+      <li>Quick favor + an update</li>
+      <li>Need your brain for 2 minutes</li>
+    </ul>
+
+    <h4>Body</h4>
+<pre>Hey [Name] —
+
+[1–2 sentence personal opener — kids, last hangout,
+recent shared thing, something they posted about. Should
+not feel like a pitch is coming.]
+
+Quick update since I haven't told you what I'm spending
+my work hours on. I've started a tech consultancy out
+here in Charlotte — Ascend Systems. Custom software,
+CRMs, AI integrations, fractional CTO work for small
+and mid-sized companies. Built the EV charging dashboard
+for the City of Charlotte last year and a multi-tenant ops
+platform for Stancil Services this year, both shipped and
+live.
+
+Need your brain for two things:
+
+1. Anyone in your network running a Charlotte business in
+   the $1M–$50M range who's drowning in manual work or
+   thinking about hiring a tech lead? Would love an intro
+   if it makes sense.
+
+2. If anything in your own business has been on the "we
+   should automate this" list too long, I'll take a look
+   for free. No sales pitch — call it a friendship favor.
+
+Drinks soon — I owe you one. Tell [spouse/kid/recent shared
+thing] I said hi.
+
+— Brian
+</pre>
+
+    <h4>Why this version</h4>
+    <p style="margin:0">Personal tone front and back. The ask is framed as "need your brain" not "want to sell to you." The offer is "friendship favor" — removes the awkward "selling to a friend" feeling on both sides. The close keeps it social with a real follow-up commitment.</p>
+  </div>
+
+  <hr>
+
+  <h2>Variant C — Dormant LinkedIn Connection</h2>
+
+  <div class="variant-card">
+    <span class="variant-tag">Variant C · Dormant LinkedIn</span>
+    <p style="margin:0 0 4px;font-size:14px;color:var(--gray-600);">Best for: LinkedIn connections accepted 6–24 months ago with no real exchange since. Also: people you met at one event and never followed up with.</p>
+
+    <h4>Subject lines (pick one — keep it short, looks more personal)</h4>
+    <ul class="subject-list">
+      <li>Long time</li>
+      <li>Quick hello + something I'm working on</li>
+      <li>[Charlotte / mutual context] — reconnecting</li>
+    </ul>
+
+    <h4>Body — Email version</h4>
+<pre>Hey [Name] —
+
+[1–2 sentence opener — where you met, why you connected,
+or something they posted recently that you genuinely
+noticed. NEVER make this up. If you can't remember the
+context, skip the person.]
+
+Reaching out because I'm building something I think
+overlaps with what you do. I've started Ascend Systems
+out of Charlotte — custom software, CRMs, AI integrations,
+fractional CTO. Recent work for the City of Charlotte and
+Stancil Services.
+
+Two quick questions, no obligation either way:
+
+1. Does this overlap anything you're working on or
+   thinking about lately?
+
+2. If not for you — is there one person you'd point
+   me to as a good fit? I'm focused on Charlotte SMBs
+   doing $1M–$50M revenue.
+
+Worth a quick coffee if you're up for it — Atherton or
+Optimist Hall, my treat.
+
+— Brian
+</pre>
+
+    <h4>Body — LinkedIn DM version (under 1,000 char, mobile-friendly)</h4>
+<pre>Hey [Name] —
+
+[Personal opener — 1 sentence max for DM format.]
+
+Quick note since it's been a while. I'm running Ascend Systems
+out of Charlotte now — custom software / CRMs / AI / fractional
+CTO. Recent work for the City of Charlotte and Stancil Services.
+
+Two questions:
+1. Does this overlap anything you're up to?
+2. If not, anyone you'd point me to? Looking for Charlotte
+   SMBs doing $1M–$50M revenue.
+
+No pressure either way — good to reconnect regardless.
+
+— Brian
+</pre>
+
+    <h4>Why this version</h4>
+    <p style="margin:0">Acknowledges the gap ("long time," "reaching out because"). Reintroduces what you do briefly (they may have forgotten). Lower-friction asks than the past-client variant — "does this overlap?" gives them an easy out, which actually increases replies. The coffee offer is specific (named venues) so it doesn't feel like a generic "let's connect."</p>
+  </div>
+
+  <hr>
+
+  <h2>Personalization bank — opener examples</h2>
+
+  <p>Use real material. If nothing comes to mind, skip the person rather than fake it. Generic openers ("hope you're well!") kill the email.</p>
+
+  <h3>Variant A openers (Past Client / Collaborator)</h3>
+  <ul>
+    <li>"Been thinking about [specific thing from the project] lately — it's funny how the [feature/workflow] we shipped is now the thing I show in every demo."</li>
+    <li>"Saw [their company / their name] in [LinkedIn post / press mention / industry list] last week — congrats on [specific milestone]."</li>
+    <li>"It's been about [N months/years] since we wrapped [project name] — wanted to circle back."</li>
+    <li>"Wrapped a project last week that reminded me of the [specific challenge] we hit on [past project] — figured I'd send a note."</li>
+  </ul>
+
+  <h3>Variant B openers (Friend in Business)</h3>
+  <ul>
+    <li>"How's [spouse / kid / dog / recent thing they mentioned]?"</li>
+    <li>"Still owe you a [coffee / round / dinner] from [event / context]."</li>
+    <li>"Saw your post about [thing] — [genuine reaction]."</li>
+    <li>"[Mutual friend] mentioned you've been heads-down on [thing] — how's that going?"</li>
+  </ul>
+
+  <h3>Variant C openers (Dormant LinkedIn)</h3>
+  <ul>
+    <li>"We connected back when [context — where, what event, mutual connection]. Time flies."</li>
+    <li>"Saw your recent post about [specific topic] — [genuine one-line reaction]."</li>
+    <li>"Noticed you moved from [old company] to [new company] — congrats. Hope the new chapter is going well."</li>
+    <li>"Came across your name again on [Charlotte Inno / CBJ / shared LinkedIn post] — figured this was the nudge to actually reach out."</li>
+  </ul>
+
+  <h2>Reply playbook — what to do when they respond</h2>
+
+  <table>
+    <thead><tr><th>Reply type</th><th>Your move</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>"Yes, I have a project."</strong></td>
+        <td>Reply with two calendar slots in the next 5 business days. 20-min call. Don't ask them to fill out a form. <code>discovery-call</code> in CRM, promote to <code>hot</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>"Yes, let me intro you to X."</strong></td>
+        <td>Reply: "Awesome — happy with email intros or LinkedIn. Here's a one-paragraph blurb you can forward if helpful: [3-sentence summary of what you do + recent proof + ICP]." Make the intro free for them.</td>
+      </tr>
+      <tr>
+        <td><strong>"Tell me more first."</strong></td>
+        <td>One short paragraph + a link to <code>ascendsystems.ai/portfolio</code> + offer a 20-min call. Don't send a pitch deck.</td>
+      </tr>
+      <tr>
+        <td><strong>"Not right now, but I'll keep you in mind."</strong></td>
+        <td>Reply: "Got it. Mind if I check in once a quarter?" Add to a <code>warm-quarterly</code> list. Genuinely follow up.</td>
+      </tr>
+      <tr>
+        <td><strong>"Send me your pricing."</strong></td>
+        <td>Don't. Reply: "Pricing depends on scope — let me ask 2 questions on a 20-min call so I can give you a real number." Drop calendar link.</td>
+      </tr>
+      <tr>
+        <td><strong>No reply after 14 days.</strong></td>
+        <td>One soft bump: "Hey [Name], no pressure — just bumping this in case it got buried. If now's not the moment, no worries at all." Then close the loop.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Tracking in the Ascend CRM</h2>
+
+  <p>Every send gets logged. Don't trust your inbox to remember. Open <a href="https://ascendsystems.ai/admin/projects" target="_blank">ascendsystems.ai/admin/projects</a> and create a lead per recipient with these tags:</p>
+
+  <ul>
+    <li><code>source = warm-reactivation</code></li>
+    <li><code>warmth = warm</code> (or <code>hot</code> after they reply positively)</li>
+    <li><code>variant = a</code> / <code>b</code> / <code>c</code> (so we can measure reply rates by audience type)</li>
+    <li><code>last-touch-date = YYYY-MM-DD</code></li>
+    <li><code>next-action</code> = "wait for reply" / "book call" / "follow up [date]"</li>
+  </ul>
+
+  <h2>Weekend send plan</h2>
+
+  <table>
+    <thead><tr><th>Block</th><th>Time</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Saturday morning</td><td>9:00–10:30 AM</td><td>20 emails — start with Variant A (past clients) since these are highest-conviction and warmest replies</td></tr>
+      <tr><td>Saturday afternoon</td><td>2:00–3:30 PM</td><td>25 emails — Variant B (friends in business)</td></tr>
+      <tr><td>Saturday evening</td><td>—</td><td>Stop. Respond to any replies that landed.</td></tr>
+      <tr><td>Sunday morning</td><td>9:00–11:00 AM</td><td>30 LinkedIn DMs — Variant C (dormant connections)</td></tr>
+      <tr><td>Sunday afternoon</td><td>2:00–4:00 PM</td><td>25 more emails — finish Variant C (the dormant connections you couldn't DM)</td></tr>
+      <tr><td>Sunday evening</td><td>—</td><td>Log every send in CRM. Draft replies to anything that came in.</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Total target: 100 personalized warm touches over the weekend.</strong> If you only hit 60, that's still a win — quality of opener beats raw count.</p>
+
+  <div class="callout">
+    <h4>One last reminder before you start</h4>
+    <p style="margin:0">Replies will start landing within an hour of the first send. Check your inbox — but don't open the floodgates by responding to one and starting a new send block in the same window. Batch the sends, then batch the replies. Otherwise you'll burn the whole weekend and only get through 30 emails.</p>
+  </div>
+
+  <div class="doc-footer">
+    Ascend Systems · prepared 2026-05-12 · companion to docs/outreach-playbook.html §3a
+  </div>
+
+</div>
+</body>
+</html>
