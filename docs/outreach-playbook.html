@@ -367,43 +367,90 @@
   </tbody>
 </table>
 
-<h4>Category keyword pulls (run as separate exports, then dedupe)</h4>
+<h4>Query syntax — use categories, not free-text search</h4>
+
+<p>Outscraper's Google Maps endpoint takes a query string, but it matters a lot how you shape it. Pair a single category with a single location — that's it. Free-text searches return Google's top-ranked ~20 results, not the universe. Category queries hit Google's internal category index and paginate the full listing.</p>
+
+<table>
+  <thead><tr><th>Query</th><th>Returns</th><th>Use it?</th></tr></thead>
+  <tbody>
+    <tr><td><code>HVAC contractor Charlotte NC</code></td><td>Full Google Maps category page — 100s to 1,000+ businesses, paginated</td><td>✅ Yes</td></tr>
+    <tr><td><code>Charlotte HVAC company</code></td><td>Same as above — Google interprets it the same way</td><td>✅ Equivalent</td></tr>
+    <tr><td><code>best HVAC company Charlotte</code></td><td>A real search — Google returns top-ranked ~20 results, not the universe</td><td>❌ Skip</td></tr>
+    <tr><td><code>small HVAC companies in Charlotte that are growing</code></td><td>Garbage. Free-text does not match Google's category index.</td><td>❌ Don't bother</td></tr>
+    <tr><td><code>HVAC</code> (no location)</td><td>Tries to return everywhere on earth</td><td>❌ Always pair with location</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Rule:</strong> one category + one location per query. Bump <code>limit</code> to 500 per pull (Outscraper's per-query max). If your interface exposes <code>coordinates + radius</code>, use <code>35.2271, -80.8431</code> with a <strong>30-mile radius</strong> — that's tighter than the "Charlotte NC" string match and reliably catches Mooresville, Concord, Huntersville, Gastonia, Rock Hill SC.</p>
+
+<h4>Category keyword pulls (run as separate exports, then dedupe by phone)</h4>
 
 <pre>Property Management:
-  "property management company", "commercial property management",
-  "real estate management", "HOA management"
+  "property management company Charlotte NC"
+  "commercial property management Charlotte NC"
+  "real estate management Charlotte NC"
+  "HOA management Charlotte NC"
 
 Professional Services:
-  "law firm", "accounting firm", "CPA firm", "marketing agency",
-  "consulting firm", "engineering firm", "architectural firm"
+  "law firm Charlotte NC"
+  "accounting firm Charlotte NC"
+  "CPA firm Charlotte NC"
+  "marketing agency Charlotte NC"
+  "consulting firm Charlotte NC"
+  "engineering firm Charlotte NC"
+  "architectural firm Charlotte NC"
 
 Multi-location service trades ($5M+):
-  "HVAC contractor", "plumbing company", "electrical contractor",
-  "landscaping company", "cleaning service", "pest control service",
-  "roofing contractor", "fire protection service"
+  "HVAC contractor Charlotte NC"
+  "plumbing company Charlotte NC"
+  "electrical contractor Charlotte NC"
+  "landscaping company Charlotte NC"
+  "cleaning service Charlotte NC"
+  "pest control service Charlotte NC"
+  "roofing contractor Charlotte NC"
+  "fire protection service Charlotte NC"
 
 Healthcare (multi-location):
-  "dental clinic", "dermatology clinic", "orthodontist",
-  "physical therapy", "veterinary clinic", "urgent care clinic"
+  "dental clinic Charlotte NC"
+  "dermatology clinic Charlotte NC"
+  "orthodontist Charlotte NC"
+  "physical therapy Charlotte NC"
+  "veterinary clinic Charlotte NC"
+  "urgent care clinic Charlotte NC"
 
 Light manufacturing / B2B:
-  "manufacturer", "metal fabrication", "machine shop",
-  "commercial printer", "packaging company"</pre>
+  "manufacturer Charlotte NC"
+  "metal fabrication Charlotte NC"
+  "machine shop Charlotte NC"
+  "commercial printer Charlotte NC"
+  "packaging company Charlotte NC"</pre>
 
-<h4>Workflow — Outscraper → CRM</h4>
+<h4>Workflow — Outscraper → enrichment → CRM</h4>
 
 <ol>
-  <li>Pull ~5,000 raw rows across all category keywords above (one export per keyword, then dedupe by phone number).</li>
-  <li>Apply <strong>review count ≥ 50</strong> filter → ~800 rows left.</li>
-  <li>Manual scan for franchise locations (drop — they buy from HQ) and obvious sole-proprietor shops → ~400 rows left.</li>
-  <li>Enrich top 200 with Apollo for founder/owner name + email + LinkedIn URL.</li>
-  <li>Run each through the qualification rubric below. 6+ points enters the active outreach list.</li>
-  <li>Tag in CRM by industry, source = <code>outscraper</code>, warmth = <code>cold</code>.</li>
+  <li><strong>Pull ~5,000 raw rows</strong> across all 30+ category queries above. One query per category, limit 500 each. Set radius = 30 miles around <code>35.2271, -80.8431</code> if your interface allows.</li>
+  <li><strong>Dedupe by phone number.</strong> Companies show up in multiple categories (a place might appear under both "plumbing" and "HVAC"). The phone field is more reliable than name for dedup.</li>
+  <li><strong>Apply review count ≥ 50 filter</strong> → ~800 rows left. Highest-signal single filter on the export.</li>
+  <li><strong>Drop franchise locations</strong> (they buy from HQ, not local) and obvious sole-proprietor shops (single review, no website, just a Google Maps pin) → ~400 rows left.</li>
+  <li><strong>Enrich top 200</strong> through Apollo.io ($49/mo Starter). Returns: revenue band, employee count, founder/owner name + email + LinkedIn URL. This is the layer that turns Google Maps data into outreach-ready leads.</li>
+  <li><strong>Run each through the qualification rubric below.</strong> 6+ points enters the active outreach list.</li>
+  <li><strong>Import into Ascend CRM</strong>: source = <code>outscraper</code>, warmth = <code>cold</code>, industry tag, sequence = <code>seq-a-generic</code> as default.</li>
 </ol>
 
 <div class="callout">
-  <h4>Why I do not filter on revenue directly</h4>
-  <p>Outscraper does not expose revenue, and the public-data services that do (Dun &amp; Bradstreet, ZoomInfo) cost $500+ to start. Review count is a tighter free proxy. 50+ reviews on Google Maps correlates strongly with $1M+ revenue for service businesses in this market. I trust the proxy.</p>
+  <h4>Outscraper does not expose revenue — these are the proxies you DO get</h4>
+  <table style="margin:12px 0 0;font-size:14px">
+    <thead><tr><th style="background:transparent;color:#fff;border-bottom-color:#3A3A3F">Field</th><th style="background:transparent;color:#fff;border-bottom-color:#3A3A3F">Proxy for</th></tr></thead>
+    <tbody>
+      <tr><td style="color:#fff;border-bottom-color:#3A3A3F"><code>reviews</code> count</td><td style="color:#fff;border-bottom-color:#3A3A3F">Best free revenue signal. ≥50 ≈ $1M+. ≥150 ≈ $5M+.</td></tr>
+      <tr><td style="color:#fff;border-bottom-color:#3A3A3F"><code>rating</code></td><td style="color:#fff;border-bottom-color:#3A3A3F">Service quality — kills the churning-customer one-truck shops</td></tr>
+      <tr><td style="color:#fff;border-bottom-color:#3A3A3F"><code>photos</code> count</td><td style="color:#fff;border-bottom-color:#3A3A3F">Active listing management — proxy for "they care about brand"</td></tr>
+      <tr><td style="color:#fff;border-bottom-color:#3A3A3F"><code>working_hours</code></td><td style="color:#fff;border-bottom-color:#3A3A3F">Operational maturity — fixed hours = established, "by appointment" = often solo</td></tr>
+      <tr><td style="color:#fff;border-bottom-color:#3A3A3F"><code>verified</code></td><td style="color:#fff;border-bottom-color:#3A3A3F">Filters abandoned Google Business listings</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:16px 0 0">Apollo enrichment fills in revenue + decision-maker. ZoomInfo / D&amp;B are more accurate but cost $500+ to start and are overkill until we have a real sales process.</p>
 </div>
 
 <h3>Qualification rubric</h3>
