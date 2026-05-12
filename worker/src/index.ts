@@ -14,6 +14,7 @@ import portalRoutes from "./routes/portal";
 import proposalRoutes from "./routes/proposals";
 import analyticsRoutes, { refreshAllProjectAnalytics } from "./routes/analytics";
 import resourceRoutes from "./routes/resources";
+import toolsRoutes from "./routes/tools";
 import { sendFormConfirmation, sendAdminAlert } from "./email";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -280,6 +281,11 @@ app.post("/api/proposals/sign/:token", async (c) => {
 // AUTH ROUTES (public — generate / verify / logout / me)
 // ---------------------------------------------------------------------------
 app.route("/api/auth", authRoutes);
+
+// ---------------------------------------------------------------------------
+// TOOLS ROUTES (public — cost calculator + future free tools)
+// ---------------------------------------------------------------------------
+app.route("/api/tools", toolsRoutes);
 
 // ---------------------------------------------------------------------------
 // CLIENT PORTAL (client session required)

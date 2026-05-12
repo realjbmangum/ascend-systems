@@ -37,6 +37,7 @@ import PortalLogin from './pages/portal/Login';
 import PortalProjects from './pages/portal/Projects';
 import PortalProjectDetail from './pages/portal/ProjectDetail';
 import PortalInvoices from './pages/portal/Invoices';
+import CostCalculator from './pages/tools/CostCalculator';
 
 export default function App() {
   return (
@@ -51,6 +52,7 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/portfolio/:slug" element={<CaseStudy />} />
+        <Route path="/tools/cost-calculator" element={<CostCalculator />} />
       </Route>
 
       {/* Public proposal sign page */}

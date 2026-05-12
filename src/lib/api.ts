@@ -23,6 +23,24 @@ export const api = {
     request('/contact', { method: 'POST', body: JSON.stringify(data) }),
   submitIntake: (data: Record<string, any>) =>
     request('/intake', { method: 'POST', body: JSON.stringify(data) }),
+  submitCostCalculator: (data: Record<string, any>) =>
+    request<{
+      success: boolean;
+      id: number;
+      result: {
+        base_waste: number;
+        error_overhead: number;
+        customer_cost: number;
+        total_annual: number;
+        total_monthly: number;
+        build_band: 'diy' | 'light' | 'custom' | 'strategic';
+        build_price_low: number;
+        build_price_high: number;
+        payback_months_low: number;
+        payback_months_high: number;
+        recommendation: string;
+      };
+    }>('/tools/cost-calculator', { method: 'POST', body: JSON.stringify(data) }),
 
   // Auth
   requestMagicLink: (email: string) =>
