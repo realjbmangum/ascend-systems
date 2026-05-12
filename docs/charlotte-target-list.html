@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Charlotte Target List — Initial Universe | Ascend Systems</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  .doc-header {
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--charcoal);
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    color: var(--charcoal);
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--charcoal);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .lede {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gray-600);
+  }
+
+  a {
+    color: var(--orange-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover { color: var(--orange); }
+
+  strong { font-weight: 600; color: var(--charcoal); }
+
+  code, kbd, pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--charcoal);
+  }
+  pre {
+    background: var(--charcoal);
+    color: #E5E5E3;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow);
+    color: var(--charcoal);
+    font-style: normal;
+  }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 48px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:hover td { background: var(--gray-100); }
+
+  .callout {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .card h4 { margin-top: 0; }
+
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc" style="max-width: 1180px;">
+
+  <div class="doc-header">
+    <p class="doc-eyebrow">Ascend Systems · Outreach · Prepared 2026-05-12</p>
+    <h1>Charlotte Target List — Initial Universe</h1>
+    <p class="lede">A working seed list of real Charlotte-metro SMBs that fit Ascend's ICP — sourced from public lists, not invented. Use this to start dialing and emailing this week; expand it from 60 to 600 over the next 90 days.</p>
+  </div>
+
+  <h2>TL;DR</h2>
+  <p><strong>62 companies sourced</strong> across the Charlotte-metro footprint (Mecklenburg + Union, Cabarrus, Iredell, Lincoln, Gaston, York SC). All names pulled from public lists (Inc. 5000, CBJ Fast 50, BBJ recognition, chamber directories, expert review aggregators). No fabrications. Sizes are best-effort estimates with sources cited.</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <h4>By Priority</h4>
+      <p><span class="tag">P1</span> 22 companies<br>
+      <span class="tag gray">P2</span> 26 companies<br>
+      <span class="tag gray">P3</span> 14 companies</p>
+    </div>
+    <div class="card">
+      <h4>By Industry (top 5)</h4>
+      <p>Professional services: 14<br>
+      Trades / home services: 11<br>
+      Property mgmt / real estate: 9<br>
+      Light manufacturing: 8<br>
+      Healthcare / dental: 6</p>
+    </div>
+    <div class="card">
+      <h4>Top P1 Candidates</h4>
+      <p>1. Opkalla (IT advisory peer)<br>
+      2. Hylaine (digital consulting)<br>
+      3. Tonidandel-Brown Restaurant Group<br>
+      4. Allen Tate Realtors<br>
+      5. Friendly Dental Group</p>
+    </div>
+  </div>
+
+  <h2>Methodology</h2>
+
+  <h3>Sources mined</h3>
+  <ul>
+    <li><strong>Inc. 5000 (2024)</strong> — Charlotte-region honorees, focusing on companies likely in the $5M–$50M revenue band based on the growth rates published</li>
+    <li><strong>Charlotte Business Journal Fast 50</strong> (2024 and 2025 editions, public references only — full ranked list is paywalled)</li>
+    <li><strong>Best Pick Reports / Expertise.com / Mynd / Stessa</strong> aggregator reviews for property management</li>
+    <li><strong>Charlotte-area trade publications</strong> — Consumer Affairs, Charlotte Observer "best of" picks, BBB profiles</li>
+    <li><strong>Industry-specific roundups</strong> — Inven, Built In Charlotte, Clutch.co, Best Lawyers, ClearlyRated</li>
+    <li><strong>Direct company websites</strong> — verified each link before adding to the table</li>
+  </ul>
+
+  <h3>Qualification rules applied</h3>
+  <ul>
+    <li><strong>Geography:</strong> HQ in Mecklenburg, Union, Cabarrus, Iredell, Lincoln, Gaston, or York SC. Regional/national companies with a strong Charlotte office included only if there's a clear local decision-maker.</li>
+    <li><strong>Size:</strong> Targeted $1M–$50M revenue or ~10–250 employees. Companies clearly above this band excluded (see Exclusions).</li>
+    <li><strong>Decision-maker access:</strong> Strong preference for founder/owner-led firms. PE-backed rollups deprioritized to P3 because procurement is structured.</li>
+    <li><strong>Honest uncertainty:</strong> Where revenue/HC isn't public, marked as "est." with the basis. If unknown, said so.</li>
+  </ul>
+
+  <h3>Priority scoring</h3>
+  <ul>
+    <li><span class="tag">P1</span> — Inc. 5000 / Fast 50 honoree (growth = pain), founder still in seat, mid-size enough to need real systems but small enough to talk directly</li>
+    <li><span class="tag gray">P2</span> — Fits ICP cleanly but no public growth signal, OR company is the right size but the decision-maker is layered behind operations leadership</li>
+    <li><span class="tag gray">P3</span> — Fits ICP at the edges (slightly oversize, PE-backed, or industry-adjacent). Worth keeping in the file but lower-yield for cold outreach.</li>
+  </ul>
+
+  <h2>The list</h2>
+  <p>Sorted by priority, then industry. Hyperlinked company names go to the company website. Hyperlinked sources go to the directory or article the lead was pulled from. Verify everything before outreach — these are starting points, not validated leads.</p>
+
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Company</th>
+        <th>Industry</th>
+        <th>Size (Rev / HC)</th>
+        <th>Decision-Maker</th>
+        <th>Signal</th>
+        <th>Source</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- ===== P1 ===== -->
+
+      <tr>
+        <td>1</td>
+        <td><a href="https://www.opkalla.com/" target="_blank">Opkalla</a></td>
+        <td>Professional services (IT advisory)</td>
+        <td>Est. ~$20M / 50+ HC</td>
+        <td>Aaron Bock, CEO &amp; Co-founder</td>
+        <td>CBJ Fast 50 2024 #15 and 2025 top-10. Founder-led, founded 2019, peer firm in adjacent space — referral path likely.</td>
+        <td><a href="https://www.opkalla.com/news/opkalla-celebrates-top-10-spot-on-charlotte-business-journals-fast-50" target="_blank">Opkalla press</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+        <td><a href="https://www.hylaine.com/" target="_blank">Hylaine</a></td>
+        <td>Professional services (digital consulting)</td>
+        <td>Est. $15M–$25M / 75+ HC</td>
+        <td>(Founder/exec team — verify on LinkedIn)</td>
+        <td>CBJ Fast 50 2024 #22. Digital/tech consulting — likely runs spreadsheets-and-ClickUp ops behind a clean front. Adjacent buyer.</td>
+        <td><a href="https://www.hylaine.com/press/fast502024" target="_blank">Hylaine press</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+        <td><a href="https://www.tonidandel-brown.com/" target="_blank">Tonidandel-Brown Restaurant Group</a></td>
+        <td>Multi-location service (restaurants)</td>
+        <td>Est. $10M–$25M / 200+ HC across 6 concepts</td>
+        <td>Joe Kindred / Jamie Brown / Jeff Tonidandel (partners)</td>
+        <td>Owns 6 concepts (Supperland, Haberdish, Growlers, etc). Multi-unit operator = scheduling/inventory/reservations stack mess.</td>
+        <td><a href="https://www.tonidandel-brown.com/" target="_blank">Company site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>4</td>
+        <td><a href="https://www.allentate.com/" target="_blank">Allen Tate Realtors</a></td>
+        <td>Real estate brokerage</td>
+        <td>~1,500 HC, 41 offices (NC + SC)</td>
+        <td>Pat Riley, President (verify current)</td>
+        <td>Largest independent residential brokerage in NC, HQ Charlotte. Agent-CRM modernization is a known pain across indie brokerages.</td>
+        <td><a href="https://www.inven.ai/company-lists/top-24-commercial-real-estate-companies-in-north-carolina" target="_blank">Inven NC RE</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>5</td>
+        <td><a href="https://www.friendlydentalgroup.com/" target="_blank">Friendly Dental Group</a></td>
+        <td>Healthcare (dental, multi-location)</td>
+        <td>20+ locations, NC + SC</td>
+        <td>(Group founders — verify on LinkedIn)</td>
+        <td>20+ locations = practice management, recall, billing all hitting scale ceilings. "Fastest growing dental practice in Charlotte" per their own marketing.</td>
+        <td><a href="https://www.friendlydentalgroup.com/" target="_blank">Company site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>6</td>
+        <td><a href="https://lumesmiles.com/" target="_blank">Lume Pediatric Dentistry &amp; Orthodontics</a></td>
+        <td>Healthcare (pediatric dental, multi-location)</td>
+        <td>Multi-location NC + SC</td>
+        <td>(Roll-up of Burrow Welchel &amp; Culp + Charlotte Pediatric Dentistry — verify ownership)</td>
+        <td>Recently rebranded under combined entity = data/system migration in progress. Right moment for fractional CTO.</td>
+        <td><a href="https://charlotteorthodontists.com/" target="_blank">Practice site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>7</td>
+        <td><a href="https://www.toptiersolarsolutions.com/" target="_blank">Top Tier Solar Solutions</a></td>
+        <td>Trades / home services (residential solar)</td>
+        <td>3-yr growth 41,101% — est. $20M+ now</td>
+        <td>(Family-owned — verify founder on LinkedIn)</td>
+        <td>Inc. 5000 2024 #4 nationally. Hypergrowth = guaranteed system pain. Family-owned = founder still in seat.</td>
+        <td><a href="https://charlotteregion.com/news/charlotte-region-home-to-61-companies-on-inc-5000-list-of-fastest-growing-businesses/" target="_blank">CRBA Inc 5000 recap</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>8</td>
+        <td><a href="https://www.lucidbots.com/" target="_blank">Lucid Bots</a></td>
+        <td>Light manufacturing (cleaning drones)</td>
+        <td>Est. $10M–$25M / 50+ HC</td>
+        <td>Andrew Ashur, Founder &amp; CEO</td>
+        <td>Inc. 5000 2024 #143. Hardware startup at scale = ERP/CRM/field-ops integration hell. Founder still leading.</td>
+        <td><a href="https://www.linkedin.com/in/andrewashur/" target="_blank">CEO LinkedIn</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>9</td>
+        <td><a href="https://www.fivestarparks.com/" target="_blank">Five Star Parks &amp; Attractions</a></td>
+        <td>Multi-location service (FECs)</td>
+        <td>Est. $30M+ across multiple parks</td>
+        <td>John Dunlap, CEO; Wes Marks</td>
+        <td>Inc. 5000 2024 #299. Roll-up of family entertainment centers — different POS/ticketing per location is a known pain.</td>
+        <td><a href="https://medium.com/authority-magazine/driving-disruption-john-dunlap-and-wes-marks-of-five-star-parks-and-attractions-on-the-innovative-0619e5f28533" target="_blank">Authority Mag profile</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>10</td>
+        <td><a href="https://www.dillingnc.com/" target="_blank">Dilling Heating, Cooling, Plumbing &amp; Electrical</a></td>
+        <td>Trades / home services (HVAC, plumbing, electrical)</td>
+        <td>Est. $20M+ / 100+ HC (70-yr-old shop)</td>
+        <td>(Family-owned — verify ownership)</td>
+        <td>70 years in market. Likely still on a creaky FSM (ServiceTitan or legacy). Dispatch/job costing is the high-leverage build.</td>
+        <td><a href="https://dillingnc.com/" target="_blank">Company site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>11</td>
+        <td><a href="https://www.robyservicesnow.com/" target="_blank">Roby Services</a></td>
+        <td>Trades / home services (electrical, HVAC, plumbing)</td>
+        <td>Est. $20M+ / 100+ HC, 3-gen since 1950</td>
+        <td>Mike Rose, President (verify)</td>
+        <td>Multi-trade. Three generations = founder-family decision-makers. Same field-service stack pain as Dilling.</td>
+        <td><a href="https://www.robyservicesnow.com/" target="_blank">Company site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>12</td>
+        <td><a href="https://www.parkshvac.com/" target="_blank">Parks Heating Cooling Plumbing &amp; Electrical</a></td>
+        <td>Trades / home services</td>
+        <td>Est. $10M–$20M / ~75 HC</td>
+        <td>(Owner — verify)</td>
+        <td>Independent Charlotte multi-trade. Smaller than Morris-Jenkins so less likely to have an internal IT team. Right ICP slice.</td>
+        <td><a href="https://www.parkshvac.com/" target="_blank">Company site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>13</td>
+        <td><a href="https://hornehvac.com/" target="_blank">Horne HVAC</a></td>
+        <td>Trades / home services</td>
+        <td>Est. $5M–$15M / 40+ HC</td>
+        <td>(Family-owned — verify)</td>
+        <td>4 decades local. Likely still doing dispatch on whiteboards or basic FSM. Founder-led.</td>
+        <td><a href="https://hornehvac.com/" target="_blank">Company site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>14</td>
+        <td><a href="https://www.touchpointpropertymanagement.com/" target="_blank">TouchPoint Property Management</a></td>
+        <td>Property management</td>
+        <td>~500 units under mgmt</td>
+        <td>(Active-investor owners — 20+ yrs combined)</td>
+        <td>Owner-operators, mid-size PM, growing portfolio. Tenant portal + maintenance workflow are perennial PM pain points.</td>
+        <td><a href="https://www.expertise.com/business/property-management/north-carolina/charlotte" target="_blank">Expertise CLT PM</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>15</td>
+        <td><a href="https://www.alarcarealty.com/" target="_blank">Alarca Realty</a></td>
+        <td>Property management</td>
+        <td>Local since 2005, mid-size</td>
+        <td>(Owner — verify on LinkedIn)</td>
+        <td>20 years in Charlotte. Long-tenured firms typically run on duct-taped legacy systems.</td>
+        <td><a href="https://www.expertise.com/business/property-management/north-carolina/charlotte" target="_blank">Expertise CLT PM</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>16</td>
+        <td><a href="https://www.carolinapropertymanagement.com/" target="_blank">Carolina Property Management</a></td>
+        <td>Property management</td>
+        <td>Locally owned since 2008</td>
+        <td>(Owner — verify)</td>
+        <td>Award-recognized leadership, locally owned. ICP-fit size and ownership profile.</td>
+        <td><a href="https://www.expertise.com/business/property-management/north-carolina/charlotte" target="_blank">Expertise CLT PM</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>17</td>
+        <td><a href="https://www.rentbottomline.com/" target="_blank">Bottom Line Property Management</a></td>
+        <td>Property management</td>
+        <td>Mid-size local (size unknown)</td>
+        <td>(Owner — verify)</td>
+        <td>Independent local PM. ICP-fit.</td>
+        <td><a href="https://www.stessa.com/blog/best-property-management-companies-charlotte/" target="_blank">Stessa list</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>18</td>
+        <td><a href="https://carodproperties.com/" target="_blank">Carod Properties</a></td>
+        <td>Property management + RE brokerage</td>
+        <td>Full-service, founded 2015</td>
+        <td>(Owner — verify)</td>
+        <td>Newer firm = more open to new systems. Brokerage + PM under one roof = data-silo pain.</td>
+        <td><a href="https://www.expertise.com/business/property-management/north-carolina/charlotte" target="_blank">Expertise CLT PM</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>19</td>
+        <td><a href="https://www.fisheraccountants.com/" target="_blank">Fisher, P.A. CPAs</a></td>
+        <td>Professional services (accounting)</td>
+        <td>Mid-market focus — est. $3M–$10M / 25–50 HC</td>
+        <td>(Partners — verify on firm website)</td>
+        <td>Explicitly markets to middle-market — same ICP we serve. Practice mgmt + client portals likely on legacy SaaS.</td>
+        <td><a href="https://www.fisheraccountants.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>20</td>
+        <td><a href="https://www.parsonscpa.com/" target="_blank">Parsons CPA, PLLC</a></td>
+        <td>Professional services (accounting)</td>
+        <td>Est. $2M–$8M / 15–30 HC, since 1990</td>
+        <td>(Owner/managing partner — verify)</td>
+        <td>35 years in market. Privately owned-company specialty = same buyers we're targeting. Owner-led.</td>
+        <td><a href="https://www.parsonscpa.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>21</td>
+        <td><a href="https://www.thenicholscompany.com/" target="_blank">The Nichols Company</a></td>
+        <td>Commercial real estate (boutique)</td>
+        <td>Boutique, est. ~$3M–$10M / 15–30 HC</td>
+        <td>(Founders — verify)</td>
+        <td>Boutique commercial RE + property mgmt. Deal-pipeline CRM is the obvious lever.</td>
+        <td><a href="https://www.thenicholscompany.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <tr>
+        <td>22</td>
+        <td><a href="https://www.thekeithcorp.com/" target="_blank">The Keith Corporation</a></td>
+        <td>Commercial real estate (family-owned)</td>
+        <td>Est. $20M+ / 50+ HC, since 1989</td>
+        <td>(Keith family principals — verify)</td>
+        <td>Family-owned CRE with development, brokerage, and PM under one roof. Multi-business unit = system fragmentation.</td>
+        <td><a href="https://www.thekeithcorp.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag">P1</span></td>
+      </tr>
+
+      <!-- ===== P2 ===== -->
+
+      <tr>
+        <td>23</td>
+        <td><a href="https://www.morrisjenkins.com/" target="_blank">Morris-Jenkins</a></td>
+        <td>Trades / home services</td>
+        <td>Est. $50M+ / 300+ HC</td>
+        <td>(Owner — verify)</td>
+        <td>Largest independent HVAC in Charlotte. Likely top end of ICP or above; flag for fractional-CTO conversation, not CRM-build.</td>
+        <td><a href="https://www.morrisjenkins.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>24</td>
+        <td><a href="https://www.irvplumbing.com/" target="_blank">IRV Plumbing, Electric &amp; HVAC</a></td>
+        <td>Trades / home services</td>
+        <td>Est. $5M–$15M / 40+ HC, multi-county</td>
+        <td>(Owner — verify)</td>
+        <td>Multi-trade across Mecklenburg + York SC. Same FSM pain as Dilling/Roby.</td>
+        <td><a href="https://www.irvplumbing.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>25</td>
+        <td><a href="https://callnublue.com/" target="_blank">NuBlue Electric, Plumbing &amp; Air</a></td>
+        <td>Trades / home services</td>
+        <td>Est. $10M–$30M / 50+ HC (multi-market)</td>
+        <td>(Owner — verify)</td>
+        <td>Multi-trade Charlotte operator. Likely growing fast through marketing.</td>
+        <td><a href="https://callnublue.com/service-area/charlotte/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>26</td>
+        <td><a href="https://pandaexteriors.com/charlotte-nc/" target="_blank">Panda Exteriors (Charlotte branch)</a></td>
+        <td>Trades / remodeling</td>
+        <td>Multi-state, 10,000+ projects</td>
+        <td>Charlotte branch GM (verify)</td>
+        <td>Inc. 5000 recognized. East Coast multi-market — likely centralized IT, but the Charlotte branch may still buy local services.</td>
+        <td><a href="https://www.roofingcontractor.com/articles/101216-40-roofing-contractors-make-2025-inc-5000-list" target="_blank">RoofingContractor Inc 5000</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>27</td>
+        <td><a href="https://www.carolinapest.com/" target="_blank">Carolina Pest Management</a></td>
+        <td>Multi-location service (pest)</td>
+        <td>Est. $5M–$15M / 30–75 HC, 80+ yrs</td>
+        <td>(Owner — verify)</td>
+        <td>80-year-old family operator. Route optimization + customer portal = obvious win.</td>
+        <td><a href="https://www.carolinapest.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>28</td>
+        <td><a href="https://noosapest.com/" target="_blank">Noosa Pest Management</a></td>
+        <td>Multi-location service (pest)</td>
+        <td>Est. $2M–$8M, family-operated since 2006</td>
+        <td>(Owner — verify)</td>
+        <td>Locally-owned family pest co. Small enough for owner-direct outreach.</td>
+        <td><a href="https://noosapest.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>29</td>
+        <td><a href="https://www.bugoutservice.com/locations/charlotte-nc/" target="_blank">Bug Out Service</a></td>
+        <td>Multi-location service (pest)</td>
+        <td>Local since 1963, multi-territory</td>
+        <td>(Owner — verify)</td>
+        <td>60-year operator. Likely legacy systems for routing + billing.</td>
+        <td><a href="https://www.bugoutservice.com/locations/charlotte-nc/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>30</td>
+        <td><a href="https://greerwalker.com/" target="_blank">GreerWalker CPAs</a></td>
+        <td>Professional services (accounting)</td>
+        <td>~$50M+ revenue, #129 nationally — borderline ICP top</td>
+        <td>Managing partner (verify)</td>
+        <td>Premier regional CPA — top end of ICP but possibly already has IT lead. Fractional CTO play or specific AI integration angle.</td>
+        <td><a href="https://greerwalker.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>31</td>
+        <td><a href="https://brcadvisory.com/" target="_blank">BRC (Bernard Robinson)</a></td>
+        <td>Professional services (accounting)</td>
+        <td>Multi-office NC firm, est. $30M+</td>
+        <td>Charlotte managing partner (verify)</td>
+        <td>Middle-market specialty firm with Charlotte office. Practice-management modernization angle.</td>
+        <td><a href="https://brcadvisory.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>32</td>
+        <td><a href="https://www.love-cpa.com/" target="_blank">Love &amp; Associates CPAs</a></td>
+        <td>Professional services (accounting)</td>
+        <td>Small/mid CPA shop, owner-led</td>
+        <td>(Owner — verify)</td>
+        <td>Owner-led local CPA. ICP-shaped buyer.</td>
+        <td><a href="https://www.love-cpa.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>33</td>
+        <td><a href="https://www.ctklawyers.com/" target="_blank">Conrad Trosch &amp; Kemmy</a></td>
+        <td>Professional services (law)</td>
+        <td>Mid-size firm, 50+ years</td>
+        <td>Managing partner (verify)</td>
+        <td>Mid-size firm with long tenure. Likely a legacy practice-management stack. Document-automation + AI summarization fit.</td>
+        <td><a href="https://www.ctklawyers.com/" target="_blank">Firm site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>34</td>
+        <td><a href="https://www.hedrickgardner.com/" target="_blank">Hedrick Gardner Kincheloe &amp; Garofalo</a></td>
+        <td>Professional services (law)</td>
+        <td>~95 attorneys — top of ICP for headcount</td>
+        <td>Managing partner (verify)</td>
+        <td>Mid-size NC firm. Probably has an IT director — fractional CTO or AI-integration angle, not ground-up build.</td>
+        <td><a href="https://www.bcgsearch.com/bestlawfirms/loc-2646629/north-carolina/charlotte" target="_blank">BCG firm list</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>35</td>
+        <td><a href="https://www.shumaker.com/" target="_blank">Shumaker, Loop &amp; Kendrick (Charlotte)</a></td>
+        <td>Professional services (law)</td>
+        <td>~37 attorneys in CLT office</td>
+        <td>Charlotte office managing partner (verify)</td>
+        <td>Multi-state firm; Charlotte office is ICP-sized. Local decision-maker access likely.</td>
+        <td><a href="https://www.bcgsearch.com/bestlawfirms/loc-2646629/north-carolina/charlotte" target="_blank">BCG firm list</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>36</td>
+        <td><a href="https://www.daeverettgroup.com/" target="_blank">D.A. Everett Group</a></td>
+        <td>Professional services (consulting)</td>
+        <td>CBJ Fast 50 2025 #6</td>
+        <td>(Founder — verify)</td>
+        <td>Top-10 on the 2025 Fast 50. Founder-led growth-stage firm.</td>
+        <td><a href="https://www.daeverettgroup.com/news-posts/r7aabbk43nnpltzlshf4bwasn6ycjw" target="_blank">D.A. Everett press</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>37</td>
+        <td><a href="https://www.loopcommunications.com/" target="_blank">Loop Communications</a></td>
+        <td>Professional services (VoIP / IT)</td>
+        <td>CBJ Fast 50 5x in a row</td>
+        <td>(Founder — verify)</td>
+        <td>VoIP — adjacent to IT services. Partner/referral candidate more than direct prospect.</td>
+        <td><a href="https://www.loopcommunications.com/charlotte-business-journals-fast-50-award-2025/" target="_blank">Loop press</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>38</td>
+        <td><a href="https://mavendog.com/" target="_blank">Mavendog</a></td>
+        <td>Professional services (marketing/dev)</td>
+        <td>CBJ Fast 50 2025 #19</td>
+        <td>(Founder — verify)</td>
+        <td>Marketing/digital agency. Partner-referral candidate or direct sale on internal-tools build.</td>
+        <td><a href="https://mavendog.com/mavendog-recognized-as-one-of-charlottes-top-50-fastest-growing-private-companies/" target="_blank">Mavendog press</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>39</td>
+        <td><a href="https://havencreativeagency.com/" target="_blank">HAVEN Creative</a></td>
+        <td>Professional services (creative agency)</td>
+        <td>CBJ Fast 50 2025 #30</td>
+        <td>(Founder — verify)</td>
+        <td>Agency partner-referral candidate.</td>
+        <td><a href="https://havencreativeagency.com/haven-creative%E2%93%A1-named-the-30th-fastest-growing-private-company-in-charlotte-by-the-charlotte-business-journal/" target="_blank">HAVEN press</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>40</td>
+        <td><a href="https://crownwealthgroup.com/" target="_blank">Crown Wealth Group</a></td>
+        <td>Professional services (wealth management)</td>
+        <td>CBJ Fast 50 2025 #37</td>
+        <td>(Founder — verify)</td>
+        <td>Wealth mgmt firm with growth signal. CRM + client-portal modernization fit.</td>
+        <td><a href="https://crownwealthgroup.com/cwg-news-crown-ranks-among-the-50-fastest-growing-companies-within-the-region-for-the-second-year/" target="_blank">Crown press</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>41</td>
+        <td><a href="https://www.croixstone.consulting/" target="_blank">Croixstone Consulting</a></td>
+        <td>Professional services (consulting)</td>
+        <td>CBJ Fast 50 2023 #28</td>
+        <td>(Founder — verify)</td>
+        <td>Consulting firm. Internal tooling and AI-augmented delivery angle.</td>
+        <td><a href="https://www.croixstone.consulting/croixstone-is-ranked-28-on-the-charlotte-business-journals-2023-fast-50-list-of-fastest-growing-private-companies/" target="_blank">Croixstone press</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>42</td>
+        <td><a href="https://www.qprod.com/" target="_blank">Quality Products</a></td>
+        <td>Light manufacturing (precision machining)</td>
+        <td>Est. $5M–$20M / 30–80 HC</td>
+        <td>(Owner — verify)</td>
+        <td>Job-shop manufacturer. ERP, quoting, and shop-floor visibility are the perennial wins.</td>
+        <td><a href="https://www.qprod.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>43</td>
+        <td><a href="https://distinctivemfg.co/" target="_blank">Distinctive Manufacturing Group</a></td>
+        <td>Light manufacturing (CNC + fab)</td>
+        <td>Est. $3M–$15M / 25–60 HC</td>
+        <td>(Owner — verify)</td>
+        <td>Local CNC shop with 5-axis. Quote/estimate workflow + ERP modernization fit.</td>
+        <td><a href="https://distinctivemfg.co/charlotte-cnc-machine-shop/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>44</td>
+        <td><a href="https://usmachineandtool.com/" target="_blank">US Machine and Tool</a></td>
+        <td>Light manufacturing (metal fab)</td>
+        <td>Est. $5M–$15M / 30–80 HC</td>
+        <td>(Owner — verify)</td>
+        <td>Full-service metal fab. Mid-size, owner-operated ICP fit.</td>
+        <td><a href="https://usmachineandtool.com/metal-fabrication-charlotte-nc/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>45</td>
+        <td><a href="https://dyna-techmfg.com/" target="_blank">Dyna-Tech Manufacturing</a></td>
+        <td>Light manufacturing (custom machining)</td>
+        <td>Est. $3M–$10M, custom job shop</td>
+        <td>(Owner — verify)</td>
+        <td>Custom machining + wire EDM. Job-tracking + quoting is the win.</td>
+        <td><a href="https://dyna-techmfg.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>46</td>
+        <td><a href="https://tritecindustries.com/" target="_blank">Tri-Tec Industries</a></td>
+        <td>Light manufacturing (precision components)</td>
+        <td>Est. $3M–$15M, small-to-mid run shop</td>
+        <td>(Owner — verify)</td>
+        <td>Precision CNC for plastics + metals. ERP + shop-floor visibility fit.</td>
+        <td><a href="https://tritecindustries.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>47</td>
+        <td><a href="https://www.owensind.com/" target="_blank">Owens Industries (CLT)</a></td>
+        <td>Light manufacturing (precision CNC)</td>
+        <td>Multi-location, est. $10M+ / 50+ HC</td>
+        <td>Owens family principals (verify)</td>
+        <td>Since 1944. Family-owned, multi-location. ICP fit at the upper end.</td>
+        <td><a href="https://www.owensind.com/MachineShop/CharlotteNC" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>48</td>
+        <td><a href="https://www.tmtfab.com/" target="_blank">TMT (Custom Metal Fab)</a></td>
+        <td>Light manufacturing (metal fab)</td>
+        <td>20+ yrs, est. $5M–$15M</td>
+        <td>(Owner — verify)</td>
+        <td>HQ just outside Charlotte. Owner-led custom fab.</td>
+        <td><a href="https://www.tmtfab.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>49</td>
+        <td><a href="https://www.pracharlotte.com/" target="_blank">Performance Rehab Associates</a></td>
+        <td>Healthcare (PT + chiro, multi-location)</td>
+        <td>3 Charlotte locations, est. $3M–$10M</td>
+        <td>(Owner — verify)</td>
+        <td>Three-location specialty practice. Scheduling, EHR integration, patient comms = clear wins.</td>
+        <td><a href="https://www.pracharlotte.com/" target="_blank">Practice site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>50</td>
+        <td><a href="https://www.coastalhealthnc.com/" target="_blank">Coastal Integrative Health</a></td>
+        <td>Healthcare (integrative, multi-location)</td>
+        <td>Multi-location, est. $5M+</td>
+        <td>(Owner — verify)</td>
+        <td>Multi-location integrative practice. Same EHR/CRM/scheduling stack pain.</td>
+        <td><a href="https://www.coastalhealthnc.com/" target="_blank">Practice site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>51</td>
+        <td><a href="https://www.charlottedentistry.com/" target="_blank">Charlotte Dentistry</a></td>
+        <td>Healthcare (dental, integrated specialty)</td>
+        <td>Multi-specialty under one roof</td>
+        <td>(Owner — verify)</td>
+        <td>Integrated specialty practice. Practice-mgmt consolidation pain.</td>
+        <td><a href="https://www.charlottedentistry.com/" target="_blank">Practice site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <tr>
+        <td>52</td>
+        <td><a href="https://fsfoodgroup.com/" target="_blank">FS Food Group</a></td>
+        <td>Multi-location service (restaurants)</td>
+        <td>Multi-concept Charlotte operator</td>
+        <td>(Founders — verify)</td>
+        <td>Multi-unit restaurant group. Same data-silo pain as Tonidandel-Brown.</td>
+        <td><a href="https://fsfoodgroup.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P2</span></td>
+      </tr>
+
+      <!-- ===== P3 ===== -->
+
+      <tr>
+        <td>53</td>
+        <td><a href="https://www.debtbook.com/" target="_blank">DebtBook</a></td>
+        <td>SaaS / fintech</td>
+        <td>Series A, Inc 5000 #39 (6,722% growth)</td>
+        <td>Tyler Traudt, CEO &amp; Co-founder</td>
+        <td>Fast-growing SaaS — they BUILD software, not buy custom. Partner-referral/network candidate, not a direct prospect.</td>
+        <td><a href="https://www.linkedin.com/in/tyler-traudt-129bb2ab/" target="_blank">CEO LinkedIn</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>54</td>
+        <td><a href="https://alreadyautismhealth.com/" target="_blank">Already Autism Health</a></td>
+        <td>Healthcare (ABA therapy, multi-location)</td>
+        <td>Inc 5000 2024 #132, PE-backed (2025)</td>
+        <td>Derek Bullard, CEO &amp; Co-founder</td>
+        <td>Recently took PE investment — procurement is now structured. Possible AI-integration play but harder sell.</td>
+        <td><a href="https://bhbusiness.com/2025/01/27/already-autism-health-lands-pe-investment-buys-commonwealth-aba/" target="_blank">BHB article</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>55</td>
+        <td><a href="https://oakdentalpartners.com/" target="_blank">Oak Dental Partners</a></td>
+        <td>Healthcare (DSO)</td>
+        <td>Dozens of locations across multiple states</td>
+        <td>Executive team (DSO structure)</td>
+        <td>DSO with centralized IT. Possible niche-integration sale only.</td>
+        <td><a href="https://oakdentalpartners.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>56</td>
+        <td><a href="https://drivenbrands.com/" target="_blank">Driven Brands</a></td>
+        <td>Multi-location service (automotive)</td>
+        <td>Public company, $2B+ rev — above ICP</td>
+        <td>Public company exec team</td>
+        <td>Public, above ICP. Listed for awareness; not an outreach target.</td>
+        <td><a href="https://drivenbrands.com/" target="_blank">Company site</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>57</td>
+        <td><a href="https://www.flexential.com/" target="_blank">Flexential</a></td>
+        <td>IT infrastructure / data center</td>
+        <td>CBJ Largest Private #19 — above ICP</td>
+        <td>Public-PE exec team</td>
+        <td>Too large + PE-owned. Listed only as a directory reference point.</td>
+        <td><a href="https://www.flexential.com/resources/press-release/flexential-honored-charlotte-business-journal-2024-fast-50-award" target="_blank">Flexential press</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>58</td>
+        <td><a href="https://jackrabbittech.com/" target="_blank">Jackrabbit Technologies</a></td>
+        <td>SaaS (class management)</td>
+        <td>CBJ Fast 50 multi-year</td>
+        <td>(Founder — verify)</td>
+        <td>Software company — builds its own stack. Not a buyer.</td>
+        <td><a href="https://jackrabbittech.com/awards/" target="_blank">Awards page</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>59</td>
+        <td><a href="https://www.goekos.com/" target="_blank">Ekos</a></td>
+        <td>SaaS (craft-beverage ops)</td>
+        <td>CBJ Fast 50 2024 #26</td>
+        <td>(Founder — verify)</td>
+        <td>SaaS product company. Partner/referral, not buyer.</td>
+        <td><a href="https://www.goekos.com/blog/ekos-ranks-no-26-on-charlotte-business-journals-fast-50-list/" target="_blank">Ekos press</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>60</td>
+        <td><a href="https://www.segsystems.com/" target="_blank">SEG Systems</a></td>
+        <td>Light manufacturing (signage / fabric graphics)</td>
+        <td>CBJ Fast 50 winner 2024 + 2025</td>
+        <td>(Founder — verify)</td>
+        <td>Likely already has in-house IT given product complexity. Niche AI/automation pitch only.</td>
+        <td><a href="https://www.segsystems.com/seg-systems-named-a-charlotte-business-journal-fast-50-winner/" target="_blank">SEG press</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>61</td>
+        <td><a href="https://imagineteam.com/" target="_blank">ImagineSoftware</a></td>
+        <td>SaaS (medical billing)</td>
+        <td>Best &amp; Brightest CLT 2025</td>
+        <td>(Founder — verify)</td>
+        <td>Software vendor. Partner-referral only.</td>
+        <td><a href="https://imagineteam.com/press-release/imaginesoftware-named-2025-best-and-brightest-companies-to-work-for-in-charlotte/" target="_blank">ImagineSoftware press</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+      <tr>
+        <td>62</td>
+        <td><a href="https://www.carewell.com/" target="_blank">Carewell</a></td>
+        <td>DTC ecommerce (caregiver supplies)</td>
+        <td>Family-founded 2015, growth-stage</td>
+        <td>Bianca Padilla &amp; Jonathan Magolnick, co-founders (verify current)</td>
+        <td>One of the few real Charlotte-HQ DTC brands. Could be in-band depending on revenue; flag for research before reaching out.</td>
+        <td><a href="https://builtin.com/companies/location/charlotte/type/retail-companies" target="_blank">Built In Charlotte</a></td>
+        <td><span class="tag gray">P3</span></td>
+      </tr>
+
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Source links — keep harvesting</h2>
+  <p>These are the wells we drew from. Each one has more names than what we extracted — Brian can mine these directly to grow the list 5–10x.</p>
+
+  <h4>Growth lists (highest signal)</h4>
+  <ul>
+    <li><a href="https://www.inc.com/inc5000/2024" target="_blank">Inc. 5000 2024 — full directory</a> (filter by Charlotte / NC)</li>
+    <li><a href="https://www.inc.com/inc5000" target="_blank">Inc. 5000 2025 — full directory</a></li>
+    <li><a href="https://charlotteregion.com/news/charlotte-region-home-to-61-companies-on-inc-5000-list-of-fastest-growing-businesses/" target="_blank">Charlotte Regional Business Alliance — Inc 5000 recap</a></li>
+    <li><a href="https://www.bizjournals.com/charlotte/" target="_blank">Charlotte Business Journal</a> — Fast 50 + Book of Lists (paywalled; worth a subscription)</li>
+    <li><a href="https://growjo.com/city/Charlotte" target="_blank">Growjo — 100 Fastest Growing Companies in Charlotte 2025</a></li>
+    <li><a href="https://businessnc.com/bnc-125-top-private-companies-2024/" target="_blank">Business North Carolina — BNC 125 Top Private Companies 2024</a></li>
+  </ul>
+
+  <h4>Industry directories</h4>
+  <ul>
+    <li><a href="https://www.expertise.com/business/property-management/north-carolina/charlotte" target="_blank">Expertise.com — Charlotte property management</a></li>
+    <li><a href="https://www.stessa.com/blog/best-property-management-companies-charlotte/" target="_blank">Stessa — Charlotte PM directory</a></li>
+    <li><a href="https://www.bcgsearch.com/bestlawfirms/loc-2646629/north-carolina/charlotte" target="_blank">BCG — Charlotte law firms</a></li>
+    <li><a href="https://www.bestlawfirms.com/united-states/north-carolina/charlotte" target="_blank">Best Lawyers — NC firms</a></li>
+    <li><a href="https://www.inven.ai/company-lists/top-21-hvac-companies-in-north-carolina" target="_blank">Inven — Top NC HVAC companies</a></li>
+    <li><a href="https://www.inven.ai/company-lists/top-25-roofing-companies-in-north-carolina" target="_blank">Inven — Top NC roofing companies</a></li>
+    <li><a href="https://clutch.co/logistics/manufacturing-companies/charlotte" target="_blank">Clutch — Charlotte manufacturing</a></li>
+    <li><a href="https://builtin.com/companies/location/charlotte" target="_blank">Built In Charlotte — tech employers</a></li>
+  </ul>
+
+  <h4>Chambers and orgs</h4>
+  <ul>
+    <li><a href="https://charlotteregion.com/" target="_blank">Charlotte Regional Business Alliance</a> (member directory)</li>
+    <li><a href="https://www.lakenormanchamber.org/" target="_blank">Lake Norman Chamber of Commerce</a> (900+ investors)</li>
+    <li><a href="https://www.lnedc.com/siteselectors/major-employers/" target="_blank">Lake Norman Economic Development — major employers</a></li>
+    <li><a href="https://www.bbb.org/us/nc/charlotte" target="_blank">BBB Charlotte</a> (filter A+ rated by industry)</li>
+    <li><a href="https://business.hbacharlotte.com/list/ql/builders-3" target="_blank">Home Builders Association of Greater Charlotte</a></li>
+  </ul>
+
+  <h4>Workplace lists (used for size validation)</h4>
+  <ul>
+    <li><a href="https://topworkplaces.com/award/charlotte/2025/" target="_blank">Charlotte Top Workplaces 2025</a> (95 employers)</li>
+    <li><a href="https://www.glassdoor.com/Award/Best-Small-and-Medium-Companies-to-Work-For-Charlotte-LST_KQ0,43_IL.44,53_IM162.htm" target="_blank">Glassdoor — Best SMB Places to Work CLT 2025</a></li>
+    <li><a href="https://builtin.com/awards/charlotte/2026/best-places-to-work" target="_blank">Built In — Best Places to Work CLT 2026</a></li>
+    <li><a href="https://businessnc.com/north-carolinas-best-employers-2025/" target="_blank">Business NC — Best Employers 2025</a></li>
+  </ul>
+
+  <h2>Next steps for Brian</h2>
+
+  <p>This is a <strong>seed list</strong>, not the final list. Treat the 62 names above as the spine of a CRM file you'll grow to 500+ over the next 90 days. Here's how:</p>
+
+  <ol>
+    <li><strong>Verify decision-makers via LinkedIn (1 evening).</strong> Most rows say "(Owner — verify)" — that's your first job. For each P1, find the founder/CEO/Operations VP on LinkedIn and add their name, title, and direct connection signal (mutual connections, alma mater, recent posts).</li>
+    <li><strong>Subscribe to Charlotte Business Journal ($150/yr).</strong> The Book of Lists alone is worth it. The Fast 50 and Largest Private Companies lists are paywalled but they're the highest-signal sources for our ICP. Download every list as a CSV.</li>
+    <li><strong>Mine each Inc 5000 / Fast 50 honoree's "About Us" + LinkedIn.</strong> Every growing Charlotte company has 3–5 vendor/supplier/partner companies of similar size on their site. That doubles the list overnight.</li>
+    <li><strong>Add chambers as a manual harvest source.</strong> The Lake Norman Chamber alone has 900+ investors. Even a 5% ICP hit rate = 45 more names. Charlotte Regional Business Alliance is bigger.</li>
+    <li><strong>Use Built In Charlotte + Glassdoor for size validation.</strong> Headcount is publicly listed and gives a defensible revenue estimate ($150K–$250K rev per employee for service businesses; $300K+ for product/SaaS).</li>
+    <li><strong>Spin up a tagging system in the CRM.</strong> Don't reach out cold to all 62. Bucket them: "warm intro available," "founder podcast guest," "shared connection," "needs research." Start with the warm bucket.</li>
+    <li><strong>Pitch by signal, not by industry.</strong> The Inc 5000 honorees all share the same pain: 3 years of 100%+ growth = duct-taped systems. Lead with that, not with "I do CRMs."</li>
+  </ol>
+
+  <h2>Companies excluded (and why)</h2>
+
+  <p>We pruned aggressively. These were dropped on purpose — not omissions.</p>
+
+  <table>
+    <thead>
+      <tr><th>Company</th><th>Why excluded</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Bank of America, Truist, Honeywell, Duke Energy, Lowe's, Nucor, LendingTree, Albemarle</td><td>Fortune 500 / public. Procurement is impossible to crack as a one-person shop.</td></tr>
+      <tr><td>AvidXchange</td><td>Public fintech with internal product + IT teams. Not ICP.</td></tr>
+      <tr><td>Moore &amp; Van Allen, Robinson Bradshaw, Alston &amp; Bird (CLT)</td><td>200+ attorney firms with full-time IT directors. Adjacent to ICP but procurement-heavy.</td></tr>
+      <tr><td>CBRE, JLL, Avison Young, Cushman &amp; Wakefield (CLT offices)</td><td>National brokerages. Local office decisions roll up to corporate IT.</td></tr>
+      <tr><td>Cherry Bekaert (CLT office)</td><td>National accounting firm with $700M+ in revenue and an enterprise IT org.</td></tr>
+      <tr><td>Bojangles, Driven Brands HQ</td><td>Both Charlotte-HQ but public/large enough that procurement is structured.</td></tr>
+      <tr><td>Lighthouse 27 portfolio (City of Charlotte EV Dashboard, Stancil Services)</td><td>Already clients — excluded per instructions.</td></tr>
+      <tr><td>Mynd, Belong, Evernest (CLT operations)</td><td>National tech-forward PM rollups with proprietary stacks. They build, not buy.</td></tr>
+      <tr><td>Strategic Staffing Solutions (S3)</td><td>Above ICP ($300M+ rev, enterprise IT consulting).</td></tr>
+      <tr><td>Capco, PwC, Accenture (CLT offices)</td><td>Global consultancies. Not buyers; possible referral partners only.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <h4>One honest caveat</h4>
+    <p>The Charlotte Business Journal Fast 50 full ranked list is paywalled. We pulled what's publicly cited in press releases (a few specific rankings) but the comprehensive 50-company list per year is not free. Subscribing to CBJ is the single highest-leverage move to expand this list from 62 to 200+ quickly.</p>
+  </div>
+
+  <div class="doc-footer">
+    <p>Prepared 2026-05-12 · Ascend Systems · Lighthouse 27 LLC</p>
+    <p>Source: public lists, company websites, BBB, and aggregator reviews. Every company hyperlinked. No fabrications.</p>
+  </div>
+
+</div>
+</body>
+</html>

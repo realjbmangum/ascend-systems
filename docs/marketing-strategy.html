@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ascend Systems — Marketing Strategy</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  .doc-header {
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--charcoal);
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    color: var(--charcoal);
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--charcoal);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .lede {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gray-600);
+  }
+
+  a {
+    color: var(--orange-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover { color: var(--orange); }
+
+  strong { font-weight: 600; color: var(--charcoal); }
+
+  code, kbd, pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--charcoal);
+  }
+  pre {
+    background: var(--charcoal);
+    color: #E5E5E3;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow);
+    color: var(--charcoal);
+    font-style: normal;
+  }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 48px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:hover td { background: var(--gray-100); }
+
+  .callout {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .card h4 { margin-top: 0; }
+
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="doc">
+
+  <div class="doc-header">
+    <p class="doc-eyebrow">Strategy &middot; Master Doc &middot; v1.0</p>
+    <h1>Ascend Systems — Marketing Strategy</h1>
+    <p class="lede">A direct go-to-market plan for a Charlotte-based technology consultancy. Built to land the first paying customer in 30 days and the first $50k of revenue inside 90.</p>
+    <p><span class="tag">Charlotte NC</span><span class="tag gray">Lighthouse 27 LLC</span><span class="tag gray">Prepared 2026-05-12</span></p>
+  </div>
+
+  <h2>TL;DR</h2>
+
+  <div class="callout">
+    <p>Ascend Systems is a high-leverage tech consultancy serving growing Charlotte SMBs that have outgrown spreadsheets, Zapier hacks, and freelance developers but cannot justify a $300k full-time engineering hire. Brian Mangum has shipped 14+ live products (including a working dashboard for the City of Charlotte and a multi-tenant operations platform for Stancil Services). The market for that buyer exists, knows it has the problem, and is geographically dense in the Charlotte metro. The go-to-market is not paid ads or content velocity. It is showing up in person, leaning on portfolio proof, and writing about the work in public.</p>
+    <h4>What we are betting on</h4>
+    <ul>
+      <li><strong>Proximity beats reach.</strong> Charlotte SMB owners buy from people they have met. The Chamber room, the BNI chapter, and the founders' Slack are worth more than 10,000 LinkedIn impressions.</li>
+      <li><strong>Proof beats pitch.</strong> A demo of the live City of Charlotte EV Dashboard and the Stancil Services ops platform closes deals that no deck can.</li>
+      <li><strong>Geographic focus beats vertical focus.</strong> Charlotte SMBs across many industries share the same operational pain — outgrowing manual processes. We sell to the city, not to a niche.</li>
+    </ul>
+  </div>
+
+  <h2>The market opportunity</h2>
+
+  <p>Charlotte is the fastest-growing major metro in the southeast and one of the fastest in the country. The combination of corporate relocations, banking and fintech expansion, and a population that has roughly doubled in the last two decades has produced a long tail of $1M–$50M SMBs that grew up alongside the city. These businesses are profitable, owner-operated, and operationally behind. Most are still running on QuickBooks, Google Sheets, a Zapier account, and one or two SaaS products with a manual reconciliation step in the middle.</p>
+
+  <p>The opportunity is the gap between two unappealing alternatives. On one side, an in-house engineer at Charlotte rates costs $150k–$220k loaded — a number that does not pencil for a $5M revenue company that needs maybe 200 hours of real engineering per year. On the other side, the big consultancies (Accenture, Cognizant, Slalom — all of which have major Charlotte presences servicing Bank of America, Truist, Lowe's, Honeywell, Duke Energy) will not return your call unless the engagement starts at six figures. In between is a vacuum filled badly by Upwork freelancers, white-label GoHighLevel "automation agencies," and Fiverr.</p>
+
+  <p>Three forces make right now the right time:</p>
+
+  <ol>
+    <li><strong>AI compresses what custom software costs to build.</strong> A working CRM that used to take six months can now ship in six weeks. The economics of custom software changed in the last 18 months, and most SMB owners have not noticed yet. There is a real, durable window to be the consultancy that explains this to them.</li>
+    <li><strong>SMB owners are AI-curious but burned by AI snake oil.</strong> Every owner has been pitched an "AI tool" by a sales rep who could not answer a single technical question. A local operator who can actually integrate Anthropic and ship working software has scarcity value.</li>
+    <li><strong>Charlotte's growth means new businesses are forming faster than the existing services ecosystem can serve them.</strong> Property managers, multi-location service businesses, and growing trade companies are hitting the operational ceiling every month.</li>
+  </ol>
+
+  <p>The Charlotte metro has roughly XXk SMBs in the $1M–$50M revenue band [verify against Mecklenburg County / Charlotte Regional Business Alliance data]. We do not need to win all of them. We need to win 6–10 in year one.</p>
+
+  <h2>Ideal Customer Profile</h2>
+
+  <p>The ICP is defined geographically, not vertically. A growing $8M property management company in Matthews and a growing $8M commercial HVAC company in Concord have more in common than either has with their out-of-state peers: same labor market, same digital maturity, same buying motion, often the same Chamber and BNI rooms.</p>
+
+  <h3>The hard filter</h3>
+
+  <ul>
+    <li><strong>Revenue:</strong> $1M–$50M annually. Below $1M they cannot afford a $10k engagement; above $50M they have either built an in-house team or signed with a Big-3 consultancy.</li>
+    <li><strong>Location:</strong> Headquartered in Mecklenburg, Union, Cabarrus, Iredell, Lincoln, Gaston, or York (SC) counties. Close enough to meet face-to-face inside an hour's drive.</li>
+    <li><strong>Decision-maker:</strong> A founder, owner-operator, or general manager with budget authority. No procurement committees, no RFP processes.</li>
+    <li><strong>Operational signal:</strong> Currently running on spreadsheets, Zapier, and 4+ disconnected SaaS tools. The owner can name the problem in one sentence.</li>
+    <li><strong>Growth posture:</strong> The business is growing. Pain is escalating, not steady. They are hiring, opening new locations, or trying to.</li>
+  </ul>
+
+  <h3>Industries — rank order of fit</h3>
+
+  <table>
+    <thead>
+      <tr><th>Rank</th><th>Industry</th><th>Why they fit</th><th>Typical engagement</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Property management</td>
+        <td>Multi-property data, tenant comms, vendor coordination, maintenance scheduling — almost all manual. High repetition, clear automation ROI.</td>
+        <td>Custom ops platform, tenant portal, maintenance workflow</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Professional services (law, accounting, consulting)</td>
+        <td>Document-heavy, deadline-driven, high billable-hour leakage. AI on top of practice management is high-leverage.</td>
+        <td>Intake automation, document AI, custom internal tools</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Multi-location service businesses</td>
+        <td>Scheduling, dispatch, customer comms across locations. ServiceTitan-class tools are expensive overkill; their alternative is chaos.</td>
+        <td>Lightweight ops platform (the Stancil pattern)</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Growing trades doing $5M+ (HVAC, electrical, plumbing, paint, roofing)</td>
+        <td>Same as above but more operationally mature. They have a coordinator who is drowning.</td>
+        <td>Dispatch + estimating + customer portal</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Small healthcare and dental groups</td>
+        <td>Multi-location, schedule-driven, regulated. Tech-buying friction is real but ROI is enormous.</td>
+        <td>Patient comms automation, internal dashboards</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Light manufacturing</td>
+        <td>Inventory, quoting, and customer portals are usually paper-based. AI for spec parsing and quote generation is concrete.</td>
+        <td>Quoting tool, inventory dashboard, supplier portal</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>E-commerce and DTC brands headquartered in Charlotte</td>
+        <td>Strong Shopify ecosystem here. Looking for AI-flavored differentiation. Smaller engagements but faster sales cycle.</td>
+        <td>Storefront automation, AI product features</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Real estate brokerages</td>
+        <td>Commission tracking, agent onboarding, listing automation, lead routing — almost always cobbled together.</td>
+        <td>Brokerage ops dashboard, agent CRM</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Red flags — who we do not sell to</h3>
+
+  <ul>
+    <li>One-truck operators under $1M revenue. They want $200/mo "AI receptionists," not consulting.</li>
+    <li>Companies that have already hired a CTO. The deal is gone; we are the wrong shape.</li>
+    <li>Anyone who needs to pass it through a procurement committee. Sales cycle kills the economics.</li>
+    <li>"Idea-stage" founders with no revenue. Wrong buyer; they need a co-founder, not a consultant.</li>
+    <li>Anyone explicitly shopping for the lowest bidder. We compete on outcomes, not hourly rate.</li>
+  </ul>
+
+  <h2>Value proposition</h2>
+
+  <p>The honest pitch: <strong>I have built and shipped 14+ live products, including a public-facing dashboard for the City of Charlotte and a multi-tenant operations platform that runs a real services business. I'm local. I do the work — there is no offshore team and no junior consultant.</strong> Everything else flows from that.</p>
+
+  <p>Against each alternative the buyer is considering:</p>
+
+  <table>
+    <thead>
+      <tr><th>Alternative</th><th>Their weakness</th><th>Our edge</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>In-house developer hire</td>
+        <td>$200k loaded, takes 90 days to hire, manage, and ramp. Cannot justify the headcount until the company is much bigger.</td>
+        <td>Pay only for the work that needs doing. No HR, no equity, no ramp.</td>
+      </tr>
+      <tr>
+        <td>Big consultancies (Accenture, Cognizant, Slalom)</td>
+        <td>Six-figure minimums, layers of account managers, junior staffing, slow.</td>
+        <td>Senior operator on every call. No bait-and-switch. Engagements start at $2.5k.</td>
+      </tr>
+      <tr>
+        <td>Upwork / Fiverr freelancers</td>
+        <td>Anonymous, no accountability, no business context, project frequently abandoned.</td>
+        <td>Local, named, references on the ground in Charlotte. You can meet me for coffee.</td>
+      </tr>
+      <tr>
+        <td>No-code / GoHighLevel "agencies"</td>
+        <td>Trapped inside one vendor's tooling. Solves cookie-cutter problems; cannot build anything bespoke.</td>
+        <td>Tooling chosen for the problem, not for the agency's commission structure. Real code when needed.</td>
+      </tr>
+      <tr>
+        <td>Doing nothing / status quo</td>
+        <td>Pain compounds. Owner's nights and weekends get longer. Eventually a hire is forced at the worst time.</td>
+        <td>One discovery sprint exposes the highest-ROI fix in 2 weeks for under $5k.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The compressed version, for in-person use:</p>
+
+  <blockquote>"I build custom software and automation for Charlotte businesses that have outgrown spreadsheets. I have a live dashboard running for the City of Charlotte and an ops platform I built for a local services company. I am not an agency — I do the work."</blockquote>
+
+  <h2>Positioning statement</h2>
+
+  <blockquote>For growing Charlotte SMBs who have outgrown spreadsheets, Zapier hacks, and off-the-shelf SaaS, <strong>Ascend Systems</strong> is the local technology partner that designs, builds, and operates the custom software and AI integrations they need — unlike in-house hires (too slow, too expensive), big consultancies (too expensive, not local), and freelancers (no accountability), Ascend is a senior operator with shipped public-sector and private-sector proof, available in person, doing the work himself.</blockquote>
+
+  <h2>Channel strategy — ranked by effort vs. payoff</h2>
+
+  <p>The strategy is bottom-up, warm-first, and multipronged. Cold email alone produces a 1–3% reply rate — at our bandwidth (5–10 hr/wk) that is not enough to hit "first deal in 30 days." So we lead with the channels that convert at 20–50x cold rates (the people who already trust us) and use cold outreach only at high-signal, highly-personalized volume. Content is the moat that makes every other channel work better.</p>
+
+  <p>Time allocation per week (use this as the budget when you sit down on Monday):</p>
+
+  <table>
+    <thead>
+      <tr><th>Rank</th><th>Channel</th><th>Time budget</th><th>Payoff timing</th><th>Why it ranks here</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Warm reactivation — old clients, friends, peers, ex-colleagues</td>
+        <td>30%</td>
+        <td>Weeks 1–4</td>
+        <td>Highest-converting outreach by 50x. Anyone who already trusts Brian. The most undervalued channel because builders feel weird asking — that is exactly why it works.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>In-person + local groups</td>
+        <td>25%</td>
+        <td>Weeks 2–8</td>
+        <td>Charlotte SMBs buy from known operators. One Chamber meeting can produce a $20k engagement. Highest conversion per hour for net-new buyers.</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Content + LinkedIn presence + free tools</td>
+        <td>25%</td>
+        <td>Compounds from week 4 onward</td>
+        <td>The Manual Process Cost Calculator + LinkedIn posts + technical case studies make every other channel close better. Inbound starts trickling around week 8–12.</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Targeted cold (LinkedIn DM + email)</td>
+        <td>15%</td>
+        <td>Weeks 4–10</td>
+        <td>Quality &gt; quantity. Only on high-signal triggers (recent funding, new exec hire, expansion announcement). Reply rates 1–3% best case — never the lead engine, always the multiplier.</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Paid amplification (NOT cold acquisition)</td>
+        <td>5%</td>
+        <td>From week 8</td>
+        <td>~$300/mo cap. Boost LinkedIn posts that hit + retarget visitors to the Cost Calculator. Wrong shape for direct cold acquisition until we have 6+ case studies and a productized offer.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Channel 1 — Warm reactivation</h3>
+
+  <p>Before any cold outreach happens, every person Brian has worked with, met at an event, or connected with on LinkedIn in the last 24 months gets a touch. This is the single highest-leverage hour in the whole plan.</p>
+
+  <h4>Who is on the list</h4>
+  <ul>
+    <li><strong>Past clients.</strong> Stancil Services, City of Charlotte contact, Mike (Masonry Contract Review), any LoveNotes / SCDMV / RecordStops users who reached out, anyone who has paid Brian a dollar.</li>
+    <li><strong>Past collaborators.</strong> Co-founders, ex-colleagues from prior jobs, consultants and devs Brian has worked alongside, partners on past builds (Oliver / Heirloom).</li>
+    <li><strong>Friends and family who own or run businesses.</strong> Anyone in Brian's personal network who fits the ICP (Charlotte SMB owner-operator) or who knows people who do.</li>
+    <li><strong>Dormant LinkedIn connections.</strong> Anyone in the 500+ existing LinkedIn network who is a Charlotte SMB founder/operator and has not been touched in 12+ months.</li>
+  </ul>
+
+  <h4>What to send</h4>
+  <p>One short, specific message per person. Never a mass-broadcast. The script:</p>
+  <blockquote>
+    "Hey [Name] — quick update: I've turned the consulting work into a focused practice serving Charlotte SMBs. Custom CRMs, AI integrations, the kind of automation that takes weeks of manual work off your team. Two questions: (1) is there anything in your business that's been on the 'I should fix this' list for too long? Happy to take a look free. (2) Do you know one Charlotte business owner I should meet? — Brian"
+  </blockquote>
+
+  <p><strong>Target:</strong> 100 warm touches in week 1. From a 500-LinkedIn-connection network plus past clients plus friends, this is achievable in 4–6 hours. Expect ~15% reply rate, ~3% "yes, let me introduce you to X," ~1% "yes, I have a project." That is 1–5 referred conversations and 1–5 real project leads from <em>week one</em>, which is more pipeline than the cold list can produce in a month.</p>
+
+  <h3>Channel 2 — In-person + local groups</h3>
+
+  <p>The second-most-valuable hour Brian can spend this month is at a room full of Charlotte business owners. Specifically:</p>
+
+  <ul>
+    <li><strong>Charlotte Regional Business Alliance / Charlotte Chamber events.</strong> Pick the two highest-density-of-buyer events per month. Bring matte-black business cards. Lead with the City of Charlotte case study within the first 30 seconds.</li>
+    <li><strong>BNI chapters.</strong> Visit three in the first 60 days as a guest. Join the one with the highest concentration of $5M+ owner-operators. The "tech consultant" seat is usually open or weak in most chapters.</li>
+    <li><strong>Charlotte Founders Slack / Queen City Mavericks / local Discord and Slack communities.</strong> Be useful for two weeks before pitching anything. Answer technical questions in public. Inbound DMs follow.</li>
+    <li><strong>Warm intros via existing portfolio clients.</strong> The City of Charlotte engagement produced relationships with the CTO's office — request 2 named introductions. Stancil Services owner can refer one peer. Each portfolio client gets a structured ask.</li>
+    <li><strong>Industry-specific local events.</strong> Charlotte Apartment Association (property management), Hood Hargett Breakfast Club, REBIC (real estate), local AGC chapter (construction). Pick one per month, attend twice before pitching.</li>
+  </ul>
+
+  <p><strong>Target:</strong> 3–4 in-person conversations per week with a fitting buyer. From that, expect 1 discovery call booked per week by week 4.</p>
+
+  <h3>Channel 3 — Content + free tools</h3>
+
+  <p>Content is the moat. It does not produce month-one revenue on its own, but it changes the conversion rate on every other channel from week 2 onward. A prospect who's seen one of Brian's LinkedIn posts, used the Cost Calculator, or read a case study is 5–10x more likely to reply to a cold DM and 2–3x more likely to convert a discovery call.</p>
+
+  <h4>Free tools (highest-yield inbound asset)</h4>
+
+  <p>One free tool on ascendsystems.ai converts cold visitors at 5–15% (vs. 0.5% for a generic "contact us"). Build order:</p>
+
+  <ol>
+    <li><strong>Manual Process Cost Calculator</strong> (build first, this week). 5 inputs: hours/week on spreadsheet work, # of employees doing it, average hourly fully-loaded cost, error rate, customer-facing impact. Output: annual $ wasted + emailed PDF report + CTA "get a free 30-min audit." Single highest-yield asset for our ICP.</li>
+    <li><strong>AI Readiness Scorecard.</strong> 10 yes/no questions. Outputs A/B/C/D grade + personalized PDF. Gated behind email.</li>
+    <li><strong>CRM Build vs. Buy Calculator.</strong> Salesforce / HubSpot 3-year TCO vs. custom-build cost. Pre-populated with Charlotte SMB benchmarks. Outputs which is cheaper at the buyer's scale plus breakpoint year.</li>
+    <li><strong>Charlotte SMB Tech Report (annual).</strong> Survey 30+ Charlotte SMB owners on their tech stack, publish anonymized findings. Becomes lead magnet, PR hook, and "reason to email every Chamber member."</li>
+  </ol>
+
+  <h4>Cadence</h4>
+
+  <table>
+    <thead><tr><th>Surface</th><th>Cadence</th><th>Format</th></tr></thead>
+    <tbody>
+      <tr><td>LinkedIn (Brian's personal profile)</td><td>3 posts per week</td><td>Build-in-public technical writeups; Charlotte business observations; case-study excerpts</td></tr>
+      <tr><td>ascendsystems.ai blog</td><td>1 long-form post per week</td><td>"How we built X for Y" technical case studies, 1,500–2,500 words with screenshots and code</td></tr>
+      <tr><td>Portfolio page updates</td><td>As shipped</td><td>Every closed engagement becomes a public case study within 30 days of delivery</td></tr>
+      <tr><td>Email newsletter</td><td>Monthly</td><td>Sent to every discovery-call lead and every Chamber contact</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Editorial pillars</h4>
+
+  <ol>
+    <li><strong>Build-in-public Charlotte case studies.</strong> "How we replaced 6 spreadsheets with one custom CRM for a property management company in Pineville." Specific, technical, named where possible.</li>
+    <li><strong>AI for SMB owners (de-hyped).</strong> Honest writeups on what AI actually does for a $10M services business. Counter-programs the snake oil.</li>
+    <li><strong>Local economy commentary.</strong> Observations on Charlotte SMB operating realities — labor market, software stack patterns, growth pains. Builds local authority signal.</li>
+  </ol>
+
+  <h3>Channel 4 — Targeted cold outreach</h3>
+
+  <p>The full playbook lives in the companion outreach doc. Headline rules:</p>
+
+  <ul>
+    <li><strong>Quality over volume.</strong> 5 highly personalized DMs per day beats 50 templated ones. Reply rates of 1–3% are the industry norm on raw cold — we lift that by leading with named portfolio proof (City of Charlotte, Stancil) and trigger-based openers (recent hire, recent funding, expansion).</li>
+    <li><strong>List source: Outscraper + Apollo enrichment.</strong> Pull from Google Maps via Outscraper using the filter recipe in the outreach playbook (rating ≥ 4.0, 50+ reviews, has website, verified — these proxy revenue and legitimacy better than any single field). Enrich top 200 with Apollo for decision-maker contact.</li>
+    <li><strong>Two-channel sequence per target:</strong> LinkedIn connection with a Charlotte-specific opener, then a 4-touch email sequence over 21 days. Every touch references a specific, real piece of portfolio work — never a generic value prop.</li>
+    <li><strong>Volume target:</strong> 20 new prospects per week, 100 active sequences at steady state. Combined with warm + in-person + content, this produces 1–2 discovery calls per week by week 4.</li>
+  </ul>
+
+  <h3>Channel 5 — Paid amplification (not cold acquisition)</h3>
+
+  <div class="callout">
+    <h4>What we DO with paid (~$300/mo cap)</h4>
+    <ul>
+      <li><strong>Boost the LinkedIn posts that hit organically.</strong> $20–50 behind a post that already has 10+ likes from real Charlotte buyers. Compounds the trust signal.</li>
+      <li><strong>Retarget visitors to the Cost Calculator + case studies.</strong> Anyone who lands on ascendsystems.ai gets a soft retarget on LinkedIn for 30 days — "saw the City of Charlotte case study?" — keeps Ascend top of mind through the buying cycle.</li>
+    </ul>
+    <h4>What we do NOT do</h4>
+    <p>Google search ads, Meta lead-form ads, or LinkedIn message ads to cold audiences. Buyers in our ICP do not click search ads to find a CTO — they ask a peer. Paid cold acquisition for a high-ticket consultancy at zero brand is a way to spend money slowly.</p>
+    <h4>Revisit paid cold acquisition when</h4>
+    <ul>
+      <li>We have closed 6+ engagements and have 3+ filmable or quotable case studies</li>
+      <li>We have a productized offer (e.g., the Discovery Sprint) with a documented conversion rate</li>
+      <li>The Cost Calculator converts cold traffic at 5%+ (verified, not assumed)</li>
+      <li>We have $2,000+/mo of free cash to allocate without it hurting</li>
+    </ul>
+  </div>
+
+  <h2>Pricing posture</h2>
+
+  <p>We anchor with three packages so the conversation starts in the right zip code. We close most deals with custom, value-based proposals built on the anchor. The packages exist to make pricing legible on a website and a first call, not to limit what we sell.</p>
+
+  <table>
+    <thead>
+      <tr><th>Tier</th><th>Price</th><th>What it is</th><th>When to sell it</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Discovery Sprint</strong></td>
+        <td>$2,500 – $5,000</td>
+        <td>2-week engagement. Audit current ops + tech stack, identify the highest-ROI build, deliver a written roadmap with scope and pricing for the build.</td>
+        <td>Default first engagement. Removes risk for the buyer. Profitable on its own and converts ~70% into a Build engagement.</td>
+      </tr>
+      <tr>
+        <td><strong>Build Engagement</strong></td>
+        <td>$10,000 – $50,000+</td>
+        <td>Fixed-scope build of a defined system: custom CRM, ops platform, internal dashboard, AI integration, customer portal. 4–12 weeks.</td>
+        <td>Right after a successful Discovery Sprint, or when a buyer arrives with a clear, scoped need.</td>
+      </tr>
+      <tr>
+        <td><strong>Fractional CTO / Operating Retainer</strong></td>
+        <td>$2,000 – $8,000 / mo</td>
+        <td>Ongoing: 1–2 days per week. Strategy + hands-on engineering + vendor management + small-build velocity. 6-month minimum.</td>
+        <td>After a Build engagement, or with a fast-growing company that needs a permanent technical seat without the headcount.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Pricing principles</h3>
+
+  <ul>
+    <li><strong>Never quote on the first call.</strong> Pricing happens in a proposal, after we understand the value. The package anchors are conversational, not contractual.</li>
+    <li><strong>Value-based, not hourly.</strong> Hourly billing caps the upside on the work we are best at. We sell outcomes.</li>
+    <li><strong>Always include a stop point.</strong> Fixed-scope, fixed-price, fixed-deadline. The buyer needs to know what they are buying.</li>
+    <li><strong>Reference the comparison.</strong> "An in-house hire would cost $200k; the big consultancy minimum is six figures; we will deliver this for $32k." The number lands differently when it is anchored.</li>
+    <li><strong>Discounts only for case-study rights.</strong> A 10–15% reduction is fine in exchange for a filmed testimonial and a named public case study. Never discount to close.</li>
+  </ul>
+
+  <h2>30 / 60 / 90 day plan</h2>
+
+  <p>The plan is built around Brian's 5–10 hours per week of marketing bandwidth. Anything that does not produce a discovery call or a piece of compounding asset (case study, content, list) is cut.</p>
+
+  <h3>Days 1–30 — Foundations and first call</h3>
+
+  <table>
+    <thead>
+      <tr><th>Week</th><th>Deliverable</th><th>Goal</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Website portfolio page polished; 3 case studies (City of Charlotte, Stancil, one consumer product) written and live. LinkedIn profile rewritten as "Charlotte technology consultant, built X, Y, Z." Two outbound email templates drafted. Discovery Sprint one-pager written.</td>
+        <td>Ready to send anyone to <code>ascendsystems.ai</code> without embarrassment.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Charlotte Chamber membership applied or attended as guest. First BNI visit booked. Target list of 50 Charlotte SMBs built and segmented by industry. First 10 LinkedIn DMs sent. First 10 cold emails sent.</td>
+        <td>Pipeline exists. Funnel begins.</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>3 in-person events attended this week. 20 more outbound DMs/emails sent. First long-form blog post published. Warm-intro asks sent to City of Charlotte contact and Stancil.</td>
+        <td>First discovery call booked.</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>First Discovery Sprint proposal sent. Second discovery call booked. Newsletter set up; first issue sent to existing contacts. Second blog post published.</td>
+        <td>First proposal in the wild. Two discovery calls completed.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Days 31–60 — First close and case study flywheel</h3>
+
+  <table>
+    <thead>
+      <tr><th>Week</th><th>Deliverable</th><th>Goal</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>5</td>
+        <td>Close first Discovery Sprint. Begin work. Continue outbound at 20/week. Attend 2 in-person events. Third blog post.</td>
+        <td>First revenue.</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Discovery Sprint delivery in-flight. Document the work in public (with client permission) — first build-in-public LinkedIn thread. Two more discovery calls booked.</td>
+        <td>Distribution starts compounding. Inbound interest begins.</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Deliver Discovery Sprint roadmap. Pitch the Build engagement. Fourth blog post — "How I audit a Charlotte SMB's tech stack in 2 weeks." Target list expanded to 100 prospects.</td>
+        <td>First Build proposal sent. Discovery Sprint becomes a published case study.</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Close first Build engagement OR close second Discovery Sprint. Fifth blog post. Speak or volunteer at one Charlotte business event.</td>
+        <td>Second close. Speaking experience under the belt.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Days 61–90 — Repeatable motion</h3>
+
+  <table>
+    <thead>
+      <tr><th>Week</th><th>Deliverable</th><th>Goal</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>9</td>
+        <td>Build engagement in execution. Sixth blog post. Two new discovery calls.</td>
+        <td>Maintain pipeline while delivering.</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Refine the Discovery Sprint playbook based on first two engagements. Document repeatable artifacts (audit template, proposal template).</td>
+        <td>The first version of the operating system exists.</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>Third Discovery Sprint closed or Build engagement closed. Outbound expanded to 30/week with help (VA or assistant).</td>
+        <td>Pipeline can run with less of Brian's time per closed deal.</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>Quarter-end review. Three case studies live. Pipeline of 8+ qualified conversations. Decision point on retainer-first vs project-first sales motion based on actual data.</td>
+        <td>$25k–$75k revenue closed in first 90 days. Pipeline visibility into the next 90.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Success metrics</h2>
+
+  <p>We measure weekly, on a Sunday night, in the Ascend CRM. Anything that is not on this list does not get tracked.</p>
+
+  <table>
+    <thead>
+      <tr><th>Metric</th><th>Week 4 target</th><th>Week 8 target</th><th>Week 12 target</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>In-person conversations with ICP</td><td>10 cumulative</td><td>25</td><td>50</td></tr>
+      <tr><td>Outbound touches sent</td><td>40</td><td>120</td><td>240</td></tr>
+      <tr><td>Discovery calls booked</td><td>2</td><td>6</td><td>12</td></tr>
+      <tr><td>Proposals sent</td><td>1</td><td>3</td><td>6</td></tr>
+      <tr><td>Deals closed</td><td>0–1</td><td>1–2</td><td>3+</td></tr>
+      <tr><td>Revenue closed</td><td>$0–$5k</td><td>$5k–$20k</td><td>$25k–$75k</td></tr>
+      <tr><td>Case studies published</td><td>3 (existing)</td><td>4</td><td>5</td></tr>
+      <tr><td>LinkedIn posts shipped</td><td>12</td><td>24</td><td>36</td></tr>
+      <tr><td>Long-form blog posts published</td><td>3</td><td>7</td><td>11</td></tr>
+    </tbody>
+  </table>
+
+  <p>Leading indicators (in-person conversations, outbound touches, calls booked) get more weight than lagging indicators (revenue) for the first 60 days. The pipeline is the leading indicator that everything else flows from.</p>
+
+  <h2>Kill criteria and pivot triggers</h2>
+
+  <div class="callout">
+    <h4>Day 30 — kill or continue check</h4>
+    <p>The strategy is working if by day 30 we have at least <strong>two discovery calls completed</strong> and <strong>one proposal sent</strong>. If we have neither, the problem is not the offer — it is volume. Triple the outbound and double the in-person events for the next 30 days before changing anything else.</p>
+
+    <h4>Day 60 — pivot trigger</h4>
+    <p>If by day 60 we have not closed at least one paid engagement (Discovery Sprint or Build), something is structurally wrong. Likely candidates: (1) the ICP definition is too broad and we are pitching the wrong buyer; (2) the Discovery Sprint price is wrong — either too high to be a no-brainer or too low to be taken seriously; (3) the proof is not landing — the case studies are not specific enough about outcomes. Run a positioning audit with three trusted Charlotte operators and pivot one variable, not all three.</p>
+
+    <h4>Day 90 — full review</h4>
+    <p>By day 90 we expect 3+ closed engagements and $25k–$75k of recognized revenue. If we are inside that band, double down: hire a VA for outbound, raise prices on the next round, and start the retainer motion. If we are below $10k, we have learned that the consultancy thesis is wrong for our current bandwidth — at that point, the right move is to pause Ascend's external marketing and rebuild the bottom of the funnel around a productized offering (e.g., a $497/mo "Charlotte SMB ops audit subscription") for 30 days before resuming consulting sales.</p>
+
+    <h4>Permanent kill</h4>
+    <p>If by day 180 we cannot show $75k+ of closed revenue and a pipeline of 10+ qualified conversations, Ascend is not pulling its weight against Brian's other portfolio bets. Wind down the marketing motion, keep the brand alive as the umbrella for individual client engagements, and reallocate the 5–10 hours per week to a higher-leverage portfolio asset.</p>
+  </div>
+
+  <h2>What we are not doing</h2>
+
+  <p>The plan is as much about subtraction as addition. The following are explicitly off the table for the next 90 days:</p>
+
+  <ul>
+    <li><strong>Paid ads.</strong> Wrong shape for the stage. Revisit at day 180+ once we have case study volume.</li>
+    <li><strong>Vertical specialization.</strong> Tempting but premature. We learn which vertical pulls hardest from real closed deals, not from a guess made in week one.</li>
+    <li><strong>Productizing too early.</strong> No fixed-scope "AI Audit" SKUs sold off the website. We sell custom engagements first; productize the patterns later when we have seen them three times.</li>
+    <li><strong>Hiring before revenue.</strong> No subcontractors, no junior consultants, no agency partnerships in 90 days. Brian does the work. The work is the moat.</li>
+    <li><strong>SEO at scale.</strong> The directory-site playbook does not apply here. One excellent technical blog post per week beats 100 thin programmatic pages.</li>
+    <li><strong>National positioning.</strong> The website, the messaging, the outbound — all Charlotte-specific. "Tech consultant" is generic; "Charlotte tech consultant" wins searches and rooms.</li>
+    <li><strong>The old AI phone-answering positioning.</strong> Dead. Removed from the brand, removed from the site, removed from the elevator pitch. Anything in older docs that mentions "Every call, handled" as the core offer is archive material.</li>
+  </ul>
+
+  <h2>The one thing</h2>
+
+  <blockquote>If only one sentence of this document survives the next 90 days, it is this: <strong>Brian Mangum has shipped real software for the City of Charlotte and for a real Charlotte business owner — and he is the one in the room.</strong> Every channel, every piece of content, every proposal is a vehicle for delivering that fact to the right buyer at the right moment. Everything else is logistics.</blockquote>
+
+  <div class="doc-footer">Ascend Systems &middot; prepared 2026-05-12</div>
+
+</div>
+
+</body>
+</html>

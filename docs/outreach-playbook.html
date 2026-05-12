@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ascend Systems — Outreach Playbook</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  .doc-header {
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--charcoal);
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    color: var(--charcoal);
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--charcoal);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .lede {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gray-600);
+  }
+
+  a {
+    color: var(--orange-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover { color: var(--orange); }
+
+  strong { font-weight: 600; color: var(--charcoal); }
+
+  code, kbd, pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--charcoal);
+  }
+  pre {
+    background: var(--charcoal);
+    color: #E5E5E3;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow);
+    color: var(--charcoal);
+    font-style: normal;
+  }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 48px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:hover td { background: var(--gray-100); }
+
+  .callout {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .card h4 { margin-top: 0; }
+
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+
+<div class="doc-header">
+  <p class="doc-eyebrow">Outreach Playbook · v1 · 2026-05-12</p>
+  <h1>How I book my first 10 Ascend Systems clients</h1>
+  <p class="lede">This is the executable companion to the marketing strategy. The strategy tells me <em>why</em>. This tells me what I do Monday morning at 9:00 AM. I run it for 90 days. Goal: first paying customer in 30 days, three by day 60, six to ten by day 90.</p>
+</div>
+
+<div class="callout">
+  <h3>The core principles of cold outreach</h3>
+  <ul>
+    <li><strong>Specificity beats volume.</strong> Twenty emails that name a real fact about the company beat 200 form letters. I am one person. I cannot win on volume. I win on knowing the prospect better than the next guy.</li>
+    <li><strong>The goal of every touch is a 20-minute call, not a sale.</strong> Stop trying to close in the email. Close on the phone, in person, over coffee.</li>
+    <li><strong>Local is the moat.</strong> Every email and DM mentions Charlotte, a Charlotte landmark, or a Charlotte client. If I sound like I could be anyone in any city, I lose to the offshore agency that charges half.</li>
+    <li><strong>Show the work, do not describe it.</strong> Link to the City of Charlotte EV dashboard. Link to the Stancil case study. Pictures of real software beat adjectives.</li>
+    <li><strong>Follow up five times.</strong> Most deals close on touch three to five. Stopping at email one is leaving the work undone.</li>
+    <li><strong>Every reply gets a same-day response.</strong> Speed of reply is the cheapest competitive advantage available to a solo founder.</li>
+  </ul>
+</div>
+
+<h2>1. Daily and weekly cadence</h2>
+
+<p>I have 5–10 hours a week for outreach. That is the constraint. The schedule below assumes 7 hours, run in 45-minute blocks before client work starts.</p>
+
+<div class="callout">
+  <h4>Week 1 is different — burn down the warm list before any cold</h4>
+  <p>The first week of this plan is not the steady-state schedule below. Week 1 is <strong>7 hours of warm reactivation only</strong> — see Section 3a. 100 personalized messages to past clients, friends, peers, and dormant LinkedIn connections. This produces more pipeline in week 1 than the cold engine will in month 1, and the steady-state schedule kicks in week 2.</p>
+</div>
+
+<h4>Steady-state schedule (week 2 onward)</h4>
+
+<table>
+  <thead>
+    <tr><th>Day</th><th>Block</th><th>Minutes</th><th>What I do</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Mon</strong></td><td>List refresh</td><td>45</td><td>Add 25 new qualified leads to the CRM. Re-rank the pipeline. Pick the 15 targets for this week's first-touch emails.</td></tr>
+    <tr><td><strong>Tue</strong></td><td>Outbound</td><td>60</td><td>Send 5 cold emails (first touches). Send 10 LinkedIn connection requests. Comment thoughtfully on 5 LinkedIn posts from prospects.</td></tr>
+    <tr><td><strong>Wed</strong></td><td>Outbound</td><td>60</td><td>Send 5 cold emails (first touches). Send the day's follow-up emails (the sequence handles this — I review and approve). DM 3 new LinkedIn connects.</td></tr>
+    <tr><td><strong>Thu</strong></td><td>Outbound</td><td>60</td><td>Send 5 cold emails (first touches). Send 5 more LinkedIn connection requests. Write the week's LinkedIn post (publish Friday morning).</td></tr>
+    <tr><td><strong>Fri</strong></td><td>Reply day</td><td>60</td><td>Review every reply from the week. Draft proposals for hot leads. Log calls, update statuses in CRM. Publish LinkedIn post.</td></tr>
+    <tr><td><strong>One night/wk</strong></td><td>In-person</td><td>120</td><td>Chamber event, BNI visit, founder meetup, or coffee with a prospect/referral source. Non-negotiable.</td></tr>
+    <tr><td><strong>Discovery calls</strong></td><td>As booked</td><td>20 each</td><td>Targeting 2–4 booked calls per week. Slot them Tue/Thu 11:00 AM or 2:00 PM.</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Weekly totals (steady state):</strong> 15 new first-touch cold emails, 15 LinkedIn connection requests, 5 thoughtful comments, 1 in-person event, 1 LinkedIn post, 2–4 discovery calls. Plus ~25 warm-network follow-ups per week from the Week 1 burst (responses, intros, "checking in" notes). Sequence automation handles drip follow-ups; I review daily.</p>
+
+<p><strong>Honest reality on cold:</strong> industry benchmark cold reply rates run 1–3% (Apollo and Lemlist medians). Even highly personalized, locally-anchored cold like ours tops out around 5–8% replied. That is fine because cold is NOT the lead engine in this plan — warm reactivation, in-person, and content are. Cold is the multiplier that turns 1 warm intro into 1 warm intro plus 2 cold replies in the same week.</p>
+
+<h2>2. Building the target list</h2>
+
+<p>I am not buying a 50,000-row Apollo dump. I am building a curated 200-row list of Charlotte SMBs I would be proud to work with. Quality of the list determines every downstream number.</p>
+
+<h3>Sources, in priority order</h3>
+
+<table>
+  <thead><tr><th>Source</th><th>How I use it</th><th>Cost</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Charlotte Chamber member directory</strong></td>
+      <td>Filter by industry. Export company names. Cross-reference with LinkedIn for the founder/owner. Member companies have already self-identified as growth-oriented.</td>
+      <td>Free (browse) / $750 for membership which unlocks the full directory and events</td>
+    </tr>
+    <tr>
+      <td><strong>LinkedIn Sales Navigator</strong></td>
+      <td>Filters: Headquarters = Charlotte, NC metro area. Company size = 11–200. Industry list (see ICP). Decision-maker title = Founder, Owner, President, CEO, COO, Managing Partner. Save as a lead list, update weekly.</td>
+      <td>$99/mo</td>
+    </tr>
+    <tr>
+      <td><strong>Charlotte Business Journal — Book of Lists</strong></td>
+      <td>Annual ranked lists of top private companies, fastest-growing firms, top law firms, top property managers, top general contractors. Buy the digital version. Every entry is a qualified lead.</td>
+      <td>$200/yr</td>
+    </tr>
+    <tr>
+      <td><strong>Inc 5000 — Charlotte filter</strong></td>
+      <td><code>inc.com/inc5000</code>, filter by city. Fast-growing private companies in Charlotte metro. Pull names into a sheet.</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td><strong>Apollo.io</strong></td>
+      <td>Same filters as Sales Navigator, but pulls email addresses. I verify each one with NeverBounce before sending. Apollo is for enrichment, not for blasting.</td>
+      <td>$49/mo starter</td>
+    </tr>
+    <tr>
+      <td><strong>BBB Charlotte accredited businesses</strong></td>
+      <td>BBB-accredited locals tend to be the boring, profitable, established SMBs that need automation help. Browse by category.</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td><strong>Local trade associations</strong></td>
+      <td>Charlotte Apartment Association (property mgmt), Mecklenburg County Bar (law), HBA of Greater Charlotte (builders), NCACPA Charlotte (accounting). Their member directories = filtered lists.</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td><strong>UNC Charlotte / Wake Forest / Duke alumni</strong></td>
+      <td>Belk College of Business alumni network. Filter for owners/founders in Charlotte. Alumni → warm intro path.</td>
+      <td>Free (alumni access)</td>
+    </tr>
+    <tr>
+      <td><strong>News and announcements</strong></td>
+      <td>Daily Charlotte Business Journal email. Look for: funding announcements, expansion news, key hires, acquisitions. Each one is a trigger for Sequence B.</td>
+      <td>$120/yr</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Outscraper filter recipe (the fast way to build the cold universe)</h3>
+
+<p>Outscraper pulls Google Maps business data — it is the cheapest way to get a clean 500-row list from a noisy universe. It does not give you revenue or founder names directly (those come from an Apollo / LinkedIn enrichment pass). But the Outscraper layer is where I scale list-building from "hours of LinkedIn scrolling" to "one $25 export."</p>
+
+<h4>Geographic filter</h4>
+<p>Location: <code>Charlotte, NC</code> with a <strong>30-mile radius</strong> (catches Concord, Mooresville, Huntersville, Gastonia, Rock Hill SC, Indian Trail, Matthews, Cornelius). Or pull by county: Mecklenburg + Cabarrus + Iredell + Union + Lincoln + Gaston + York SC.</p>
+
+<h4>Quality filters — the proxy for "real business, can afford me"</h4>
+
+<table>
+  <thead><tr><th>Filter</th><th>Setting</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Rating</td><td>≥ 4.0</td><td>Below 3.5 = service problems, churning customers, will not buy software</td></tr>
+    <tr><td><strong>Review count</strong></td><td><strong>≥ 50 (ICP), ≥ 20 (expand list)</strong></td><td>50+ reviews is the single best free signal for $1M+ revenue. Sub-10 = too new or one-person shop. This filter alone removes 80% of noise.</td></tr>
+    <tr><td>Has website</td><td>Required</td><td>Filters out Facebook-only operators</td></tr>
+    <tr><td>Has phone</td><td>Required</td><td>Basic professionalism check</td></tr>
+    <tr><td>Verified</td><td>Yes</td><td>Filters out abandoned Google Business listings</td></tr>
+    <tr><td>Photos</td><td>≥ 5</td><td>Indicates someone actually manages the listing — proxy for "they care about their brand"</td></tr>
+  </tbody>
+</table>
+
+<h4>Category keyword pulls (run as separate exports, then dedupe)</h4>
+
+<pre>Property Management:
+  "property management company", "commercial property management",
+  "real estate management", "HOA management"
+
+Professional Services:
+  "law firm", "accounting firm", "CPA firm", "marketing agency",
+  "consulting firm", "engineering firm", "architectural firm"
+
+Multi-location service trades ($5M+):
+  "HVAC contractor", "plumbing company", "electrical contractor",
+  "landscaping company", "cleaning service", "pest control service",
+  "roofing contractor", "fire protection service"
+
+Healthcare (multi-location):
+  "dental clinic", "dermatology clinic", "orthodontist",
+  "physical therapy", "veterinary clinic", "urgent care clinic"
+
+Light manufacturing / B2B:
+  "manufacturer", "metal fabrication", "machine shop",
+  "commercial printer", "packaging company"</pre>
+
+<h4>Workflow — Outscraper → CRM</h4>
+
+<ol>
+  <li>Pull ~5,000 raw rows across all category keywords above (one export per keyword, then dedupe by phone number).</li>
+  <li>Apply <strong>review count ≥ 50</strong> filter → ~800 rows left.</li>
+  <li>Manual scan for franchise locations (drop — they buy from HQ) and obvious sole-proprietor shops → ~400 rows left.</li>
+  <li>Enrich top 200 with Apollo for founder/owner name + email + LinkedIn URL.</li>
+  <li>Run each through the qualification rubric below. 6+ points enters the active outreach list.</li>
+  <li>Tag in CRM by industry, source = <code>outscraper</code>, warmth = <code>cold</code>.</li>
+</ol>
+
+<div class="callout">
+  <h4>Why I do not filter on revenue directly</h4>
+  <p>Outscraper does not expose revenue, and the public-data services that do (Dun &amp; Bradstreet, ZoomInfo) cost $500+ to start. Review count is a tighter free proxy. 50+ reviews on Google Maps correlates strongly with $1M+ revenue for service businesses in this market. I trust the proxy.</p>
+</div>
+
+<h3>Qualification rubric</h3>
+
+<p>Before a company goes into the active outreach list, it has to hit this rubric. Anything that scores under 6 gets parked, not pitched.</p>
+
+<table>
+  <thead><tr><th>Signal</th><th>Score</th><th>What to look for</th></tr></thead>
+  <tbody>
+    <tr><td>Location</td><td>2 pts</td><td>HQ in Charlotte metro (Mecklenburg, Union, Cabarrus, Gaston, Iredell). Required.</td></tr>
+    <tr><td>Revenue band</td><td>2 pts</td><td>$1M–$50M. Bigger than that and they have an IT team. Smaller and they cannot afford me.</td></tr>
+    <tr><td>Headcount</td><td>1 pt</td><td>10–150 employees. Sweet spot 25–75.</td></tr>
+    <tr><td>Growth signal</td><td>2 pts</td><td>Hiring on Indeed/LinkedIn, recent funding/acquisition, new location, press in last 6 months, Inc 5000 listing.</td></tr>
+    <tr><td>Decision-maker findable</td><td>2 pts</td><td>Owner or founder visible on LinkedIn with profile activity in last 90 days. Email findable via Apollo or pattern-match.</td></tr>
+    <tr><td>Industry fit</td><td>1 pt</td><td>One of the ICP industries (property mgmt, prof services, multi-location service, $5M+ trades, healthcare/dental, light manufacturing, DTC, real estate brokerage).</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Minimum to outreach: 6 of 10 points.</strong> If a company scores 9–10, they move to the top of the queue and I research them harder before sending.</p>
+
+<h3>CRM tagging</h3>
+
+<p>Every lead enters the Ascend CRM under <code>project = Ascend Outreach</code>. Tags applied at creation:</p>
+
+<ul>
+  <li><strong>industry</strong>: <code>prop-mgmt</code> / <code>legal</code> / <code>accounting</code> / <code>healthcare</code> / <code>trades</code> / <code>mfg</code> / <code>dtc</code> / <code>real-estate</code> / <code>other</code></li>
+  <li><strong>source</strong>: <code>chamber</code> / <code>linkedin</code> / <code>cbj-list</code> / <code>inc5000</code> / <code>apollo</code> / <code>referral</code> / <code>event</code></li>
+  <li><strong>warmth</strong>: <code>cold</code> / <code>warm</code> (mutual connection / event meeting) / <code>hot</code> (replied / asked to talk)</li>
+  <li><strong>sequence</strong>: <code>seq-a-generic</code> / <code>seq-b-trigger</code> / <code>seq-c-referral</code></li>
+  <li><strong>last-touch-date</strong>: ISO date of last contact</li>
+  <li><strong>status</strong>: <code>queued</code> / <code>sequencing</code> / <code>replied</code> / <code>booked</code> / <code>proposal</code> / <code>won</code> / <code>lost</code> / <code>nurture</code></li>
+</ul>
+
+<h2>3. The outreach channels</h2>
+
+<p>I run four channels in parallel. Each has a different cost, a different conversion rate, and a different role. Warm reactivation goes first because it converts at 20–50x cold. In-person is the highest-priority channel for net-new buyers. Cold email is the volume engine. LinkedIn is the relationship glue between all of them.</p>
+
+<h3>3a. Warm reactivation (do this first, before any cold)</h3>
+
+<p>The single highest-leverage outreach hour I will spend this quarter is touching everyone I already know. Warm reactivation converts at 20–50x cold rates because the trust is already built. Builders avoid this because it feels like asking for a favor — that is exactly why it works. Run this BEFORE any cold sequences go live.</p>
+
+<h4>Who is on the warm list</h4>
+
+<table>
+  <thead><tr><th>Bucket</th><th>Examples</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Past clients</strong></td><td>Stancil Services, City of Charlotte CTO contact, Mike (Masonry Contract Review), anyone who has paid me a dollar through Lighthouse 27</td><td>Already vouched. Either has another project or knows someone who does.</td></tr>
+    <tr><td><strong>Past collaborators</strong></td><td>Co-founders, ex-colleagues from prior jobs, devs/consultants I have worked alongside, partners on past builds (Oliver / Heirloom)</td><td>Know the work quality first-hand. Referral path.</td></tr>
+    <tr><td><strong>Friends and family who own / run businesses</strong></td><td>Anyone in my personal network who fits the ICP, OR who personally knows 1–2 Charlotte SMB owner-operators</td><td>Lowest awkwardness, highest trust. The "intro chain" multiplier starts here.</td></tr>
+    <tr><td><strong>Dormant LinkedIn connections</strong></td><td>The 500+ existing connections I have not touched in 12+ months who are Charlotte SMB founders / operators</td><td>Already accepted the connection request — door is open. Cost of message = zero. Goodwill is the multiplier.</td></tr>
+  </tbody>
+</table>
+
+<h4>The message — one specific, personal note per person. Never a broadcast.</h4>
+
+<pre>Subject: Quick update + a small ask
+
+Hey [Name] —
+
+Quick update: I have turned the consulting work into a focused
+practice serving Charlotte SMBs. Custom CRMs, AI integrations,
+fractional CTO — the kind of automation that takes weeks of manual
+work off a team. Recent work: built the EV charging dashboard for
+the City of Charlotte, the multi-tenant ops platform for Stancil.
+
+Two questions:
+
+1. Is there anything in your business that has been on the "I should
+   fix this" list for too long? Happy to take a look free, no
+   commitment.
+
+2. Do you know one Charlotte business owner I should meet?
+
+— Brian</pre>
+
+<p>Personalization variables: <code>[Name]</code> (always), <code>[specific context — kid's name, recent move, last conversation topic]</code> in the opener if I have it.</p>
+
+<h4>Cadence</h4>
+
+<ul>
+  <li><strong>Week 1:</strong> 100 warm touches. From a 500-LinkedIn-connection network plus past clients plus friends, this is 4–6 hours of focused work. Send in batches of 10–15, spread across the week so replies stay manageable.</li>
+  <li><strong>Track replies in CRM</strong> with tag <code>warmth = warm</code>, source = <code>warm-reactivation</code>. Promote to <code>hot</code> on "yes, let's talk."</li>
+  <li><strong>Follow up at 14 days</strong> if no reply: one short line. "Hey [Name], just bumping this — no pressure. If now is not the moment, no worries." Then close the loop.</li>
+</ul>
+
+<h4>Expected return</h4>
+
+<p>From 100 well-personalized warm touches: ~15 replies, ~3–5 introductions to someone in the ICP, ~1–3 "yes I have a project" responses. That is more pipeline from <em>week one of warm reactivation</em> than the cold list will produce in a month. This is why it goes first.</p>
+
+<h3>3b. In-person and referral</h3>
+
+<p>Charlotte is a face-to-face town. Every dollar I have made consulting has come from someone who met me in person. The math is unbeatable: one Chamber lunch with 40 owners in the room is 40 first-touches with a 90% open rate and a built-in handshake.</p>
+
+<h4>The weekly in-person commitment</h4>
+
+<p><strong>At least one event per week.</strong> Non-negotiable. Rotate across the four event types so I am not running into the same 30 people every Tuesday.</p>
+
+<table>
+  <thead><tr><th>Type</th><th>Examples</th><th>Cadence</th><th>What I'm hunting</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Chamber</strong></td>
+      <td>Charlotte Chamber morning briefings, Power Lunches, ribbon cuttings, Young Professionals Network mixers</td>
+      <td>2x/month</td>
+      <td>Owner/operator SMBs. Conservative crowd. Plumbers, dentists, accountants.</td>
+    </tr>
+    <tr>
+      <td><strong>BNI / referral groups</strong></td>
+      <td>Visit BNI chapters as a guest. Goal: join the strongest chapter with no competing technologist. South Park, Ballantyne, and Uptown chapters are highest density.</td>
+      <td>Visit 1/month, join 1</td>
+      <td>40-week commitment = 40 weekly referrals. Slow start, compounding return.</td>
+    </tr>
+    <tr>
+      <td><strong>Tech and founder meetups</strong></td>
+      <td>CharlotteJS, Queen City Mavericks, Charlotte Founders, Tech Talent South alumni, Charlotte.AI</td>
+      <td>1x/month</td>
+      <td>Founders building real things. Different vibe — peers, not prospects. Long-game relationship builds.</td>
+    </tr>
+    <tr>
+      <td><strong>Industry-specific</strong></td>
+      <td>Charlotte Apartment Assoc. mixers, Mecklenburg Bar luncheons, HBA Greater Charlotte builder events</td>
+      <td>1x/month</td>
+      <td>Highest-conversion. Everyone in the room is in one of my target verticals.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Conversation-starter scripts</h4>
+
+<p>I never walk up and pitch. I lead with curiosity, find the work, then offer to be useful. Memorized so I don't fumble at the coffee table.</p>
+
+<blockquote>
+<strong>Opening (anyone, anywhere):</strong> "Hey, I'm Brian. What do you do?" — then I shut up and listen for 3 minutes. People love talking about their work. I take mental notes for the hook.
+</blockquote>
+
+<blockquote>
+<strong>Transition (when they ask what I do):</strong> "I run a small tech shop called Ascend Systems out of Charlotte. I build custom software and AI tools for local businesses. Last year I built the EV charging dashboard for the City of Charlotte and a multi-tenant ops platform for a property services company in town. Mostly I help owners get off spreadsheets."
+</blockquote>
+
+<blockquote>
+<strong>Probe (always, regardless of fit):</strong> "What's the most annoying manual process in your business right now? The thing that makes you want to throw your laptop?" — Their answer is the proposal.
+</blockquote>
+
+<blockquote>
+<strong>Close (if there is a hook):</strong> "That sounds like something I could probably help with. Want to grab coffee next week? I'll come to you — I just want to see your setup. No charge, no sales pitch, I just like looking at how businesses actually run."
+</blockquote>
+
+<h4>The "5 clients, 2 intros each" framework</h4>
+
+<p>I have 8 portfolio clients and one big-name reference (City of Charlotte). I ask 5 of them this exact question, in person or on a 10-minute call:</p>
+
+<blockquote>"I'm growing Ascend Systems and I'm taking on 2–3 new Charlotte clients this quarter. You know my work. Who are the two business owners you know personally that I should talk to? I'll mention you sent me. I won't waste their time."</blockquote>
+
+<p>5 clients × 2 intros = 10 warm introductions. At a 30% conversion to discovery call and a 30% conversion call-to-proposal, that is one signed deal from the existing network alone. Do this in week 1.</p>
+
+<h3>3c. Cold email (the volume engine)</h3>
+
+<p>Three sequences, sent through Apollo or Smartlead with a warmed-up <code>brian@ascendsystems.ai</code> mailbox plus a backup <code>brian@lighthouse27.com</code> domain to avoid sending too many from a single sender. Sequences are below in Section 4.</p>
+
+<h4>Sending rules</h4>
+
+<ul>
+  <li><strong>Max 25 first-touch sends per day per mailbox.</strong> Anything more lights up spam filters.</li>
+  <li><strong>Plain text. No tracking pixels. No images.</strong> A plain email from a real person is half the deliverability battle.</li>
+  <li><strong>Send Tuesday–Thursday, 7:30–8:30 AM Eastern.</strong> Owners check their inbox over coffee before the day fills up.</li>
+  <li><strong>Personalization in line 1 of every email, every time.</strong> Not a merge field — a real sentence about the company.</li>
+  <li><strong>Reply-to is my real address.</strong> Replies come into the inbox I check hourly.</li>
+  <li><strong>Suppression list runs.</strong> If a domain has bounced or someone has said no, it never gets a second sequence.</li>
+</ul>
+
+<h3>3d. LinkedIn outbound</h3>
+
+<p>LinkedIn is where I build the relationship in parallel to email. The owner sees a connection request from a real Charlotte person before, during, or after an email lands — and the email stops feeling cold.</p>
+
+<h4>The LinkedIn weekly stack</h4>
+
+<table>
+  <thead><tr><th>Action</th><th>Volume/wk</th><th>Goal</th></tr></thead>
+  <tbody>
+    <tr><td>Connection requests to ICP-matched owners</td><td>15</td><td>Build the network</td></tr>
+    <tr><td>Thoughtful comments on prospect posts</td><td>5</td><td>Warm familiarity before any DM</td></tr>
+    <tr><td>First DM after a request is accepted</td><td>~10 (75% accept)</td><td>Open a conversation</td></tr>
+    <tr><td>Follow-up DMs</td><td>10–15</td><td>Keep the thread moving</td></tr>
+    <tr><td>Original post from Brian's profile</td><td>1</td><td>Stay top of mind for the network</td></tr>
+  </tbody>
+</table>
+
+<h4>The weekly LinkedIn post</h4>
+
+<p>One short post every Friday morning. 100–200 words. Always one of these four types:</p>
+
+<ol>
+  <li><strong>Case study mini-thread.</strong> "Last week I shipped X for a Charlotte client. Here's what we built and what it replaced. Pictures."</li>
+  <li><strong>Opinion on local tech.</strong> "Most Charlotte SMBs do not need a CRM. They need a clean spreadsheet and a Zapier. Here's the rule I use."</li>
+  <li><strong>AI use case for SMBs.</strong> A specific, non-hype application of AI that a property manager or law firm could actually run on Monday.</li>
+  <li><strong>What I'm seeing in the market.</strong> Notes from Chamber events. What founders are asking me. No names unless I have permission.</li>
+</ol>
+
+<p>The posts are not for vanity. They are the trust artifact that an owner reads in week 3 when they get my email and search my name.</p>
+
+<h2>4. Cold email sequences</h2>
+
+<p>Three sequences. Five emails each. Day cadence: <strong>Day 1 / Day 3 / Day 8 / Day 15 / Day 30</strong>. The Day 30 email in every sequence is the breakup. Subjects use no marketing fluff — sentence case, short, scannable.</p>
+
+<h3>Sequence A — "I work with companies like yours in Charlotte"</h3>
+
+<p>For prospects with no specific trigger signal. Lead with proof and local proximity. The whole sequence assumes the prospect has never heard of Ascend.</p>
+
+<h4>A1 — Day 1</h4>
+
+<p>Personalization vars: <code>[FIRST NAME]</code>, <code>[COMPANY]</code>, <code>[ONE-LINE OBSERVATION]</code> (something I noticed about the company — service area, recent project, year founded, etc.), <code>[INDUSTRY ANALOG]</code> (the most similar Ascend case study).</p>
+
+<pre>Subject: Charlotte tech help for [COMPANY]?
+
+Hi [FIRST NAME] —
+
+I'm Brian Mangum. I run a small tech shop in Charlotte called Ascend Systems. [ONE-LINE OBSERVATION] — looks like you're past the point where spreadsheets are still pulling their weight.
+
+I build custom software, web apps, and AI tools for Charlotte-area businesses. Recent work includes the EV charging dashboard for the City of Charlotte and a multi-tenant ops platform for [INDUSTRY ANALOG] here in town.
+
+I'm a one-person shop. No offshore team. I look at your tech setup in person, build the thing myself, and own it end-to-end.
+
+Worth a 15-minute call next week to see if there's a fit? I'll come to you.
+
+Brian
+ascendsystems.ai/portfolio</pre>
+
+<h4>A2 — Day 3</h4>
+
+<pre>Subject: Re: Charlotte tech help for [COMPANY]?
+
+[FIRST NAME] — quick follow-up.
+
+The reason I reached out: most of the SMBs I work with in Charlotte are stuck in the same place. Revenue is good, headcount is growing, and the back office is held together by one spreadsheet that one person understands.
+
+What I usually find when I sit down with an owner: two or three workflows that eat 10+ hours a week and could be automated for less than the cost of one more hire.
+
+If that sounds familiar, I'd like to see it. Free, no slides, no proposal — just me looking at your screen for 20 minutes.
+
+Pick a time: [CALENDAR LINK]
+
+Brian</pre>
+
+<h4>A3 — Day 8</h4>
+
+<p>Personalization: <code>[CASE STUDY URL]</code> — link to the most relevant portfolio piece for their industry.</p>
+
+<pre>Subject: One example
+
+[FIRST NAME] —
+
+Rather than sell, here's a concrete example. Last year a Charlotte property services company asked me to fix their dispatch process. They were running it out of three spreadsheets, two text threads, and a whiteboard.
+
+I built them a multi-tenant platform that pulls in their crews, jobs, and customer requests in one place. Now they dispatch in two clicks instead of twenty minutes.
+
+Case study with screenshots: [CASE STUDY URL]
+
+If [COMPANY] has a process like that — the one you keep meaning to fix — I'd like to see it.
+
+Brian</pre>
+
+<h4>A4 — Day 15</h4>
+
+<pre>Subject: Different angle
+
+[FIRST NAME] —
+
+Stepping back. I'm not trying to sell you a project. I'm trying to find the 2–3 Charlotte businesses I'll work with this year.
+
+What I'm offering: a 30-minute look at one thing in your business that is slower than it should be. I'll tell you whether it's worth automating, whether it should be done by a person, or whether I'd recommend a tool you can buy off the shelf for $50 a month.
+
+Most of the time the answer is the third option. I lose money on that meeting and you save thousands. That is the bet I'm making — that being useful once means you call me when the bigger project comes.
+
+Want the 30 minutes? Reply with "yes" and I'll send a few times.
+
+Brian</pre>
+
+<h4>A5 — Day 30 (breakup)</h4>
+
+<pre>Subject: Closing the loop
+
+[FIRST NAME] — last note from me on this.
+
+I'm assuming the timing isn't right, which is fine. Two requests before I close the loop:
+
+1. If you know another Charlotte owner who's drowning in manual work, send them my way. I'd owe you one.
+2. If "not now" is closer to "not interested," reply with a single word — "stop" — and I'll never email you again.
+
+Either way, good luck with [COMPANY] this year.
+
+Brian
+ascendsystems.ai</pre>
+
+<h3>Sequence B — "I noticed [specific trigger]"</h3>
+
+<p>For prospects with an observable signal: a job posting for an engineering or operations hire, recent funding, an acquisition, a new location, recent press, or a public technology pain point. Highest reply rate of the three.</p>
+
+<p>Personalization vars: <code>[FIRST NAME]</code>, <code>[COMPANY]</code>, <code>[SPECIFIC TRIGGER]</code> (the exact thing I noticed), <code>[TRIGGER URL]</code> (link to the post/article/listing), <code>[ROLE TITLE]</code> if it's a hiring trigger.</p>
+
+<h4>B1 — Day 1</h4>
+
+<pre>Subject: [SPECIFIC TRIGGER] at [COMPANY]
+
+Hi [FIRST NAME] —
+
+Saw [SPECIFIC TRIGGER] at [COMPANY]. Congrats. [TRIGGER URL]
+
+I run Ascend Systems, a small tech shop here in Charlotte. The reason I'm reaching out: when growth-stage companies hit the point you're at, the next two quarters usually surface a backlog of internal tools — a real CRM, a customer portal, integrations between three systems that don't talk.
+
+I do that work as a fractional CTO. Owner-operator, no junior account manager, no offshore team. I built software for the City of Charlotte and an ops platform for a property services company in town.
+
+Worth 20 minutes to compare notes on what's on your tech roadmap? I'll come to you.
+
+Brian
+ascendsystems.ai/portfolio</pre>
+
+<h4>B2 — Day 3 (for a hiring trigger specifically)</h4>
+
+<pre>Subject: Re: [SPECIFIC TRIGGER] at [COMPANY]
+
+[FIRST NAME] — quick add-on.
+
+A hire like [ROLE TITLE] usually means you have a build queue you're trying to clear. Fully loaded, that role costs $180–220K in year one. Most of that first year goes to figuring out your systems before any new code ships.
+
+Alternative: I run a fractional CTO engagement at $6–12K/month. You get a senior builder shipping in week one, and the role itself can be re-evaluated in six months once you know what you actually need full-time for.
+
+Not always the right move. But worth a 20-minute conversation before you make the hire.
+
+Brian</pre>
+
+<h4>B3 — Day 8</h4>
+
+<pre>Subject: The work I'd start with
+
+[FIRST NAME] —
+
+If we worked together, here's the first 30 days, concretely:
+
+Week 1: Two hours with you and one operator. Look at every system, every spreadsheet, every workflow. Write it down.
+Week 2: Pick the one thing that breaks the most often, or the one thing eating the most hours.
+Weeks 3–4: Ship the fix. Real software, not a slide deck. You see something working before the first invoice.
+
+I don't sell strategy decks. I sell working code. Most of the time the first month pays for the year.
+
+Worth a call? [CALENDAR LINK]
+
+Brian</pre>
+
+<h4>B4 — Day 15</h4>
+
+<pre>Subject: Two questions
+
+[FIRST NAME] —
+
+If now isn't the right moment, no problem. Two quick questions before I move on:
+
+1. Is there someone else at [COMPANY] who owns this part of the business who I should be talking to instead?
+2. If you had a senior builder shipping internal tools for you starting tomorrow — no hiring process, no equity, month-to-month — what would you have them build first?
+
+Curious about the answer either way.
+
+Brian</pre>
+
+<h4>B5 — Day 30 (breakup)</h4>
+
+<pre>Subject: Last note
+
+[FIRST NAME] —
+
+Closing this thread. Three short asks:
+
+1. If timing is the issue, tell me when to circle back and I'll diary it.
+2. If you've already hired or solved it, congrats — happy to be a backup option for the next thing.
+3. If it's a hard pass, reply "stop" and I'll never email you again.
+
+Good luck with everything you're building at [COMPANY].
+
+Brian</pre>
+
+<h3>Sequence C — "Mutual connection"</h3>
+
+<p>For warm intros where someone I know has either explicitly recommended I reach out, or is a strong-enough connection that name-dropping is honest. Highest conversion rate of the three. Use sparingly — burns social capital if abused.</p>
+
+<p>Personalization vars: <code>[FIRST NAME]</code>, <code>[COMPANY]</code>, <code>[INTRODUCER NAME]</code>, <code>[REASON THEY SUGGESTED]</code> (the specific reason the introducer pointed me here), <code>[SHARED CONTEXT]</code> (Chamber, alumni, past project, etc.).</p>
+
+<h4>C1 — Day 1</h4>
+
+<pre>Subject: [INTRODUCER NAME] suggested I reach out
+
+Hi [FIRST NAME] —
+
+[INTRODUCER NAME] and I were talking last week about [SHARED CONTEXT] and your name came up. [REASON THEY SUGGESTED]
+
+Short version of what I do: I run Ascend Systems, a Charlotte tech shop that builds custom software and AI tools for owner-operated businesses. Recent work for the City of Charlotte, a property services company, and a few smaller ops. ascendsystems.ai/portfolio.
+
+[INTRODUCER NAME] thought it was worth us talking. Up for a 20-minute call next week? I'm happy to come to you.
+
+Brian</pre>
+
+<h4>C2 — Day 3</h4>
+
+<pre>Subject: Re: [INTRODUCER NAME] suggested I reach out
+
+[FIRST NAME] — quick follow-up.
+
+To make the call easy: I don't do discovery questionnaires. We sit down, you show me one workflow, one spreadsheet, or one tool you wish worked differently. I tell you whether I can help, whether something off-the-shelf would work better, or whether it's not worth doing at all.
+
+20 minutes. No deck. No pitch.
+
+[CALENDAR LINK]
+
+Brian</pre>
+
+<h4>C3 — Day 8</h4>
+
+<pre>Subject: What [INTRODUCER NAME] saw
+
+[FIRST NAME] —
+
+I asked [INTRODUCER NAME] what made them think of you specifically. They said [REASON THEY SUGGESTED, REWORDED].
+
+If that's still on your plate, this is the kind of work I do regularly. Closest case study from the portfolio: [CASE STUDY URL].
+
+If it's not on your plate or already solved, no worries — but I'd hate to leave [INTRODUCER NAME]'s suggestion sitting in your inbox without one more nudge.
+
+Brian</pre>
+
+<h4>C4 — Day 15</h4>
+
+<pre>Subject: Wrapping up
+
+[FIRST NAME] —
+
+I'll close this out unless I hear from you. One last option: if a 20-minute call is too much, I'm happy to do a quick async write-up — I'd just need you to send me one or two screenshots or a short description of the workflow [INTRODUCER NAME] mentioned. I'll write back with what I'd do.
+
+That's a free 30 minutes of my time. Yours for the asking.
+
+Brian</pre>
+
+<h4>C5 — Day 30 (breakup)</h4>
+
+<pre>Subject: All good
+
+[FIRST NAME] —
+
+I'll let this rest. If you want me to circle back in a quarter, say the word. If it's truly not relevant, no follow-up needed.
+
+I'll let [INTRODUCER NAME] know I gave it a real shot. Thanks for the read.
+
+Brian</pre>
+
+<h2>5. LinkedIn message templates</h2>
+
+<p>LinkedIn limits connection requests to 300 characters. Keep them short, specific, and human. The DMs that follow are longer but still concise.</p>
+
+<h3>Connection request (300 char max)</h3>
+
+<p>Personalization: <code>[FIRST NAME]</code>, <code>[ONE-WORD HOOK]</code> (their industry, a recent post topic, a shared connection).</p>
+
+<pre>Hey [FIRST NAME] — I run a small Charlotte tech shop (Ascend Systems). I follow what's happening in [ONE-WORD HOOK] here in town and your work caught my eye. Not pitching anything — just like to know the operators in the city. Worth a connect?</pre>
+
+<h3>First DM after the connect is accepted</h3>
+
+<p>Send same day or next morning. Never the moment of acceptance — feels automated.</p>
+
+<pre>Thanks for connecting, [FIRST NAME].
+
+Quick context on why I reached out: I build custom software and AI tools for Charlotte SMBs. Recent work: the EV charging dashboard for the City of Charlotte, and a multi-tenant ops platform for a local property services company.
+
+I'm not pitching here. Mostly I want to know who's building real things in town. If there's ever a tech problem you want a second opinion on, I'm a free phone call.
+
+What are you working on this quarter?</pre>
+
+<h3>Follow-up DM (5 days after first DM, if no reply)</h3>
+
+<pre>[FIRST NAME] — circling back. No agenda, just genuinely curious. If you're not in a place to chat shop, all good — I'll just see you in the feed.
+
+If you are, what's the one process at [COMPANY] you'd most like to fix? I usually have an opinion.</pre>
+
+<h3>Value-add DM (10 days after first DM, if still no reply)</h3>
+
+<p>Send a link to one of our case studies or blog posts that matches their industry. No ask.</p>
+
+<pre>[FIRST NAME] — sharing this one because it's the closest thing I've built to what you're doing at [COMPANY]:
+
+[CASE STUDY OR BLOG URL]
+
+Filing it under "you might find it interesting." No reply needed.
+
+Brian</pre>
+
+<h3>Engaging on a prospect's post</h3>
+
+<p>Five thoughtful comments per week, on posts from prospects in the active list. Rules:</p>
+
+<ul>
+  <li>Add a real opinion or a specific fact, not "Great post!"</li>
+  <li>Two sentences minimum, four sentences max.</li>
+  <li>Never link to my own stuff in a comment.</li>
+  <li>Like the post. Don't like every post they have ever made — that's stalker behavior and they'll see it.</li>
+</ul>
+
+<h2>6. Reply handling</h2>
+
+<p>Every reply gets a response within 4 business hours, ideally faster. Speed of reply is a free competitive advantage. Below are templates by reply type.</p>
+
+<h3>Positive — "Sure, let's talk"</h3>
+
+<pre>Great — here's a link to my calendar with open 20-minute slots: [CALENDAR LINK]
+
+What to expect on the call:
+- 2 min: I tell you about Ascend Systems.
+- 10 min: You walk me through one or two things you wish worked better.
+- 5 min: I tell you whether I can help, whether you'd be better off with off-the-shelf software, or whether it's not worth doing at all.
+- 3 min: If there's a fit, we agree on next steps.
+
+If you'd prefer to grab coffee in person instead of Zoom, I'm in Charlotte and happy to come to your office. Just let me know.
+
+Brian</pre>
+
+<h3>Curious — "Tell me more / send some info"</h3>
+
+<p>Don't dump a brochure. Send one case study that matches their industry and offer a call.</p>
+
+<pre>Happy to. Closest piece of work to what [COMPANY] does: [CASE STUDY URL]
+
+That gives the shape of how I work and what I ship. If after reading it you want a 15-minute walkthrough where I show you the actual product and the actual code, here's the calendar: [CALENDAR LINK]
+
+If a written reply is easier, send me one sentence on the problem you're thinking about and I'll write back with a rough approach.
+
+Brian</pre>
+
+<h3>Negative — "Not interested / we're set"</h3>
+
+<p>Take the no, but learn something. Most "no" replies are actually "not yet."</p>
+
+<pre>Got it — thanks for the quick reply.
+
+If you don't mind a single follow-up question: what would [COMPANY] need to look like for this to be a "yes" later? Different size, different problem, different timing? Helps me know when (or whether) to circle back.
+
+Either way, good luck this year.
+
+Brian</pre>
+
+<h3>"Send pricing"</h3>
+
+<p>Never send pricing without a conversation. Pricing is meaningless without scope. Book the call.</p>
+
+<pre>Happy to walk through pricing on a call. The reason I won't quote in an email: my work ranges from a $5K fixed-scope build to a $12K/month fractional CTO retainer, and the right number depends entirely on what you actually need.
+
+15 minutes here and I'll give you a real number on the call: [CALENDAR LINK]
+
+If you want a rough ballpark before we talk, send me one sentence on what you're trying to build.
+
+Brian</pre>
+
+<h3>"Can you do X by Y date?"</h3>
+
+<p>Hot lead. Drop everything and book within 24 hours.</p>
+
+<pre>Maybe. Quickest way to know: 20 minutes on the phone today or tomorrow.
+
+Here's the calendar — I'll move things around if you don't see a slot that works: [CALENDAR LINK]
+
+Or text me directly: 704-XXX-XXXX
+
+Brian</pre>
+
+<h2>7. The first call — 20-minute discovery script</h2>
+
+<p>Every first call follows the same shape. I do not improvise. Improvisation is how a 20-minute call becomes a 45-minute waste of two people's time.</p>
+
+<table>
+  <thead><tr><th>Minute</th><th>What I do</th><th>Goal</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>0–2</strong><br>Open</td>
+      <td>Thanks for the time. Quick context: I run Ascend Systems, I build custom software and AI tools for Charlotte SMBs, I've worked for the City of Charlotte and [closest analog client]. I'm a one-person shop. Today is a fit conversation, not a pitch.</td>
+      <td>Set tone, lower defenses</td>
+    </tr>
+    <tr>
+      <td><strong>2–12</strong><br>Their context</td>
+      <td>Walk me through what you do. What's the headcount? How fast are you growing? What does your current tech stack look like — what tools are you running today? Where does work happen that you wish was in software? What's the most annoying manual thing you do every week? Who in the company would be the day-one user of anything I built?</td>
+      <td>Find the wedge problem</td>
+    </tr>
+    <tr>
+      <td><strong>12–17</strong><br>My response</td>
+      <td>Reflect back what I heard. Name the one specific problem I'd start with. Tell them how I'd approach it — week one, week two, week four. Show one screenshot of an analogous build from the portfolio. Be honest if I'd recommend an off-the-shelf tool instead. Range the cost.</td>
+      <td>Show competence, propose a wedge</td>
+    </tr>
+    <tr>
+      <td><strong>17–20</strong><br>Close</td>
+      <td>If there's a fit: "Here's what happens next. I'll send a one-page scope of work by Friday. If it looks right, I'll send a fixed-price proposal Monday. If we sign, I start the following Monday." If there's no fit: "Honest answer — I'm not the right person for this. Here's who I'd send you to." If unsure: "Let me think on it overnight and I'll send a note tomorrow with my honest take."</td>
+      <td>Get a yes/no to a next step</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Key questions I always ask</h3>
+
+<ul>
+  <li>What does the end of a successful year look like for [COMPANY]?</li>
+  <li>What is your team spending time on that you think a computer should do?</li>
+  <li>Who owns this project on your side, day-to-day?</li>
+  <li>How do you usually buy something like this — fixed-price, hourly, retainer?</li>
+  <li>If I built this and it worked, what would you ask me to build next?</li>
+</ul>
+
+<h3>Questions I never ask</h3>
+
+<ul>
+  <li>"What's your budget?" (lazy — I price the work, not the wallet)</li>
+  <li>"What's your decision-making process?" (sales-y — they tune out)</li>
+  <li>"Are you the decision-maker?" (insulting — I already know from the research)</li>
+</ul>
+
+<h2>8. CRM hygiene</h2>
+
+<p>The Ascend CRM at <code>ascendsystems.ai/admin/projects</code> is the source of truth. Everything goes in. If I touched a lead and didn't log it, the touch didn't happen.</p>
+
+<h3>What I log after every touch</h3>
+
+<ul>
+  <li><strong>Touch type:</strong> email-sent / email-replied / linkedin-dm / linkedin-comment / in-person / phone / referral-intro</li>
+  <li><strong>Touch date</strong> (auto)</li>
+  <li><strong>Touch summary:</strong> One sentence. What I said, what they said. "Sent A1. No reply." or "Asked about dispatch workflow. He uses three spreadsheets and a whiteboard."</li>
+  <li><strong>Next action + due date:</strong> "Follow up Day 3 — already queued in Apollo" or "Send case study URL by Friday."</li>
+  <li><strong>Status change</strong> (if any): queued → sequencing → replied → booked → proposal → won/lost/nurture</li>
+</ul>
+
+<h3>Lead becomes a deal when…</h3>
+
+<p>A lead is promoted from <code>contact</code> to <code>deal</code> when one of these is true:</p>
+
+<ol>
+  <li>A discovery call has been booked on the calendar.</li>
+  <li>They've replied asking for pricing or scope.</li>
+  <li>An intro call has happened and there's a clear next step.</li>
+</ol>
+
+<p>At the deal stage I add a project record in the CRM with an estimated deal value, target close date, and one of three stages: <code>discovery</code> / <code>proposal</code> / <code>negotiation</code>. I review the deal board every Friday during reply day.</p>
+
+<h2>9. The 30/60/90 outreach plan</h2>
+
+<table>
+  <thead><tr><th>Phase</th><th>Days</th><th>Targets</th><th>Output</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Setup</strong></td>
+      <td>Week 1<br>(Days 1–7)</td>
+      <td>List built · sequences loaded · mailbox warmed</td>
+      <td>200 qualified Charlotte SMBs in the CRM, tagged and scored. Apollo/Smartlead account configured. Two sending domains warmed for 5 days. Calendar link live. Portfolio page reviewed. LinkedIn profile updated.</td>
+    </tr>
+    <tr>
+      <td><strong>Send phase 1</strong></td>
+      <td>Week 2<br>(Days 8–14)</td>
+      <td>75 first-touches sent</td>
+      <td>15/day × 5 days. First Chamber event attended. 5 portfolio clients asked for intros. First LinkedIn post live.</td>
+    </tr>
+    <tr>
+      <td><strong>Send phase 2</strong></td>
+      <td>Weeks 3–4<br>(Days 15–30)</td>
+      <td>150 more sent · 5 calls booked · 1 proposal</td>
+      <td>Sequences running. Follow-ups auto-queued. First discovery calls held. First scope-of-work doc and proposal sent. First in-person coffee meeting. <strong>First paying customer signed by Day 30.</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Build the funnel</strong></td>
+      <td>Weeks 5–8<br>(Days 31–60)</td>
+      <td>15 calls booked · 5 proposals out · 2–3 signed</td>
+      <td>Sequences A and B both running at full speed. Sequence C activated as warm intros come in. BNI chapter joined. Second Chamber event. Two LinkedIn posts. Pipeline is real and weighted.</td>
+    </tr>
+    <tr>
+      <td><strong>Close and compound</strong></td>
+      <td>Weeks 9–13<br>(Days 61–90)</td>
+      <td>6–10 paying clients total · referral loop active</td>
+      <td>Existing clients asked for testimonials. Case studies updated. Referral asks made to every signed client. List rebuilt with what worked. Sequences rewritten based on the highest-replying subject lines and openings. Decision on what's working and what to kill.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>10. Metrics and kill criteria</h2>
+
+<p>Tracked every Friday during reply day. Logged in a single Google Sheet next to the CRM.</p>
+
+<h3>Weekly scoreboard</h3>
+
+<table>
+  <thead><tr><th>Metric</th><th>Healthy</th><th>Warning</th><th>Kill / change</th></tr></thead>
+  <tbody>
+    <tr><td>First-touch emails sent</td><td>75/wk</td><td>50–74/wk</td><td>&lt;50/wk for 2 weeks</td></tr>
+    <tr><td>Email reply rate</td><td>≥8%</td><td>4–7%</td><td>&lt;4% for 2 weeks — rewrite subject lines or openings</td></tr>
+    <tr><td>Positive reply rate</td><td>≥3%</td><td>1–2%</td><td>&lt;1% — list quality or message-market fit problem</td></tr>
+    <tr><td>LinkedIn accept rate</td><td>≥60%</td><td>40–59%</td><td>&lt;40% — rewrite connection request</td></tr>
+    <tr><td>Discovery calls booked</td><td>3–4/wk</td><td>1–2/wk</td><td>0/wk for 2 weeks — channel mix is broken</td></tr>
+    <tr><td>Call → proposal rate</td><td>≥40%</td><td>20–39%</td><td>&lt;20% — fit problem on the list or the script</td></tr>
+    <tr><td>Proposal → close rate</td><td>≥30%</td><td>15–29%</td><td>&lt;15% — pricing or scope problem</td></tr>
+    <tr><td>In-person events attended</td><td>≥1/wk</td><td>1 every 2 wks</td><td>0/month — the highest-leverage channel is unused</td></tr>
+  </tbody>
+</table>
+
+<p>Industry benchmarks for B2B cold outreach: median reply rates of 8–10% (Apollo, Lemlist published medians), positive reply rates of 1–3%. The numbers above are my targets, not my history.</p>
+
+<h3>Kill criteria — when I pivot</h3>
+
+<ol>
+  <li><strong>Day 30, zero discovery calls.</strong> The list or the sequences are broken. Stop sending. Spend a full week auditing list quality, rewriting Sequence A, and running 10 manual hyper-personalized sends to test whether the problem is the message or the audience.</li>
+  <li><strong>Day 60, zero signed clients.</strong> Something more structural is off. Either the offering needs sharpening (fractional CTO is too vague), the price is wrong, or the ICP is wrong. Pause outbound for one week and have 5 honest conversations with people in the pipeline who didn't buy.</li>
+  <li><strong>Day 90, fewer than 3 signed clients.</strong> Re-evaluate the whole motion. The playbook is not working at scale. Consider narrowing the ICP to one vertical and rebuilding the list from scratch.</li>
+</ol>
+
+<div class="callout">
+  <h3>What I will not do</h3>
+  <ul>
+    <li>Buy a 10,000-row email list and blast it. Lights up the sending domains and burns the brand.</li>
+    <li>Hire a VA in the Philippines to send my LinkedIn DMs. Defeats the entire premise of "owner-operator who shows up in person."</li>
+    <li>Use AI to write personalization that I haven't read with my own eyes. The whole edge is that I am a real Charlotte person who actually read the company website.</li>
+    <li>Skip the weekly Chamber event because I'm tired. The in-person channel is the highest-leverage activity in this playbook.</li>
+    <li>Drop pricing in an email. Pricing happens on the phone, after I see the work.</li>
+    <li>Take on a client outside Charlotte metro in the first 90 days. The whole geographic moat depends on being local.</li>
+  </ul>
+</div>
+
+<h2>Ready-to-run checklist</h2>
+
+<p>Monday morning, week 1. In order:</p>
+
+<ol>
+  <li>Buy Sales Navigator. Save the "Charlotte SMB owners" lead list with the ICP filters.</li>
+  <li>Buy Apollo starter. Connect both sending domains. Verify deliverability scores ≥9/10 on Mail-tester.</li>
+  <li>Buy the Charlotte Business Journal Book of Lists.</li>
+  <li>Pull 200 qualified leads into the CRM by Friday. Tag each one.</li>
+  <li>Load Sequences A and B into Smartlead. Sequence C lives manually for now — referrals are rare and worth hand-writing.</li>
+  <li>Update LinkedIn profile: headline says "I build custom software and AI tools for Charlotte SMBs." Banner uses the Ascend brand. Featured section links to portfolio.</li>
+  <li>Write the first LinkedIn post — case study mini-thread, Friday publish.</li>
+  <li>Identify 5 portfolio clients to ask for intros. Send the ask email by Wednesday.</li>
+  <li>Register for the next Charlotte Chamber event on the calendar. Add to phone.</li>
+  <li>Start Sequence A sending Tuesday of week 2 at 7:30 AM.</li>
+</ol>
+
+<p>Then I run it. Same thing the next week. Same thing the week after that. The playbook works on volume of repetition, not on cleverness. The owner who follows up five times beats the agency that sends three perfect emails and disappears.</p>
+
+<div class="doc-footer">Ascend Systems · prepared 2026-05-12</div>
+
+</div>
+</body>
+</html>
