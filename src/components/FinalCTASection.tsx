@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { siteConfig } from '../config/site';
 
 const FinalCTASection = () => {
+  const bookingHref = siteConfig.calendlyUrl || '/contact';
+  const isExternal = bookingHref.startsWith('http');
   return (
     <section
       id="contact"
@@ -63,14 +67,25 @@ const FinalCTASection = () => {
               direct conversation with the person who'll run your engagement.
             </p>
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-              <a href="https://cal.com/ascend" className="btn btn-primary btn-lg">
-                Book a discovery call <span>→</span>
-              </a>
+              {isExternal ? (
+                <a
+                  href={bookingHref}
+                  className="btn btn-primary btn-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Book a discovery call <span>→</span>
+                </a>
+              ) : (
+                <Link to={bookingHref} className="btn btn-primary btn-lg">
+                  Book a discovery call <span>→</span>
+                </Link>
+              )}
               <a
-                href="mailto:hello@ascend.systems"
+                href={`mailto:${siteConfig.email}`}
                 className="btn btn-ghost-dark btn-lg"
               >
-                hello@ascend.systems
+                {siteConfig.email}
               </a>
             </div>
           </div>

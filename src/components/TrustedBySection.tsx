@@ -13,12 +13,12 @@ const TrustedBySection = () => {
 
   return (
     <section
-      className="section section-darker"
+      className="section section-light"
       style={{
         padding: '56px 0',
         overflow: 'hidden',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderTop: '1px solid var(--color-gray-200)',
+        borderBottom: '1px solid var(--color-gray-200)',
       }}
     >
       <div
@@ -29,7 +29,7 @@ const TrustedBySection = () => {
           fontSize: 11,
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.45)',
+          color: 'var(--color-gray-600)',
         }}
       >
         — Recent engagements —
@@ -70,7 +70,7 @@ const TrustedBySection = () => {
                   fontFamily: 'var(--font-body)',
                   fontSize: 16,
                   fontWeight: 600,
-                  color: 'rgba(255,255,255,0.7)',
+                  color: 'var(--color-charcoal)',
                   textAlign: 'center',
                 }}
               >

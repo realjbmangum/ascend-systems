@@ -44,8 +44,14 @@ export default function Footer() {
             </ul>
             <div className="mt-6">
               <h4 className="text-white text-sm font-semibold mb-2">Get in Touch</h4>
-              <p className="text-sm">{siteConfig.email}</p>
-              <p className="text-sm">{siteConfig.phone}</p>
+              {siteConfig.email && (
+                <p className="text-sm">
+                  <a href={`mailto:${siteConfig.email}`} className="hover:text-white transition-colors">
+                    {siteConfig.email}
+                  </a>
+                </p>
+              )}
+              {siteConfig.phone && <p className="text-sm">{siteConfig.phone}</p>}
             </div>
           </div>
         </div>
