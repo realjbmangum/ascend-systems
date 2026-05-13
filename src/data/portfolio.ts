@@ -23,6 +23,7 @@ export const PROJECTS: Project[] = [
     description:
       'South Carolinians were stuck manually refreshing the DMV scheduler for hours. SC DMV Alerts monitors all 65 locations every 5 minutes and fires an email the moment a slot opens.',
     url: 'https://scdmvappointments.com',
+    screenshot: '/images/portfolio/scdmv-alerts-card.svg',
     status: 'live',
     tags: ['Astro', 'Cloudflare Workers', 'D1', 'SendGrid', 'Stripe'],
     metrics: [
@@ -46,6 +47,7 @@ export const PROJECTS: Project[] = [
     description:
       'Record collectors had no good way to find independent stores outside their city. RecordStops built the go-to directory — state by state, city by city — with store profiles, hours, and curated city guides.',
     url: 'https://recordstops.com',
+    screenshot: '/images/portfolio/recordstops-card.svg',
     status: 'live',
     tags: ['Astro', 'Cloudflare D1', 'Tailwind', 'SEO'],
     metrics: [
@@ -69,6 +71,7 @@ export const PROJECTS: Project[] = [
     description:
       'SendMyLove lets you schedule recurring love messages to the people who matter most. One subscription, personalized notes, delivered on your schedule — no florist markup required.',
     url: 'https://sendmylove.app',
+    screenshot: '/images/portfolio/sendmylove-card.svg',
     status: 'live',
     tags: ['SvelteKit', 'Stripe', 'Supabase', 'Consumer SaaS'],
     metrics: [
@@ -116,7 +119,7 @@ export const PROJECTS: Project[] = [
     description:
       'Ringdocket is a spam-call blocking app powered by a shared blocklist. Users report spam numbers; everyone on the network is protected instantly.',
     url: 'https://ringdocket.com',
-    screenshot: '/images/ringocket.png',
+    screenshot: '/images/portfolio/ringdocket-card.svg',
     status: 'live',
     tags: ['Mobile', 'Call Blocking', 'Community Data'],
     metrics: [
@@ -140,6 +143,7 @@ export const PROJECTS: Project[] = [
     description:
       'PottyDirectory is the largest crowdsourced public restroom directory online — 1,400+ listings with hours, cleanliness ratings, and accessibility notes.',
     url: 'https://pottydirectory.com',
+    screenshot: '/images/portfolio/pottydirectory-card.svg',
     status: 'live',
     tags: ['Astro', 'Cloudflare D1', 'AdSense', 'Directory'],
     metrics: [
