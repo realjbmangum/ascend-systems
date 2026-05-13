@@ -51,6 +51,28 @@
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
+/* ============================================================
+   SSR FOUC guard
+   framer-motion's `initial={{ opacity: 0, y: 20 }}` serializes to
+   inline `opacity:0;transform:translateY(...)` during Astro's
+   server render. If JS fails to load (or arrives slowly), the
+   marketing copy stays invisible. Override with a delayed
+   no-JS reveal so users always see content even without
+   hydration. The `.js-loaded` class on <html> (set immediately
+   after hydration) suppresses this so framer-motion can take over
+   for users who do have JS.
+   ============================================================ */
+html:not(.js-loaded) [style*="opacity:0"][style*="transform:translateY"] {
+  animation: ssr-fallback-reveal 0s 0.8s forwards;
+}
+
+@keyframes ssr-fallback-reveal {
+  to {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);

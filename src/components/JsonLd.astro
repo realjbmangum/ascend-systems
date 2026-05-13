@@ -1,0 +1,26 @@
+---
+/**
+ * Per-page JSON-LD emitter.
+ *
+ * Renders a single <script type="application/ld+json"> tag in the document
+ * head. Pages pass a schema-shaped object (or an array wrapped in an
+ * `@graph`). Multiple <JsonLd> instances are allowed per page (e.g. FAQ +
+ * BreadcrumbList).
+ *
+ * Pattern from docs/seo/2026-05-12-schema-markup.html — Pattern B.
+ */
+
+interface Props {
+  /** Any schema.org-shaped object or an `@graph` envelope. */
+  data: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { data } = Astro.props;
+const json = JSON.stringify(data);
+---
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={json}
+/>

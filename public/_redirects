@@ -1,0 +1,14 @@
+# Astro-first deploy
+#
+# Astro static HTML serves all marketing/public routes. The React SPA
+# (admin, portal, proposal-sign) is NOT bundled into this dist yet —
+# see progress.txt "admin/portal migration status" for the plan to move
+# it to admin.ascendsystems.ai before the public Astro site goes live.
+#
+# Once the React SPA is being co-deployed, uncomment the lines below
+# (and add `dist/admin/index.html` + `dist/portal/index.html` to the
+# build pipeline) so client-side routing inside the SPA works:
+#
+# /admin/*       /admin/index.html       200
+# /portal/*      /portal/index.html      200
+# /proposals/*   /admin/index.html       200

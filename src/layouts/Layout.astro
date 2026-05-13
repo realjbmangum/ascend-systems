@@ -1,0 +1,107 @@
+---
+/**
+ * Root layout for every public marketing page.
+ *
+ * Renders:
+ * - Full HTML5 head with canonical, OG, Twitter card, theme-color
+ * - Sitewide JSON-LD @graph (Organization, ProfessionalService, Person, WebSite)
+ * - Pre-rendered Nav + Footer (plain HTML, no React)
+ * - Slot for page body
+ *
+ * Pages pass title/description/canonical/OG via props.
+ */
+
+import '../styles/globals.css';
+import AstroNav from '../components/AstroNav.astro';
+import AstroFooter from '../components/AstroFooter.astro';
+import { SITEWIDE_GRAPH } from '../data/schema-graph';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Canonical path (e.g. "/services"). Site origin is prepended. */
+  canonical?: string;
+  /** OG image URL (absolute). Defaults to site og-image.png. */
+  ogImage?: string;
+  /** Open Graph type — defaults to "website". Use "article" for case studies. */
+  ogType?: 'website' | 'article';
+  /** Optional noindex (only true for private pages). */
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = 'https://ascendsystems.ai/og-image.png',
+  ogType = 'website',
+  noindex = false,
+} = Astro.props;
+
+const siteOrigin = 'https://ascendsystems.ai';
+const canonicalUrl = canonical
+  ? `${siteOrigin}${canonical.startsWith('/') ? canonical : `/${canonical}`}`
+  : `${siteOrigin}${Astro.url.pathname}`.replace(/\/$/, '') || siteOrigin;
+
+const graphJson = JSON.stringify(SITEWIDE_GRAPH);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1E2A32" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="Ascend Systems" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Fonts — preconnect + import. Inter + JetBrains Mono with system fallback. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
+
+    <!-- Sitewide JSON-LD @graph (Phase 1 schema) -->
+    <script type="application/ld+json" is:inline set:html={graphJson} />
+
+    <slot name="head" />
+
+    <!-- Mark js-loaded immediately so the SSR-FOUC-guard CSS in globals.css
+         stays dormant for hydrated users. framer-motion then drives entrance
+         animations as designed. Users without JS get a 0.8s delayed reveal. -->
+    <script is:inline>document.documentElement.classList.add('js-loaded');</script>
+  </head>
+  <body class="bg-[#FAFAF8] text-charcoal font-sans antialiased min-h-screen flex flex-col">
+    <AstroNav />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <AstroFooter />
+  </body>
+</html>

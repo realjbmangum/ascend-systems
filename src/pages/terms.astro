@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageIsland from '../components/PageIsland';
+
+const title = 'Terms of Service | Ascend Systems';
+const description = 'Terms of service for Ascend Systems (Lighthouse 27 LLC).';
+---
+
+<Layout title={title} description={description} canonical="/terms">
+  <PageIsland page="terms" initialPath="/terms" client:load />
+</Layout>

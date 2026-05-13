@@ -1,0 +1,109 @@
+---
+/**
+ * Server-rendered nav. Mirrors src/components/Nav.tsx 1:1 in markup + classes,
+ * just swapping react-router <Link> for plain <a> so the chrome ships in raw
+ * HTML (no JS required for the marquee crawl). The mobile-menu toggle is a
+ * tiny inline script — no React hydration needed.
+ */
+
+const pathname = Astro.url.pathname;
+
+const navLinks = [
+  { to: '/services', label: 'Services' },
+  { to: '/portfolio', label: 'Portfolio' },
+  { to: '/tools/cost-calculator', label: 'Free Tools' },
+  { to: '/about', label: 'About' },
+];
+
+function isActive(href: string) {
+  return pathname === href || pathname === `${href}/`;
+}
+---
+
+<nav class="sticky top-0 z-50 bg-charcoal/95 backdrop-blur-sm border-b border-charcoal-light">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/images/logo.png" alt="Ascend Systems" class="h-16 sm:h-[4.75rem]" />
+        <span class="text-lg sm:text-xl font-bold text-white tracking-tight">
+          ASCEND<span class="text-orange"> SYSTEMS</span>
+        </span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8">
+        {navLinks.map((link) => (
+          <a
+            href={link.to}
+            class:list={[
+              'text-sm font-medium transition-colors',
+              isActive(link.to) ? 'text-orange' : 'text-gray-300 hover:text-white',
+            ]}
+          >
+            {link.label}
+          </a>
+        ))}
+        <a
+          href="/contact"
+          class="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+        >
+          Let's Talk
+        </a>
+      </div>
+
+      <button
+        id="mobile-menu-toggle"
+        class="md:hidden text-white p-2"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="md:hidden pb-4 border-t border-charcoal-light pt-4 hidden">
+      {navLinks.map((link) => (
+        <a
+          href={link.to}
+          class:list={[
+            'block py-2 text-sm font-medium',
+            isActive(link.to) ? 'text-orange' : 'text-gray-300 hover:text-white',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+      <a
+        href="/contact"
+        class="block mt-3 bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors text-center"
+      >
+        Let's Talk
+      </a>
+    </div>
+  </div>
+</nav>
+
+<script is:inline>
+  (function () {
+    const btn = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const open = document.getElementById('icon-open');
+    const close = document.getElementById('icon-close');
+    if (!btn || !menu || !open || !close) return;
+    btn.addEventListener('click', function () {
+      const isOpen = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden');
+      open.classList.toggle('hidden', !isOpen ? false : true);
+      // simpler: re-derive after toggle
+      const nowOpen = !menu.classList.contains('hidden');
+      btn.setAttribute('aria-expanded', String(nowOpen));
+      open.classList.toggle('hidden', nowOpen);
+      close.classList.toggle('hidden', !nowOpen);
+    });
+  })();
+</script>

@@ -1,0 +1,64 @@
+---
+/**
+ * Server-rendered footer. Mirrors src/components/Footer.tsx — swaps
+ * react-router <Link> for plain <a>. siteConfig is imported as plain TS.
+ */
+import { siteConfig } from '../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-charcoal-900 text-gray-400 py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+      <div class="md:col-span-2">
+        <a href="/" class="inline-block">
+          <span class="text-2xl font-bold text-white tracking-tight">
+            ASCEND<span class="text-orange"> SYSTEMS</span>
+          </span>
+        </a>
+        <p class="mt-4 text-sm leading-relaxed max-w-sm">
+          Custom software, AI integrations, and business automation for
+          growing Charlotte SMBs. One senior engineer, end to end.
+        </p>
+        <p class="mt-4 text-xs text-gray-500">
+          {siteConfig.location} &middot; {siteConfig.company}
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-white text-sm font-semibold mb-4">Company</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/about" class="hover:text-white transition-colors">About</a></li>
+          <li><a href="/services" class="hover:text-white transition-colors">Services</a></li>
+          <li><a href="/portfolio" class="hover:text-white transition-colors">Portfolio</a></li>
+          <li><a href="/tools/cost-calculator" class="hover:text-white transition-colors">Free Cost Calculator</a></li>
+          <li><a href="/contact" class="hover:text-white transition-colors">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white text-sm font-semibold mb-4">Legal</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+          <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
+        </ul>
+        <div class="mt-6">
+          <h4 class="text-white text-sm font-semibold mb-2">Get in Touch</h4>
+          {siteConfig.email && (
+            <p class="text-sm">
+              <a href={`mailto:${siteConfig.email}`} class="hover:text-white transition-colors">
+                {siteConfig.email}
+              </a>
+            </p>
+          )}
+          {siteConfig.phone && <p class="text-sm">{siteConfig.phone}</p>}
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-charcoal-light text-center text-xs text-gray-500">
+      &copy; {year} {siteConfig.company}. All rights reserved.
+    </div>
+  </div>
+</footer>

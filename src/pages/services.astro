@@ -1,0 +1,92 @@
+---
+/**
+ * Services page — `/services`
+ *
+ * Renders existing React <Services /> via PageIsland. Adds Service × 5
+ * JSON-LD as page-specific schema (Phase 2 in the audit, included here
+ * since the foundation is being laid).
+ */
+import Layout from '../layouts/Layout.astro';
+import JsonLd from '../components/JsonLd.astro';
+import PageIsland from '../components/PageIsland';
+
+const title = 'Services — Custom Software, AI, and Automation | Ascend Systems';
+const description =
+  'Custom SaaS, AI agents, internal tooling, and legacy modernization for Charlotte mid-market businesses. One senior engineer, end to end.';
+
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': 'https://ascendsystems.ai/services#custom-saas',
+      name: 'Custom SaaS Development',
+      serviceType: 'Custom Software Development',
+      description:
+        'End-to-end product teams building revenue-generating platforms on modern stacks. From zero-to-one to enterprise scale.',
+      provider: { '@id': 'https://ascendsystems.ai/#organization' },
+      areaServed: [
+        { '@type': 'City', name: 'Charlotte' },
+        { '@type': 'AdministrativeArea', name: 'North Carolina' },
+      ],
+    },
+    {
+      '@type': 'Service',
+      '@id': 'https://ascendsystems.ai/services#ai-integrations',
+      name: 'AI Integrations & Agents',
+      serviceType: 'AI Application Development',
+      description:
+        'AI phone agents, document processing, custom chatbots, and LLM integrations trained on your data.',
+      provider: { '@id': 'https://ascendsystems.ai/#organization' },
+      areaServed: [
+        { '@type': 'City', name: 'Charlotte' },
+        { '@type': 'AdministrativeArea', name: 'North Carolina' },
+      ],
+    },
+    {
+      '@type': 'Service',
+      '@id': 'https://ascendsystems.ai/services#internal-tools',
+      name: 'Internal Tools & Dashboards',
+      serviceType: 'Custom Software Development',
+      description:
+        'Internal software your team will actually use — operations dashboards, admin panels, and workflow automation.',
+      provider: { '@id': 'https://ascendsystems.ai/#organization' },
+      areaServed: [
+        { '@type': 'City', name: 'Charlotte' },
+        { '@type': 'AdministrativeArea', name: 'North Carolina' },
+      ],
+    },
+    {
+      '@type': 'Service',
+      '@id': 'https://ascendsystems.ai/services#legacy-modernization',
+      name: 'Legacy System Modernization',
+      serviceType: 'Software Migration',
+      description:
+        'Replace aging on-prem and bespoke systems with modern cloud-native stacks without disrupting the business.',
+      provider: { '@id': 'https://ascendsystems.ai/#organization' },
+      areaServed: [
+        { '@type': 'City', name: 'Charlotte' },
+        { '@type': 'AdministrativeArea', name: 'North Carolina' },
+      ],
+    },
+    {
+      '@type': 'Service',
+      '@id': 'https://ascendsystems.ai/services#fractional-cto',
+      name: 'Fractional CTO',
+      serviceType: 'Technical Advisory',
+      description:
+        'Senior engineering leadership on retainer for owner-operators who need a technical partner, not a vendor.',
+      provider: { '@id': 'https://ascendsystems.ai/#organization' },
+      areaServed: [
+        { '@type': 'City', name: 'Charlotte' },
+        { '@type': 'AdministrativeArea', name: 'North Carolina' },
+      ],
+    },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical="/services">
+  <JsonLd slot="head" data={serviceSchema} />
+  <PageIsland page="services" initialPath="/services" client:load />
+</Layout>

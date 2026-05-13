@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageIsland from '../components/PageIsland';
+
+const title = 'Portfolio — Custom Software Projects | Ascend Systems';
+const description =
+  'Selected work shipped by Ascend Systems: SaaS products, AI agents, directory sites, mobile apps, and internal tools for mid-market clients.';
+---
+
+<Layout title={title} description={description} canonical="/portfolio">
+  <PageIsland page="portfolio" initialPath="/portfolio" client:load />
+</Layout>

@@ -1,0 +1,83 @@
+---
+/**
+ * Case study page — `/portfolio/[slug]`
+ *
+ * Astro generates one static page per project at build time via
+ * getStaticPaths(), pulling the slug list from src/data/portfolio.ts.
+ * Each page renders the existing React <CaseStudy /> inside PageIsland
+ * with the routePattern wired up so useParams returns the slug.
+ *
+ * Phase 3 schema (Article + BreadcrumbList) is generated per-slug below.
+ */
+import Layout from '../../layouts/Layout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import PageIsland from '../../components/PageIsland';
+import { PROJECTS } from '../../data/portfolio';
+
+export async function getStaticPaths() {
+  return PROJECTS.map((p) => ({
+    params: { slug: p.slug },
+    props: { project: p },
+  }));
+}
+
+const { project } = Astro.props;
+const { slug } = Astro.params;
+
+const title = `${project.name} — Case Study | Ascend Systems`;
+const description = project.tagline;
+const canonical = `/portfolio/${slug}`;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `https://ascendsystems.ai${canonical}#article`,
+  headline: project.name,
+  description: project.description,
+  author: { '@id': 'https://ascendsystems.ai/#brian-mangum' },
+  publisher: { '@id': 'https://ascendsystems.ai/#organization' },
+  url: `https://ascendsystems.ai${canonical}`,
+  about: project.tags,
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://ascendsystems.ai/',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Portfolio',
+      item: 'https://ascendsystems.ai/portfolio',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: project.name,
+      item: `https://ascendsystems.ai${canonical}`,
+    },
+  ],
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogType="article"
+>
+  <JsonLd slot="head" data={articleSchema} />
+  <JsonLd slot="head" data={breadcrumbSchema} />
+  <PageIsland
+    page="case-study"
+    initialPath={canonical}
+    routePattern="/portfolio/:slug"
+    client:load
+  />
+</Layout>

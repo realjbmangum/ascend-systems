@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageIsland from '../components/PageIsland';
+
+const title = 'Privacy Policy | Ascend Systems';
+const description =
+  'How Ascend Systems (Lighthouse 27 LLC) collects, uses, and protects information.';
+---
+
+<Layout title={title} description={description} canonical="/privacy">
+  <PageIsland page="privacy" initialPath="/privacy" client:load />
+</Layout>
