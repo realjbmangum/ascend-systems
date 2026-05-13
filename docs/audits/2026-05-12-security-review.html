@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Security Review — Ascend Systems · 2026-05-12</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E; --charcoal-soft: #2A2A2E; --charcoal-light: #3A3A3F;
+    --orange: #C45A2C; --orange-light: #D4703F; --orange-dark: #A84820; --orange-glow: #FDF3ED;
+    --red: #B91C1C; --red-glow: #FEF2F2;
+    --bg: #FAFAF8; --gray-100: #F3F3F2; --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF; --gray-600: #6B7280; --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  .doc { max-width: 880px; margin: 0 auto; padding: 64px 32px 96px; }
+  .doc-header { border-bottom: 1px solid var(--gray-200); padding-bottom: 32px; margin-bottom: 48px; }
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--orange-dark); margin: 0 0 12px;
+  }
+  h1 { font-size: 40px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 16px; }
+  h2 { font-size: 26px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; margin: 56px 0 16px; }
+  h3 { font-size: 19px; line-height: 1.3; font-weight: 600; margin: 28px 0 8px; }
+  h4 { font-size: 14px; line-height: 1.4; font-weight: 600; margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-600); }
+  p { margin: 0 0 14px; }
+  .lede { font-size: 19px; line-height: 1.55; color: var(--gray-600); }
+  a { color: var(--orange-dark); text-decoration: underline; text-underline-offset: 2px; }
+  strong { font-weight: 600; color: var(--charcoal); }
+  code {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace; font-size: 0.92em;
+    background: var(--gray-100); padding: 2px 6px; border-radius: 4px; color: var(--charcoal);
+  }
+  pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace; font-size: 13px;
+    background: var(--charcoal); color: #E5E5E3; padding: 18px 22px; border-radius: 8px;
+    overflow-x: auto; line-height: 1.55; white-space: pre-wrap; word-wrap: break-word;
+    margin: 12px 0 20px;
+  }
+  pre code { background: transparent; color: inherit; padding: 0; }
+  hr { border: none; border-top: 1px solid var(--gray-200); margin: 40px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+  th { background: var(--gray-100); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .callout {
+    margin: 24px 0; padding: 24px 28px; background: var(--charcoal); color: var(--white); border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout strong { color: var(--white); }
+  .tag {
+    display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.p0 { background: var(--red-glow); color: var(--red); border: 1px solid var(--red); }
+  .tag.p1 { background: var(--orange-glow); color: var(--orange-dark); }
+  .tag.p2 { background: var(--gray-100); color: var(--charcoal); }
+  .tag.p3 { background: var(--gray-100); color: var(--gray-600); }
+  .tag.pass { background: #E6F6EC; color: #15803D; }
+  .finding {
+    border: 1px solid var(--gray-200); border-radius: 8px;
+    padding: 22px 26px; margin: 16px 0;
+  }
+  .finding h3 { margin-top: 0; }
+  .doc-footer {
+    margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--gray-200);
+    font-size: 13px; color: var(--gray-600); font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-header">
+    <p class="doc-eyebrow">Security Review · 2026-05-12</p>
+    <h1>Ascend Systems — Security Review</h1>
+    <p class="lede">Full review of the Ascend Systems worker (Cloudflare Workers + D1 + R2), admin CRM, public site, and webhook integrations. Code + live endpoint audit.</p>
+  </div>
+
+  <div class="callout">
+    <h3>TL;DR — Moderate risk · No P0 found</h3>
+    <p style="margin:0 0 12px">No critical vulnerabilities. The recently-deleted <code style="background:#3A3A3F;color:#fff">/api/auth/test-login</code> backdoor is confirmed absent from source. No hardcoded secrets, no SQL injection vectors, no unauthorized admin access.</p>
+    <p style="margin:0 0 12px"><strong>Findings: 15 total — 0 P0, 5 P1, 5 P2, 5 P3.</strong></p>
+    <p style="margin:0"><strong>Most urgent (P1):</strong> No rate limiting on any of the four public write endpoints (<code style="background:#3A3A3F;color:#fff">/api/contact</code>, <code style="background:#3A3A3F;color:#fff">/api/intake</code>, <code style="background:#3A3A3F;color:#fff">/api/leads</code>, <code style="background:#3A3A3F;color:#fff">/api/tools/cost-calculator</code>). An attacker can loop a single IP to flood the leads table and drain the SendGrid quota (50k/month) in under 14 hours. Cloudflare Rate Limiting fixes this in 10 minutes from the dashboard, no code deploy.</p>
+  </div>
+
+  <h2>P1 — High severity (fix this week)</h2>
+
+  <div class="finding">
+    <span class="tag p1">P1 · 1</span>
+    <h3>No rate limiting on any public write endpoint</h3>
+    <p><strong>Files:</strong> <code>worker/src/index.ts:42</code>, <code>:109</code>, <code>:190</code>; <code>worker/src/routes/tools.ts:97</code></p>
+    <p><strong>Endpoints:</strong> <code>POST /api/contact</code>, <code>POST /api/intake</code>, <code>POST /api/leads</code>, <code>POST /api/tools/cost-calculator</code></p>
+    <p><strong>Risk:</strong> All four endpoints accept arbitrary JSON, insert into <code>leads</code>, create a task, and optionally trigger a SendGrid email — with no IP-level throttle, no CAPTCHA, and no duplicate-email guard. An attacker can loop <code>/api/tools/cost-calculator</code> from a single IP and flood the leads table and drain SendGrid quota. Each contact/calculator submission also appends a drip enrollment, multiplying email sends. At 1 req/sec this exhausts a day's SendGrid quota in under 14 hours.</p>
+<pre>// worker/src/index.ts:42 — no rate check before insert
+app.post("/api/contact", async (c) =&gt; {
+  const body = await c.req.json&lt;{ name?: string; email?: string; ... }&gt;();
+  if (!body.name || !body.email) { ... }
+  const result = await c.env.DB.prepare(
+    `INSERT INTO leads (name, email, ...) VALUES (?, ?, ...)`
+  ).bind(...).run();
+  // No throttle. No duplicate guard. Proceeds to email send.
+</pre>
+    <h4>Fix</h4>
+    <p>Add Cloudflare Rate Limiting rules at the Workers level targeting <code>/api/contact</code>, <code>/api/intake</code>, <code>/api/leads</code>, <code>/api/tools/*</code> by IP: 5 requests/minute per IP. Free tier covers 10k requests. Also add a per-email guard on insert: <code>SELECT COUNT(*) FROM leads WHERE email = ? AND created_at &gt; datetime('now', '-24 hours')</code> — reject if &gt; 0.</p>
+  </div>
+
+  <div class="finding">
+    <span class="tag p1">P1 · 2</span>
+    <h3>Stripe webhook: HMAC verified but timestamp staleness not checked</h3>
+    <p><strong>File:</strong> <code>worker/src/stripe.ts:4–34</code></p>
+    <p><strong>Risk:</strong> <code>verifyStripeSignature</code> correctly extracts <code>t</code> (timestamp) and <code>v1</code> (HMAC) from the <code>stripe-signature</code> header and validates the HMAC. It never checks whether the timestamp is within an acceptable window. Stripe's docs specify a 300-second tolerance. Without this check, a captured webhook payload can be replayed indefinitely — an attacker who records a legitimate <code>invoice.paid</code> webhook can replay it to mark invoices paid without actual payment.</p>
+<pre>// worker/src/stripe.ts:16 — timestamp extracted but never validated for age
+if (!timestamp || !hash) return false;
+// Missing: const age = Math.abs(Date.now()/1000 - Number(timestamp));
+//          if (age &gt; 300) return false;
+const key = await crypto.subtle.importKey(...)
+</pre>
+    <h4>Fix</h4>
+    <p>After extracting <code>timestamp</code>: <code>const age = Math.abs(Date.now() / 1000 - parseInt(timestamp, 10)); if (age &gt; 300) return false;</code></p>
+  </div>
+
+  <div class="finding">
+    <span class="tag p1">P1 · 3</span>
+    <h3><code>ADMIN_EMAILS</code> stored as plaintext in <code>wrangler.toml</code> (committed to git)</h3>
+    <p><strong>File:</strong> <code>worker/wrangler.toml:7–8</code></p>
+    <p><strong>Risk:</strong> <code>ADMIN_EMAILS = "bmangum1@gmail.com"</code> is in the <code>[vars]</code> block, which means it is a plaintext Worker variable — not a secret. Committed to GitHub history, visible in the Cloudflare dashboard. This value is the sole factor determining who receives admin-role magic links.</p>
+<pre>[vars]
+APP_ORIGIN = "https://ascendsystems.ai"
+ADMIN_EMAILS = "bmangum1@gmail.com"   # &lt;-- plaintext, controls admin auth
+</pre>
+    <p>Risk rating is P1 not P0 because an attacker still needs control of the inbox to complete auth. But since the email is publicly associated with Brian, the "secret" value is effectively zero.</p>
+    <h4>Fix</h4>
+    <p>Move to a wrangler secret: <code>wrangler secret put ADMIN_EMAILS</code>. Remove from <code>wrangler.toml</code>. The <code>Bindings</code> type already marks it <code>ADMIN_EMAILS?: string</code>, so no code change.</p>
+  </div>
+
+  <div class="finding">
+    <span class="tag p1">P1 · 4</span>
+    <h3><code>SameSite=None</code> session cookie without CSRF protection</h3>
+    <p><strong>File:</strong> <code>worker/src/routes/auth.ts:96–102</code></p>
+    <p><strong>Risk:</strong> Session cookie is set with <code>sameSite: "None"</code> + <code>secure: true</code>. <code>SameSite=None</code> was chosen to allow cross-origin requests from the React SPA (different origin from the worker). But this disables all browser-level CSRF protection. Any site can make credentialed cross-origin requests to <code>ascend-api.bmangum1.workers.dev</code> that include the session cookie. CORS limits <em>reading</em> the response — but state-mutating endpoints (<code>PATCH</code>, <code>DELETE</code>, <code>POST</code>) succeed without needing to read it. An attacker can trigger <code>DELETE /api/leads/:id</code>, <code>PATCH /api/leads/:id</code>, etc. via cross-origin POST from any page Brian visits while authenticated.</p>
+<pre>// worker/src/routes/auth.ts:96–102
+setCookie(c, SESSION_COOKIE, sessionToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",   // &lt;-- disables CSRF protection for cross-origin requests
+  path: "/",
+  maxAge: SESSION_TTL_DAYS * 24 * 60 * 60,
+});
+</pre>
+    <h4>Fix</h4>
+    <p>Either (a) add a custom request header (<code>X-Requested-With: XMLHttpRequest</code>) check on all state-mutating admin endpoints (simple CSRF double-submit), or (b) change to <code>SameSite=Lax</code> and serve the admin SPA from the same registered domain (e.g., move worker to <code>api.ascendsystems.ai</code>). The latter is the correct long-term fix.</p>
+  </div>
+
+  <div class="finding">
+    <span class="tag p1">P1 · 5</span>
+    <h3>No input length limits on any text field — DoS via oversized payloads</h3>
+    <p><strong>Files:</strong> <code>worker/src/index.ts:43–66</code>; <code>worker/src/routes/tools.ts:97–113</code></p>
+    <p><strong>Risk:</strong> All public endpoints accept <code>body.message</code>, <code>body.process_description</code>, <code>body.name</code> with no length cap. A 100 MB <code>message</code> string will be parsed and inserted into D1. Cloudflare Workers has a 100 MB request body limit, but D1 <code>TEXT</code> fields are unbounded. Attacker can fill the database with junk and degrade read performance.</p>
+    <h4>Fix</h4>
+    <p>Add length validation before insert. Suggested caps: <code>name</code> 255, <code>email</code> 254, <code>message</code>/<code>process_description</code> 5000, <code>company</code> 255.</p>
+<pre>if (body.message &amp;&amp; body.message.length &gt; 5000)
+  return c.json({ error: "message too long" }, 400);
+</pre>
+  </div>
+
+  <h2>P2 — Medium severity (fix this month)</h2>
+
+  <div class="finding">
+    <span class="tag p2">P2 · 6</span>
+    <h3>No security response headers on the Cloudflare Pages site</h3>
+    <p><strong>Impact:</strong> No <code>Content-Security-Policy</code>, <code>X-Frame-Options</code>, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code>, or <code>Permissions-Policy</code>. No <code>public/_headers</code> file exists. The admin SPA can be iframed by any origin (clickjacking). Without CSP, any XSS that does exist has no secondary containment.</p>
+    <h4>Fix</h4>
+    <p>Create <code>public/_headers</code> (Cloudflare Pages picks this up automatically):</p>
+<pre>/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://ascend-api.bmangum1.workers.dev; img-src 'self' data: https:; frame-ancestors 'none'
+</pre>
+  </div>
+
+  <div class="finding">
+    <span class="tag p2">P2 · 7</span>
+    <h3>File downloads from R2 serve attacker-controlled Content-Type</h3>
+    <p><strong>File:</strong> <code>worker/src/index.ts:581, 587–595</code></p>
+    <p><strong>Risk:</strong> File downloads set <code>Content-Type</code> from <code>obj.httpMetadata?.contentType</code>, which was stored at upload from <code>file.type || "application/octet-stream"</code> — i.e., from the browser, never validated server-side. An admin who uploads an HTML file would have it served as <code>text/html</code> — browsers render rather than download, enabling stored XSS via the file download URL.</p>
+    <h4>Fix</h4>
+    <p>Server-side, override stored <code>contentType</code> on download to <code>application/octet-stream</code>. If preview is needed, maintain a strict allowlist (<code>image/jpeg</code>, <code>image/png</code>, <code>application/pdf</code>).</p>
+  </div>
+
+  <div class="finding">
+    <span class="tag p2">P2 · 8</span>
+    <h3><code>process_description</code> stored verbatim without length limit</h3>
+    <p><strong>Files:</strong> <code>worker/src/routes/tools.ts:134</code>; <code>worker/src/email.ts:162–165</code></p>
+    <p><strong>Risk:</strong> Free-text from the cost calculator gets inserted into <code>leads.message</code> and embedded into the <code>sendAdminAlert</code> HTML email. <code>escapeHtml()</code> is correctly applied (no XSS). But no length limit — a 1 MB description causes a large email + DB row.</p>
+    <h4>Fix</h4>
+    <p>Cap <code>process_description</code> at 2000 characters (same fix as Finding 5).</p>
+  </div>
+
+  <div class="finding">
+    <span class="tag p2">P2 · 9</span>
+    <h3>CORS allows <code>localhost:5173</code> in production worker</h3>
+    <p><strong>File:</strong> <code>worker/src/index.ts:29</code></p>
+    <p><strong>Risk:</strong> <code>http://localhost:5173</code> is in the production CORS allowlist. Any browser tab running a local server on port 5173 can make credentialed cross-origin requests to the live worker. Low-probability but a developer machine with a malicious local process could authenticate as admin against production.</p>
+    <h4>Fix</h4>
+    <p>Remove <code>http://localhost:5173</code> from the production CORS list. Use <code>wrangler dev --local</code> for local dev, or a separate <code>wrangler.dev.toml</code>.</p>
+  </div>
+
+  <div class="finding">
+    <span class="tag p2">P2 · 10</span>
+    <h3>Stripe signature comparison uses string equality (not constant-time)</h3>
+    <p><strong>File:</strong> <code>worker/src/stripe.ts:33</code></p>
+    <p><strong>Risk:</strong> <code>return computed === hash</code> short-circuits on first differing byte. Remote timing attacks against HMAC over the internet are extremely difficult, but best practice is constant-time compare.</p>
+    <h4>Fix</h4>
+    <p>Length-check first, then <code>crypto.subtle.timingSafeEqual</code> on equal-length buffers.</p>
+  </div>
+
+  <h2>P3 — Low / defense-in-depth</h2>
+
+  <table>
+    <thead><tr><th>#</th><th>Finding</th><th>File</th><th>Suggested fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>11</td>
+        <td><code>SENDGRID_API_KEY</code> absence logged with var name to <code>console.error</code></td>
+        <td><code>auth.ts:49</code></td>
+        <td>Change message to "email service unavailable" — omit specific env var name</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>Magic-link token format — verify whether URL uses path segment (good) or <code>?token=</code> query param (worse — leaks to history + access logs + referrers)</td>
+        <td><code>email.ts:64</code>; <code>Verify.tsx:10</code></td>
+        <td>Confirm path-segment form is used end-to-end. If query param, switch.</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>No cleanup of expired <code>magic_links</code> or <code>sessions</code></td>
+        <td><code>schema.sql:43–63</code></td>
+        <td>Add daily cron step: <code>DELETE FROM magic_links WHERE expires_at &lt; datetime('now', '-1 day')</code> + same for sessions</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td>Server-banner suppression confirmed — Hono doesn't add <code>X-Powered-By</code></td>
+        <td>—</td>
+        <td>No action; confirm at Cloudflare Workers layer</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td><code>react-markdown</code> in <code>EmailSequences.tsx</code> renders admin-controlled <code>body_html</code> only — no public XSS vector</td>
+        <td><code>EmailSequences.tsx</code></td>
+        <td>No action — verified safe</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Verifications passed</h2>
+
+  <table>
+    <thead><tr><th>Check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td><code>test-login</code> backdoor in <code>auth.ts</code></td><td><span class="tag pass">PASS</span> Confirmed absent. Only routes present: <code>POST /magic-link</code>, <code>GET /verify/:token</code>, <code>POST /logout</code>, <code>GET /me</code>.</td></tr>
+      <tr><td>Magic-link token entropy</td><td><span class="tag pass">PASS</span> 256 bits via <code>crypto.getRandomValues()</code>. Single-use enforced (<code>used_at IS NULL</code>). 15-min TTL.</td></tr>
+      <tr><td>Session token entropy</td><td><span class="tag pass">PASS</span> 384 bits. 30-day TTL.</td></tr>
+      <tr><td>Admin route gating</td><td><span class="tag pass">PASS</span> <code>admin.use("*", requireAuth("admin"))</code> at <code>index.ts:300</code> gates every admin sub-route.</td></tr>
+      <tr><td>Client portal isolation</td><td><span class="tag pass">PASS</span> All portal queries bind <code>session.client_id</code> in <code>WHERE</code> — no cross-client data access possible.</td></tr>
+      <tr><td>SQL injection</td><td><span class="tag pass">PASS</span> All DB queries use prepared statements with <code>?</code> + <code>.bind()</code>. Dynamic WHERE construction uses whitelisted column names only.</td></tr>
+      <tr><td>R2 file access gating</td><td><span class="tag pass">PASS</span> All <code>/api/projects/:id/files*</code> routes under admin auth. Bucket is private.</td></tr>
+      <tr><td>Hardcoded secrets in source</td><td><span class="tag pass">PASS</span> No API keys, tokens, or passwords. SENDGRID/STRIPE keys are runtime secrets.</td></tr>
+      <tr><td><code>.env</code> files committed</td><td><span class="tag pass">PASS</span> None. <code>.gitignore</code> excludes them.</td></tr>
+      <tr><td>Frontend secrets in JS bundle</td><td><span class="tag pass">PASS</span> No <code>VITE_</code>-prefixed secrets. <code>src/config/site.ts</code> exposes only public API URL.</td></tr>
+      <tr><td>CORS origins</td><td><span class="tag pass">PASS</span> 4 origins, no wildcard. (One needs cleanup — see P2-9.)</td></tr>
+      <tr><td>Stripe webhook signature</td><td><span class="tag pass">PASS</span> HMAC verified. (Timestamp staleness gap — see P1-2.)</td></tr>
+      <tr><td>Proposal sign token</td><td><span class="tag pass">PASS</span> <code>crypto.randomUUID()</code> — 122 bits.</td></tr>
+      <tr><td><code>escapeHtml()</code> in emails</td><td><span class="tag pass">PASS</span> Applied in <code>sendAdminAlert</code>, <code>sendFormConfirmation</code>, <code>sendCalculatorReport</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Recommendations — priority order</h2>
+
+  <ol>
+    <li><strong>Cloudflare Rate Limiting rules</strong> (P1 — 10 min in CF dashboard, no deploy). Target <code>/api/contact</code>, <code>/api/intake</code>, <code>/api/leads</code>, <code>/api/tools/cost-calculator</code> at 5 req/min/IP.</li>
+    <li><strong>Move <code>ADMIN_EMAILS</code> to a wrangler secret</strong> (P1). <code>wrangler secret put ADMIN_EMAILS</code>, then remove from <code>wrangler.toml</code>.</li>
+    <li><strong>Stripe timestamp validation</strong> (P1 — 2-line fix in <code>worker/src/stripe.ts</code>).</li>
+    <li><strong>Fix <code>SameSite=None</code> CSRF gap</strong> (P1 — short-term: <code>X-Requested-With</code> header check on state-mutating endpoints. Long-term: move worker to <code>api.ascendsystems.ai</code>).</li>
+    <li><strong>Create <code>public/_headers</code></strong> (P2 — 10 min). Add CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy.</li>
+    <li><strong>Sanitize R2 Content-Type on download</strong> (P2). Force <code>application/octet-stream</code> or strict allowlist.</li>
+    <li><strong>Add input length validation</strong> (P1/P2). Cap all free-text fields at the worker layer.</li>
+  </ol>
+
+  <h2>Files reviewed</h2>
+
+<pre>worker/src/index.ts
+worker/src/routes/{auth,tools,tasks,invoices,portal,notes,proposals,
+                   analytics,resources,email-sequences}.ts
+worker/src/middleware.ts
+worker/src/email.ts
+worker/src/stripe.ts
+worker/src/types.ts
+worker/wrangler.toml
+worker/db/schema.sql
+worker/db/migration_001.sql
+worker/db/migration_002.sql
+src/lib/api.ts
+src/config/site.ts
+src/pages/admin/{LeadDetail,ProjectDetail,Verify,EmailSequences}.tsx
+.gitignore
+package.json
+worker/package.json
+</pre>
+
+  <div class="doc-footer">
+    Ascend Systems · Security Review · prepared 2026-05-12
+  </div>
+
+</div>
+</body>
+</html>
