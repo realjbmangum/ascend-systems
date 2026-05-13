@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ascend Systems — Design Audit · 2026-05-12</title>
+  <style>
+    :root {
+      --charcoal: #1C1C1E;
+      --charcoal-soft: #2A2A2E;
+      --charcoal-light: #3A3A3F;
+      --orange: #C45A2C;
+      --orange-light: #D4703F;
+      --orange-dark: #A84820;
+      --orange-glow: #FDF3ED;
+      --bg: #FAFAF8;
+      --gray-100: #F3F3F2;
+      --gray-200: #E5E5E3;
+      --gray-400: #9CA3AF;
+      --gray-600: #6B7280;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--charcoal);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    .doc { max-width: 820px; margin: 0 auto; padding: 64px 32px 96px; }
+    .doc-header { border-bottom: 1px solid var(--gray-200); padding-bottom: 32px; margin-bottom: 48px; }
+    .doc-eyebrow {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange-dark); margin: 0 0 12px;
+    }
+    h1 { font-size: 44px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 16px; color: var(--charcoal); }
+    h2 { font-size: 28px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; margin: 56px 0 16px; color: var(--charcoal); }
+    h3 { font-size: 20px; line-height: 1.3; font-weight: 600; margin: 32px 0 12px; color: var(--charcoal); }
+    h4 { font-size: 16px; line-height: 1.4; font-weight: 600; margin: 24px 0 8px; color: var(--charcoal); text-transform: uppercase; letter-spacing: 0.04em; }
+    p { margin: 0 0 16px; }
+    .lede { font-size: 20px; line-height: 1.5; color: var(--gray-600); }
+    a { color: var(--orange-dark); text-decoration: underline; text-underline-offset: 2px; }
+    a:hover { color: var(--orange); }
+    strong { font-weight: 600; color: var(--charcoal); }
+    code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace; font-size: 0.92em; }
+    code { background: var(--gray-100); padding: 2px 6px; border-radius: 4px; color: var(--charcoal); }
+    pre { background: var(--charcoal); color: #E5E5E3; padding: 20px 24px; border-radius: 8px; overflow-x: auto; line-height: 1.5; }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    blockquote { margin: 24px 0; padding: 16px 24px; border-left: 3px solid var(--orange); background: var(--orange-glow); color: var(--charcoal); }
+    ul, ol { margin: 0 0 16px; padding-left: 24px; }
+    li { margin-bottom: 6px; }
+    hr { border: none; border-top: 1px solid var(--gray-200); margin: 48px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+    th { background: var(--gray-100); font-weight: 600; color: var(--charcoal); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    tr:hover td { background: var(--gray-100); }
+    .callout { margin: 24px 0; padding: 24px 28px; background: var(--charcoal); color: var(--white); border-radius: 8px; }
+    .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+    .callout a { color: var(--orange-light); }
+    .tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--orange-glow); color: var(--orange-dark); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 6px; font-weight: 600; }
+    .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+    .tag.dark { background: var(--charcoal); color: var(--white); }
+    .tag.p0 { background: #FEE2E2; color: #991B1B; }
+    .tag.p1 { background: #FEF3C7; color: #92400E; }
+    .tag.p2 { background: var(--gray-100); color: var(--gray-600); }
+    .tag.p3 { background: var(--orange-glow); color: var(--orange-dark); }
+    .grade { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 72px; font-weight: 700; line-height: 1; color: var(--orange-light); }
+    .doc-footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--gray-200); font-size: 13px; color: var(--gray-600); font-family: 'JetBrains Mono', monospace; }
+    @media (max-width: 640px) { .doc { padding: 32px 20px 64px; } h1 { font-size: 32px; } h2 { font-size: 24px; } }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-header">
+    <p class="doc-eyebrow">Technical design audit · 2026-05-12</p>
+    <h1>Ascend Systems — Design Audit</h1>
+    <p class="lede">A code-level review of the site that is about to receive cold outreach traffic. Five dimensions — accessibility, performance, theming, responsive design, and anti-patterns — scored P0–P3, with the smallest defensible fix for each issue.</p>
+  </div>
+
+  <h2>TL;DR &middot; overall grade</h2>
+
+  <div class="callout">
+    <h3 style="margin-bottom:8px">Grade: <span class="grade" style="font-size:48px;vertical-align:-6px">C&minus;</span></h3>
+    <p style="margin-bottom:8px"><strong>Score: 11 / 20.</strong> The site looks polished at first glance — strong typography, intentional charcoal/orange brand, real case studies on <code>/portfolio</code>. But it carries three loaded weapons aimed at its own credibility: fabricated hero stats, fabricated testimonials, and a fabricated client marquee. Any prospect who clicks one Google search ("Meridian Freight COO Priya Shankar") finds nothing, and the whole site loses trust in a heartbeat.</p>
+    <p style="margin:0"><strong>Do not send outreach traffic to this site until the three P0 trust issues are fixed.</strong> Everything else (perf, a11y, responsive) is fixable in a normal week.</p>
+  </div>
+
+  <h3>Dimension scores</h3>
+  <table>
+    <thead><tr><th>Dimension</th><th style="width:60px">Score</th><th>Key finding</th></tr></thead>
+    <tbody>
+      <tr><td>Accessibility</td><td>2 / 4</td><td>Forms missing <code>aria-describedby</code>/<code>aria-invalid</code>; no skip link; marquee not pausable.</td></tr>
+      <tr><td>Performance</td><td>1 / 4</td><td>Single 1.0 MB JS bundle for every public page; no code-splitting; admin app shipped to anonymous visitors.</td></tr>
+      <tr><td>Theming</td><td>2 / 4</td><td>Two parallel token systems (<code>globals.css</code> <code>@theme</code> vs <code>ascend-design-system.css</code>) with conflicting hex values for the same names.</td></tr>
+      <tr><td>Responsive Design</td><td>3 / 4</td><td>Generally good. Three-column case study and testimonial grids never collapse below desktop — break below 900&nbsp;px.</td></tr>
+      <tr><td>Anti-patterns</td><td>1 / 4</td><td>Fabricated stats, fabricated testimonials, fake client marquee. P0 credibility risk.</td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>11 / 20</strong></td><td><strong>Acceptable — significant work needed</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Top 3 things to fix before any outreach goes out</h3>
+  <ol>
+    <li><strong>Delete or rewrite the fabricated testimonials</strong> in <code>src/components/TestimonialsSection.tsx</code>. Priya Shankar at Meridian Freight, Jordan Albrecht at Keystone Health Partners, Marcus Okafor at Blackwood &amp; Co. are not real Ascend clients. One LinkedIn search by a prospect kills the deal.</li>
+    <li><strong>Rewrite or remove the hero stats</strong> in <code>src/components/HeroSection.tsx</code> ("47 engagements shipped", "$18M legacy systems retired", "11yr avg engineer tenure", "4.9 client NPS"). The site says "Est. 2024" in the same hero. The numbers contradict the eyebrow.</li>
+    <li><strong>Fix the "Trusted by" marquee</strong> in <code>src/components/TrustedBySection.tsx</code>. Only City of Charlotte and Stancil Services are paying-client logos. Carolina Masonry and SuiteManager are listed without permission/evidence. Either get written sign-off or drop them.</li>
+  </ol>
+
+  <h2><span class="tag p0">P0</span> Must fix before any outreach traffic</h2>
+
+  <table>
+    <thead><tr><th>Issue</th><th>Where</th><th>Severity</th><th>Why it matters</th><th>Suggested fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Fabricated testimonials</strong></td>
+        <td><code>src/components/TestimonialsSection.tsx</code> L10–31</td>
+        <td><span class="tag p0">P0</span> Anti-pattern · Legal</td>
+        <td>Three named individuals at three named companies with specific dollar figures ("better than what we paid a Big 4 firm $400K for") and engagement lengths ("18-month engagement"). For a solo shop "Est. 2024", these read as invented. Any prospect who reverse-searches the names finds nothing — instant credibility collapse. Also exposes Brian to FTC §255 endorsement-rule liability.</td>
+        <td>Either (a) delete the section entirely and replace with a "Recent work" link to <code>/portfolio</code>, or (b) replace with real quotes from real clients (City of Charlotte, Stancil) with written permission and accurate titles.</td>
+      </tr>
+      <tr>
+        <td><strong>Fabricated hero stats contradict "Est. 2024"</strong></td>
+        <td><code>src/components/HeroSection.tsx</code> L96, L151–156</td>
+        <td><span class="tag p0">P0</span> Anti-pattern</td>
+        <td>Hero says "Charlotte, NC · Est. 2024" and then claims 47 engagements shipped, $18M legacy systems retired, 11-year average engineer tenure, and 4.9 client NPS — at a 1-person shop founded ~18 months ago. The internal contradiction is the first thing a careful reader notices.</td>
+        <td>Replace with honest, verifiable stats — e.g. "7 products shipped / 2 paying clients / Cloudflare + AWS certified / 12&nbsp;yrs engineering" — or drop the stat bar entirely and let the case studies carry the proof.</td>
+      </tr>
+      <tr>
+        <td><strong>Unverified client logos in marquee</strong></td>
+        <td><code>src/components/TrustedBySection.tsx</code> L7–12</td>
+        <td><span class="tag p0">P0</span> Anti-pattern · Legal</td>
+        <td>"Carolina Masonry" and "SuiteManager" appear with no logo, no case study, and no engagement record in the portfolio data. Using a company's name as a trust signal without permission is a takedown letter waiting to happen, especially in a small Charlotte market.</td>
+        <td>Show only the two real client logos (City of Charlotte, Stancil Services) as a static row — not a marquee — until there are at least 5 verified logos to fill the rail. Two logos with the line "Trusted by operators across the Carolinas" is honest; four with two of them fabricated is not.</td>
+      </tr>
+      <tr>
+        <td><strong>Public bundle ships the entire admin app to anonymous visitors</strong></td>
+        <td><code>src/App.tsx</code> L12–39, <code>dist/assets/index-*.js</code> (1.0&nbsp;MB)</td>
+        <td><span class="tag p0">P0</span> Performance</td>
+        <td>Every public route eagerly imports <code>Dashboard</code>, <code>Leads</code>, <code>Invoices</code>, <code>Proposals</code>, <code>EmailSequences</code>, the portal, the case-study editor, etc. A prospect on a 4G phone in Charlotte downloads ~340&nbsp;KB gzipped of admin React code they will never see. LCP will suffer, especially on the home page that already loads a 378&nbsp;KB hero JPEG.</td>
+        <td>Convert every admin and portal route to <code>React.lazy(() =&gt; import('./pages/admin/Dashboard'))</code> wrapped in <code>&lt;Suspense&gt;</code>. Expect public bundle to drop to ~200&nbsp;KB. One afternoon's work.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="tag p1">P1</span> Fix this week</h2>
+
+  <table>
+    <thead><tr><th>Issue</th><th>Where</th><th>Severity</th><th>Why it matters</th><th>Suggested fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Cost calculator form has no programmatic error association</td>
+        <td><code>src/pages/tools/CostCalculator.tsx</code> L407–428</td>
+        <td><span class="tag p1">P1</span> A11y · WCAG 3.3.1</td>
+        <td>Errors appear visually below each field, but screen readers don't link them to the input. A blind user submitting the form hears "Show me the number" → silence → no idea what is wrong.</td>
+        <td>Add <code>aria-invalid={!!error}</code> and <code>aria-describedby="{id}-error"</code> on each input, then put <code>id="{id}-error"</code> on the error <code>&lt;p&gt;</code>. Same fix on Contact form (<code>src/pages/Contact.tsx</code>).</td>
+      </tr>
+      <tr>
+        <td>Radio group has no fieldset/legend</td>
+        <td><code>src/pages/tools/CostCalculator.tsx</code> L266–295</td>
+        <td><span class="tag p1">P1</span> A11y · WCAG 1.3.1</td>
+        <td>"Customer impact" radio buttons are wrapped in a plain <code>&lt;div&gt;</code> with a <code>&lt;label&gt;</code> that is not connected to the group. Screen reader users don't hear the question text when they tab into the first radio.</td>
+        <td>Wrap in <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code> containing the question. Add <code>role="radiogroup" aria-required="true"</code>.</td>
+      </tr>
+      <tr>
+        <td>Logo PNG is 421&nbsp;KB unoptimized</td>
+        <td><code>public/images/logo.png</code></td>
+        <td><span class="tag p1">P1</span> Performance</td>
+        <td>The nav logo appears on every page above the fold. 421&nbsp;KB for a logo is ~10× too large; should be ≤ 30&nbsp;KB as SVG or WebP. Same file is also duplicated as <code>public/images/Acscend Systems.png</code> (with the typo) — also 421&nbsp;KB, unused, but shipped to the CDN.</td>
+        <td>Export the logo as SVG (or 2× WebP at ≤ 25&nbsp;KB). Delete the typo'd duplicate. Audit <code>public/images/</code> for other dead assets.</td>
+      </tr>
+      <tr>
+        <td>Hero background JPEG (378&nbsp;KB) loaded as CSS background — blocks LCP signal</td>
+        <td><code>src/components/HeroSection.tsx</code> L67, <code>src/pages/Contact.tsx</code> L73, <code>src/pages/Services.tsx</code> L120</td>
+        <td><span class="tag p1">P1</span> Performance · LCP</td>
+        <td>CSS <code>background-image</code> assets are not discoverable by the preload scanner and they cannot be an LCP candidate, so Chrome measures LCP off the H1 text, but visually the page is blocked behind a 378&nbsp;KB image. On mobile, this is a 2–3&nbsp;s gap between "page rendered" and "page usable."</td>
+        <td>Either (a) convert the hero JPEG to WebP at ≤ 100&nbsp;KB and add <code>&lt;link rel="preload" as="image" href="/images/hero-bg.webp"&gt;</code> in <code>index.html</code>, or (b) replace the photo with a CSS gradient + grid texture that ships in 0&nbsp;bytes.</td>
+      </tr>
+      <tr>
+        <td>Two competing design-token systems</td>
+        <td><code>src/styles/globals.css</code> L6–35 vs <code>src/styles/ascend-design-system.css</code> L6–107</td>
+        <td><span class="tag p1">P1</span> Theming</td>
+        <td>The site has two parallel sources of truth for the brand. <code>globals.css</code> defines <code>--color-charcoal: #1E2A32</code> and <code>--color-orange: #D4632C</code>. <code>ascend-design-system.css</code> defines <code>--color-primary: #1C1C1E</code> and <code>--color-accent: #C45A2C</code>. Same brand, different hex. The doc style guide (this file's stylesheet) uses a third set. Components pick whichever variable they happen to import.</td>
+        <td>Pick one canonical set (recommend <code>ascend-design-system.css</code> — the values match the doc style guide and the printed brand kit). Delete the <code>@theme</code> color block in <code>globals.css</code>, alias Tailwind utilities (<code>charcoal</code>, <code>orange</code>) to the canonical CSS vars.</td>
+      </tr>
+      <tr>
+        <td>No <code>prefers-reduced-motion</code> guards</td>
+        <td>Multiple — <code>HeroSection.tsx</code> framer-motion entries, <code>ascend-design-system.css</code> L345–360 marquee, <code>globals.css</code> L37–45 keyframes, <code>ScrollReveal</code></td>
+        <td><span class="tag p1">P1</span> A11y · WCAG 2.3.3</td>
+        <td>Every entry animates with <code>opacity 0 → 1, y 20 → 0</code>, the client logo strip marquees forever, and scroll-reveal fires on every section. For users with vestibular sensitivity (≈ 1 in 3 over 40), the homepage is a physical irritant. Also: the marquee runs an infinite animation on the main thread.</td>
+        <td>Wrap motion blocks in <code>@media (prefers-reduced-motion: no-preference)</code> in CSS, and use <code>useReducedMotion()</code> from framer-motion in the hero. Pause the marquee on reduced-motion users entirely.</td>
+      </tr>
+      <tr>
+        <td>Three-column grids never collapse below 900&nbsp;px</td>
+        <td><code>src/components/CaseStudiesSection.tsx</code> L84–90, <code>src/components/TestimonialsSection.tsx</code> L64–69</td>
+        <td><span class="tag p1">P1</span> Responsive</td>
+        <td>Both sections use inline <code>style</code> with <code>gridTemplateColumns: 'repeat(3, 1fr)'</code> with no media query. Inline styles can't be overridden by the <code>.section { padding }</code> @media block. On a 768&nbsp;px tablet, three case-study cards squeeze into ~230&nbsp;px each and the stat numbers wrap. Below 640&nbsp;px the cards become unreadable.</td>
+        <td>Move both grids to Tailwind utilities: <code>className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"</code>. Same fix on any other inline <code>repeat(3, 1fr)</code> grid in the codebase.</td>
+      </tr>
+      <tr>
+        <td>No skip-to-content link, no <code>&lt;main&gt;</code> landmark id</td>
+        <td><code>src/components/Layout.tsx</code> L8–16</td>
+        <td><span class="tag p1">P1</span> A11y · WCAG 2.4.1</td>
+        <td>Keyboard users hit Tab 8+ times through the nav before reaching the page content on every navigation. The <code>&lt;main&gt;</code> element exists but isn't a target.</td>
+        <td>Add <code>&lt;a href="#main" className="sr-only focus:not-sr-only ..."&gt;Skip to content&lt;/a&gt;</code> as the first child of <code>Layout</code>, and <code>id="main"</code> on the <code>&lt;main&gt;</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="tag p2">P2</span> Fix this month</h2>
+
+  <table>
+    <thead><tr><th>Issue</th><th>Where</th><th>Severity</th><th>Why it matters</th><th>Suggested fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Hero CTAs use in-page anchors that don't exist</td>
+        <td><code>src/components/HeroSection.tsx</code> L142–147</td>
+        <td><span class="tag p2">P2</span> UX</td>
+        <td><code>href="#contact"</code> and <code>href="#services"</code> are anchor links, but the home page has no element with <code>id="contact"</code> or <code>id="services"</code>. Clicking the primary CTA does nothing visible. The user is supposed to scroll, but won't.</td>
+        <td>Change to <code>&lt;Link to="/contact"&gt;</code> and <code>&lt;a href="#work"&gt;</code> (the <code>CaseStudiesSection</code> already has <code>id="work"</code>). Or add the missing anchor ids to the relevant sections.</td>
+      </tr>
+      <tr>
+        <td>Heavy inline-style usage prevents responsive overrides</td>
+        <td><code>HeroSection.tsx</code>, <code>TrustedBySection.tsx</code>, <code>TestimonialsSection.tsx</code>, <code>CaseStudiesSection.tsx</code></td>
+        <td><span class="tag p2">P2</span> Theming · Maintainability</td>
+        <td>Most of the home page uses inline <code>style={{ }}</code> objects with fixed pixel values (paddings of 72, 56, 36, 24). Tailwind utilities and CSS variables can't override them. Every responsive tweak has to be done in JS via <code>window.innerWidth</code>.</td>
+        <td>Migrate the home-page sections to Tailwind + the design-system utility classes already defined in <code>ascend-design-system.css</code> (<code>.section</code>, <code>.container</code>, <code>.eyebrow</code>, etc.). They were built for this — they just aren't being used.</td>
+      </tr>
+      <tr>
+        <td>"See all 7 projects" link, but portfolio data is dynamic</td>
+        <td><code>src/components/CaseStudiesSection.tsx</code> L254</td>
+        <td><span class="tag p2">P2</span> Content drift</td>
+        <td>Hard-coded "7" will go stale the moment a project is added or removed. <code>PROJECTS.length</code> is right there.</td>
+        <td><code>See all {PROJECTS.length} projects →</code> — also imports the array so any add/remove flows through.</td>
+      </tr>
+      <tr>
+        <td>About page floating code snippets are decorative but read by screen readers</td>
+        <td><code>src/pages/About.tsx</code> L35–39</td>
+        <td><span class="tag p2">P2</span> A11y</td>
+        <td>Snippets like <code>"const result = await build();"</code> and <code>"if (ready) ship();"</code> are visual flourishes but screen readers announce them as content, interrupting the founder paragraph.</td>
+        <td>Wrap in a container with <code>aria-hidden="true"</code>. Same for any other purely-decorative motion elements.</td>
+      </tr>
+      <tr>
+        <td>Mobile nav hamburger has 44px touch target but no <code>aria-expanded</code></td>
+        <td><code>src/components/Nav.tsx</code> L51–63</td>
+        <td><span class="tag p2">P2</span> A11y · WCAG 4.1.2</td>
+        <td>Button toggles state but doesn't announce the open/closed state to assistive tech.</td>
+        <td>Add <code>aria-expanded={mobileOpen}</code> and <code>aria-controls="mobile-menu"</code>, plus <code>id="mobile-menu"</code> on the menu div.</td>
+      </tr>
+      <tr>
+        <td>Font CSS loaded from two domains (rsms.me + fonts.googleapis.com) without preconnect</td>
+        <td><code>src/styles/globals.css</code> L1–2</td>
+        <td><span class="tag p2">P2</span> Performance</td>
+        <td>Two render-blocking CSS imports from two different origins, no preconnect, no <code>font-display: swap</code> guarantee from the rsms.me bundle. Adds ~300&nbsp;ms to FCP on cold loads.</td>
+        <td>Move both font links to <code>index.html</code> as <code>&lt;link rel="preconnect"&gt;</code> + <code>&lt;link rel="stylesheet"&gt;</code>. Self-host the Inter + JetBrains Mono subsets you actually use (latin only, 400/500/600/700).</td>
+      </tr>
+      <tr>
+        <td>Marquee animation is a JS-thread CSS animation that runs forever</td>
+        <td><code>src/styles/ascend-design-system.css</code> L345–360</td>
+        <td><span class="tag p2">P2</span> Performance</td>
+        <td>40-second linear marquee runs continuously while the home page is open. Burns battery on mobile. Doesn't pause when off-screen.</td>
+        <td>Add <code>animation-play-state: paused</code> via <code>IntersectionObserver</code>, or replace marquee with a static row (recommended after the P0 logo cleanup — two real logos don't need to scroll).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="tag p3">P3</span> Nice to have</h2>
+
+  <table>
+    <thead><tr><th>Issue</th><th>Where</th><th>Severity</th><th>Why it matters</th><th>Suggested fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>"Scroll" indicator at bottom of hero is purely decorative on mobile</td>
+        <td><code>src/components/HeroSection.tsx</code> L160–178</td>
+        <td><span class="tag p3">P3</span> UX</td>
+        <td>On a 375&nbsp;px iPhone, the hero is already ~92vh and the scroll indicator overlaps the stats bar. Reads as cluttered.</td>
+        <td>Hide the scroll indicator on viewports under 640&nbsp;px (<code>display: 'none'</code> in a media query).</td>
+      </tr>
+      <tr>
+        <td>Footer logo is 84px tall, larger than the nav logo on the same page</td>
+        <td><code>src/components/Footer.tsx</code> L12</td>
+        <td><span class="tag p3">P3</span> Visual hierarchy</td>
+        <td>Footer logo (<code>h-[5.25rem]</code> = 84&nbsp;px) is taller than the nav logo (<code>h-16</code> = 64&nbsp;px). Footers should be subordinate. Same image, same un-optimized 421&nbsp;KB cost.</td>
+        <td>Drop footer logo to <code>h-12</code> (48&nbsp;px) and use the optimized SVG from the P1 fix.</td>
+      </tr>
+      <tr>
+        <td>"Briefly, what is the process?" textarea has no character limit / count</td>
+        <td><code>src/pages/tools/CostCalculator.tsx</code> L301–308</td>
+        <td><span class="tag p3">P3</span> UX · Spam</td>
+        <td>Optional textarea is a wide-open invite for prompt injection or spam payloads. Worker likely accepts arbitrary length.</td>
+        <td>Add <code>maxLength={500}</code> on the textarea and a matching limit server-side in the worker validator.</td>
+      </tr>
+      <tr>
+        <td>Hero "Charlotte, NC · Est. 2024" eyebrow buried at the top of the hero</td>
+        <td><code>src/components/HeroSection.tsx</code> L95</td>
+        <td><span class="tag p3">P3</span> Content</td>
+        <td>Once P0 fixes land, the "Est. 2024" line becomes an asset (it explains the modest stat numbers honestly). Right now it's at 12&nbsp;px and easy to miss.</td>
+        <td>After P0 fixes, promote it to a more prominent place — e.g. above the testimonials: "Two real clients. Seven shipped products. Eighteen months in." Honesty as a positioning move.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>What's actually good</h2>
+
+  <p>The audit grade is C&minus;, but most of that score is sitting on three fixable trust issues and one bundle-splitting fix. Underneath, the site has real foundations worth keeping.</p>
+
+  <ul>
+    <li><strong>Real portfolio.</strong> <code>/portfolio</code> and the per-project case studies are honest, specific, and well-structured. The data model in <code>src/data/portfolio.ts</code> with status flags (live / building / on-hold) is the kind of detail that signals "operator-built, not marketing-built."</li>
+    <li><strong>The cost calculator is a strong lead magnet.</strong> The form copy ("Four numbers, one honest answer", "no sales pitch", "we do not sell or share your email"), the on-page result, and the email follow-up are well thought out. The math model with build_band / payback ranges is more rigorous than 90% of consultancy calculators. Fix the form a11y and ship it.</li>
+    <li><strong>Typography discipline.</strong> Inter + JetBrains Mono pairing, balanced text-wrap, tight letter-spacing on display sizes, eyebrow micro-headers in mono — the type system is the strongest piece of the design.</li>
+    <li><strong>Charcoal &amp; burnt-orange brand is distinctive.</strong> In a category drowning in cobalt-blue gradients, the warm-dark direction reads grown-up and Charlotte-specific. Worth defending.</li>
+    <li><strong>Mostly semantic HTML.</strong> Headings are real headings, the form uses real <code>&lt;label&gt;</code> + <code>htmlFor</code>, the testimonial uses <code>&lt;figure&gt;</code>/<code>&lt;figcaption&gt;</code>. The bones are right; the ARIA wiring is what's missing.</li>
+    <li><strong>The Contact and Cost-Calculator copy is in Brian's actual voice.</strong> "Tell us what you are working on. We will get back to you within one business day with an honest take on timeline, cost, and whether we can help." That's the voice that should be on the home page too — not the fabricated-VP voice in the testimonials.</li>
+  </ul>
+
+  <h2>Patterns &amp; systemic issues</h2>
+
+  <ol>
+    <li><strong>Inline styles vs. design system.</strong> Two parallel approaches coexist: a well-built design system (<code>ascend-design-system.css</code> + Tailwind <code>@theme</code>) and inline <code>style</code> objects with hard-coded pixels. The home-page sections all use inline styles; the cost calculator uses utilities. Pick one. The utility/token path is the right one — the system already exists.</li>
+    <li><strong>Trust signals invented to fill the page.</strong> Hero stats, testimonials, and client marquee all fabricate proof Brian doesn't have yet. The site has real proof (City of Charlotte EV Dashboard is a serious win) but is hiding it behind invented proof. Inversion needed: lead with the two real engagements, drop the stats, drop the names that aren't real.</li>
+    <li><strong>No code-splitting strategy.</strong> Every chunk lives in one bundle — admin, portal, public, calculator, even the Stripe-ish proposal-sign flow. Vite's <code>rollupOptions.output.manualChunks</code> isn't configured. Adding <code>React.lazy</code> per route group is the entire fix.</li>
+    <li><strong>Animation is on by default everywhere.</strong> Framer-motion entry on every component, scroll-reveal class on every section, infinite marquee, pulse-glow keyframes. No <code>prefers-reduced-motion</code> escape hatch. Strip the animations to the 2–3 that earn their weight.</li>
+  </ol>
+
+  <h2>Recommended next commands</h2>
+
+  <p>In priority order, mapped to the relevant Claude skill:</p>
+
+  <ol>
+    <li><strong><span class="tag p0">P0</span> <code>/clarify</code></strong> — rewrite or remove the three trust-signal blocks (hero stats, testimonials, client marquee) with content that matches Brian's actual track record. Honest beats impressive on a site that already has real case studies.</li>
+    <li><strong><span class="tag p0">P0</span> <code>/optimize</code></strong> — code-split the admin/portal routes with <code>React.lazy</code>, convert hero JPEG to preloaded WebP, compress logo PNG to SVG. Target: ≤ 200&nbsp;KB initial JS, ≤ 100&nbsp;KB initial image weight.</li>
+    <li><strong><span class="tag p1">P1</span> <code>/harden</code></strong> — wire up <code>aria-invalid</code>/<code>aria-describedby</code> on the calculator and contact forms, add fieldset/legend on the radio group, add skip-to-content, add <code>aria-expanded</code> on the mobile nav.</li>
+    <li><strong><span class="tag p1">P1</span> <code>/adapt</code></strong> — fix the inline three-column grids on case studies and testimonials so they collapse below 900&nbsp;px and 640&nbsp;px. Audit any other inline <code>repeat(3, 1fr)</code> grids.</li>
+    <li><strong><span class="tag p1">P1</span> <code>/quieter</code></strong> — gate every motion effect behind <code>prefers-reduced-motion</code>, prune the framer-motion entries down to the hero + one section-level reveal, replace the infinite marquee with a static row.</li>
+    <li><strong><span class="tag p2">P2</span> <code>/distill</code></strong> — consolidate the two token systems into one (recommend the <code>ascend-design-system.css</code> set), migrate the home-page sections off inline styles onto the utility classes that already exist.</li>
+    <li><strong><span class="tag p2">P2</span> <code>/polish</code></strong> — final pass on the small stuff: dead anchor links in the hero, hard-coded "7 projects" string, oversized footer logo, decorative code snippets read by screen readers.</li>
+  </ol>
+
+  <h2>One-paragraph summary for the dashboard</h2>
+
+  <blockquote>
+    Ascend Systems site graded <strong>C&minus; (11/20)</strong> on 2026-05-12. Foundations are good: real portfolio data, distinctive brand, strong typography, an excellent new cost-calculator lead magnet. Three P0 issues block sending outreach traffic: <strong>(1) fabricated testimonials</strong> from people who don't exist, <strong>(2) fabricated hero stats</strong> that contradict the site's own "Est. 2024" eyebrow, and <strong>(3) unverified client logos</strong> in the trust marquee. A fourth P0 ships the admin app to every anonymous visitor — fix with route-level <code>React.lazy</code>. P1 issues are the usual ARIA wiring, prefers-reduced-motion guards, image weight, and the inline 3-column grids that never collapse on tablet. Do not run outreach until the three trust-signal P0s are fixed; the rest is one normal week of work.
+  </blockquote>
+
+  <div class="doc-footer">
+    Prepared 2026-05-12 · Ascend Systems internal · audit skill v2.1.1 · scope: ascendsystems.ai (home, services, about, contact, portfolio, portfolio/:slug, tools/cost-calculator)
+  </div>
+
+</div>
+</body>
+</html>

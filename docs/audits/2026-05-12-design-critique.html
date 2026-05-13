@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ascend Systems — UX Design Critique · 2026-05-12</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  .doc { max-width: 820px; margin: 0 auto; padding: 64px 32px 96px; }
+  .doc-header { border-bottom: 1px solid var(--gray-200); padding-bottom: 32px; margin-bottom: 48px; }
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--orange-dark); margin: 0 0 12px;
+  }
+  h1 { font-size: 44px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 16px; color: var(--charcoal); }
+  h2 { font-size: 28px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; margin: 56px 0 16px; color: var(--charcoal); }
+  h3 { font-size: 20px; line-height: 1.3; font-weight: 600; margin: 32px 0 12px; color: var(--charcoal); }
+  h4 { font-size: 16px; line-height: 1.4; font-weight: 600; margin: 24px 0 8px; color: var(--charcoal); text-transform: uppercase; letter-spacing: 0.04em; }
+  p { margin: 0 0 16px; }
+  .lede { font-size: 20px; line-height: 1.5; color: var(--gray-600); }
+  a { color: var(--orange-dark); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--orange); }
+  strong { font-weight: 600; color: var(--charcoal); }
+  code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--gray-100); padding: 2px 6px; border-radius: 4px; color: var(--charcoal); }
+  pre { background: var(--charcoal); color: #E5E5E3; padding: 20px 24px; border-radius: 8px; overflow-x: auto; line-height: 1.5; }
+  pre code { background: transparent; color: inherit; padding: 0; }
+  blockquote {
+    margin: 24px 0; padding: 16px 24px;
+    border-left: 3px solid var(--orange); background: var(--orange-glow);
+    color: var(--charcoal); font-style: normal;
+  }
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+  hr { border: none; border-top: 1px solid var(--gray-200); margin: 48px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+  th { background: var(--gray-100); font-weight: 600; color: var(--charcoal); font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+  tr:hover td { background: var(--gray-100); }
+  .callout { margin: 24px 0; padding: 20px 24px; background: var(--charcoal); color: var(--white); border-radius: 8px; }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+  .tag {
+    display: inline-block; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; padding: 3px 8px; border-radius: 4px;
+    background: var(--orange-glow); color: var(--orange-dark);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .card { border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; background: var(--white); }
+  .card h4 { margin-top: 0; }
+  .doc-footer {
+    margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--gray-200);
+    font-size: 13px; color: var(--gray-600); font-family: 'JetBrains Mono', monospace;
+  }
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+  <div class="doc-header">
+    <p class="doc-eyebrow">UX design critique · 2026-05-12</p>
+    <h1>Ascend Systems — Design Critique</h1>
+    <p class="lede">A buyer-personas-first walkthrough of ascendsystems.ai, scored as the first impression for cold and warm outreach starting Week 2. The verdict: visually competent, strategically incoherent — the home page sells a fake agency while the rest of the site tells the real (and better) story.</p>
+  </div>
+
+  <h2>TL;DR + overall UX score</h2>
+  <div class="callout">
+    <h3 style="font-family: 'JetBrains Mono', monospace; font-size: 18px; letter-spacing: 0.04em;">OVERALL UX SCORE — 58 / 100</h3>
+    <p style="margin-bottom: 0;">
+      The craft is here — clean type, restrained palette, well-paced sections, no AI-slop gradients. The
+      <strong>strategy is broken</strong>. The home page invents a senior team, fabricates three named
+      testimonials, and stamps fake hero metrics (<em>47 engagements, $18M, 4.9 NPS, 11yr avg engineer tenure</em>)
+      onto what every other page admits is a one-person studio. A 25-person law firm COO will smell the inflation
+      in under five seconds. A Charlotte HVAC owner-operator will bounce when the FAQ quotes <em>$80K–$400K</em>
+      engagements. Fix the founder lie, ship the founder photo, and this is a 78. Don't, and the cold outreach
+      campaign is pouring buyers into a credibility trap.
+    </p>
+  </div>
+
+  <h2>Page-by-page scoring table</h2>
+  <p>Each page scored 1–10 from each persona's perspective. P1 = HVAC owner-operator, P2 = law-firm COO, P3 = warm-reactivation past collaborator. Average rounded to one decimal.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Page</th>
+        <th>P1 HVAC</th>
+        <th>P2 Law-firm COO</th>
+        <th>P3 Warm reactivation</th>
+        <th>Avg</th>
+        <th>One-sentence verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>/ (Home)</td>
+        <td>4</td><td>3</td><td>5</td><td><strong>4.0</strong></td>
+        <td>Looks like a 12-person agency I can't afford and don't trust — names I can't Google, numbers nobody verifies.</td>
+      </tr>
+      <tr>
+        <td>/services</td>
+        <td>8</td><td>7</td><td>8</td><td><strong>7.7</strong></td>
+        <td>Plain-English, named real examples (RecordStops, SCDMV, SendMyLove) — this is the page that actually sells.</td>
+      </tr>
+      <tr>
+        <td>/about</td>
+        <td>6</td><td>5</td><td>8</td><td><strong>6.3</strong></td>
+        <td>Honest founder story undermined by a "BM" initials block where the founder photo should be.</td>
+      </tr>
+      <tr>
+        <td>/portfolio</td>
+        <td>7</td><td>7</td><td>8</td><td><strong>7.3</strong></td>
+        <td>Strongest evidence asset on the site — live URLs, screenshots, status pills do the heavy lifting.</td>
+      </tr>
+      <tr>
+        <td>/portfolio/scdmv-alerts</td>
+        <td>8</td><td>7</td><td>8</td><td><strong>7.7</strong></td>
+        <td>Problem / Build / Result structure is clean; metrics are real and verifiable on the live link.</td>
+      </tr>
+      <tr>
+        <td>/contact</td>
+        <td>7</td><td>7</td><td>8</td><td><strong>7.3</strong></td>
+        <td>Right fields, right tone, right promise — "within one business day" is a credible commitment.</td>
+      </tr>
+      <tr>
+        <td>/tools/cost-calculator</td>
+        <td>9</td><td>7</td><td>7</td><td><strong>7.7</strong></td>
+        <td>Best new asset on the site — but invisible from the nav, so nobody will find it.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Pattern: every page Brian wrote in his own voice scores 7+. Every page that performs the "agency" role scores in the 4s. The home page is the worst entry point.</p>
+
+  <h2>Strengths</h2>
+  <p>Calling out what is actually working — these are keepers, not areas to overhaul.</p>
+
+  <ul>
+    <li><strong>Restrained, intentional brand system.</strong> Burnt orange <code>#C45A2C</code> against deep charcoal <code>#1C1C1E</code> on off-white reads like a small premium studio, not a SaaS landing-page generator. JetBrains Mono for eyebrows + numerics, Inter for body — it's a deliberate type-pairing, not the usual Inter-everywhere shortcut.</li>
+    <li><strong>No AI-slop gradient hero.</strong> The hero uses a photographic mountain background under a charcoal overlay. No purple-to-blue gradient mesh, no glassmorphic cards, no glow effects. Already past the lowest bar most consultancy sites flunk.</li>
+    <li><strong>Portfolio is the real moat.</strong> Eight live products with status pills, real metrics ("296 stores, 683 visitors/mo"), live "View live" buttons. Brian's portfolio is doing the work three fake testimonials are trying (and failing) to do on the home page.</li>
+    <li><strong>The /services page reads like a person wrote it.</strong> "Your team copies quote info from email into a spreadsheet, then re-keys it into QuickBooks" — that is the voice of someone who has actually been in a Charlotte SMB back office. This is the page that converts.</li>
+    <li><strong>The cost calculator is a real lead magnet.</strong> Four well-explained inputs ("$45–$75 is typical for ops staff in Charlotte"), localized to the buyer, no email-walled gate, an honest result-card with a band ("Light automation") and a payback range. This is the asset to lead with.</li>
+    <li><strong>Process section is correctly understated.</strong> Discovery / Build / Launch / Support — four steps, no "agile pods at scale" vocabulary. P1 will respect this.</li>
+    <li><strong>Contact form is right-sized.</strong> Five fields, budget range as a select (frames cost expectations early), one-business-day promise. Doesn't try to be clever.</li>
+  </ul>
+
+  <h2>Top 5 UX issues, ranked by impact on conversion</h2>
+
+  <table>
+    <thead>
+      <tr><th>#</th><th>Issue · Where</th><th>Why it hurts conversion</th><th>Smallest fix</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>
+          <strong>Fabricated testimonials with full names + companies.</strong><br>
+          <code>src/components/TestimonialsSection.tsx</code> — Priya Shankar / Meridian Freight, Jordan Albrecht / Keystone Health Partners, Marcus Okafor / Blackwood &amp; Co. Visible on home page.
+        </td>
+        <td>A law-firm COO will Google one of these names in 8 seconds, find nothing, and close the tab. Any visitor sophisticated enough to be a real buyer will identify these as placeholders — and once one element is fake, every metric on the page is suspect. This is the single highest-risk asset on the site.</td>
+        <td>Delete the section entirely until 2–3 real client quotes exist. In the interim, replace with a single "Recent work" callout linking to the portfolio. Empty space is better than a credibility crater.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>
+          <strong>Hero stats contradict the rest of the site.</strong><br>
+          <code>HeroSection.tsx</code> — "47 engagements shipped · $18M legacy systems retired · 11yr avg engineer tenure · 4.9 client NPS"
+        </td>
+        <td>"11yr avg engineer tenure" implies a team of engineers with multi-year tenures. The /about page then opens with "I'm Brian Mangum…in the past year I have built and launched over 10 products." These two pages cannot both be true. P1 and P2 will resolve the contradiction by assuming the home page is lying.</td>
+        <td>Replace the four stats with three Brian can defend: <em>10+ products shipped · Charlotte, NC · Est. 2024</em>. Or just delete the stats row — the hero copy is strong enough alone.</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>
+          <strong>Founder photo is missing — replaced by "BM" initials block.</strong><br>
+          <code>src/pages/About.tsx</code> lines 100–104.
+        </td>
+        <td>The whole site's pitch is "you get the person who builds it." The About page is where that promise gets paid off. A monogram block is what a SaaS placeholder looks like. P3 (warm reactivation) will be the most jarred — they already know Brian and expect to see him.</td>
+        <td>Ship a real headshot. Even a phone snapshot in good light beats the initials block. If a photo isn't ready today, replace the placeholder with the Charlotte skyline / a workspace photo and move the bio left.</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>
+          <strong>Identity mismatch: "senior team" vs. solo founder.</strong><br>
+          Home page: "Five practices. One senior team." · "We staff 2–5 people per project" (FAQ) · "$80K–$400K engagements" (FAQ).<br>
+          About page: "you get me — the person who plans it, builds it, and stands behind it."
+        </td>
+        <td>A Charlotte HVAC owner sees "$80K–$400K, 2–5 people per project, never offshore, every engineer is U.S.-based and senior" and assumes the budget floor is out of reach — they'll bounce before clicking through to /about where the actual pitch lives. The FAQ is filtering out the buyers the rest of the site is targeting.</td>
+        <td>Rewrite the FAQ. "Typical engagement is $5K–$50K for a defined build, $3–8K/mo for ongoing partnership. Smaller, we'll point you to no-code. Larger, we'll bring in a sub." Match the budget brackets the /contact form already offers.</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>
+          <strong>Cost calculator is invisible — not linked from nav, home, or services.</strong><br>
+          <code>src/components/Nav.tsx</code> — nav has only Services / Portfolio / About / Let's Talk.
+        </td>
+        <td>The strongest top-of-funnel asset on the site has zero discoverability. Cold-outreach traffic landing on / will never find it. This is the asset that converts P1 (the skeptical HVAC owner) because it speaks money, not technology.</td>
+        <td>Add "Free tools" to the nav, or replace the second hero CTA ("See our work") with "Calculate your manual-work cost →". One five-minute change moves the highest-converting page from buried to front-door.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Anti-pattern flags</h2>
+  <p>Generic-AI-consultancy tropes audit. Format: <strong>present</strong> = found on the site, <strong>absent</strong> = good, you avoided it.</p>
+
+  <ul>
+    <li><strong>Present — fabricated testimonials with stock-sounding names.</strong> See issue #1. Worst offender on the site.</li>
+    <li><strong>Present — round-number trust stats with no source.</strong> "47 engagements · $18M · 4.9 NPS" — classic AI-slop hero pattern. See issue #2.</li>
+    <li><strong>Present — "trusted by" marquee with 4 logos doubled to look like 8.</strong> <code>TrustedBySection.tsx</code> sets <code>const row = [...clients, ...clients]</code>. Two of the four are text-only ("Carolina Masonry", "SuiteManager") because there are no logos. A sophisticated buyer will spot the duplication. Either ship 8 real logos, or kill the marquee and replace with a single sentence: "Recent clients include the City of Charlotte and Stancil Services."</li>
+    <li><strong>Present — vague "senior team" / "staff-level engineers" copy on /home.</strong> "We're generalists with a narrow definition of quality. Every engagement is staffed with staff-level engineers and a product lead who has shipped the exact thing you're asking for, before." This is the LinkedIn-bot voice. The /services page (real voice) doesn't do this.</li>
+    <li><strong>Present — hero copy is generic.</strong> "Software that moves legacy businesses forward" could be any of 200 consultancies. The Services-page hero "Your business has a technology problem. We fix it." is sharper, more specific, more Brian.</li>
+    <li><strong>Absent — no stock photo people.</strong> Good.</li>
+    <li><strong>Absent — no purple-blue gradient hero, no glassmorphic cards, no "AI-powered" stamp.</strong> Good.</li>
+    <li><strong>Absent — no fake metrics on the case studies.</strong> Portfolio metrics are real and verifiable on the live links. Good.</li>
+    <li><strong>Absent — no chatbot or "Talk to AI" widget.</strong> Good — would be self-parody on a "we build AI that works" site.</li>
+    <li><strong>Absent — no nav with 9 items.</strong> Four items, clean. Good.</li>
+  </ul>
+
+  <p>Net: the visual craft avoids most AI-slop tells. The <em>copy</em> is where the slop hides — testimonials, hero stats, marquee, and generic "senior team" language. Five surgical deletes would clean this up.</p>
+
+  <h2>The cost calculator — persona-tested verdict</h2>
+
+  <p>This shipped today. It's the single best-designed page on the site, and the most strategically important asset for the Week 2 outreach push. It deserves its own pass.</p>
+
+  <h3>What it gets right</h3>
+  <ul>
+    <li><strong>The hero promise is honest and specific.</strong> "Four numbers, one honest answer. We will email you a full breakdown plus a recommended next step — no sales pitch." That's a calibrated commitment, not a hand-wave.</li>
+    <li><strong>The four-input model is well-chosen.</strong> Hours/week, hourly cost, error rate, customer impact — each is something a buyer can answer in under 30 seconds. Field hints localize the answer ("$45–$75 is typical for ops staff in Charlotte" — directly speaks to P1).</li>
+    <li><strong>The result card is structured around money first, recommendation second, build investment third.</strong> A buyer sees the annual cost in 48pt mono, then the breakdown, then a "Light automation"-style band, then the build range. That's a textbook commerce funnel hierarchy.</li>
+    <li><strong>The "$ build range / payback months" is the closer.</strong> It is genuinely rare for a Charlotte-area consultancy to show price ranges. This builds trust on a page where trust is the whole product.</li>
+    <li><strong>Form mechanics are clean.</strong> Inline errors, no required-field walls, optional process-description that promises a smarter email if filled. Submit copy: "Show me the number" — strong, deferential, no exclamation marks.</li>
+  </ul>
+
+  <h3>What's broken</h3>
+  <ul>
+    <li><strong>Zero discoverability.</strong> Already flagged as issue #5. This must be the first fix. If the cost calculator isn't in the nav before Monday's first outreach send, it doesn't exist.</li>
+    <li><strong>No social proof on the page itself.</strong> P2 (law-firm COO) will scroll to the form, hesitate, and want to see "what does the email actually look like?" or "who has used this?" before handing over a work email. Add one inline example: a small "Real example: a 25-person ops team in Charlotte found $148K/yr in manual-work cost — and the build paid back in 4 months." Stub it as illustrative if no real one exists yet, but mark it so.</li>
+    <li><strong>The "email gate" is invisible until the bottom.</strong> The Name / Work email / Company fields appear below a horizontal rule labeled "Where to send the report." P3 (warm collaborator) will be fine, but a cold-traffic P1 may bounce when they hit the email field because the page didn't telegraph it would email them. Surface it in the hero: "We'll show you the number on screen and email you the breakdown — your call whether you want the audit."</li>
+    <li><strong>Submit button doesn't differentiate from /contact.</strong> Same orange, same shape, same weight. The result page also uses the orange-glow callout style that the /home services CTA uses. Visually, the calculator is doing the same job as the contact CTA — but it's a fundamentally different intent (information vs. commitment). Consider a secondary visual treatment for the result-card CTA so it feels like a follow-up, not a duplicate ask.</li>
+    <li><strong>No back-out story for the "no recommended build" case.</strong> If the calculation lands in <code>build_band: 'diy'</code>, the result page still shows "Want a free 30-minute audit?" — which contradicts the recommendation. Suppress or rewrite the audit CTA when the band is DIY: "Looks like a no-code fix — here are three tools that'll handle it" with affiliate-or-direct links.</li>
+  </ul>
+
+  <h3>Persona verdicts on the calculator</h3>
+  <blockquote>
+    <strong>P1 (HVAC owner-operator):</strong> "Wait, this actually shows me a number? OK. I'd fill this out — but I'd hesitate at the email field if I hadn't been told it was coming."
+  </blockquote>
+  <blockquote>
+    <strong>P2 (law-firm COO):</strong> "Smart instrument. But who else has used this? Show me the methodology before I trust the number."
+  </blockquote>
+  <blockquote>
+    <strong>P3 (warm reactivation):</strong> "Brian built a calculator. Of course he did. I'd send this to my ops director."
+  </blockquote>
+
+  <p>Verdict: the page is a 9/10 craft, 6/10 distribution. Ship discoverability first, social proof second, no-build-case fallback third.</p>
+
+  <h2>What I'd ship this week</h2>
+  <p>Three changes Brian can ship in roughly 1–2 hours each that move the conversion needle the most. In ranked order:</p>
+
+  <h3>1. Delete the fabricated testimonials section. (45 minutes)</h3>
+  <p>File: <code>src/components/TestimonialsSection.tsx</code>. Remove from <code>src/pages/Home.tsx</code> imports. Don't replace it — leave a clean transition from the case-studies section directly to the FAQ. Empty space is better than fake people. If a real client (Stancil, Carolina Masonry, City of Charlotte) will sign off on a single quote, lead with that <em>one</em> quote and a real name + role. One is more credible than three fake ones. This is the highest-impact change on the site — it is the only change that removes a verifiable lie.</p>
+
+  <h3>2. Add the cost calculator to the main nav + replace one home-page hero CTA. (30 minutes)</h3>
+  <p>File: <code>src/components/Nav.tsx</code>. Add <code>{ to: '/tools/cost-calculator', label: 'Free Tools' }</code> between Portfolio and About. File: <code>src/components/HeroSection.tsx</code>. Replace the secondary "See our work" CTA with <code>&lt;a href="/tools/cost-calculator"&gt;Calculate your manual-work cost →&lt;/a&gt;</code>. The primary "Book a discovery call" stays — but you now have a low-friction "tire-kicker" path that captures the 80% of cold traffic that isn't ready to book a call. The calculator is the lead magnet; the nav and hero are the megaphone.</p>
+
+  <h3>3. Replace the hero stats row with three Brian can defend. (20 minutes)</h3>
+  <p>File: <code>src/components/HeroSection.tsx</code>. Replace the four-stat <code>HeroStatsComponent</code> with three real ones: <em>"10+ products shipped" · "Charlotte, NC, est. 2024" · "Founder-built"</em>. Or — and this is what I'd actually do — delete the stats row entirely. The hero copy is strong enough alone, and the home page is over-engineered. The 72px top margin of <code>HeroStatsComponent</code> is doing more credibility-damage than the four numbers are doing credibility-building. Less is more honest here.</p>
+
+  <p>That's it. Three files touched, ~90 minutes of work, and the home page goes from a 4/10 to a 7/10 for both buyer personas. None of these require new content, new photos, or new strategy. The actual sales engine of the site (Services + Portfolio + Calculator + Contact) is already good — these three fixes just stop the home page from sabotaging it.</p>
+
+  <h2>One more thing — the "BM" placeholder on /about</h2>
+  <p>This isn't in the top three because it's mid-week work (needs a photo), but it's the single highest-leverage <em>permanent</em> upgrade. The whole pitch is "you get the person." A monogram block where the photo should be is the visual equivalent of <em>"placeholder text here"</em> in production copy. Even a phone-camera photo in window light, cropped square, in front of a neutral wall, would be a step-function improvement. The site is otherwise within an inch of "credible owner-operator" — the missing photo is the difference between an inch and a mile.</p>
+
+  <div class="doc-footer">
+    Prepared 2026-05-12 · Ascend Systems UX critique · evaluated against three buyer personas (Charlotte SMB owner-operator, Charlotte professional-services COO, warm-reactivation past collaborator) · companion to the same-day technical audit.
+  </div>
+</div>
+</body>
+</html>

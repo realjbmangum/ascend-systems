@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ascend Systems — Competitive Landscape · May 2026</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  .doc-header {
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--charcoal);
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    color: var(--charcoal);
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--charcoal);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .lede {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gray-600);
+  }
+
+  a {
+    color: var(--orange-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover { color: var(--orange); }
+
+  strong { font-weight: 600; color: var(--charcoal); }
+
+  code, kbd, pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--charcoal);
+  }
+  pre {
+    background: var(--charcoal);
+    color: #E5E5E3;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow);
+    color: var(--charcoal);
+    font-style: normal;
+  }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 48px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:hover td { background: var(--gray-100); }
+
+  .callout {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .card h4 { margin-top: 0; }
+
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-header">
+    <p class="doc-eyebrow">Competitive analysis · 2026-05-12</p>
+    <h1>Ascend Systems — Competitive Landscape</h1>
+    <p class="lede">A buyer-tier map of who a Charlotte SMB owner-operator shortlists when they decide they need a custom CRM, an internal tool, or an AI integration — and where Ascend's solo-operator, ship-the-work-yourself wedge actually holds up.</p>
+  </div>
+
+  <div class="callout">
+    <h3>TL;DR + verdict</h3>
+    <p><strong>The most-defensible wedge:</strong> Local + solo owner-operator + verifiable public-sector and multi-tenant shipped work + AI-native by default. Specifically: the only Charlotte-based tech consultant whose buyer can drive past a live deployment (City of Charlotte EV Dashboard) and call a current operator (Stancil Services) before signing. No agency at this price tier has that. No fractional-CTO solo has that depth of shipped product.</p>
+    <p><strong>2–3 threats to watch:</strong></p>
+    <ul>
+      <li><strong><a href="https://designli.co/">Designli</a></strong> — Charlotte-listed office, 200+ five-star reviews, ranked top-tier on Clutch, $70–150/hr blended, owns "non-technical founder" niche. Most credible local up-market threat.</li>
+      <li><strong><a href="https://bry.net/">Bry AI / Bryan Dennstedt</a></strong> — Charlotte-metro solo fractional CTO with AI angle and 40+ engagements via TechCXO. Closest mirror of Ascend's solo-operator pitch.</li>
+      <li><strong><a href="https://www.upwork.com/hire/web-developers/us/charlotte-nc/">Upwork freelancers + Bubble/Webflow shops</a></strong> — Not a brand, a buyer behavior. The cheap path the SMB tries first. Wins on price every time Ascend lets it become a price conversation.</li>
+    </ul>
+    <p><strong>Headline opportunity:</strong> The Charlotte market is split between (a) opaque-pricing local agencies with marketing-heavy copy and no shipped-product proof, and (b) remote staffing platforms with no local presence. There is no Charlotte-local operator publicly showing real, current, owned-and-shipped software with named clients. Publish the City of Charlotte and Stancil case studies with screenshots, named contacts, and architecture diagrams. That single move out-evidences every direct competitor in this report.</p>
+  </div>
+
+  <h2>Methodology &amp; scope</h2>
+  <p>Three buyer-decision tiers were analyzed against Ascend Systems' stated positioning (custom CRM, full-stack web, AI integrations, fractional CTO — Charlotte SMBs $1M–$50M revenue):</p>
+  <ol>
+    <li><strong>Tier 1 — Direct local competitors:</strong> Charlotte-metro tech consultancies the same buyer would shortlist. Sourced from <a href="https://clutch.co/developers/charlotte">Clutch</a>, <a href="https://www.goodfirms.co/directory/city/top-software-development-companies/charlotte">GoodFirms</a>, <a href="https://www.designrush.com/agency/software-development/north-carolina/charlotte">DesignRush</a>.</li>
+    <li><strong>Tier 2 — National/remote competitors:</strong> Platforms and firms that compete remotely for the same engagement.</li>
+    <li><strong>Tier 3 — Alternative paths:</strong> What the buyer does <em>instead of</em> hiring any consultancy: in-house hire, freelancer marketplaces, no-code shops, enterprise consulting.</li>
+  </ol>
+  <p>Note: the older <code>brand-strategy.md</code> in this repo (Feb 2026) analyzed AI phone-answering competitors (Smith.ai, Ruby, Dialzara, Rosie, etc.) for a since-abandoned product positioning. Those firms are <strong>not</strong> Ascend's competitors today and are excluded.</p>
+
+  <hr>
+
+  <h2>Tier 1 — Direct local competitors (Charlotte metro)</h2>
+
+  <p>These are the firms a $1M–$50M Charlotte SMB will see when they Google "Charlotte custom software" or scroll a Clutch / GoodFirms / DesignRush directory. Weighted by Charlotte presence first, shipped proof second, brand recognition third.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>HQ</th>
+        <th>Pricing</th>
+        <th>Services</th>
+        <th>Wedge</th>
+        <th>Strength vs Ascend</th>
+        <th>Weakness vs Ascend</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://designli.co/">Designli</a></td>
+        <td>Greenville SC + Charlotte + Atlanta + SF</td>
+        <td>$70–150/hr blended; project starting ~$10K to $150K+ <span class="tag gray">via Clutch</span></td>
+        <td>Mobile + web app dev, custom software, UI/UX, AI</td>
+        <td>"Solution Lab" discovery + non-technical founder positioning; 200+ 5-star reviews</td>
+        <td>Multi-office credibility, deep review moat, formal product-team process</td>
+        <td>Sub-office Charlotte presence (HQ is Greenville), team-not-founder delivery, opaque project minimums</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.dualbootpartners.com/">Dualboot Partners</a></td>
+        <td>Charlotte + Raleigh + Montevideo UY</td>
+        <td>$50K minimum project; most projects $250K–$350K; up to $1M+ <span class="tag gray">via Clutch/GoodFirms</span></td>
+        <td>Full-stack dev, fractional CTO, QA, PMO, design</td>
+        <td>"Bridge from executive vision to technical reality" — embedded long-term partner with nearshore team</td>
+        <td>Real Charlotte office, fractional CTO offering with real bench, can take large engagements</td>
+        <td>$50K floor + $250K-typical pricing is out-of-reach for most $1M–$5M SMB buyers; team-based not founder-led</td>
+      </tr>
+      <tr>
+        <td><a href="https://thebigpixel.net/">Big Pixel</a></td>
+        <td>Raleigh NC <span class="tag gray">listed in Charlotte directories</span></td>
+        <td>$100K minimum; $150–199/hr <span class="tag gray">via Clutch</span></td>
+        <td>Custom software, UI/UX, API dev, mobile, web</td>
+        <td>Strategic-design-led, US-only team, strong Clutch reviews</td>
+        <td>Senior-talent reputation; founder David Baxter is visible</td>
+        <td>Raleigh-based (3hr drive); $100K floor; no AI/CTO services advertised; not actually local to Charlotte</td>
+      </tr>
+      <tr>
+        <td><a href="https://bry.net/">Bry AI (Bryan Dennstedt)</a></td>
+        <td>Charlotte metro</td>
+        <td>Opaque <span class="tag gray">TechCXO partner — typically retainer-based fractional engagements</span></td>
+        <td>Fractional CTO, AI strategy, product roadmaps, integrations</td>
+        <td>"25+ years, 40+ fractional engagements, AI-native" — solo operator with telemedicine and healthcare track record + YouTube/content presence ("AI with Bry")</td>
+        <td>Direct mirror of Ascend's solo-operator + AI pitch with longer résumé; content marketing flywheel already running</td>
+        <td>Strategist-not-builder posture (advises, doesn't necessarily ship code); enterprise telemedicine résumé reads "too big" for $1M–$5M SMBs; opaque fractional pricing</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.pineapplecf.com/">Pineapple Consulting Firm</a></td>
+        <td>Charlotte NC</td>
+        <td>BI packages from $55/mo; projects typically &lt;$10K <span class="tag gray">via Clutch</span></td>
+        <td>Fractional analytics, dashboards, BI, data strategy</td>
+        <td>Hyper-narrow: "fractional analytics partner" — owns the dashboard/BI niche for SMBs</td>
+        <td>Crisp positioning, real local presence, low-friction entry price</td>
+        <td>Analytics-only; no software builds, no CRM, no AI integration beyond reporting — actually a complementary partner, not a head-to-head competitor</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.stonehillinnovation.com/ai-consulting-firm-charlotte">Stonehill Innovation</a></td>
+        <td>Charlotte NC (+ FL)</td>
+        <td>$10K project minimum; $150–199/hr <span class="tag gray">via Clutch — 1 review only</span></td>
+        <td>AI consulting, digital transformation, innovation strategy</td>
+        <td>Strategy-first AI consulting language</td>
+        <td>"AI consulting" SEO real estate is well-built</td>
+        <td>Strategy-deck shop, not a shipping shop; thin Clutch presence (1 review); generic consulting copy without product proof</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.epicnotion.com/">Epic Notion</a></td>
+        <td>Charlotte NC</td>
+        <td>Opaque — contact for quote</td>
+        <td>SEO, paid media, web design/dev, branding, content, email automation</td>
+        <td>Full-service marketing agency, founded 2007, "intentionally small"</td>
+        <td>Real Charlotte office, 18 years in market, marketing-channel breadth</td>
+        <td>Marketing-led not engineering-led; not where a buyer goes for a CRM build or AI integration</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.promerix.com/">Promerix</a></td>
+        <td>Indian Land SC (Ballantyne adjacent)</td>
+        <td>Opaque</td>
+        <td>Web design, custom web apps, eCommerce (Shopify/Magento), SEO</td>
+        <td>21-year track record on small/mid web builds</td>
+        <td>Real Charlotte-metro presence; long-tenured</td>
+        <td>Website-and-eCommerce shop; no AI, no CRM-build, no fractional CTO offering</td>
+      </tr>
+      <tr>
+        <td><a href="https://foureyes.com/">Four Eyes</a></td>
+        <td>Charlotte NC</td>
+        <td>Opaque</td>
+        <td>WordPress sites, digital marketing, web design since 1998</td>
+        <td>28 years in market — institutional Charlotte trust</td>
+        <td>Local incumbent</td>
+        <td>WordPress/marketing-site shop; not a software-build competitor at all — different buyer</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.confianzit.com/">Confianz IT</a></td>
+        <td>Charlotte NC</td>
+        <td>Opaque</td>
+        <td>Custom web app dev, Odoo ERP integration, mobile</td>
+        <td>SMB-to-Fortune-100 range</td>
+        <td>Local; broad scope</td>
+        <td>Heavy generic-agency copy; no visible AI/CTO offer; light on shipped-product evidence</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.animink.com/charlotte-custom-software-solutions-development-services/">Animink</a></td>
+        <td>Charlotte NC</td>
+        <td>Opaque</td>
+        <td>Custom inventory, sales order processing, mobile apps</td>
+        <td>"Hundreds of corporate and private business" claim</td>
+        <td>Local; operational-software niche</td>
+        <td>Older positioning, dated site, no AI angle</td>
+      </tr>
+      <tr>
+        <td><a href="https://skookum.com/charlotte">Skookum (GlobalLogic)</a></td>
+        <td>Charlotte NC + Denver</td>
+        <td>Enterprise — opaque, project minimums likely $250K+ <span class="tag gray">$13.4M revenue, 44 employees</span></td>
+        <td>Digital strategy, design, development for enterprise</td>
+        <td>The Charlotte legacy brand — well-known locally, acquired by GlobalLogic 2019</td>
+        <td>Brand recognition in Charlotte; deep talent bench post-acquisition</td>
+        <td>Enterprise scope; their floor is above the entire Ascend ICP ceiling — they don't compete for the same engagement</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Top 3 local — deep profiles</h3>
+
+  <h4>1 · Designli</h4>
+  <p>The most credible same-tier threat. Designli is a Southeast US firm with a stated Charlotte office, 200+ five-star reviews on third-party platforms, $70–150/hr blended pricing (which overlaps Ascend's likely rate), and a documented discovery process they trademarked as "Solution Lab." Founded 2013. Per <a href="https://designli.co/why-designli">their about page</a>, founder Keith "has spent 12+ years helping non-technical founders bring their software ideas to life."</p>
+  <blockquote>"Designli pairs non-technical software founders with full-time, founder-aligned product teams of software engineers, designers and product owners." <span class="tag gray">via Designli site / Clutch profile</span></blockquote>
+  <p><strong>Where they beat Ascend:</strong> 200+ public reviews, multi-office brand, repeatable productized discovery sprint, AI service line already marketed. <strong>Where Ascend beats them:</strong> Designli is team-delivery — the buyer doesn't get the founder doing the work. Designli's "non-technical founder" positioning is built for app-startup-MVPs, not for owner-operator SMBs running existing $1M–$50M businesses who need a CRM or internal tool. Ascend's ICP is the wrong buyer for Designli's discovery sprint.</p>
+
+  <h4>2 · Dualboot Partners</h4>
+  <p>The most credible local <em>full-spectrum</em> threat — they actually offer a fractional CTO service line, have a Charlotte office, and were founded 2018. Their pricing floor and project averages, however, place them in an entirely different buyer tier.</p>
+  <blockquote>"Unlike consulting firms that hand over a plan and disappear, [our] fractional CTO services stand apart by bridging the gap between executive vision and technical reality." <span class="tag gray">via dualbootpartners.com/services/product-development/cto-consulting</span></blockquote>
+  <p><strong>Where they beat Ascend:</strong> Real bench (Charlotte + Raleigh + Montevideo nearshore), Fortune 500 client list, can take seven-figure engagements, full PMO/QA wrap. <strong>Where Ascend beats them:</strong> Their $50K floor and $250K-typical engagement is 5–10x what a $1M–$5M Charlotte owner-operator will sign. Ascend can win every engagement under ~$75K by default — they won't fight for it. For the buyer who needs a $20K CRM build, Dualboot is structurally not the answer.</p>
+
+  <h4>3 · Bry AI / Bryan Dennstedt</h4>
+  <p>The closest mirror of Ascend's solo-operator + AI-native pitch. Charlotte-metro, 25+ years, 40+ fractional engagements via TechCXO, runs the "AI with Bry" YouTube channel, owns <a href="https://bry.net/">bry.net</a>. Telemedicine and healthcare background (former CTO of MDLIVE and iPic Entertainment).</p>
+  <p><strong>Where he beats Ascend:</strong> Longer résumé, content-marketing flywheel already running (YouTube + LinkedIn), TechCXO platform distribution, executive-network credibility. <strong>Where Ascend beats him:</strong> He sells <em>advisory</em> — Brian sells <em>built</em>. Ascend's portfolio is shipped public-facing software (City of Charlotte EV Dashboard, Stancil Services, LoveNotes, RecordStops, etc.); Bry AI's evidence is org-chart accomplishments and YouTube explainer videos. The owner-operator of a $2M HVAC company wants a tool, not a consultant. The "I'll build it this week" pitch eats the "I'll advise you" pitch at this buyer tier.</p>
+
+  <hr>
+
+  <h2>Tier 2 — National / remote competitors</h2>
+
+  <p>These are platforms and firms that compete remotely for the same engagement. The Charlotte buyer encounters them by Googling "fractional CTO" or "hire developer" rather than "Charlotte software development."</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>HQ</th>
+        <th>Pricing</th>
+        <th>Services</th>
+        <th>Wedge</th>
+        <th>Strength vs Ascend</th>
+        <th>Weakness vs Ascend</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://www.a.team/">A.Team</a></td>
+        <td>NYC (remote)</td>
+        <td>Opaque, custom; "elite vetted" rates typically $100–200+/hr</td>
+        <td>AI Solutions (built-and-owned) + Talent (embedded engineers)</td>
+        <td>"Production-ready AI" + vetted senior engineer network</td>
+        <td>Brand strength in AI-product narrative; access to senior talent at scale</td>
+        <td>No local presence; staffing-marketplace dynamic, not a partner; expensive; opaque vetting</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.bairesdev.com/">BairesDev</a></td>
+        <td>San Francisco + LATAM nearshore</td>
+        <td>$50–99/hr; $50K project minimum; team build ~$60K/mo <span class="tag gray">via Clutch + hireinsouth.com</span></td>
+        <td>Custom software, staff aug, nearshore squads</td>
+        <td>Nearshore scale at sub-US rates</td>
+        <td>Lower hourly rate than most US firms; deep talent pool</td>
+        <td>$50K floor + $60K/mo team rate prices them out of the SMB tier; remote/nearshore = no local handshake; quality variance per public reviews</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.fractional.ai/">Fractional AI</a></td>
+        <td>Remote (US)</td>
+        <td>Opaque; project-based AI transformation engagements</td>
+        <td>AI transformation, agentic systems, ML/AI engineering</td>
+        <td>Pure-play AI transformation consultancy</td>
+        <td>AI-only focus, brand authority on the AI side</td>
+        <td>Enterprise-flavored copy; not the buyer Ascend's ICP would discover; no integrated CRM/web offering</td>
+      </tr>
+      <tr>
+        <td><a href="https://gun.io/">Gun.io</a></td>
+        <td>Nashville (remote network)</td>
+        <td>$100+/hr typical; 20% of first-year salary for FT placements <span class="tag gray">via gun.io</span></td>
+        <td>Vetted senior developer placement (3,000+ network)</td>
+        <td>Vetted-talent marketplace, premium tier</td>
+        <td>Speed of access to senior engineers</td>
+        <td>Marketplace, not a partner; client manages the engagement; no AI/CTO advisory; no shipped product on their side</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.toptal.com/">Toptal</a></td>
+        <td>Remote (global)</td>
+        <td>$60–200+/hr blended; $500 refundable deposit + $79/mo <span class="tag gray">via Toptal</span></td>
+        <td>Vetted freelance dev/design/PM placement</td>
+        <td>"Top 3%" vetted-freelancer brand</td>
+        <td>Highest-recognition brand among SMB owners doing self-service research</td>
+        <td>Pure staffing — owner has to manage the engagement themselves; high blended rate after markup; no local accountability</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Top 2 national/remote — deep profiles</h3>
+
+  <h4>1 · A.Team</h4>
+  <p>The category-leader for "AI + senior engineer team, on demand." Their pitch has effectively replaced Toptal as the premium remote shorthand for sophisticated tech buyers. Two service lines: AI Solutions (managed builds) and Talent (embedded engineers).</p>
+  <p><strong>Where they beat Ascend:</strong> Brand-name AI authority; deep specialized talent (ML engineers, agent designers); raised funding from a16z = perceived legitimacy. <strong>Where Ascend beats them:</strong> A.Team is for venture-funded ops leaders comfortable spending $30K/mo on a remote squad. Charlotte owner-operators don't shop here. They want one phone number and one face. A.Team's wedge dissolves the moment local proximity matters — and at this revenue tier, it always does.</p>
+
+  <h4>2 · BairesDev</h4>
+  <p>The most common "we should outsource to Latin America" answer. Real footprint, real talent, real reviews — but priced and structured for engagements an order of magnitude larger than Ascend's ICP need.</p>
+  <p><strong>Where they beat Ascend:</strong> $50–99/hr nearshore rate is hard to beat on raw cost; bench can absorb hiring volume Ascend can't. <strong>Where Ascend beats them:</strong> The $50K project floor and team-of-5 model is wrong-shaped for an HVAC company that needs a $15K dispatch tool. BairesDev requires the client to drive the project; Ascend ships the project. The Charlotte owner-operator who tried BairesDev once and got a contracted PM and a Slack channel will pay 2x to get a person who shows up at their office.</p>
+
+  <hr>
+
+  <h2>Tier 3 — Alternatives the buyer considers instead</h2>
+
+  <p>Often the real competition isn't another consultancy — it's a different category entirely. These are the four paths a Charlotte SMB owner-operator weighs before signing with anyone.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Alternative</th>
+        <th>Visible cost</th>
+        <th>What it solves</th>
+        <th>Wedge</th>
+        <th>Why it loses to Ascend</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>In-house junior developer</td>
+        <td>$70K–87K salary (Charlotte mid-2026) + 25–35% benefits load = $90K–$120K all-in <span class="tag gray">via Salary.com, BuiltIn, Glassdoor</span></td>
+        <td>Permanent capacity, ownership of IP day one</td>
+        <td>"Hire someone who works only for us"</td>
+        <td>Junior alone can't architect; no AI fluency; can't ship in week one; loaded cost = ~$10K/mo with zero output for 3+ months while ramping</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.upwork.com/">Upwork freelancers</a></td>
+        <td>$15–50/hr typical; $39 median; up to $100+/hr for senior <span class="tag gray">via Upwork</span></td>
+        <td>Fast, cheap, off-the-books capacity for a discrete task</td>
+        <td>"Pay only for what gets built, no commitment"</td>
+        <td>Wide quality variance; owner has to manage spec, QA, timeline; no AI integration depth; no continuity; 70% of SMB Upwork projects fail or stall (industry rule of thumb)</td>
+      </tr>
+      <tr>
+        <td><a href="https://www.toptal.com/">Toptal / Gun.io / Lemon.io</a></td>
+        <td>$60–200+/hr blended</td>
+        <td>Vetted senior freelancer for a project</td>
+        <td>"Top 3% talent without the recruiting work"</td>
+        <td>Still staffing, not delivery; owner manages engagement; platform takes 30%+ of rate; no local; no integrated AI/CTO advisory</td>
+      </tr>
+      <tr>
+        <td>Bubble / Webflow no-code shops</td>
+        <td>$100–200/hr; $10K–40K typical MVP; $200–1,500/mo platform fees ongoing <span class="tag gray">via lowcode.agency, Bubble docs</span></td>
+        <td>Visual-builder MVP without writing code</td>
+        <td>"Ship faster, cheaper, with no engineering team"</td>
+        <td>Platform-lock; vertical scaling cliff; struggles with real integrations; AI features bolted on, not native; ownership of stack is limited</td>
+      </tr>
+      <tr>
+        <td>Enterprise consulting (Thoughtworks, Centric, Skookum/GlobalLogic, IBM, Big-4)</td>
+        <td>$200–400+/hr; $250K+ engagements typical</td>
+        <td>Enterprise-grade transformation, governance, risk-managed delivery</td>
+        <td>"Nobody got fired for hiring [enterprise firm]"</td>
+        <td>Sized for Fortune 1000; their floor is above the entire SMB tier ceiling; the buyer who got a Thoughtworks proposal once already learned this — it's the "we tried this and it was 10x what we wanted to spend" reference point</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>Positioning map</h2>
+
+  <p>Two axes that capture how a Charlotte SMB buyer actually filters this market:</p>
+  <ul>
+    <li><strong>X-axis: Local ←→ Remote</strong> — Can the buyer get coffee with the person doing the work?</li>
+    <li><strong>Y-axis: Productized/Templated ←→ Custom Build</strong> — Are they buying a packaged offering, or a custom-built tool?</li>
+  </ul>
+
+<pre>
+                CUSTOM BUILD
+                     │
+                     │
+   Big Pixel ●       │       ● Dualboot Partners
+   (Raleigh)         │       (Charlotte/nearshore)
+                     │
+                     │       ● Designli
+                     │         (Greenville/Charlotte)
+                     │
+                     │   ★ ASCEND SYSTEMS
+                     │     (Charlotte, solo)
+                     │
+                     │       ● Skookum/GlobalLogic
+                     │         (Charlotte, enterprise)
+                     │
+                     │   ● Bry AI (Charlotte, advisory not build)
+                     │
+   LOCAL  ───────────┼────────────────────────── REMOTE
+                     │
+                     │       ● A.Team
+                     │       ● BairesDev
+                     │       ● Toptal / Gun.io / Upwork
+                     │       ● Fractional AI
+                     │
+   Promerix ●        │
+   Four Eyes ●       │       ● Bubble / Webflow shops
+   Animink ●         │
+   Epic Notion ●     │       ● No-code agencies
+   (WordPress /      │
+    marketing site   │
+    shops)           │
+                     │
+   Pineapple ●       │
+   (BI dashboards    │
+    only)            │
+                     │
+                PRODUCTIZED / TEMPLATED
+</pre>
+
+  <p><strong>What the map shows:</strong> the upper-left quadrant — <em>local + truly custom build</em> — is occupied at the top by Dualboot (priced out of the Ascend ICP), at the middle by Designli (Greenville HQ, team delivery), and at the bottom by Skookum (enterprise floor). The <em>solo-operator + local + custom-build + AI-native</em> intersection has exactly one occupant: Ascend. Bry AI is the nearest neighbor but sits in advisory rather than build. That's the gap.</p>
+
+  <hr>
+
+  <h2>Wedge analysis — what Ascend defensibly owns</h2>
+
+  <p>Stripped of marketing language, the wedge is composed of four overlapping moats:</p>
+
+  <h3>1 · Local + present, not "Charlotte-listed"</h3>
+  <p>Three of the most-ranked "Charlotte" firms aren't actually based in Charlotte: Designli HQ is Greenville SC, Big Pixel HQ is Raleigh, Dualboot delivers from Montevideo. Brian is in Charlotte, available for a coffee in Uptown or South End this week. For an owner-operator buyer, "you can drive 15 minutes to see me" eats "we have a Charlotte office" eats "we serve the Charlotte market remotely."</p>
+
+  <h3>2 · Solo owner-doing-the-work, not team delivery</h3>
+  <p>Every Tier-1 firm above ~$50K project size delivers through a team: account exec sells, PM coordinates, juniors execute. The Charlotte SMB buyer at the $1M–$10M revenue tier — owner-operator, decisions made in the field — values <em>not getting handed off</em>. The "you talk to me, I build it, I deploy it, I support it" pitch is structurally unavailable to Designli, Dualboot, BairesDev, Skookum, and A.Team. It's only available to Bry AI (who isn't building) and freelancers (who aren't accountable). Brian is the only one in the matrix who does both.</p>
+
+  <h3>3 · Verifiable, drive-by, named-client shipped product</h3>
+  <p>This is the most defensible piece. The competitive set is heavy on testimonials and light on shipped-product evidence. Designli has 200+ five-star reviews but the case-study artifacts are hard to find. Dualboot describes domains and outcomes but rarely names public clients. Stonehill has one Clutch review. Charlotte's marketing-shop tier (Promerix, Four Eyes, Epic Notion, Animink) shows brochure-style screenshots.</p>
+  <p>Ascend has: <strong>the City of Charlotte EV Charging Dashboard</strong> — a public-sector deployment a buyer can pull up on their phone in the meeting — and <strong>Stancil Services</strong> — a multi-tenant operations platform with a current operator who can be called. Plus a portfolio of 14+ shipped products under Lighthouse 27 (SCDMV Alerts, LoveNotes, RecordStops, Heirloom, etc.). No competitor in this analysis has the same combination of <em>public-sector real software + multi-tenant SMB ops platform + visible founder-shipped portfolio</em>.</p>
+
+  <h3>4 · AI-native by default, not bolted on</h3>
+  <p>"AI integration" appears as a service line on Designli, Dualboot, Stonehill, and A.Team marketing pages. None of them are AI-native — it's an offering bolted onto a traditional services menu. Brian's shipped portfolio is AI-native (LoveNotes, Fanvue, Heirloom, the EV dashboard's natural-language interface). For a buyer who keeps hearing "use AI" from their board and trade press, hiring a consultant whose entire portfolio is already AI-native is a different decision than hiring a generalist firm that opened an "AI practice" in 2024.</p>
+
+  <h3>The composite</h3>
+  <p>Ascend's wedge is the intersection: <strong>Local (Charlotte-resident, not Charlotte-listed) + Solo owner-operator (you get Brian, not a PM and three contractors) + Named, drive-by shipped product (City of Charlotte, Stancil) + AI-native portfolio (not a 2024 service-line bolt-on)</strong>. No competitor in this report holds more than two of those four simultaneously.</p>
+
+  <hr>
+
+  <h2>Pricing benchmarks</h2>
+
+  <p>What competitors charge — for anchoring proposals. Numbers below are from public Clutch profiles, agency directories, and pricing pages dated 2025–2026. Use as conversation anchors, not list price.</p>
+
+  <table>
+    <thead>
+      <tr><th>Engagement type</th><th>Local market range</th><th>National/remote range</th><th>Ascend anchor</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Hourly blended rate</td>
+        <td>$100–199/hr (Designli $70–150, Dualboot ~$150, Big Pixel $150–199, Stonehill $150–199)</td>
+        <td>$50–99/hr (BairesDev), $60–200+ (Toptal/Gun.io), $100+ (A.Team senior)</td>
+        <td>$125–175/hr is defensible mid-market; below $100 reads junior, above $200 needs enterprise context</td>
+      </tr>
+      <tr>
+        <td>Discovery sprint / scoping engagement</td>
+        <td>$5K–15K (Designli Solution Lab, Pineapple data audit ~$10K)</td>
+        <td>$5K–25K (A.Team, Fractional AI engagement scoping)</td>
+        <td>$3K–8K productized 2-week scope &amp; prototype — undercuts Designli's Solution Lab while staying profitable</td>
+      </tr>
+      <tr>
+        <td>SMB build engagement (CRM, internal tool, web app)</td>
+        <td>$25K–150K (Designli typical $40K–$150K, Big Pixel $100K min, Dualboot $50K min, $250K typical)</td>
+        <td>$50K min (BairesDev); $30K–250K (no-code shops)</td>
+        <td>$15K–75K is the white space — most local agencies refuse below $40K, Bubble shops cap around $40K. Ascend can serve $15K–$75K as a credible custom-code shop</td>
+      </tr>
+      <tr>
+        <td>Fractional CTO retainer (monthly)</td>
+        <td>$5K–15K/mo (Bry AI / TechCXO, Dualboot retainer model)</td>
+        <td>$8K–20K/mo (A.Team embedded, fractional.ai)</td>
+        <td>$4K–10K/mo for 1–2 day/week engagement is the SMB sweet spot. Below $4K = perceived junior; above $10K = SMB sticker shock</td>
+      </tr>
+      <tr>
+        <td>AI integration project</td>
+        <td>$15K–50K typical scoped project (Stonehill, Designli AI line)</td>
+        <td>$25K–250K (Fractional AI, A.Team AI Solutions)</td>
+        <td>$10K–40K productized AI integration (single-workflow automation, RAG over docs, voice/text agent) is the entry door product</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Pricing posture recommendation</h3>
+  <p>Ascend's price ceiling is set by Designli ($150/hr blended). Its price floor is set by perception risk — under $100/hr the buyer will start wondering why. The defensible band for Brian as a senior solo operator is <strong>$135–165/hr blended with a productized $5K discovery / $25K–75K build / $5K–8K-per-month fractional CTO retainer</strong> stack. That puts Ascend cheaper than Designli on a project basis (no PM markup), comparable to Bry AI on retainer (with the differentiator that Ascend ships code), and structurally inaccessible to BairesDev and Dualboot at the same scope.</p>
+
+  <hr>
+
+  <h2>Threats to watch</h2>
+
+  <h3>Threat 1 — Designli moves into Charlotte more aggressively</h3>
+  <p>Designli already lists Charlotte as an office. If they invest in a Charlotte presence (a real local senior delivery lead, in-person Chamber visibility, Charlotte case studies), their 200+ reviews + multi-office bench become very hard to out-position. <strong>Watch:</strong> Designli LinkedIn for Charlotte hires, sponsored Charlotte events, local case-study publications. <strong>Counter-move:</strong> Lock in 2–3 named Charlotte SMB case studies and publish them this quarter before Designli does.</p>
+
+  <h3>Threat 2 — Bry AI productizes the solo-operator-with-AI play</h3>
+  <p>Bry AI is the structurally closest competitor. If Bryan publishes a productized fractional-CTO offering at $5–8K/mo with AI specialization, he'd be inside Ascend's exact lane with a longer résumé. His YouTube channel is already building inbound demand. <strong>Watch:</strong> bry.net for productized retainer pages, AI-with-Bry YouTube subscriber growth, any case-study posting beyond MDLIVE history. <strong>Counter-move:</strong> Out-evidence him with shipped product. Bry sells advisory; Brian sells <em>built</em>. Keep publishing built artifacts — the EV dashboard write-up, the Stancil case study, screenshots, architecture diagrams. He cannot match those without becoming a builder.</p>
+
+  <h3>Threat 3 — The Upwork/Bubble race-to-bottom on price-sensitive buyers</h3>
+  <p>Not a single competitor — a category. Roughly half of Ascend's discovery calls will involve "I got a quote on Upwork for $4,500." This isn't a brand threat; it's a positioning threat: every conversation that becomes about hourly rate is one Ascend loses. <strong>Watch:</strong> intake friction on cold inbound — track how many leads anchor on a freelancer quote in the first call. <strong>Counter-move:</strong> Don't quote hourly to first-call leads. Quote outcomes: "I'll ship a working dispatch tool integrated with your QuickBooks in 6 weeks for $35K, with a 90-day post-launch warranty." Freelancers can't quote that.</p>
+
+  <hr>
+
+  <h2>Recommendations — 5 moves that widen the wedge</h2>
+
+  <h3>1 · Publish the City of Charlotte case study as a 2,000-word, screenshot-heavy writeup</h3>
+  <p>This is the single highest-leverage move in this report. None of the local competitors have anything comparable. A real public-sector deployment, with a named municipal client, screenshots of the live dashboard, architecture diagram, AI-features narrative, and a one-line testimonial — even unattributed — beats every other firm's marketing copy in 30 seconds. Goal: ascendsystems.ai/work/city-of-charlotte-ev-dashboard live by end of Q2.</p>
+
+  <h3>2 · Publish the Stancil Services multi-tenant case study with named operator quote</h3>
+  <p>Same logic for the SMB tier. The buyer's mental model is "show me you've done this for someone like me." Stancil is that proof. Get one paragraph quote from the Stancil owner. This becomes the artifact that converts the chamber-meeting cold lead.</p>
+
+  <h3>3 · Productize a $5K "AI Readiness Sprint" — a 2-week scoped discovery</h3>
+  <p>Designli has Solution Lab. Pineapple has fractional analytics packages. The buyer wants a no-risk first transaction. A productized 2-week sprint with a fixed price and a deliverable (audit document + 1 working AI prototype + cost-to-build estimate for next phase) gives the buyer a low-commitment way to test working with Brian — and creates a natural upsell to a $25–75K build. This is the front door of the funnel.</p>
+
+  <h3>4 · Lock down the fractional-CTO retainer offering — publish a real pricing page</h3>
+  <p>Right now this service is in the positioning copy but not productized. Dualboot, Bry AI, TechCXO, and A.Team all have visible fractional CTO products. Ascend should publish three tiers (e.g., Strategy / Embedded / Build) with rough hours and starting prices. Even an opaque-but-anchored "$5K/mo starting" page beats no page. This is the only Ascend service line where the competitor visibility is currently higher.</p>
+
+  <h3>5 · Stop competing on "Charlotte software development" SEO — own "Charlotte AI integration" and "Charlotte fractional CTO who ships code"</h3>
+  <p>The general-software-dev SERP is owned by directory aggregators (Clutch, GoodFirms, DesignRush) — fighting them is expensive and slow. The narrower, more-defensible queries — "Charlotte AI integration consultant," "Charlotte CRM build for service business," "Charlotte fractional CTO that codes" — are wide-open. Three or four pillar pages aimed at those queries, supported by the case studies in #1–2, beats trying to outrank Designli's directory listings.</p>
+
+  <hr>
+
+  <h2>Appendix — Sources</h2>
+  <ul>
+    <li><a href="https://clutch.co/developers/charlotte">Clutch — Top Software Developers in Charlotte</a></li>
+    <li><a href="https://www.designrush.com/agency/software-development/north-carolina/charlotte">DesignRush — Top Software Development Companies in Charlotte</a></li>
+    <li><a href="https://www.goodfirms.co/directory/city/top-software-development-companies/charlotte">GoodFirms — Top Software Companies in Charlotte</a></li>
+    <li><a href="https://clutch.co/profile/designli">Clutch profile — Designli (77 reviews, pricing)</a></li>
+    <li><a href="https://designli.co/why-designli">Designli — Our Story &amp; Mission</a></li>
+    <li><a href="https://www.dualbootpartners.com/services/product-development/cto-consulting/">Dualboot Partners — Fractional CTO Services</a></li>
+    <li><a href="https://www.goodfirms.co/company/dualboot-partners">GoodFirms — Dualboot Partners</a></li>
+    <li><a href="https://www.thebigpixel.net/">Big Pixel — Raleigh, NC</a></li>
+    <li><a href="https://clutch.co/profile/big-pixel">Clutch profile — Big Pixel (pricing &amp; reviews)</a></li>
+    <li><a href="https://bry.net/fractional-cto">Bry.net — Fractional CTO Services (Bryan Dennstedt)</a></li>
+    <li><a href="https://www.techcxo.com/partners/bryan-dennstedt/">TechCXO — Bryan Dennstedt partner page</a></li>
+    <li><a href="https://www.pineapplecf.com/">Pineapple Consulting Firm — Charlotte BI / analytics</a></li>
+    <li><a href="https://clutch.co/profile/pineapple-consulting-firm">Clutch profile — Pineapple Consulting Firm</a></li>
+    <li><a href="https://www.stonehillinnovation.com/ai-consulting-firm-charlotte">Stonehill Innovation — Charlotte AI consulting page</a></li>
+    <li><a href="https://clutch.co/profile/stonehill">Clutch profile — Stonehill</a></li>
+    <li><a href="https://www.epicnotion.com/">Epic Notion — Charlotte digital marketing</a></li>
+    <li><a href="https://www.promerix.com/">Promerix — Charlotte web design / dev</a></li>
+    <li><a href="https://foureyes.com/">Four Eyes — Charlotte web dev since 1998</a></li>
+    <li><a href="https://www.confianzit.com/web-design-development-company">Confianz IT — Charlotte custom web apps</a></li>
+    <li><a href="https://www.animink.com/charlotte-custom-software-solutions-development-services/">Animink — Charlotte custom software</a></li>
+    <li><a href="https://skookum.com/charlotte">Skookum — Charlotte (now GlobalLogic)</a></li>
+    <li><a href="https://www.globallogic.com/about/press-room/press-release/globallogic-acquires-skookum-an-innovative-digital-design-development-company-2/">GlobalLogic — Skookum acquisition press release</a></li>
+    <li><a href="https://www.a.team/">A.Team — AI Solutions + Talent</a></li>
+    <li><a href="https://www.bairesdev.com/">BairesDev — Nearshore software</a></li>
+    <li><a href="https://clutch.co/profile/bairesdev">Clutch profile — BairesDev pricing</a></li>
+    <li><a href="https://www.hireinsouth.com/post/how-much-does-baires-dev-cost">HireInSouth — BairesDev pricing breakdown</a></li>
+    <li><a href="https://gun.io/pricing-calculator/">Gun.io — Developer rate calculator</a></li>
+    <li><a href="https://www.hirefraction.com/pricing">Fraction (hirefraction.com) — Fractional AI engineer pricing</a></li>
+    <li><a href="https://www.fractional.ai/">Fractional AI — AI transformation</a></li>
+    <li><a href="https://www.hireinsouth.com/post/how-much-does-toptal-cost">HireInSouth — Toptal pricing 2026</a></li>
+    <li><a href="https://www.upwork.com/hire/web-developers/cost/">Upwork — Web developer hourly rates</a></li>
+    <li><a href="https://www.upwork.com/hire/web-designers/us/charlotte-nc/">Upwork — Charlotte web designers</a></li>
+    <li><a href="https://www.lowcode.agency/blog/bubble-pricing-plans">lowcode.agency — Bubble pricing 2026</a></li>
+    <li><a href="https://www.salary.com/research/salary/listing/junior-software-developer-salary/charlotte-nc">Salary.com — Junior software developer salary Charlotte NC</a></li>
+    <li><a href="https://builtin.com/salaries/us/charlotte-nc/junior-software-engineer">BuiltIn — Junior software engineer salary Charlotte 2026</a></li>
+    <li><a href="https://centricconsulting.com/locations/charlotte/">Centric Consulting — Charlotte office</a></li>
+    <li><a href="https://www.thoughtworks.com/">Thoughtworks — enterprise consulting</a></li>
+  </ul>
+
+  <div class="doc-footer">
+    Prepared 2026-05-12 · Ascend Systems competitive landscape audit · <code>docs/audits/2026-05-12-competitive-analysis.html</code>
+  </div>
+
+</div>
+</body>
+</html>
