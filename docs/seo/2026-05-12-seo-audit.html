@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ascend Systems — SEO Audit (2026-05-12)</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  .doc-header {
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--charcoal);
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    color: var(--charcoal);
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--charcoal);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .lede {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gray-600);
+  }
+
+  a {
+    color: var(--orange-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover { color: var(--orange); }
+
+  strong { font-weight: 600; color: var(--charcoal); }
+
+  code, kbd, pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--charcoal);
+  }
+  pre {
+    background: var(--charcoal);
+    color: #E5E5E3;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow);
+    color: var(--charcoal);
+    font-style: normal;
+  }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 48px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:hover td { background: var(--gray-100); }
+
+  .callout {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .card h4 { margin-top: 0; }
+
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-header">
+    <p class="doc-eyebrow">SEO Audit · 2026-05-12</p>
+    <h1>Ascend Systems — SEO Audit</h1>
+    <p class="lede">Technical SEO review of <a href="https://ascendsystems.ai">ascendsystems.ai</a> measured against the goal of "humming for target keywords in 3–6 months." Findings prioritized P0–P3 with a week-by-week 90-day plan. Three sibling agents are running programmatic SEO, schema markup, and content strategy in parallel — this audit stays in the technical-and-on-page lane.</p>
+  </div>
+
+  <h2>TL;DR &amp; Overall SEO Grade</h2>
+
+  <div class="callout">
+    <h3>Overall Grade: <span style="color:var(--orange-light)">D+</span></h3>
+    <p>The site is well-designed, well-written, and clearly positioned — but it is functionally invisible to Google. It is a client-side React SPA with no server-side rendering, no <code>robots.txt</code>, no <code>sitemap.xml</code>, no canonical tags, no structured data, no per-route HTML, and a soft-404 pattern that returns <code>200 OK</code> for every URL including ones that don't exist. Every page Googlebot crawls today returns the same generic title and meta description from <code>index.html</code>. The site does not yet meaningfully exist in the index.</p>
+    <p><strong>Top 3 P0s, in order:</strong></p>
+    <ol>
+      <li><strong>Add pre-rendering / SSR.</strong> Without it, none of the per-page <code>SEO</code> components, H1s, or copy are visible to crawlers. Nothing else in this audit matters until this is fixed.</li>
+      <li><strong>Ship <code>robots.txt</code> + <code>sitemap.xml</code>.</strong> Both 404 today. Google has no entry point.</li>
+      <li><strong>Verify Google Search Console + Bing Webmaster Tools.</strong> Currently flying blind. Cannot diagnose what's actually indexed.</li>
+    </ol>
+    <p>Brian's "humming in 3–6 months" goal is achievable. Local-intent terms like <em>Charlotte custom software developer</em>, <em>Charlotte fractional CTO</em>, and <em>Charlotte AI consultant</em> have low keyword difficulty and the closest local competitor (<a href="https://bry.net">Bry AI</a>) is the one to beat. But the technical foundation has to come first. If we fix the P0s in Weeks 1–2, the on-page work in Weeks 3–6 starts compounding, and Weeks 7–12 is where rankings show up.</p>
+  </div>
+
+  <h2>Quick Wins (Under 1 Hour Each)</h2>
+
+  <p>The following items take less than an hour each, have no dependencies, and unblock measurable SEO impact this week.</p>
+
+  <table>
+    <thead>
+      <tr><th>Priority</th><th>Quick Win</th><th>File / Location</th><th>Time</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag dark">P0</span></td>
+        <td>Create <code>public/robots.txt</code> with sitemap reference and explicit allow for GPTBot/ClaudeBot/PerplexityBot.</td>
+        <td><code>public/robots.txt</code></td>
+        <td>10 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag dark">P0</span></td>
+        <td>Generate static <code>public/sitemap.xml</code> with all 8 public routes + case-study slugs.</td>
+        <td><code>public/sitemap.xml</code></td>
+        <td>20 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag dark">P0</span></td>
+        <td>Add Open Graph + Twitter Card + canonical meta tags into <code>index.html</code> as defaults.</td>
+        <td><code>index.html</code></td>
+        <td>15 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P1</span></td>
+        <td>Set up Google Search Console + Bing Webmaster Tools. Submit the sitemap.</td>
+        <td>(external)</td>
+        <td>20 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P1</span></td>
+        <td>Rewrite <code>index.html</code> default title to match the actual Home title (<em>"Ascend Systems | Custom Software &amp; AI for Growing Businesses | Charlotte, NC"</em>) so non-JS crawlers see the right title on every route until pre-render lands.</td>
+        <td><code>index.html</code></td>
+        <td>5 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P1</span></td>
+        <td>Add LocalBusiness JSON-LD inline to <code>index.html</code> with NAP, geo, sameAs links.</td>
+        <td><code>index.html</code></td>
+        <td>20 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P1</span></td>
+        <td>Set a real phone number in <code>src/config/site.ts</code> (currently empty, blocks LocalBusiness schema completeness).</td>
+        <td><code>src/config/site.ts:21</code></td>
+        <td>5 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P1</span></td>
+        <td>Convert <code>hero-bg.jpg</code> (125 KB), <code>brian-mangum.jpg</code> (when uploaded), and PNG case-study screenshots to WebP/AVIF.</td>
+        <td><code>public/images/</code></td>
+        <td>30 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P2</span></td>
+        <td>Verify <code>www → apex</code> 301 (or apex → www, pick one) is configured at Cloudflare.</td>
+        <td>(Cloudflare DNS/page rules)</td>
+        <td>10 min</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P2</span></td>
+        <td>Add <code>noindex</code> on <code>/admin/*</code> and <code>/portal/*</code> routes (and Disallow in robots.txt) so private app surface never gets crawled.</td>
+        <td><code>public/robots.txt</code></td>
+        <td>5 min</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Technical Findings</h2>
+
+  <h3>The Big One: SPA With No Server Rendering</h3>
+
+  <p>The site is built with React 19 + Vite 8 + <code>react-router-dom</code> 7, served as static HTML+JS from Cloudflare Pages. <code>index.html</code> ships exactly one body element: <code>&lt;div id="root"&gt;&lt;/div&gt;</code> (verified at <code>/Users/jbm/new-project/site-ai-tech-co/index.html:14</code>). All routing, all content, all per-page <code>&lt;title&gt;</code> and <code>&lt;meta&gt;</code> updates happen client-side via <code>document.title</code> writes in <code>src/components/SEO.tsx</code>.</p>
+
+  <p>Modern Googlebot does eventually render JS — but rendering is a separate, slower, lower-priority pass than HTML crawling. For a brand-new domain with zero backlinks, expect the index queue for JS-rendered content to be measured in weeks, not hours. Bingbot, DuckDuckBot, and most AI crawlers (ClaudeBot in particular) render JS far less aggressively or not at all. Every social preview (Slack, iMessage, LinkedIn, Twitter, Discord) reads <em>only</em> the static HTML.</p>
+
+  <p>What Googlebot, Bingbot, and AI crawlers see for <strong>every URL on the site right now</strong>:</p>
+
+  <pre><code>&lt;title&gt;Ascend Systems | Custom Software Development &amp; AI Solutions | Charlotte NC&lt;/title&gt;
+&lt;meta name="description" content="Custom software development, AI integrations, and business automation
+for mid-market companies. Ship your next product in weeks, not months. Based in Charlotte, NC." /&gt;</code></pre>
+
+  <p>No H1. No body content. No internal links. No schema. No canonical. Identical for <code>/</code>, <code>/services</code>, <code>/about</code>, <code>/contact</code>, <code>/portfolio</code>, <code>/portfolio/city-of-charlotte</code>, and <code>/tools/cost-calculator</code> — all confirmed via <code>curl</code> against the live site on 2026-05-12.</p>
+
+  <p><strong>Fix:</strong> Add pre-rendering. Three viable paths in priority order:</p>
+  <ol>
+    <li><strong><a href="https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#readme">vite-plugin-prerender</a> or <a href="https://github.com/chrisvfritz/prerender-spa-plugin">prerender-spa-plugin</a>.</strong> Render each known route at build time to static HTML. No code rewrite. Cost: 2–4 hours. This is the recommended path given there are 8 public routes and case-study slugs are a known static list.</li>
+    <li><strong>Migrate to <a href="https://astro.build">Astro</a> with React islands.</strong> Brian's preferred stack per global CLAUDE.md. Gives proper SSR + static export, much better Core Web Vitals than the current 704 KB JS bundle, and aligns with Cloudflare Pages workflow. Cost: 1–2 days. Highest payoff long-term.</li>
+    <li><strong>Cloudflare Workers HTML injection.</strong> A Worker in front of Pages that injects the right <code>&lt;title&gt;</code> / <code>&lt;meta&gt;</code> / canonical / OG tags based on path. Cheapest, but doesn't put body content in the HTML — solves the meta-tag problem only. Use as a stopgap if (1) and (2) are not feasible this week.</li>
+  </ol>
+
+  <h3>Crawlability — robots.txt, sitemap, indexability, redirects</h3>
+
+  <table>
+    <thead>
+      <tr><th>Severity</th><th>Finding</th><th>Evidence</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag dark">P0</span></td>
+        <td><code>/robots.txt</code> does not exist. Cloudflare Pages SPA-fallback serves <code>index.html</code> with a <code>200 OK</code> and an HTML body when robots.txt is requested.</td>
+        <td><code>curl -s https://ascendsystems.ai/robots.txt</code> returns the React shell HTML.</td>
+      </tr>
+      <tr>
+        <td><span class="tag dark">P0</span></td>
+        <td><code>/sitemap.xml</code> does not exist. Same SPA-fallback behavior.</td>
+        <td><code>curl -s https://ascendsystems.ai/sitemap.xml</code> returns HTML, not XML.</td>
+      </tr>
+      <tr>
+        <td><span class="tag dark">P0</span></td>
+        <td>Soft 404: every nonexistent URL returns <code>HTTP/2 200</code> and the full HTML shell. Google flags this as a quality signal failure for the whole domain.</td>
+        <td><code>curl -sI https://ascendsystems.ai/nonexistent-page-xyz</code> returns <code>200</code>.</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P1</span></td>
+        <td>No <code>&lt;link rel="canonical"&gt;</code> on any page. The <code>SEO</code> component at <code>src/components/SEO.tsx</code> only sets title and description. Without canonical, duplicate variants (<code>www</code>, trailing slash, query params) compete.</td>
+        <td><code>src/components/SEO.tsx</code> lines 8–24.</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P1</span></td>
+        <td>Admin and client portal routes (<code>/admin/*</code>, <code>/portal/*</code>, <code>/proposals/:token</code>) have no <code>noindex</code> directive and no robots.txt disallow. Cloudflare Access likely 401s them at the edge, but the safety net of <code>noindex</code> + Disallow should exist.</td>
+        <td><code>src/App.tsx</code> lines 74–107.</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P2</span></td>
+        <td>www subdomain handling not verified. Could not confirm whether <code>www.ascendsystems.ai</code> 301s to apex, returns 404, or duplicates content.</td>
+        <td>Needs DNS check.</td>
+      </tr>
+      <tr>
+        <td><span class="tag">P2</span></td>
+        <td>HTTPS, HSTS, and TLS look healthy. Cloudflare-served, valid cert, HTTP/2 + HTTP/3 (h3 alt-svc advertised).</td>
+        <td><code>curl -sI</code> response headers show <code>alt-svc: h3=":443"</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Suggested <code>robots.txt</code> (deploy to <code>public/robots.txt</code>)</h4>
+
+<pre><code># ascendsystems.ai robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /portal/
+Disallow: /proposals/
+
+# AI crawlers — explicitly allow. Brian wants citation surface.
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+Disallow: /portal/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+Disallow: /portal/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+Disallow: /portal/
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://ascendsystems.ai/sitemap.xml</code></pre>
+
+  <p>Verify Cloudflare WAF does <em>not</em> silently 403 these bots. The "Block AI bots" managed rule in Cloudflare Bot Management is known to do this — see <code>~/.claude/projects/-Users-jbm-new-project/memory/feedback_cloudflare_ai_bot_block.md</code>. Toggle off before launching outreach to AI search tools.</p>
+
+  <h3>Indexed Pages</h3>
+
+  <p>Cannot perform a live <code>site:ascendsystems.ai</code> query in this audit. Estimated indexed pages based on what Google would currently find:</p>
+
+  <ul>
+    <li><strong>Likely indexed:</strong> 0–1 pages (probably the homepage, treated as the entire site).</li>
+    <li><strong>Should be indexed once pre-render lands:</strong> 8 public routes — <code>/</code>, <code>/services</code>, <code>/about</code>, <code>/contact</code>, <code>/portfolio</code>, <code>/portfolio/city-of-charlotte</code>, <code>/tools/cost-calculator</code>, <code>/privacy</code>, <code>/terms</code> — plus any additional case-study slugs in <code>src/data/portfolio.ts</code>.</li>
+    <li><strong>Should not be indexed:</strong> all <code>/admin/*</code>, <code>/portal/*</code>, <code>/proposals/:token</code>, <code>/admin/auth/verify</code> routes.</li>
+  </ul>
+
+  <p>Verify in Google Search Console "Pages" report once GSC is set up.</p>
+
+  <h3>Page Speed Signals</h3>
+
+  <table>
+    <thead>
+      <tr><th>Signal</th><th>Status</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Main JS bundle</td>
+        <td>704 KB raw / 221 KB gzipped</td>
+        <td>Recently reduced (per task brief). Still large. Top contributor likely <code>framer-motion</code> (12 KB jsx-runtime peeled off but framer is heavy) + <code>recharts</code>. <code>recharts</code> is only used in admin/portal — verify it's not in the marketing bundle.</td>
+      </tr>
+      <tr>
+        <td>Bundle file</td>
+        <td><code>dist/assets/index-BNvClh9w.js</code></td>
+        <td>Verified via <code>du -sh</code>. Second-largest chunk is <code>ProjectDetail-ICSX_cmD.js</code> at 152 KB — admin only, lazy-loaded, fine.</td>
+      </tr>
+      <tr>
+        <td>Hero image</td>
+        <td><code>hero-bg.jpg</code> 125 KB</td>
+        <td>Used as background-image on Home, Services, Contact hero sections. Loaded via CSS <code>backgroundImage</code> — no <code>loading="lazy"</code>, no <code>fetchpriority</code>, no WebP/AVIF fallback. P1 to convert.</td>
+      </tr>
+      <tr>
+        <td>Case study screenshots</td>
+        <td><code>ringocket.png</code> 188 KB, <code>deadrop.png</code> 129 KB, <code>Acscend Systems.png</code> 412 KB</td>
+        <td>Note typo in filename "Acscend". PNG should be WebP. The 412 KB PNG is the worst offender. P1.</td>
+      </tr>
+      <tr>
+        <td>Fonts</td>
+        <td>Inter + JetBrains Mono via Google Fonts</td>
+        <td>Preconnect tags present (good). Could self-host fonts on Cloudflare for an extra 100–200 ms on first paint, but low priority.</td>
+      </tr>
+      <tr>
+        <td>Render-blocking CSS</td>
+        <td>1 stylesheet (<code>index-O7dpdv3q.css</code>)</td>
+        <td>Acceptable. Tailwind 4 output, likely &lt; 50 KB.</td>
+      </tr>
+      <tr>
+        <td>Core Web Vitals (LCP, INP, CLS)</td>
+        <td>Needs measurement</td>
+        <td>Run PageSpeed Insights at <a href="https://pagespeed.web.dev/?url=https%3A%2F%2Fascendsystems.ai">pagespeed.web.dev</a> and capture baseline. Expectation: LCP will be poor for SPA-first-paint until pre-render lands; CLS should be okay because layouts are mostly stable.</td>
+      </tr>
+      <tr>
+        <td>Cloudflare caching</td>
+        <td>14400s for static, dynamic for HTML</td>
+        <td>Verified in response headers (<code>cache-control: public, max-age=14400</code>). Good.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Mobile-Friendliness</h3>
+
+  <p>Spot-checked the source. Mobile-friendliness is mostly fine:</p>
+  <ul>
+    <li><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code> present in <code>index.html:5</code>.</li>
+    <li>Tailwind responsive utilities used throughout (<code>sm:</code>, <code>md:</code>, <code>lg:</code> breakpoints visible in every page).</li>
+    <li>Touch targets on the nav and CTAs look generously sized (<code>px-8 py-4</code> for primary buttons).</li>
+    <li>One concern: the hero on Services and Contact pages uses a 125 KB background image that won't resize for mobile — serves the same JPEG to a 360px-wide phone as to a 1440px desktop. Use <code>image-set()</code> or generate 3 sizes (mobile/tablet/desktop) and switch via media query.</li>
+  </ul>
+
+  <p>Run <a href="https://search.google.com/test/mobile-friendly">Mobile-Friendly Test</a> after pre-render lands. Result needs verification.</p>
+
+  <h3>AI-Bot Crawlability</h3>
+
+  <p>The site is on Cloudflare. The known gotcha is that Cloudflare's "Block AI bots" managed rule will silently 403 GPTBot, ClaudeBot, and PerplexityBot regardless of what <code>robots.txt</code> says (see global memory note <code>feedback_cloudflare_ai_bot_block.md</code>). This <em>matters</em> for Ascend because the positioning is "AI-native solo operator" and the long game includes citation by AI search tools.</p>
+
+  <p><strong>Action:</strong> Log into Cloudflare → ascendsystems.ai zone → Security → Bots → confirm "Block AI bots" is OFF, and confirm no custom WAF rule targets the AI user-agents. Verify with:</p>
+
+<pre><code>curl -A "Mozilla/5.0 (compatible; GPTBot/1.1; +https://openai.com/gptbot)" \
+     -sI https://ascendsystems.ai/ | head -3
+curl -A "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)" \
+     -sI https://ascendsystems.ai/ | head -3
+curl -A "Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)" \
+     -sI https://ascendsystems.ai/ | head -3</code></pre>
+
+  <p>All three should return <code>200</code>. Anything other than 200 = blocked at the edge.</p>
+
+  <h2>On-Page Findings (Per Page)</h2>
+
+  <p>Title, description, and H1 below come from inspection of the React source. <strong>None of these are visible to Googlebot today</strong> — they only render after JS execution. The table represents the <em>intended</em> on-page SEO once pre-rendering is in place.</p>
+
+  <table>
+    <thead>
+      <tr><th>Route</th><th>Title (intended)</th><th>Meta Desc len</th><th>H1</th><th>Issues</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/</code> (Home)</td>
+        <td>Ascend Systems | Custom Software &amp; AI for Growing Businesses | Charlotte, NC <em>(92 chars)</em></td>
+        <td>156 chars</td>
+        <td>"Software that moves legacy businesses forward."</td>
+        <td>Title at 92 chars — will truncate in SERP at ~60. Drop one segment. H1 is brand-y, lacks keyword density. Consider "Custom Software &amp; AI for Charlotte Businesses" as H1.</td>
+      </tr>
+      <tr>
+        <td><code>/services</code></td>
+        <td>Services | Custom Software, AI &amp; Automation for Growing Businesses | Ascend Systems <em>(94 chars)</em></td>
+        <td>148 chars</td>
+        <td>"Your Business Has a Technology Problem. We Fix It."</td>
+        <td>Title too long. H1 is good copy but contains zero target keywords. Search-friendly alternate: "Custom Software, AI &amp; Automation Services — Charlotte, NC".</td>
+      </tr>
+      <tr>
+        <td><code>/about</code></td>
+        <td>About Ascend Systems | Brian Mangum | Charlotte, NC <em>(54 chars)</em></td>
+        <td>149 chars</td>
+        <td>"A Technology Partner You Can Actually Trust."</td>
+        <td>Title is well-sized. H1 is generic — would benefit from naming Brian + Charlotte. Strong E-E-A-T page: founder bio, photo, real shipped products listed. Add author schema.</td>
+      </tr>
+      <tr>
+        <td><code>/contact</code></td>
+        <td>Contact Ascend Systems | Let's Talk About Your Project <em>(55 chars)</em></td>
+        <td>164 chars</td>
+        <td>"Let's Figure Out if We're the Right Fit"</td>
+        <td>Title is fine. Description very slightly long. Should add LocalBusiness schema with NAP — this is THE page Google looks at for local signals.</td>
+      </tr>
+      <tr>
+        <td><code>/portfolio</code></td>
+        <td>Portfolio | Ascend Systems <em>(26 chars)</em></td>
+        <td>118 chars</td>
+        <td>"Things we've built and shipped."</td>
+        <td>Title is too short — wasted SERP real estate. Try "Portfolio — Custom Software &amp; AI Products We've Shipped | Ascend Systems". Description could use "Charlotte" tag.</td>
+      </tr>
+      <tr>
+        <td><code>/portfolio/:slug</code></td>
+        <td>{project.name} | Ascend Systems Portfolio <em>(dynamic)</em></td>
+        <td>~variable (uses <code>project.tagline</code>)</td>
+        <td>Project name</td>
+        <td>Per-case-study titles will be unique once pre-rendered. Add CreativeWork or Product schema per project. The City of Charlotte case study is the strongest authority signal on the site — give it the longest, deepest content treatment.</td>
+      </tr>
+      <tr>
+        <td><code>/tools/cost-calculator</code></td>
+        <td>(SEO component called, copy not extracted here)</td>
+        <td>—</td>
+        <td>—</td>
+        <td>This is a high-intent ranking target: "custom software cost calculator", "how much does custom software cost", "software development ROI calculator". Currently a tool, not a content page. Wrap it with 800–1,200 words of educational content above/below the calculator. Highest organic ROI on the site once pre-rendered.</td>
+      </tr>
+      <tr>
+        <td><code>/privacy</code>, <code>/terms</code></td>
+        <td>(needs check)</td>
+        <td>—</td>
+        <td>—</td>
+        <td>Legal pages — fine to <code>noindex,follow</code>. Doesn't hurt to leave indexable but no ranking value either way.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Cross-cutting on-page issues</h3>
+  <ul>
+    <li><strong>SEO component is incomplete.</strong> <code>src/components/SEO.tsx</code> only writes <code>document.title</code> and the description meta. It does <em>not</em> set: canonical, OG tags, Twitter card, robots meta, JSON-LD. All seven are needed on every public page. Even when pre-rendering arrives, the source-of-truth component still needs the missing fields. Expand the component, then pre-render reads them per route.</li>
+    <li><strong>H1 hierarchy is clean.</strong> Spot-checked Home, Services, About, Portfolio — each has exactly one H1 (motion.h1 elements). Good.</li>
+    <li><strong>Image alt text is universal.</strong> 9 image tags in the React source, 9 alt attributes. No missing alts. (<code>grep -rn "alt=" src/</code> confirms.)</li>
+    <li><strong>Internal linking is shallow but correct.</strong> Footer (<code>src/components/Footer.tsx</code>) links to all 5 main pages plus the Cost Calculator. Nav links the same. Every page is within 1 click of the homepage. The Cost Calculator is well-promoted from Services. No orphan pages.</li>
+    <li><strong>Anchor text is generic.</strong> CTAs are mostly "Book a Free Discovery Call" or "Try the Calculator". No internal anchor text like "Charlotte custom software developer" or "fractional CTO services". Low-effort SEO win once content depth grows.</li>
+    <li><strong>Word count on most pages is decent for a consultancy</strong> — estimated 600–900 words on Home, Services, About. <code>/portfolio</code> and <code>/contact</code> are thin (~250–400 words). Privacy and Terms not assessed.</li>
+  </ul>
+
+  <h2>Content Gaps</h2>
+
+  <h3>Thin pages</h3>
+  <ul>
+    <li><strong><code>/portfolio</code></strong> — listing page with very little narrative around the projects. Add 400–600 words of "what we build and why" intro, ideally with the same positioning as Bry AI's <em>build vs. advise</em> differentiator from the competitive analysis.</li>
+    <li><strong><code>/contact</code></strong> — form-heavy. Could add a "What to expect on the discovery call" section + Charlotte location signals (neighborhood, response-time SLA, map).</li>
+  </ul>
+
+  <h3>Pages that should exist but don't</h3>
+
+  <p>The competitive analysis identifies a structural gap that Ascend can win: <em>solo-operator + local + custom-build + AI-native</em>. To win those queries, the site needs dedicated landing pages for the queries themselves. Suggested additions, in priority order:</p>
+
+  <ol>
+    <li><strong><code>/services/fractional-cto</code></strong> — Bry AI, Dualboot, TechCXO, and A.Team all have visible fractional-CTO product pages. Ascend doesn't. Per the competitive analysis: "Right now this service is in the positioning copy but not productized." Highest competitive-gap win. <span class="tag">P1</span></li>
+    <li><strong><code>/services/ai-integration</code></strong> — currently a section on the Services page. Splitting it out gives a target page for "Charlotte AI consultant", "AI integration services", "OpenAI/Claude implementation". <span class="tag">P1</span></li>
+    <li><strong><code>/services/custom-software-development</code></strong> — same logic. Targets "Charlotte custom software developer", high-intent local query. <span class="tag">P1</span></li>
+    <li><strong><code>/locations/charlotte</code> or <code>/charlotte-nc</code></strong> — a single dedicated local-intent page can carry LocalBusiness schema, neighborhoods served, drive-time radius, references. Search Console will tell you whether to keep it as <code>/contact</code> + Charlotte signals only or add a dedicated locations page. <span class="tag">P2</span></li>
+    <li><strong><code>/blog</code></strong> — the long game. The competitive analysis explicitly notes "One excellent technical blog post per week beats 100 thin programmatic pages." Bry AI has YouTube; Brian has shipped products. Write up each one. <span class="tag">P2</span></li>
+    <li><strong><code>/case-studies/stancil-services</code></strong> — only the City of Charlotte slug was referenced in the task brief, but the marketing strategy highlights Stancil Services as the second proof. Confirm it exists in <code>src/data/portfolio.ts</code>; if not, build it. <span class="tag">P2</span></li>
+  </ol>
+
+  <p><strong>This audit deliberately does not specify what's <em>in</em> these pages or which keywords to target at scale — that's the programmatic-SEO and content-strategy agents' lane.</strong> What this audit says: the URL slots need to exist, the pre-rendering pipeline needs to support them, and the schema markup hooks need to be ready.</p>
+
+  <h2>Local SEO Findings</h2>
+
+  <p>This is Ascend's strongest near-term opportunity. The positioning is explicitly Charlotte-metro, the founder is named, and the competitive set is small. The technical signals are mostly absent.</p>
+
+  <table>
+    <thead>
+      <tr><th>Signal</th><th>Status</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"Charlotte" or "Charlotte, NC" in titles</td>
+        <td>4 of 8 pages</td>
+        <td>Good on Home, About, Contact, default index.html title. Add to Services and Portfolio.</td>
+      </tr>
+      <tr>
+        <td>"Charlotte" in H1s</td>
+        <td>0 of 8 pages</td>
+        <td>At least one H1 (probably Home) should explicitly say Charlotte.</td>
+      </tr>
+      <tr>
+        <td>NAP (Name / Address / Phone)</td>
+        <td>Partial — name + city only</td>
+        <td><code>src/config/site.ts</code> has <code>location: 'Charlotte, NC'</code> but <code>phone: ''</code> (empty, intentionally per the comment) and no street address. Set a phone number even if it's a Google Voice forward; address can be a city-only neighborhood signal if no commercial address is appropriate.</td>
+      </tr>
+      <tr>
+        <td>Google Business Profile</td>
+        <td>Needs verification</td>
+        <td>Critical. A verified GBP is the single highest-ROI local SEO action. If one doesn't exist yet, create it under "Lighthouse 27 LLC" or "Ascend Systems" — service-area business, no storefront. Address can be hidden, service radius set to Charlotte metro.</td>
+      </tr>
+      <tr>
+        <td>LocalBusiness JSON-LD</td>
+        <td>None on any page</td>
+        <td>Add inline in <code>index.html</code> so it appears on every route even before pre-render. Schema agent will refine.</td>
+      </tr>
+      <tr>
+        <td>Citations / NAP consistency</td>
+        <td>Unknown</td>
+        <td>Check / create on: Google Business Profile, Bing Places, LinkedIn Company Page, Crunchbase, Clutch, GoodFirms, Charlotte Chamber listings.</td>
+      </tr>
+      <tr>
+        <td>Local schema sameAs</td>
+        <td>None</td>
+        <td>In LocalBusiness JSON-LD, link to the founder's LinkedIn, the GitHub org, and the company LinkedIn Page once they exist.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Backlink / Authority</h2>
+
+  <p>Cannot run an Ahrefs / Semrush lookup in this audit. Heuristic assessment based on domain age + site state:</p>
+
+  <ul>
+    <li><strong>Domain age:</strong> ascendsystems.ai is brand-new. Registered 2024–2025 likely, given the "Est. 2024" eyebrow on the hero (<code>src/components/HeroSection.tsx:96</code>). Authority is functionally zero.</li>
+    <li><strong>Likely existing backlinks:</strong> probably 0–5. Possible sources: Brian's personal social profiles, any client signature links, possibly a Lighthouse 27 mention from the City of Charlotte EV dashboard project.</li>
+    <li><strong>The asymmetric authority win available right now:</strong> the City of Charlotte engagement. A live <code>cltgo.charlotte.nc.gov</code> / city-domain backlink (or any <code>.gov</code> backlink) crediting Lighthouse 27 / Ascend Systems is worth several months of organic content effort. Ask the city for an attribution mention on the dashboard page itself, on a press release, or in a city blog post.</li>
+    <li><strong>Realistic 90-day backlink targets:</strong> 5–15 quality links from Charlotte business publications (Charlotte Business Journal, WFAE, Charlotte Inno), tech meetups (Charlotte JS, Code &amp; Coffee), the Charlotte Chamber, podcast appearances, and one or two AI-tooling roundups. Quality over quantity at this stage.</li>
+  </ul>
+
+  <h2>Recommended 90-Day SEO Plan</h2>
+
+  <p>Calibrated to Brian's "humming for keywords in 3–6 months" target. Weeks 1–2 are non-negotiable foundation work — nothing downstream pays off without them.</p>
+
+  <h3>Phase 1 — Foundation Fixes (Weeks 1–2)</h3>
+
+  <table>
+    <thead>
+      <tr><th>Week</th><th>Task</th><th>Owner</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Add pre-rendering pipeline (vite-plugin-prerender or migrate to Astro). All 8+ public routes must serve real HTML.</td><td>Brian</td><td><span class="tag dark">P0</span></td></tr>
+      <tr><td>1</td><td>Ship <code>public/robots.txt</code> (per spec above).</td><td>Brian</td><td><span class="tag dark">P0</span></td></tr>
+      <tr><td>1</td><td>Ship <code>public/sitemap.xml</code> with all public routes, monthly <code>lastmod</code>.</td><td>Brian</td><td><span class="tag dark">P0</span></td></tr>
+      <tr><td>1</td><td>Verify Cloudflare AI-bot rule is OFF. Verify GPTBot / ClaudeBot / PerplexityBot return 200.</td><td>Brian</td><td><span class="tag dark">P0</span></td></tr>
+      <tr><td>1</td><td>Verify Google Search Console (DNS TXT). Submit sitemap.</td><td>Brian</td><td><span class="tag dark">P0</span></td></tr>
+      <tr><td>1</td><td>Verify Bing Webmaster Tools. Submit sitemap.</td><td>Brian</td><td><span class="tag">P1</span></td></tr>
+      <tr><td>2</td><td>Expand <code>src/components/SEO.tsx</code>: add canonical, OG, Twitter Card, robots meta, JSON-LD slot.</td><td>Brian</td><td><span class="tag">P1</span></td></tr>
+      <tr><td>2</td><td>Add real phone number to <code>src/config/site.ts</code>. Update Footer + Contact page.</td><td>Brian</td><td><span class="tag">P1</span></td></tr>
+      <tr><td>2</td><td>Add 404 page that returns <code>200</code> via Pages config but renders a real "Not Found" UI with link back to home.</td><td>Brian</td><td><span class="tag">P1</span></td></tr>
+      <tr><td>2</td><td>Capture baseline metrics: PageSpeed Insights LCP/INP/CLS for Home + Services + Contact. Save scores.</td><td>Brian</td><td><span class="tag">P1</span></td></tr>
+      <tr><td>2</td><td>Convert hero-bg.jpg + 4 case-study screenshots to WebP. Rename "Acscend Systems.png" → "ascend-systems.webp".</td><td>Brian</td><td><span class="tag">P1</span></td></tr>
+    </tbody>
+  </table>
+
+  <p>End-of-Phase-1 success: <code>site:ascendsystems.ai</code> in GSC shows 8+ indexed URLs within 7–14 days of submitting the sitemap.</p>
+
+  <h3>Phase 2 — On-Page, Schema, Content Velocity (Weeks 3–6)</h3>
+
+  <table>
+    <thead>
+      <tr><th>Week</th><th>Task</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>3</td><td>Rewrite titles per on-page review above (Home, Services, Portfolio).</td><td>Bring all titles under 60 chars where possible; ensure Charlotte appears in 7 of 8.</td></tr>
+      <tr><td>3</td><td>Add LocalBusiness + Organization + Person (founder) JSON-LD.</td><td>Hands off to schema-markup agent. Render in pre-rendered HTML on every route, customized per page.</td></tr>
+      <tr><td>3</td><td>Create or claim Google Business Profile.</td><td>Service-area business, Charlotte metro radius, photos of work (City of Charlotte dashboard screenshots fine).</td></tr>
+      <tr><td>4</td><td>Build <code>/services/fractional-cto</code> landing page.</td><td>Tiered offer (Strategy / Embedded / Build) per competitive analysis. 800–1,200 words.</td></tr>
+      <tr><td>4</td><td>Add FAQPage schema to existing FAQSection on Home.</td><td>FAQSection component exists (<code>src/components/FAQSection.tsx</code>). Free rich-result eligibility.</td></tr>
+      <tr><td>5</td><td>Build <code>/services/ai-integration</code> and <code>/services/custom-software-development</code>.</td><td>Same template as fractional-CTO. Add Service schema per page.</td></tr>
+      <tr><td>5</td><td>Expand Cost Calculator page with 800–1,200 words of intro/methodology content.</td><td>Targets "custom software cost", "software development ROI". This page already has high product-led-SEO potential.</td></tr>
+      <tr><td>6</td><td>Publish Case Study: City of Charlotte EV Dashboard, expanded.</td><td>Targets "Charlotte EV charging dashboard", "city of charlotte tech vendor", citation-worthy. Add CreativeWork schema.</td></tr>
+      <tr><td>6</td><td>Publish Case Study: Stancil Services multi-tenant ops platform.</td><td>Same template. Second concrete proof point.</td></tr>
+    </tbody>
+  </table>
+
+  <p>End-of-Phase-2 success: 15+ pages indexed, first impressions for Charlotte-qualified terms showing up in GSC, GBP live with 3+ photos.</p>
+
+  <h3>Phase 3 — Authority &amp; Measurement (Weeks 7–12)</h3>
+
+  <table>
+    <thead>
+      <tr><th>Week</th><th>Task</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>7</td><td>Outreach: Charlotte Inno, Charlotte Business Journal startups beat.</td><td>City of Charlotte engagement is the hook. Press kit / pitch — separate skill.</td></tr>
+      <tr><td>7</td><td>Outreach: ask City of Charlotte for an attribution backlink on the EV dashboard page.</td><td>.gov backlinks compound for years. Worth a polite ask in a follow-up email.</td></tr>
+      <tr><td>8</td><td>Start a blog. First post: "What We Learned Building the Charlotte EV Charging Dashboard."</td><td>Cross-publish to LinkedIn + Medium for surface area. Internal link from <code>/portfolio/city-of-charlotte</code>.</td></tr>
+      <tr><td>8–12</td><td>One technical blog post per week.</td><td>Per the marketing strategy: "One excellent technical blog post per week beats 100 thin programmatic pages." Topics drawn from shipped product backlog (SCDMV scraper, LoveNotes Stripe flow, AI phone agent architecture). This is the content-strategy agent's lane — coordinate.</td></tr>
+      <tr><td>9</td><td>Get listed on Clutch, GoodFirms, Charlotte Chamber.</td><td>Citation + low-quality-but-trusted backlinks. ~2 hours.</td></tr>
+      <tr><td>10</td><td>Podcast outreach: Charlotte-focused business shows + AI/dev podcasts.</td><td>Earned media + a backlink each. Patrick Foster lead is in the dashboard already (different project) — see if Brian's network has Charlotte equivalents.</td></tr>
+      <tr><td>11</td><td>First measurement review.</td><td>GSC impressions, clicks, position changes for target terms. Adjust Phase 3 plan based on what's actually moving.</td></tr>
+      <tr><td>12</td><td>Refresh underperforming pages.</td><td>By Week 12 there'll be enough GSC data to see which pages are getting impressions but low CTR (rewrite titles), which are getting clicks but no conversions (rewrite CTAs).</td></tr>
+    </tbody>
+  </table>
+
+  <p>End-of-Phase-3 success: 25+ indexed pages, ranking page-1 for 3–5 long-tail Charlotte-qualified terms, 10+ external backlinks including at least one strong local press hit, GSC showing 200+ impressions/day.</p>
+
+  <h2>Metrics to Track Weekly</h2>
+
+  <table>
+    <thead>
+      <tr><th>Metric</th><th>Source</th><th>Target by Week 12</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Indexed pages</td><td>Google Search Console → Pages</td><td>25+</td></tr>
+      <tr><td>Impressions (28-day)</td><td>GSC → Performance</td><td>5,000+</td></tr>
+      <tr><td>Clicks (28-day)</td><td>GSC → Performance</td><td>200+</td></tr>
+      <tr><td>Average position</td><td>GSC → Performance</td><td>&lt; 25 for tracked terms</td></tr>
+      <tr><td>Tracked target keywords</td><td>GSC (no paid rank tracker yet)</td><td>5–8 page-1 long-tails</td></tr>
+      <tr><td>Core Web Vitals (CWV)</td><td>GSC → Core Web Vitals</td><td>"Good" on mobile + desktop for all URLs</td></tr>
+      <tr><td>Backlinks (referring domains)</td><td>GSC → Links (or free Ahrefs Webmaster Tools)</td><td>10+</td></tr>
+      <tr><td>GBP impressions + actions</td><td>Google Business Profile insights</td><td>&gt;100 impressions / &gt;5 actions per week</td></tr>
+      <tr><td>Bot crawl errors</td><td>GSC → Crawl stats + URL Inspection</td><td>0 server errors, 0 soft 404s</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Suggested target keywords (long-tail, Charlotte-qualified)</h3>
+
+  <p>Not a full keyword strategy — that's the content-strategy agent's lane. These are the technical-SEO anchor points that should appear in titles, H1s, and meta descriptions across the rewritten pages:</p>
+
+  <ul>
+    <li><em>charlotte custom software developer</em></li>
+    <li><em>charlotte ai consultant</em> / <em>charlotte ai integration</em></li>
+    <li><em>charlotte fractional cto</em></li>
+    <li><em>custom crm development charlotte</em></li>
+    <li><em>charlotte business automation</em></li>
+    <li><em>ai phone agent for small business</em> (national long-tail with low difficulty)</li>
+    <li><em>custom software cost calculator</em> (national tool query — high intent)</li>
+  </ul>
+
+  <h2>What This Audit Did Not Cover</h2>
+
+  <p>Per the brief, three sibling agents are handling adjacent lanes. To avoid duplication:</p>
+  <ul>
+    <li><strong>Schema markup design</strong> — LocalBusiness, Organization, Person, Service, FAQPage, CreativeWork shapes and validation. (Schema agent.)</li>
+    <li><strong>Programmatic SEO</strong> — page-template strategy if scaling to dozens of city / service combinations. (Programmatic-SEO agent.)</li>
+    <li><strong>Content strategy</strong> — keyword research, topical clusters, blog editorial calendar. (Content agent.)</li>
+  </ul>
+
+  <p>This audit covered: crawlability, indexability, on-page structure, page speed signals, mobile, AI-bot access, local SEO foundations, and the 90-day technical plan. Where the lanes meet — adding schema slots to the SEO component, reserving URL paths for the content agent, building the pre-render pipeline that supports both — has been flagged inline so the work composes.</p>
+
+  <div class="doc-footer">
+    Prepared 2026-05-12 · Ascend Systems internal · SEO Audit v1.0
+  </div>
+
+</div>
+</body>
+</html>

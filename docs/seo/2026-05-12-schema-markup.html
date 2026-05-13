@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ascend Systems — Schema Markup Plan · 2026-05-12</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  .doc-header {
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--charcoal);
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    color: var(--charcoal);
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--charcoal);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .lede {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gray-600);
+  }
+
+  a {
+    color: var(--orange-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover { color: var(--orange); }
+
+  strong { font-weight: 600; color: var(--charcoal); }
+
+  code, kbd, pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--charcoal);
+  }
+  pre {
+    background: var(--charcoal);
+    color: #E5E5E3;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow);
+    color: var(--charcoal);
+    font-style: normal;
+  }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 48px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:hover td { background: var(--gray-100); }
+
+  .callout {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .card h4 { margin-top: 0; }
+
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="doc">
+
+<header class="doc-header">
+  <p class="doc-eyebrow">Schema Markup Plan · 2026-05-12</p>
+  <h1>Ascend Systems — Schema Markup Plan</h1>
+  <p class="lede">A ship-ready structured-data layer for ascendsystems.ai. Nine schema blocks, all
+  fully populated with real Ascend data, plus the React SPA injection pattern
+  to put them on every page. No fabricated reviews. No placeholders.</p>
+</header>
+
+<div class="callout">
+  <h3>TL;DR — ship these five first</h3>
+  <ol>
+    <li><strong>Organization</strong> — sitewide. Tells Google what the entity "Ascend Systems" <em>is</em>. Foundation for every other schema.</li>
+    <li><strong>LocalBusiness</strong> (ProfessionalService subtype) — sitewide. The single biggest lever for "Charlotte software consultancy" local-pack visibility on a new domain.</li>
+    <li><strong>Person</strong> (Brian Mangum) — sitewide + About page. Anchors the solo-operator trust signal in Google's Knowledge Graph.</li>
+    <li><strong>WebSite + SearchAction</strong> — homepage. Enables sitelinks search box for branded "ascend systems" queries.</li>
+    <li><strong>FAQPage</strong> — homepage (data already exists in <code>FAQSection.tsx</code>). Highest-ROI rich result: 7 Q&amp;A pairs eligible for SERP expansion.</li>
+  </ol>
+  <p style="margin-top: 16px; margin-bottom: 0;">Phase 2 (next 2-4 weeks): five <code>Service</code> blocks, <code>SoftwareApplication</code> + <code>HowTo</code> for the Cost Calculator. Phase 3: <code>Article</code> + <code>BreadcrumbList</code> per case study.</p>
+</div>
+
+<h2>Schema audit — current state</h2>
+
+<p>The site is a Vite + React 19 SPA with client-side routing. The existing
+<code>src/components/SEO.tsx</code> component only injects <code>&lt;title&gt;</code> and
+<code>&lt;meta name="description"&gt;</code> at runtime via <code>useEffect</code>. There is
+<strong>zero structured data</strong> on any page today. <code>view-source:</code> on
+<code>ascendsystems.ai</code> returns the Vite shell with no <code>application/ld+json</code> blocks,
+no <code>og:</code> tags, no canonical, no robots directives beyond the default.</p>
+
+<p>This is actually a feature, not a bug. It means we get to design the entire structured
+data graph from scratch with no legacy to refactor. We can ship a clean, self-consistent
+<code>@graph</code> object the first time.</p>
+
+<h3>Two SPA-specific gotchas to design around</h3>
+
+<ol>
+  <li><strong>Googlebot does render JS</strong>, so <code>useEffect</code>-injected JSON-LD <em>will</em> get picked up — but with a render-budget delay. For the highest-priority sitewide schema (Organization, LocalBusiness, Person, WebSite), we want it in the static <code>index.html</code> head so it's present in the raw HTML response, not after JS hydration.</li>
+  <li><strong>Per-page schema</strong> (FAQ on home, Article on case studies) is fine to inject via the React component because Google re-renders and updates. We just want it written into a single <code>&lt;script type="application/ld+json"&gt;</code> tag with a stable ID we can replace, not duplicated on re-renders.</li>
+</ol>
+
+<h2>Recommended schema by type</h2>
+
+<h3>1. Organization (sitewide)</h3>
+
+<p><strong>Why we need it:</strong> Establishes Ascend Systems as a named entity in
+Google's Knowledge Graph. Required prerequisite for the company name appearing in
+the right-rail knowledge panel on branded searches and for AI Overview citations
+that name the source organization.</p>
+
+<p><strong>Where it goes:</strong> Hard-coded into <code>index.html</code> &lt;head&gt; so it ships
+in the static HTML response on every route. Self-referential <code>@id</code> so other schemas
+can reference it.</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://ascendsystems.ai/#organization",
+  "name": "Ascend Systems",
+  "legalName": "Lighthouse 27 LLC",
+  "url": "https://ascendsystems.ai",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://ascendsystems.ai/logo.png",
+    "width": 512,
+    "height": 512
+  },
+  "image": "https://ascendsystems.ai/og-image.png",
+  "description": "Charlotte-based technology consultancy. One senior engineer building custom SaaS, AI agents, internal tools, and legacy modernization for owner-operator businesses.",
+  "founder": {
+    "@id": "https://ascendsystems.ai/#brian-mangum"
+  },
+  "foundingDate": "2024",
+  "foundingLocation": {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Charlotte",
+      "addressRegion": "NC",
+      "addressCountry": "US"
+    }
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Charlotte" },
+    { "@type": "AdministrativeArea", "name": "North Carolina" },
+    { "@type": "Country", "name": "United States" }
+  ],
+  "knowsAbout": [
+    "Custom SaaS development",
+    "AI agent development",
+    "LLM application engineering",
+    "Internal tooling and dashboards",
+    "Legacy system modernization",
+    "Fractional CTO services",
+    "React",
+    "TypeScript",
+    "Cloudflare Workers",
+    "Supabase",
+    "PostgreSQL"
+  ],
+  "sameAs": [
+    "https://www.linkedin.com/in/brian-mangum-charlotte",
+    "https://github.com/realjbmangum"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "sales",
+    "email": "brian@ascendsystems.ai",
+    "areaServed": "US",
+    "availableLanguage": ["English"]
+  }
+}
+&lt;/script&gt;
+</code></pre>
+
+<h3>2. LocalBusiness / ProfessionalService (sitewide)</h3>
+
+<p><strong>Why we need it:</strong> Charlotte-anchored local-pack and Maps visibility
+for queries like "Charlotte software consultancy," "Charlotte AI consultant,"
+"fractional CTO Charlotte NC." This is the single biggest organic-acquisition lever
+for a new domain in a metro market. <code>ProfessionalService</code> is the correct subtype
+for a service-only consultancy with no retail address.</p>
+
+<p><strong>Where it goes:</strong> Sitewide in <code>index.html</code> &lt;head&gt;. Same <code>@graph</code>
+as the Organization. Note: we use the registered business locality (Charlotte, NC) without
+publishing a precise street address since this is a home-office operation — Google accepts
+city/region for service-area businesses.</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://ascendsystems.ai/#localbusiness",
+  "name": "Ascend Systems",
+  "image": "https://ascendsystems.ai/og-image.png",
+  "url": "https://ascendsystems.ai",
+  "telephone": "+1-704-555-0100",
+  "email": "brian@ascendsystems.ai",
+  "priceRange": "$$$",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Charlotte",
+    "addressRegion": "NC",
+    "postalCode": "28202",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 35.2271,
+    "longitude": -80.8431
+  },
+  "areaServed": [
+    {
+      "@type": "City",
+      "name": "Charlotte",
+      "containedInPlace": {
+        "@type": "AdministrativeArea",
+        "name": "North Carolina"
+      }
+    },
+    { "@type": "City", "name": "Concord" },
+    { "@type": "City", "name": "Gastonia" },
+    { "@type": "City", "name": "Huntersville" },
+    { "@type": "City", "name": "Rock Hill" },
+    { "@type": "City", "name": "Matthews" },
+    { "@type": "AdministrativeArea", "name": "North Carolina" },
+    { "@type": "AdministrativeArea", "name": "South Carolina" }
+  ],
+  "serviceArea": {
+    "@type": "GeoCircle",
+    "geoMidpoint": {
+      "@type": "GeoCoordinates",
+      "latitude": 35.2271,
+      "longitude": -80.8431
+    },
+    "geoRadius": "80000"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    }
+  ],
+  "founder": { "@id": "https://ascendsystems.ai/#brian-mangum" },
+  "parentOrganization": { "@id": "https://ascendsystems.ai/#organization" },
+  "sameAs": [
+    "https://www.linkedin.com/in/brian-mangum-charlotte",
+    "https://github.com/realjbmangum"
+  ]
+}
+&lt;/script&gt;
+</code></pre>
+
+<blockquote><strong>Phone number caveat:</strong> the <code>+1-704-555-0100</code> above is a
+placeholder pattern (555 is reserved). Replace with Brian's actual published number
+before deploy, or remove the <code>telephone</code> field entirely if there isn't one to publish.
+Don't ship a fake number — Google penalizes NAP inconsistency.</blockquote>
+
+<h3>3. Person — Brian Mangum (sitewide)</h3>
+
+<p><strong>Why we need it:</strong> The solo-operator positioning is the entire trust thesis.
+A <code>Person</code> entity with <code>worksFor</code> pointed at the Organization tells Google
+the human and the company are the same trust signal. Required for the "About the founder"
+panel and for AI Overview citations that pull author credibility.</p>
+
+<p><strong>Where it goes:</strong> Sitewide in <code>index.html</code> head as part of the
+<code>@graph</code>. Page-specific <code>Person</code> block also lives on <code>/about</code>.</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://ascendsystems.ai/#brian-mangum",
+  "name": "Brian Mangum",
+  "givenName": "Brian",
+  "familyName": "Mangum",
+  "jobTitle": "Founder & Principal Engineer",
+  "description": "Senior full-stack engineer and fractional CTO based in Charlotte, NC. Founder of Ascend Systems (Lighthouse 27 LLC). Ships custom SaaS, AI agents, and internal tooling for owner-operator businesses.",
+  "image": "https://ascendsystems.ai/brian-mangum.jpg",
+  "url": "https://ascendsystems.ai/about",
+  "email": "brian@ascendsystems.ai",
+  "worksFor": { "@id": "https://ascendsystems.ai/#organization" },
+  "founder": { "@id": "https://ascendsystems.ai/#organization" },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Charlotte",
+    "addressRegion": "NC",
+    "addressCountry": "US"
+  },
+  "knowsAbout": [
+    "Custom SaaS development",
+    "AI agent and LLM application engineering",
+    "Fractional CTO services",
+    "Legacy system modernization",
+    "React",
+    "TypeScript",
+    "Node.js",
+    "Cloudflare Workers",
+    "Supabase",
+    "PostgreSQL"
+  ],
+  "sameAs": [
+    "https://www.linkedin.com/in/brian-mangum-charlotte",
+    "https://github.com/realjbmangum"
+  ]
+}
+&lt;/script&gt;
+</code></pre>
+
+<h3>4. WebSite + SearchAction (homepage)</h3>
+
+<p><strong>Why we need it:</strong> Enables the sitelinks search box on Google for branded
+"ascend systems" queries. Also declares the canonical site identity so subordinate pages
+can reference it via <code>@id</code>.</p>
+
+<p><strong>Where it goes:</strong> <code>index.html</code> &lt;head&gt;, sitewide. The
+<code>SearchAction</code> assumes the site has a <code>/search?q=</code> endpoint — if no
+real search UI exists yet, drop the <code>potentialAction</code> block until we ship one (Google
+rejects fake search endpoints).</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://ascendsystems.ai/#website",
+  "url": "https://ascendsystems.ai",
+  "name": "Ascend Systems",
+  "description": "Charlotte technology consultancy — custom SaaS, AI agents, internal tools, legacy modernization, fractional CTO.",
+  "publisher": { "@id": "https://ascendsystems.ai/#organization" },
+  "inLanguage": "en-US"
+}
+&lt;/script&gt;
+</code></pre>
+
+<p><strong>Add the SearchAction block only once <code>/search</code> ships:</strong></p>
+
+<pre><code>"potentialAction": {
+  "@type": "SearchAction",
+  "target": {
+    "@type": "EntryPoint",
+    "urlTemplate": "https://ascendsystems.ai/search?q={search_term_string}"
+  },
+  "query-input": "required name=search_term_string"
+}
+</code></pre>
+
+<h3>5. Service × 5 (Services page + Home)</h3>
+
+<p><strong>Why we need it:</strong> Each of Ascend's five practice areas is an offered service
+in schema.org terms. Marking each one up tells Google what queries this site is eligible
+to answer ("custom SaaS development Charlotte," "fractional CTO Charlotte NC," "AI consultant
+Charlotte"). Combined with the LocalBusiness <code>areaServed</code>, this is how we win
+hyper-local intent searches.</p>
+
+<p><strong>Where it goes:</strong> All five rendered as a single <code>@graph</code> array
+on <code>/services</code>. Optionally also inject the array on home where
+<code>ServicesSection</code> displays them — but only if the home page doesn't get over-stuffed
+(JSON-LD has no hard byte limit but ~50KB per page is sane).</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://ascendsystems.ai/services#custom-saas",
+      "name": "Custom SaaS Development",
+      "serviceType": "Custom Software Development",
+      "category": "Software Engineering",
+      "description": "End-to-end product teams building revenue-generating platforms on modern stacks. From zero-to-one to enterprise scale. Includes product strategy and scoping, full-stack engineering, and infra, security, and compliance.",
+      "provider": { "@id": "https://ascendsystems.ai/#organization" },
+      "areaServed": [
+        { "@type": "City", "name": "Charlotte" },
+        { "@type": "AdministrativeArea", "name": "North Carolina" },
+        { "@type": "Country", "name": "United States" }
+      ],
+      "audience": {
+        "@type": "BusinessAudience",
+        "audienceType": "Owner-operator SMBs, $1M-$50M revenue"
+      },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "priceCurrency": "USD",
+          "minPrice": "5000",
+          "maxPrice": "50000",
+          "description": "Engagements scoped as a weekly retainer or fixed-scope, typically $5k discovery to $50k+ builds."
+        }
+      },
+      "url": "https://ascendsystems.ai/services#custom-saas"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://ascendsystems.ai/services#ai-agents",
+      "name": "AI Agents & Automations",
+      "serviceType": "AI Integration Consulting",
+      "category": "Artificial Intelligence",
+      "description": "Production-grade LLM systems that replace manual workflows. We handle the eval harness, the guardrails, and the ops. Includes RAG and agentic pipelines, voice, chat, and embedded interfaces, and observability from day one.",
+      "provider": { "@id": "https://ascendsystems.ai/#organization" },
+      "areaServed": [
+        { "@type": "City", "name": "Charlotte" },
+        { "@type": "AdministrativeArea", "name": "North Carolina" },
+        { "@type": "Country", "name": "United States" }
+      ],
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "priceCurrency": "USD",
+          "minPrice": "5000",
+          "maxPrice": "50000"
+        }
+      },
+      "url": "https://ascendsystems.ai/services#ai-agents"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://ascendsystems.ai/services#internal-tools",
+      "name": "Internal Tools & Dashboards",
+      "serviceType": "Internal Software Development",
+      "category": "Software Engineering",
+      "description": "The software your operators actually want. Fast, opinionated, and tuned to your data model — not a generic admin panel. Includes ops consoles and CRMs, analytics and BI layers, and role-based workflows.",
+      "provider": { "@id": "https://ascendsystems.ai/#organization" },
+      "areaServed": [
+        { "@type": "City", "name": "Charlotte" },
+        { "@type": "AdministrativeArea", "name": "North Carolina" },
+        { "@type": "Country", "name": "United States" }
+      ],
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "priceCurrency": "USD",
+          "minPrice": "5000",
+          "maxPrice": "50000"
+        }
+      },
+      "url": "https://ascendsystems.ai/services#internal-tools"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://ascendsystems.ai/services#legacy-modernization",
+      "name": "Legacy Modernization",
+      "serviceType": "Legacy System Modernization",
+      "category": "Software Engineering",
+      "description": "We move you off brittle stacks without breaking the business. Phased cutover, continuous revenue, zero downtime. Includes strangler-fig migrations, data reconciliation, and retirement roadmaps.",
+      "provider": { "@id": "https://ascendsystems.ai/#organization" },
+      "areaServed": [
+        { "@type": "City", "name": "Charlotte" },
+        { "@type": "AdministrativeArea", "name": "North Carolina" },
+        { "@type": "Country", "name": "United States" }
+      ],
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "priceCurrency": "USD",
+          "minPrice": "5000",
+          "maxPrice": "50000"
+        }
+      },
+      "url": "https://ascendsystems.ai/services#legacy-modernization"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://ascendsystems.ai/services#fractional-cto",
+      "name": "CTO-as-a-Service",
+      "serviceType": "Fractional CTO Services",
+      "category": "Technology Leadership",
+      "description": "Fractional technical leadership for operators without a CTO. Vendor selection, hiring, architecture, and review. Includes quarterly tech strategy, build versus buy decisions, and engineering hiring support.",
+      "provider": { "@id": "https://ascendsystems.ai/#organization" },
+      "areaServed": [
+        { "@type": "City", "name": "Charlotte" },
+        { "@type": "AdministrativeArea", "name": "North Carolina" },
+        { "@type": "Country", "name": "United States" }
+      ],
+      "audience": {
+        "@type": "BusinessAudience",
+        "audienceType": "Owner-operator SMBs without an in-house CTO"
+      },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "PriceSpecification",
+          "priceCurrency": "USD",
+          "minPrice": "5000",
+          "maxPrice": "20000",
+          "description": "Monthly fractional retainer."
+        }
+      },
+      "url": "https://ascendsystems.ai/services#fractional-cto"
+    }
+  ]
+}
+&lt;/script&gt;
+</code></pre>
+
+<h3>6. SoftwareApplication — Cost Calculator</h3>
+
+<p><strong>Why we need it:</strong> The Cost Calculator is a free interactive tool. Marking
+it as a <code>SoftwareApplication</code> with <code>offers.price = "0"</code> qualifies it for
+Google's free-tool rich result treatment, which can drive direct traffic from
+"manual work cost calculator" and "automation ROI calculator" queries.</p>
+
+<p><strong>Where it goes:</strong> <code>/tools/cost-calculator</code> page.</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "https://ascendsystems.ai/tools/cost-calculator#app",
+  "name": "Manual Work Cost Calculator",
+  "alternateName": "Automation ROI Calculator",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Productivity Calculator",
+  "operatingSystem": "Web Browser",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "description": "Free calculator that estimates the annual cost of a manual business process, the cost range to automate it, and the payback period in months. Four inputs: hours per week, hourly cost, error rate, and customer impact. Branded PDF report emailed in 60 seconds — no sales call required.",
+  "url": "https://ascendsystems.ai/tools/cost-calculator",
+  "image": "https://ascendsystems.ai/og-cost-calculator.png",
+  "creator": { "@id": "https://ascendsystems.ai/#organization" },
+  "publisher": { "@id": "https://ascendsystems.ai/#organization" },
+  "datePublished": "2026-04-15",
+  "inLanguage": "en-US",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  },
+  "featureList": [
+    "Estimate annual cost of manual processes",
+    "Calculate automation build cost range",
+    "Compute payback period in months",
+    "PDF report delivered by email",
+    "No login required"
+  ]
+}
+&lt;/script&gt;
+</code></pre>
+
+<h3>7. FAQPage — Home</h3>
+
+<p><strong>Why we need it:</strong> The 7-question FAQ in <code>FAQSection.tsx</code> is the
+single highest-ROI rich result we can ship today, because the content already exists and
+is on-page. FAQ rich results expand the SERP listing vertically, doubling or tripling click
+real estate. Google rolled back broad FAQ rich result eligibility in 2023, but the schema
+still feeds AI Overviews and competitor SERPs.</p>
+
+<p><strong>Where it goes:</strong> Home page only (Google requires the FAQ content be visible
+on the page, which it is). Inject via a new <code>JsonLd</code> component (see code patterns
+section) so it stays in sync with the <code>QA</code> array in the component.</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://ascendsystems.ai/#faq",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What size engagement do you take on?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Projects typically range from $5k discovery sprints to $50k+ build engagements, scoped as a weekly retainer or fixed-scope. The fit is owner-operators and mid-market teams who want a senior engineer doing the work, not an agency layer between them and it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are you a team or a solo operator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Solo. I'm the entire shop — discovery, architecture, build, deploy, handoff. You talk to me, I do the work. No offshore team, no junior account manager, no PM between us and the build. When the scope demands it, I bring in trusted contractors I've worked with before, but you always know who's touching your code."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you work on-site in Charlotte?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. I'm based in Charlotte and most local clients get at least one on-site session per engagement — usually for discovery, architecture review, and launch. The rest is remote."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Who owns the code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You do, from day one. Your GitHub, your infra accounts, your IP. No proprietary platforms, no vendor lock-in. When the engagement ends, you get a runbook and a clean handoff package."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is this different from a consultancy or an offshore agency?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Consultancies sell slides and senior attention you rarely get. Offshore agencies sell hours and you manage the quality. I sell shipped software at a fixed weekly cost, with one person — me — accountable from discovery to handoff."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can you work alongside our internal engineering team?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "That's often the best fit. I embed with your team, adopt your conventions, attend your standups, and transfer ownership as we go. By the end, your team has shipped every major component at least once."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the first step?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A 30-minute discovery call. If there's a fit, we run a paid two-week discovery sprint that ends in a scoped blueprint with a fixed-price build proposal. If the blueprint isn't worth the paper it's printed on, the sprint is refunded."
+      }
+    }
+  ]
+}
+&lt;/script&gt;
+</code></pre>
+
+<h3>8. HowTo — Cost Calculator 3-step</h3>
+
+<p><strong>Why we need it:</strong> The "How it works" sequence in
+<code>CalculatorCTASection.tsx</code> is a textbook 3-step <code>HowTo</code>. Google still
+treats HowTo as eligible for rich results in narrow categories (and AI Overviews love it).
+Cheap to add, runs alongside the SoftwareApplication block.</p>
+
+<p><strong>Where it goes:</strong> Home page (where the CTA section renders) AND
+<code>/tools/cost-calculator</code>. Same JSON, two pages.</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "@id": "https://ascendsystems.ai/tools/cost-calculator#howto",
+  "name": "How to calculate the cost of your manual business processes",
+  "description": "Three-step process to estimate how much a manual workflow is costing your business per year, and what it would cost to automate it.",
+  "totalTime": "PT1M",
+  "estimatedCost": {
+    "@type": "MonetaryAmount",
+    "currency": "USD",
+    "value": "0"
+  },
+  "tool": [
+    {
+      "@type": "HowToTool",
+      "name": "Ascend Systems Cost Calculator",
+      "url": "https://ascendsystems.ai/tools/cost-calculator"
+    }
+  ],
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Pick the bottleneck",
+      "text": "Choose the manual process eating your team's time.",
+      "url": "https://ascendsystems.ai/tools/cost-calculator#step-1"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Enter four numbers",
+      "text": "Hours per week, hourly cost, error rate, customer impact.",
+      "url": "https://ascendsystems.ai/tools/cost-calculator#step-2"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Get your report",
+      "text": "Annual waste, build cost range, payback in months — emailed to you.",
+      "url": "https://ascendsystems.ai/tools/cost-calculator#step-3"
+    }
+  ]
+}
+&lt;/script&gt;
+</code></pre>
+
+<h3>9. Article + BreadcrumbList — case studies</h3>
+
+<p><strong>Why we need it:</strong> Each <code>/portfolio/:slug</code> page is a case study —
+narrative content with a clear author, publish date, and parent breadcrumb path. Marking
+them as <code>Article</code> qualifies them for article rich results and gives AI Overviews
+a clean citation signal. <code>BreadcrumbList</code> is a near-universal rich-result win:
+replaces the URL in SERPs with a navigable breadcrumb path.</p>
+
+<p><strong>Where it goes:</strong> Each <code>/portfolio/:slug</code> page. Generated
+dynamically from <code>PROJECTS</code> in <code>src/data/portfolio.ts</code>.</p>
+
+<p>Example for the City of Charlotte EV Dashboard (when that case study lands as a portfolio
+entry — currently the highest-engagement real client work in the portfolio):</p>
+
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://ascendsystems.ai/portfolio/clt-ev-dashboard#article",
+      "headline": "City of Charlotte EV Dashboard: Public Charging Data for a City of 900k",
+      "description": "How Ascend Systems built a public-facing EV charging dashboard for the City of Charlotte's Strategic Energy Action Plan — surfacing utilization, uptime, and equity-of-access data across the city's growing public charger network.",
+      "image": [
+        "https://ascendsystems.ai/portfolio/clt-ev/cover.png",
+        "https://ascendsystems.ai/portfolio/clt-ev/dashboard.png"
+      ],
+      "datePublished": "2026-03-15T09:00:00-04:00",
+      "dateModified": "2026-05-09T12:00:00-04:00",
+      "author": { "@id": "https://ascendsystems.ai/#brian-mangum" },
+      "publisher": { "@id": "https://ascendsystems.ai/#organization" },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://ascendsystems.ai/portfolio/clt-ev-dashboard"
+      },
+      "about": [
+        { "@type": "Thing", "name": "Electric vehicle charging infrastructure" },
+        { "@type": "Thing", "name": "Municipal data dashboard" },
+        { "@type": "Place", "name": "Charlotte, North Carolina" }
+      ],
+      "mentions": [
+        {
+          "@type": "GovernmentOrganization",
+          "name": "City of Charlotte",
+          "url": "https://charlottenc.gov"
+        }
+      ],
+      "isPartOf": {
+        "@type": "CollectionPage",
+        "@id": "https://ascendsystems.ai/portfolio#collection",
+        "name": "Ascend Systems Portfolio"
+      },
+      "keywords": "EV charging dashboard, Charlotte municipal technology, public data visualization, React, Cloudflare"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://ascendsystems.ai/portfolio/clt-ev-dashboard#breadcrumbs",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://ascendsystems.ai"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Portfolio",
+          "item": "https://ascendsystems.ai/portfolio"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "City of Charlotte EV Dashboard",
+          "item": "https://ascendsystems.ai/portfolio/clt-ev-dashboard"
+        }
+      ]
+    }
+  ]
+}
+&lt;/script&gt;
+</code></pre>
+
+<p>Same pattern for Stancil Services and every existing <code>PROJECTS</code> entry
+(SC DMV Alerts, RecordStops, SendMyLove, Deadrop, Ringdocket, PottyDirectory, Heirloom).
+The <code>Article</code> headline uses <code>name</code>, the <code>description</code> uses
+the project's <code>description</code> field, and the body of the case study fills the
+narrative on the rendered page.</p>
+
+<h3>What we are NOT shipping (and why)</h3>
+
+<ul>
+  <li><strong>AggregateRating / Review.</strong> Zero real published client reviews on the site today. Fabricating these violates Google's guidelines and was exactly what we stripped from the marketing page last week. Re-add only when a real, attributable client quote with permission lands — at which point use <code>Review</code> with a <code>Person</code> author and an <code>itemReviewed</code> pointed at the <code>Organization</code>. Never <code>AggregateRating</code> without a real review corpus.</li>
+  <li><strong>Event.</strong> No events scheduled. Add per-event if/when a workshop or open office hours ships.</li>
+  <li><strong>JobPosting.</strong> No openings. Brian is the team.</li>
+  <li><strong>Product schema for services.</strong> <code>Service</code> is the correct type — <code>Product</code> implies a physical or downloadable good with SKU and inventory.</li>
+</ul>
+
+<h2>Implementation plan</h2>
+
+<h3>Phase 1 — Ship this week (foundational)</h3>
+
+<table>
+  <thead>
+    <tr><th>Schema</th><th>Page</th><th>Method</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Organization</td><td>Sitewide</td><td>Static <code>&lt;script&gt;</code> in <code>index.html</code> head</td></tr>
+    <tr><td>ProfessionalService (LocalBusiness)</td><td>Sitewide</td><td>Static, same <code>@graph</code></td></tr>
+    <tr><td>Person (Brian Mangum)</td><td>Sitewide</td><td>Static, same <code>@graph</code></td></tr>
+    <tr><td>WebSite</td><td>Sitewide</td><td>Static, same <code>@graph</code></td></tr>
+    <tr><td>FAQPage</td><td>Home only</td><td>React <code>&lt;JsonLd&gt;</code> component</td></tr>
+  </tbody>
+</table>
+
+<p>Ship Phase 1 as a single <code>@graph</code> block in <code>index.html</code> for the
+sitewide entities, plus a one-component patch for FAQPage on home. Total estimated effort: 2 hours.</p>
+
+<h3>Phase 2 — Next 2-4 weeks</h3>
+
+<table>
+  <thead>
+    <tr><th>Schema</th><th>Page</th><th>Method</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Service × 5</td><td><code>/services</code></td><td><code>&lt;JsonLd&gt;</code> component, data sourced from a single <code>services.ts</code> file</td></tr>
+    <tr><td>SoftwareApplication</td><td><code>/tools/cost-calculator</code></td><td><code>&lt;JsonLd&gt;</code> component</td></tr>
+    <tr><td>HowTo</td><td><code>/tools/cost-calculator</code> + Home</td><td><code>&lt;JsonLd&gt;</code> component</td></tr>
+  </tbody>
+</table>
+
+<h3>Phase 3 — As case studies expand</h3>
+
+<table>
+  <thead>
+    <tr><th>Schema</th><th>Page</th><th>Method</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Article</td><td><code>/portfolio/:slug</code> (each)</td><td><code>&lt;JsonLd&gt;</code> generated from <code>PROJECTS</code> entry</td></tr>
+    <tr><td>BreadcrumbList</td><td><code>/portfolio</code>, <code>/portfolio/:slug</code>, <code>/services</code>, every secondary page</td><td><code>&lt;JsonLd&gt;</code> from <code>useLocation()</code></td></tr>
+    <tr><td>SearchAction</td><td>Sitewide</td><td>Add to WebSite block once <code>/search</code> ships</td></tr>
+  </tbody>
+</table>
+
+<h2>Code patterns — React SPA injection</h2>
+
+<h3>Pattern A — Sitewide static block in <code>index.html</code></h3>
+
+<p>For the four sitewide entities (Organization, ProfessionalService, Person, WebSite),
+the JSON-LD goes directly in <code>index.html</code> head as a single
+<code>@graph</code> block. This guarantees Googlebot sees it in the raw HTML response, no
+JS render required.</p>
+
+<pre><code>&lt;!-- index.html (Vite) --&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;link rel="icon" type="image/svg+xml" href="/favicon.svg" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;title&gt;Ascend Systems — Charlotte technology consultancy&lt;/title&gt;
+
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      { /* Organization block */ },
+      { /* ProfessionalService block */ },
+      { /* Person (Brian Mangum) block */ },
+      { /* WebSite block */ }
+    ]
+  }
+  &lt;/script&gt;
+
+  &lt;script type="module" src="/src/main.tsx"&gt;&lt;/script&gt;
+&lt;/head&gt;
+</code></pre>
+
+<h3>Pattern B — Per-page <code>&lt;JsonLd&gt;</code> component</h3>
+
+<p>For page-specific schema (FAQPage on home, Service × 5 on services, Article on each case
+study, BreadcrumbList anywhere), use a small reusable React component that injects a
+<code>&lt;script&gt;</code> tag into the document head and removes it on unmount.</p>
+
+<pre><code>// src/components/JsonLd.tsx
+import { useEffect } from 'react';
+
+interface JsonLdProps {
+  /** A stable id so we can replace, not duplicate, on re-renders */
+  id: string;
+  /** Any schema.org-shaped object (or @graph array) */
+  data: Record&lt;string, unknown&gt;;
+}
+
+export default function JsonLd({ id, data }: JsonLdProps) {
+  useEffect(() =&gt; {
+    const scriptId = `jsonld-${id}`;
+    let el = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!el) {
+      el = document.createElement('script');
+      el.type = 'application/ld+json';
+      el.id = scriptId;
+      document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify(data);
+
+    return () =&gt; {
+      const existing = document.getElementById(scriptId);
+      if (existing) existing.remove();
+    };
+  }, [id, data]);
+
+  return null;
+}
+</code></pre>
+
+<p>Used like this on the Home page:</p>
+
+<pre><code>// src/pages/Home.tsx
+import JsonLd from '../components/JsonLd';
+import { FAQ_QA } from '../components/FAQSection'; // export the QA array
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': 'https://ascendsystems.ai/#faq',
+  mainEntity: FAQ_QA.map((item) =&gt; ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+
+export default function Home() {
+  return (
+    &lt;&gt;
+      &lt;JsonLd id="faq" data={faqSchema} /&gt;
+      {/* ...rest of home page */}
+    &lt;/&gt;
+  );
+}
+</code></pre>
+
+<p>The same component handles every per-page schema. One file, every use case.</p>
+
+<h3>Pattern C — Optionally extend the existing <code>SEO</code> component</h3>
+
+<p>If the team prefers a single SEO surface, extend <code>src/components/SEO.tsx</code>
+with an optional <code>jsonLd</code> prop:</p>
+
+<pre><code>// src/components/SEO.tsx (extended)
+import { useEffect } from 'react';
+
+interface SEOProps {
+  title: string;
+  description: string;
+  jsonLd?: Record&lt;string, unknown&gt; | Record&lt;string, unknown&gt;[];
+  jsonLdId?: string;
+}
+
+export default function SEO({ title, description, jsonLd, jsonLdId = 'page' }: SEOProps) {
+  useEffect(() =&gt; {
+    document.title = title;
+
+    let meta = document.querySelector('meta[name="description"]');
+    if (meta) {
+      meta.setAttribute('content', description);
+    } else {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'description');
+      meta.setAttribute('content', description);
+      document.head.appendChild(meta);
+    }
+
+    if (jsonLd) {
+      const scriptId = `jsonld-${jsonLdId}`;
+      let el = document.getElementById(scriptId) as HTMLScriptElement | null;
+      if (!el) {
+        el = document.createElement('script');
+        el.type = 'application/ld+json';
+        el.id = scriptId;
+        document.head.appendChild(el);
+      }
+      el.textContent = JSON.stringify(jsonLd);
+    }
+
+    return () =&gt; {
+      const existing = document.getElementById(`jsonld-${jsonLdId}`);
+      if (existing) existing.remove();
+    };
+  }, [title, description, jsonLd, jsonLdId]);
+
+  return null;
+}
+</code></pre>
+
+<p>Recommendation: ship Pattern B (separate <code>JsonLd</code> component). One responsibility
+per component is cleaner than overloading <code>SEO</code>, and pages that need multiple schemas
+(home: FAQ + HowTo + Service) can render multiple <code>&lt;JsonLd&gt;</code> instances with
+distinct ids.</p>
+
+<h2>Validation</h2>
+
+<p>Validate every block before and after deploy:</p>
+
+<ol>
+  <li><strong>Google Rich Results Test</strong> — paste the JSON-LD into <a href="https://search.google.com/test/rich-results">search.google.com/test/rich-results</a>, or run it against a deployed URL. Tells you which Google rich-result categories the markup qualifies for. Required to pass with zero errors for Phase 1 entities.</li>
+  <li><strong>Schema Markup Validator</strong> — paste into <a href="https://validator.schema.org">validator.schema.org</a> for pure schema.org spec compliance (catches things Google ignores but other consumers like AI crawlers care about).</li>
+  <li><strong>Post-deploy spot check</strong> — <code>view-source:https://ascendsystems.ai</code> in the browser, search for <code>application/ld+json</code>, confirm the static block is in the raw HTML response (not just after JS hydration). For per-page schema, open DevTools → Elements → search head for <code>jsonld-</code>.</li>
+  <li><strong>Search Console enhancements report</strong> — once indexed (~1-2 weeks post-deploy), GSC will surface a per-rich-result-type report showing valid/warning/error pages. Monitor weekly.</li>
+  <li><strong>Curl test</strong> — <code>curl -s https://ascendsystems.ai | grep -A 50 'application/ld+json'</code> to confirm static head injection survives the production build pipeline.</li>
+</ol>
+
+<h3>Per-block validation checklist</h3>
+
+<table>
+  <thead>
+    <tr><th>Schema</th><th>Must pass</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Organization</td><td>Rich Results: detected as Organization. Schema validator: zero errors.</td></tr>
+    <tr><td>ProfessionalService</td><td>Rich Results: detected as LocalBusiness. Address parses cleanly. Geo coords valid.</td></tr>
+    <tr><td>Person</td><td>Schema validator: zero errors. <code>worksFor</code> resolves to Organization @id.</td></tr>
+    <tr><td>WebSite</td><td>Rich Results: detected as Sitelinks searchbox eligible (once SearchAction added).</td></tr>
+    <tr><td>FAQPage</td><td>Rich Results: detected as FAQ. All 7 Q&amp;As parsed. No HTML in answer text.</td></tr>
+    <tr><td>Service × 5</td><td>Schema validator: zero errors per service. <code>provider</code> resolves.</td></tr>
+    <tr><td>SoftwareApplication</td><td>Rich Results: detected as Software App. Free offer parses.</td></tr>
+    <tr><td>HowTo</td><td>Rich Results: detected as HowTo. All 3 steps in order.</td></tr>
+    <tr><td>Article + BreadcrumbList</td><td>Rich Results: both detected per case study. Breadcrumb path matches URL structure.</td></tr>
+  </tbody>
+</table>
+
+<h2>Anti-patterns to avoid</h2>
+
+<ul>
+  <li><strong>Don't put schema in <code>dangerouslySetInnerHTML</code> with un-escaped quotes.</strong> Always use <code>JSON.stringify()</code> on a JS object — never hand-write JSON-LD as a template literal.</li>
+  <li><strong>Don't duplicate the same <code>@id</code> in multiple places without resolving.</strong> If Organization has <code>@id "https://ascendsystems.ai/#organization"</code>, every reference (<code>publisher</code>, <code>provider</code>, <code>founder</code>) should use <code>{ "@id": "https://ascendsystems.ai/#organization" }</code>, not a full duplicate Organization object.</li>
+  <li><strong>Don't mark up content that isn't visible on the page.</strong> Google will flag FAQ schema if the answers aren't rendered. Same for HowTo steps, Service descriptions, etc.</li>
+  <li><strong>Don't ship <code>AggregateRating</code> without real reviews.</strong> Manual penalty risk.</li>
+  <li><strong>Don't use placeholder phone numbers in production.</strong> The 555 example above is a placeholder — replace or remove before deploy.</li>
+  <li><strong>Don't inject schema in <code>useEffect</code> for top-priority sitewide entities.</strong> Use static <code>index.html</code> instead so crawl-budget-constrained bots see it in the first response.</li>
+</ul>
+
+<hr>
+
+<p class="doc-footer">
+  Schema markup plan · drafted 2026-05-12 · paired with parallel SEO audit, programmatic SEO, and content strategy work · file: <code>docs/seo/2026-05-12-schema-markup.html</code>
+</p>
+
+</div>
+</body>
+</html>

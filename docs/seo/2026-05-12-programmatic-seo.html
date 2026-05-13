@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ascend Systems — Programmatic SEO Plan</title>
+<style>
+  :root {
+    --charcoal: #1C1C1E;
+    --charcoal-soft: #2A2A2E;
+    --charcoal-light: #3A3A3F;
+    --orange: #C45A2C;
+    --orange-light: #D4703F;
+    --orange-dark: #A84820;
+    --orange-glow: #FDF3ED;
+    --bg: #FAFAF8;
+    --gray-100: #F3F3F2;
+    --gray-200: #E5E5E3;
+    --gray-400: #9CA3AF;
+    --gray-600: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--charcoal);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+
+  .doc-header {
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+
+  .doc-eyebrow {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    color: var(--charcoal);
+  }
+
+  h2 {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    color: var(--charcoal);
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--charcoal);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .lede {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--gray-600);
+  }
+
+  a {
+    color: var(--orange-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover { color: var(--orange); }
+
+  strong { font-weight: 600; color: var(--charcoal); }
+
+  code, kbd, pre {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--charcoal);
+  }
+  pre {
+    background: var(--charcoal);
+    color: #E5E5E3;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  blockquote {
+    margin: 24px 0;
+    padding: 16px 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--orange-glow);
+    color: var(--charcoal);
+    font-style: normal;
+  }
+
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 48px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--charcoal);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:hover td { background: var(--gray-100); }
+
+  .callout {
+    margin: 24px 0;
+    padding: 20px 24px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 8px;
+  }
+  .callout h3, .callout h4 { color: var(--white); margin-top: 0; }
+  .callout a { color: var(--orange-light); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--orange-glow);
+    color: var(--orange-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 6px;
+  }
+  .tag.gray { background: var(--gray-100); color: var(--gray-600); }
+  .tag.dark { background: var(--charcoal); color: var(--white); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .card h4 { margin-top: 0; }
+
+  .doc-footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 13px;
+    color: var(--gray-600);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .doc { padding: 32px 20px 64px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="doc">
+
+  <div class="doc-header">
+    <p class="doc-eyebrow">Programmatic SEO Plan &middot; 2026-05-12</p>
+    <h1>Ascend Systems — Programmatic SEO Plan</h1>
+    <p class="lede">A template-driven page strategy designed for a consultancy, not a directory. Five overlapping page sets built on the React Router stack already in production — calibrated for 5–10 hours of marketing bandwidth per week and engineered to compound, not flood.</p>
+    <p><span class="tag">Charlotte NC</span><span class="tag gray">Solo consultancy</span><span class="tag gray">Brand-new domain</span><span class="tag gray">Prepared 2026-05-12</span></p>
+  </div>
+
+  <div class="callout">
+    <h3>TL;DR — what we ship, in this order</h3>
+    <p><strong>Five template sets, ~40 published pages over 12 weeks, built on the existing React Router + static TypeScript data pattern.</strong> Total estimated build: 50–70 hours of Brian's time spread across the quarter. No 1,000-page directory dumps. Quality threshold per page: 500+ unique words, one real artifact (case study reference, working calculator, screenshot, or architecture diagram), and content that <em>only Ascend can write</em>.</p>
+
+    <h4>The five sets, in launch order</h4>
+    <ol>
+      <li><strong><code>/services/[slug]</code></strong> — 5 service pillar pages. Explode the existing single <code>/services</code> route. <strong>Effort:</strong> 8–10 hours. <strong>Cumulative monthly traffic estimate at month 6:</strong> 80–200 sessions <span class="tag gray">est, needs verification via GSC</span>. The foundation every other set links into.</li>
+      <li><strong><code>/charlotte/[service-slug]</code></strong> — 5 geo+service pages. <strong>Effort:</strong> 10–12 hours. <strong>Month-6 estimate:</strong> 150–400 sessions. Highest-intent buyer queries in Ascend's footprint.</li>
+      <li><strong><code>/tools/[tool-slug]</code></strong> — 4 free interactive tools (Cost Calc is shipped; add 3 more). <strong>Effort:</strong> 20–30 hours. <strong>Month-6 estimate:</strong> 200–500 sessions + the highest conversion rate of any page type (5–15% to email capture).</li>
+      <li><strong><code>/vs/[alternative-slug]</code></strong> — 6 comparison pages. <strong>Effort:</strong> 12–15 hours. <strong>Month-6 estimate:</strong> 100–300 sessions of the most commercial-intent traffic on the site.</li>
+      <li><strong><code>/industries/[slug]</code></strong> — 5 ICP-aligned industry pages (property management, law firms, multi-location services, trades, healthcare). <strong>Effort:</strong> 10–15 hours. <strong>Month-6 estimate:</strong> 80–200 sessions, but the highest sales-cycle compression on close.</li>
+    </ol>
+
+    <h4>Top priority keyword (the one to win first)</h4>
+    <p><strong>"custom CRM development charlotte"</strong> — high commercial intent, owned by directory aggregators with thin content, no Charlotte solo operator currently ranks. Win this with <code>/charlotte/custom-crm-development</code> + the underlying <code>/services/custom-crm</code> hub + the <code>/vs/custom-crm-vs-salesforce</code> comparison + the Cost Calculator tool. Four pages, one cluster, all pointing at one query family.</p>
+
+    <h4>What we are explicitly NOT doing</h4>
+    <ul>
+      <li>No <code>/charlotte-[industry]-software</code> hyper-local matrix (e.g., "Charlotte HVAC software"). That's a directory play, and the SERP is owned by Jobber, Housecall Pro, ServiceTitan with massive budgets. Cannot win.</li>
+      <li>No <code>/learn/[topic]</code> educational glossary. SERP loses to Clio, Salesforce, Clutch.</li>
+      <li>No "Charlotte [city neighborhood] software" suburb permutations. Zero search volume; pure thin-content risk.</li>
+    </ul>
+  </div>
+
+  <h2>Methodology — how the five were chosen</h2>
+
+  <p>This is a consultancy, not a marketplace. The programmatic-SEO playbook from the directory world (10,000 city pages, thin variable swaps) does not transfer. A consultancy lives or dies by 30–50 high-intent visitors per month who fit a narrow ICP. The shape of the asset has to match that economics.</p>
+
+  <p>Every candidate template set was scored on four dimensions, on a 1–5 scale, with the lowest score acting as the gate:</p>
+
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>What it measures</th><th>Why it's a hard gate</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Buyer intent</strong></td>
+        <td>How close the searcher is to signing a check</td>
+        <td>Informational traffic doesn't fund a consultancy. Commercial-intent traffic does.</td>
+      </tr>
+      <tr>
+        <td><strong>Ranking feasibility</strong></td>
+        <td>SERP analysis: who ranks now, domain authority, content depth, geo modifier presence</td>
+        <td>A brand-new domain cannot beat Salesforce, Clio, or Clutch on head terms. Pick fights we can win.</td>
+      </tr>
+      <tr>
+        <td><strong>Content sustainability</strong></td>
+        <td>Can every page support 500+ words of genuinely unique content without padding?</td>
+        <td>Thin-content penalty is the #1 risk of programmatic SEO. If we can't fill the page honestly, don't build it.</td>
+      </tr>
+      <tr>
+        <td><strong>Stack feasibility</strong></td>
+        <td>Builds cleanly on React Router 7 + static TS data + Vite SSR/prerender</td>
+        <td>Brian has 5–10 hrs/wk. If a template requires custom backend or external CMS, it doesn't ship.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The eight candidate sets from the brief were scored against this rubric. Five passed. Three were rejected with notes.</p>
+
+  <table>
+    <thead>
+      <tr><th>Candidate</th><th>Intent</th><th>Feasibility</th><th>Sustainability</th><th>Stack</th><th>Verdict</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>/services/[slug]</code></td><td>5</td><td>5</td><td>5</td><td>5</td><td><strong>SHIP</strong> — foundation</td></tr>
+      <tr><td><code>/charlotte/[service-slug]</code></td><td>5</td><td>4</td><td>4</td><td>5</td><td><strong>SHIP</strong> — highest-intent geo</td></tr>
+      <tr><td><code>/tools/[slug]</code></td><td>4</td><td>4</td><td>5</td><td>4</td><td><strong>SHIP</strong> — lead magnet engine</td></tr>
+      <tr><td><code>/vs/[alternative]</code></td><td>5</td><td>3</td><td>5</td><td>5</td><td><strong>SHIP</strong> — bottom-funnel</td></tr>
+      <tr><td><code>/industries/[slug]</code></td><td>4</td><td>3</td><td>4</td><td>5</td><td><strong>SHIP</strong> — sales-call enabler</td></tr>
+      <tr><td><code>/case-studies/[type]</code></td><td>4</td><td>4</td><td>3</td><td>4</td><td><strong>DEFER</strong> — fold into Portfolio expansion, not its own set</td></tr>
+      <tr><td><code>/learn/[topic]</code></td><td>2</td><td>1</td><td>3</td><td>5</td><td><strong>SKIP</strong> — Clio, Salesforce, Bloomberg own these SERPs</td></tr>
+      <tr><td><code>/charlotte-[business-type]-software</code></td><td>5</td><td>1</td><td>2</td><td>5</td><td><strong>SKIP</strong> — Jobber/ServiceTitan + thin-content trap</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Why <code>/case-studies/[type]</code> was deferred (not killed)</h3>
+  <p>The existing <code>/portfolio/:slug</code> route already serves this need. Splitting case studies into a separate template set adds URL fragmentation and internal-linking complexity without adding ranking surface area — search intent for "Charlotte CRM case study" is approximately zero. The right move is to <em>deepen</em> the existing portfolio pages (richer write-ups, screenshots, architecture diagrams, named-client quotes) and use them as the proof-cited <em>from</em> the five template sets. Treat them as supporting infrastructure, not a programmatic surface.</p>
+
+  <h3>Why <code>/learn/[topic]</code> was killed</h3>
+  <p>SERP inspection on five informational queries — "what is a custom CRM," "what is a fractional CTO," "AI integration explained," "build vs buy software," "how much does a CRM cost" — shows the top 10 dominated by Clio (DA 78), Salesforce (DA 91), Clutch (DA 83), HubSpot (DA 93), and a tail of $5M-content-budget SaaS blogs. A brand-new DA-1 consultancy domain has no realistic path to top 10 inside 12 months. The CAC of an informational visitor is high; the volume we'd capture (10–30/mo per page, generously) doesn't repay the writing cost.</p>
+
+  <h3>Why <code>/charlotte-[business-type]-software</code> was killed</h3>
+  <p>SERP for "Charlotte HVAC software" is owned by national field-service-management SaaS — <a href="https://www.getjobber.com/industries/hvac/">Jobber</a>, <a href="https://www.housecallpro.com/industries/hvac-software/">Housecall Pro</a>, <a href="https://www.servicetitan.com/industries/hvac-software/dispatching">ServiceTitan</a>, <a href="https://www.servicefusion.com/hvac-software">Service Fusion</a>. These vendors run $10M+/yr content programs and target the exact same buyer Ascend wants. Even if we ranked, the buyer who arrives is shopping for SaaS, not custom development — wrong intent for our offer. And the page can't honestly support 500+ unique words per (Charlotte × industry) cell without padding. Triple thin-content risk. Skip.</p>
+
+  <h2>Keyword research — Charlotte-metro SMB software</h2>
+
+  <p>Volume estimates below are directional, derived from SERP signals (SERP feature presence, ad density, "people also ask" coverage, autosuggest density). <strong>Verify all numbers via Ahrefs/SEMrush/Google Keyword Planner before locking the keyword map.</strong> The competition column reflects observed SERP composition, not a tool-derived KD score.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Volume est <span class="tag gray">verify</span></th>
+        <th>Intent</th>
+        <th>Difficulty</th>
+        <th>Page</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>custom crm development charlotte</td><td>20–90/mo</td><td>Commercial — buyer ready</td><td>Med — directory aggregators rank, no local solo</td><td><code>/charlotte/custom-crm-development</code></td><td><strong>P0</strong></td></tr>
+      <tr><td>charlotte fractional cto</td><td>40–110/mo</td><td>Commercial — exec hire</td><td>Med — TechCXO, Bry, Dualboot rank</td><td><code>/charlotte/fractional-cto</code></td><td><strong>P0</strong></td></tr>
+      <tr><td>charlotte ai consultant for small business</td><td>30–80/mo</td><td>Commercial — buyer ready</td><td>Med — Holistic, Stonehill, Agentic Arc, Springman occupy SERP</td><td><code>/charlotte/ai-integration</code></td><td><strong>P0</strong></td></tr>
+      <tr><td>custom crm vs salesforce</td><td>200–500/mo (national)</td><td>Commercial — comparison shop</td><td>High — Salesforce + content SaaS dominate</td><td><code>/vs/custom-crm-vs-salesforce</code></td><td><strong>P1</strong></td></tr>
+      <tr><td>fractional cto vs in house developer</td><td>50–200/mo</td><td>Commercial — exec decision</td><td>Med — fractional firms compete for it</td><td><code>/vs/fractional-cto-vs-in-house-developer</code></td><td><strong>P1</strong></td></tr>
+      <tr><td>custom software development charlotte nc</td><td>50–150/mo</td><td>Commercial — top of funnel</td><td>High — Designli, Skookum, Promerix, Clutch own page 1</td><td><code>/charlotte/custom-software-development</code></td><td><strong>P1</strong></td></tr>
+      <tr><td>build vs buy software calculator</td><td>100–300/mo</td><td>Tool — high engagement</td><td>Med — SaaSFractionalCPO, Brilworks, Ideanote rank with calculators</td><td><code>/tools/build-vs-buy-calculator</code></td><td><strong>P1</strong></td></tr>
+      <tr><td>custom crm cost calculator</td><td>50–200/mo</td><td>Tool — buyer pricing-out</td><td>Med — content blogs, no real calculators rank</td><td><code>/tools/crm-cost-calculator</code></td><td><strong>P1</strong></td></tr>
+      <tr><td>ai readiness assessment for small business</td><td>100–400/mo</td><td>Tool — exec curiosity</td><td>Med — McKinsey, Microsoft, generic agency PDFs</td><td><code>/tools/ai-readiness-scorecard</code></td><td><strong>P1</strong></td></tr>
+      <tr><td>custom software for property management companies</td><td>100–300/mo</td><td>Commercial — vertical buyer</td><td>High — Buildium, Yardi, Propertyware own SERP</td><td><code>/industries/property-management</code></td><td><strong>P2</strong></td></tr>
+      <tr><td>ai automation for law firms</td><td>200–800/mo</td><td>Commercial — vertical buyer</td><td>High — Clio, Spellbook, Harvey dominate</td><td><code>/industries/law-firms</code></td><td><strong>P2</strong></td></tr>
+      <tr><td>charlotte custom software development for service business</td><td>10–40/mo</td><td>Commercial — buyer ready, narrow</td><td>Low — virtually no targeted result</td><td><code>/industries/service-businesses</code></td><td><strong>P0</strong> for ease of win</td></tr>
+    </tbody>
+  </table>
+
+  <h3>SERP analysis notes — what the top 10 actually look like</h3>
+
+  <h4>"custom CRM development charlotte"</h4>
+  <p>SERP composition: 2 directory aggregators (Clutch, GoodFirms), 1 generic SaaS landing page (CustomCRMPros), 2 Charlotte-area firms with weak product proof (Pure Technology Consulting, Accessible Computing), 1 large agency page (Progatix), and rounded out by Salesforce consulting directory listings. <strong>The gap:</strong> no result on page 1 actually shows a Charlotte solo operator with a shipped CRM artifact. Ascend's wedge — the Stancil Services multi-tenant ops platform — is unmatched here. Win condition: a single 1,500-word page anchored on the Stancil case study with screenshots, an architecture diagram, and a clear pricing anchor. (<a href="https://crm.consulting/salesforce-companies-usa/north-carolina/charlotte">Clutch CRM Charlotte</a>, <a href="https://customcrmpros.com/locations/north-carolina/charlotte">CustomCRMPros</a>)</p>
+
+  <h4>"Charlotte fractional CTO"</h4>
+  <p>SERP composition: SERP is currently <em>dominated by fractional CFO results</em>, not CTO — Google misreads the query for the higher-volume CFO term. The actual CTO results that do appear: <a href="https://bry.net/">Bry AI / Bryan Dennstedt</a>, TechCXO, Dualboot Partners' CTO page, and a handful of out-of-market national fractional firms. <strong>The gap:</strong> Bry AI and TechCXO are advisory-shop oriented; no Charlotte page exists that says "fractional CTO who ships code." That's Ascend's wedge. Win condition: page explicitly differentiates from advisory-only fractional CTOs by showing shipped artifacts (City of Charlotte EV Dashboard, Stancil). The CFO-vs-CTO ambiguity in the SERP is also an opportunity — a well-optimized page can claim disambiguation traffic.</p>
+
+  <h4>"Charlotte AI consultant for small business"</h4>
+  <p>SERP composition: <a href="https://www.holisticconsulting.tech/">Holistic Consulting Technologies (Davidson)</a>, <a href="https://www.stonehillinnovation.com/ai-consulting-firm-charlotte">Stonehill Innovation</a>, <a href="https://www.agenticarc.ai/">Agentic Arc AI</a>, <a href="https://springmanconsulting.com/ai-consulting-services/">Springman Consulting</a>, <a href="https://flux-form.com/north-carolina/charlotte-ai-solutions/">Flux Form</a>, <a href="https://www.ademero.com/ai-services/consulting/charlotte">Ademero</a>, plus Clutch's AI directory. <strong>The gap:</strong> every page reads like generic agency copy — "we help Charlotte businesses with AI." None show a working AI product the buyer can poke at. Ascend has the LoveNotes AI message generator, Heirloom AI photo restoration, the Fanvue platform, and AI features baked into the EV Dashboard — actual deployed AI artifacts. Win condition: lead the page with one live AI feature the visitor can interact with on Ascend's own portfolio products.</p>
+
+  <h4>"custom CRM vs Salesforce"</h4>
+  <p>SERP composition: Salesforce itself ranks for the term (cleverly — they have a Custom CRM marketing page), then content-marketing blog posts from <a href="https://www.getcha.com/blogs/salesforce-vs-custom-csm">Getcha</a>, <a href="https://ekfrazo.com/resources/blogs/salesforce-vs-custom-crm-2025-guide/">EKFrazo</a>, <a href="https://venue.cloud/news/insights/custom-crm-vs-salesforce-when-building-beats-buying">Venue</a>, <a href="https://pretius.com/blog/custom-crm-vs-salesforce">Pretius</a>, <a href="https://www.4degrees.ai/blog/off-the-shelf-vs-custom-built-crms">4Degrees</a>. All informational, none with an interactive cost-comparison tool, all hedged ("it depends"). <strong>The gap:</strong> no page commits to a real ROI calculator with hard numbers. If Ascend ships <code>/vs/custom-crm-vs-salesforce</code> with an embedded calculator that takes 5 inputs and produces a 3-year TCO comparison, it's the only utility result on the page. Win condition: the page becomes a tool, not a blog post.</p>
+
+  <h4>"custom software for property management companies"</h4>
+  <p>SERP composition: total SaaS-vendor lock-out. <a href="https://www.buildium.com/">Buildium</a>, <a href="https://www.propertyware.com/">Propertyware</a>, <a href="https://www.yardi.com/">Yardi</a>, <a href="https://www.rentmanager.com/">Rent Manager</a>, <a href="https://www.rentvine.com/">Rentvine</a>, <a href="https://inhabit.com/">Inhabit</a> — the entire page is property management SaaS. <a href="https://www.glideapps.com/solutions/property-management-companies/compliance-management-software">Glide</a> is the lone "build custom" alternative. <strong>The gap:</strong> the keyword has wrong intent — visitors are evaluating SaaS, not contracting custom. We'd need to capture a long-tail variant: <em>"custom property management software when Yardi doesn't fit"</em> or <em>"custom integrations for property management companies"</em>. This is why Industries is a P2 — high difficulty, but valuable as a sales-call asset for the buyers we do reach.</p>
+
+  <h2>Template set 1 — <code>/services/[slug]</code></h2>
+  <p><span class="tag">P0 · ship week 1</span></p>
+
+  <p>The foundation. Today's site has a single <code>/services</code> page that covers all five service lines in one go — that's wasted SEO surface. Every service is its own search query and its own keyword cluster.</p>
+
+  <h4>URL pattern</h4>
+  <p><code>/services/custom-crm</code>, <code>/services/web-application-development</code>, <code>/services/ai-integration</code>, <code>/services/fractional-cto</code>, <code>/services/process-automation</code></p>
+
+  <h4>Target keywords (per page)</h4>
+  <table>
+    <thead><tr><th>Page</th><th>Primary KW</th><th>Secondary KWs</th></tr></thead>
+    <tbody>
+      <tr><td>custom-crm</td><td>custom CRM development</td><td>build a custom CRM, bespoke CRM software, CRM software development</td></tr>
+      <tr><td>web-application-development</td><td>custom web application development</td><td>internal tool development, business web app, SaaS development</td></tr>
+      <tr><td>ai-integration</td><td>AI integration consultant</td><td>AI integration services, OpenAI/Claude integration, RAG implementation</td></tr>
+      <tr><td>fractional-cto</td><td>fractional CTO services</td><td>fractional CTO that codes, technical advisor SMB, fractional engineering leadership</td></tr>
+      <tr><td>process-automation</td><td>business process automation services</td><td>Zapier replacement, workflow automation, internal tool automation</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Data source</h4>
+  <p>A single TypeScript file <code>src/data/services.ts</code> exporting a typed array. The page renders from that data plus per-slug MDX (or just JSX-embedded long-form prose) for the unique narrative section. The "data" is intentionally not just slug-swappable variables — each entry references a specific real portfolio project the page can showcase.</p>
+
+  <pre><code>// src/data/services.ts
+export interface ServicePage {
+  slug: string;
+  title: string;             // H1 + SEO title base
+  metaTitle: string;
+  metaDescription: string;   // 150–160 chars
+  hero: {
+    eyebrow: string;
+    headline: string;
+    subhead: string;
+  };
+  problem: {
+    headline: string;
+    body: string;            // 200–300 words, unique
+  };
+  approach: string[];        // 4–6 bullets describing the engagement shape
+  pricing: {
+    discoverySprint: string; // e.g. "$3,500 — 2 weeks"
+    typicalBuild: string;    // e.g. "$15K – $75K"
+  };
+  proofProject: {
+    portfolioSlug: string;   // links to /portfolio/:slug
+    outcome: string;         // 1-sentence outcome line
+    artifactImg: string;     // /og/services/[slug].png
+  };
+  faqs: { q: string; a: string }[];   // 5–7 per page, unique answers
+  relatedServices: string[]; // slugs for internal linking
+  relatedTools: string[];    // slugs of /tools that apply
+}</code></pre>
+
+  <h4>Content blocks rendered (per page)</h4>
+  <ol>
+    <li>Hero — H1 + 1-sentence outcome promise + primary CTA</li>
+    <li>"The problem" — 200–300 words, Charlotte-SMB-specific, no boilerplate</li>
+    <li>"How an engagement runs" — 4–6 steps, concrete, with timeline</li>
+    <li>"Proof" — one named portfolio project rendered inline with screenshot</li>
+    <li>Pricing anchor — Discovery Sprint price, typical Build range, Fractional rate</li>
+    <li>FAQ — 5–7 questions, each answered in 80–150 unique words (FAQPage schema)</li>
+    <li>Related services + related tools — internal linking hub</li>
+    <li>Footer CTA — Discovery Sprint or Cost Calculator</li>
+  </ol>
+
+  <h4>Word count target</h4>
+  <p><strong>1,200–1,800 unique words per page.</strong> Hard floor: 1,000. Anything thinner gets the page held back until written properly.</p>
+
+  <h4>React Router pattern</h4>
+  <pre><code>// src/App.tsx — add lazy route
+const ServiceDetail = lazy(() =&gt; import('./pages/services/ServiceDetail'));
+
+&lt;Route path="/services" element={&lt;Services /&gt;} /&gt;
+&lt;Route path="/services/:slug" element={&lt;ServiceDetail /&gt;} /&gt;
+
+// src/pages/services/ServiceDetail.tsx
+import { useParams } from 'react-router-dom';
+import { services } from '@/data/services';
+
+export default function ServiceDetail() {
+  const { slug } = useParams();
+  const service = services.find((s) =&gt; s.slug === slug);
+  if (!service) return &lt;NotFound /&gt;;
+  return &lt;ServiceTemplate service={service} /&gt;;
+}</code></pre>
+
+  <p>Since the stack is Vite SPA, set up <code>vite-plugin-ssg</code> or <code>react-snap</code> to prerender each <code>/services/[slug]</code> to a static HTML file at build time. Without prerendering, Google can crawl but the indexation rate on CSR routes is materially worse — measured commonly at 60–70% vs. 95%+ for prerendered. This is the single most important technical-SEO call for the entire plan; the parallel technical-SEO audit should land on the same answer.</p>
+
+  <h4>Launch sequence</h4>
+  <p>Ship all 5 pages in week 1. They are mostly already written content (the existing <code>/services</code> page) just decomposed and deepened. This is the lowest-effort, highest-leverage set in the plan.</p>
+
+  <h2>Template set 2 — <code>/charlotte/[service-slug]</code></h2>
+  <p><span class="tag">P0 · ship weeks 2–4</span></p>
+
+  <p>The geo-anchored variant of Set 1. These are the pages that win the buyer typing "Charlotte custom CRM" into Google at 9pm after a long day fighting with a spreadsheet. Highest commercial intent in the entire plan.</p>
+
+  <h4>URL pattern</h4>
+  <p><code>/charlotte/custom-crm-development</code>, <code>/charlotte/fractional-cto</code>, <code>/charlotte/ai-integration</code>, <code>/charlotte/custom-software-development</code>, <code>/charlotte/process-automation</code></p>
+
+  <h4>Why this isn't a duplicate of Set 1</h4>
+  <p>Critical distinction — these pages must have <em>materially different</em> content from <code>/services/[slug]</code>, or they get folded together by Google as duplicate content. The Charlotte pages are organized around <strong>local proof and local context</strong>:</p>
+  <ul>
+    <li>Lead with named Charlotte clients (City of Charlotte, Stancil Services)</li>
+    <li>Reference Charlotte SMB pricing context (e.g., "what a $5M Charlotte business typically pays")</li>
+    <li>Cite local SERP context (Designli, Bry AI, Dualboot named explicitly with why the visitor might be choosing among them)</li>
+    <li>Charlotte-specific FAQ ("can you meet at my office in South End?", "do you work with Charlotte property management companies?")</li>
+    <li>NAP block (name, address, phone) for local-business schema</li>
+  </ul>
+
+  <h4>Data source</h4>
+  <pre><code>// src/data/charlotte-services.ts
+export interface CharlotteServicePage {
+  slug: string;
+  serviceSlug: string;       // links back to /services/[slug]
+  metaTitle: string;
+  metaDescription: string;
+  heroHeadline: string;      // "[Service] in Charlotte, NC"
+  localContext: string;      // 250–400 words, unique Charlotte framing
+  localProof: {
+    clients: ('city-of-charlotte' | 'stancil-services')[];
+    quote: string;
+  };
+  competitorContext: {
+    namedAlternatives: string[];  // ["Designli", "Bry AI", "Dualboot"]
+    whyAscend: string;            // 150–250 words honest differentiator
+  };
+  pricingForCharlotte: string;     // 100–200 words on local pricing reality
+  faqs: { q: string; a: string }[]; // ≥3 with Charlotte-specific wording
+  meetingOptions: string[];        // "Coffee in Uptown", "Office visit", etc.
+}</code></pre>
+
+  <h4>Content blocks rendered</h4>
+  <ol>
+    <li>Hero — "[Service] in Charlotte, NC" + 1-line proof (City of Charlotte / Stancil)</li>
+    <li>Local context paragraph — Charlotte SMB reality, 250–400 words</li>
+    <li>Named local proof — embedded case-study reference with named operator</li>
+    <li>Competitor honesty section — "you're probably also looking at Designli and Bry AI; here's the difference"</li>
+    <li>Pricing for Charlotte specifically — what a local buyer actually pays</li>
+    <li>Meeting / availability — coffee, office visit, video</li>
+    <li>FAQ block — locally-flavored</li>
+    <li>LocalBusiness schema + NAP block in footer</li>
+  </ol>
+
+  <h4>Word count target</h4>
+  <p><strong>1,000–1,500 unique words per page.</strong> Lower than Set 1 because local context naturally compresses; higher than thin geo-pages because we're not just swapping "in Charlotte" into the same boilerplate.</p>
+
+  <h4>Launch sequence</h4>
+  <ol>
+    <li>Week 2: <code>/charlotte/custom-crm-development</code> first (the top priority keyword)</li>
+    <li>Week 3: <code>/charlotte/fractional-cto</code> and <code>/charlotte/ai-integration</code></li>
+    <li>Week 4: <code>/charlotte/custom-software-development</code> and <code>/charlotte/process-automation</code></li>
+  </ol>
+
+  <h2>Template set 3 — <code>/tools/[tool-slug]</code></h2>
+  <p><span class="tag">P1 · ship weeks 4–10</span></p>
+
+  <p>The highest-converting page type on the entire site. The existing Cost Calculator already shipped at <code>/tools/cost-calculator</code> validates the pattern. Each free tool is simultaneously: (1) an SEO asset, (2) a lead magnet, (3) something the marketing strategy already calls for. This template set is the single best ROI on engineering hours in the plan.</p>
+
+  <h4>URL pattern</h4>
+  <p><code>/tools/cost-calculator</code> (shipped), <code>/tools/ai-readiness-scorecard</code>, <code>/tools/build-vs-buy-calculator</code>, <code>/tools/crm-cost-calculator</code></p>
+
+  <h4>Target keywords</h4>
+  <table>
+    <thead><tr><th>Tool</th><th>Primary KW</th><th>Secondary KWs</th></tr></thead>
+    <tbody>
+      <tr><td>cost-calculator (shipped)</td><td>manual process cost calculator</td><td>spreadsheet cost calculator, automation ROI calculator</td></tr>
+      <tr><td>ai-readiness-scorecard</td><td>AI readiness assessment small business</td><td>AI readiness checklist, AI maturity score</td></tr>
+      <tr><td>build-vs-buy-calculator</td><td>build vs buy software calculator</td><td>custom vs SaaS TCO calculator</td></tr>
+      <tr><td>crm-cost-calculator</td><td>custom CRM cost calculator</td><td>Salesforce TCO calculator, CRM build cost estimator</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Why tools rank so well</h4>
+  <p>SERP analysis on "build vs buy software calculator" shows <a href="https://saasfractionalcpo.com/tools-for-founders/saas-build-vs-buy-calculator/">SaaSFractionalCPO</a>, <a href="https://www.brilworks.com/tools/build-vs-buy-software-calculator/">Brilworks</a>, and <a href="https://ideanote.io/tool/build-vs-buy-idea-management">Ideanote</a> ranking purely because they shipped an actual interactive calculator. Most "calculator" SERPs are still 70% blog posts because writers default to writing essays instead of building tools. Build the tool, win the SERP — even on a brand-new domain, calculator pages earn backlinks and dwell time at rates blog posts cannot.</p>
+
+  <h4>Data source &amp; tool shape</h4>
+  <p>Each tool is a React component with controlled inputs, instant computed output, and an "email me the full report" gate that drops the lead into the existing Ascend CRM. The calculator logic lives in a TypeScript file colocated with the page. No external API required — every calc is pure client-side math.</p>
+
+  <pre><code>// src/data/tools.ts — metadata for SEO + cross-linking
+export interface ToolPage {
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+  heroHeadline: string;
+  inputs: ToolInput[];       // schema for the calculator
+  resultExplainer: string;   // 400–600 words explaining the methodology
+  whyItMatters: string;      // 250–400 words editorial framing
+  relatedServices: string[]; // services we'd pitch after capture
+  faqs: { q: string; a: string }[];
+}
+
+// src/pages/tools/BuildVsBuyCalculator.tsx — the actual tool
+// uses inputs from tools.ts + custom calc component</code></pre>
+
+  <h4>Content blocks rendered</h4>
+  <ol>
+    <li>Hero — H1 + 1-line "what this calculator does" + "no email required" trust signal</li>
+    <li>The calculator itself — inputs above the fold</li>
+    <li>Live result panel — updates on input change</li>
+    <li>"Email me the full PDF report" — gated email capture, NOT a wall</li>
+    <li>"How this calculator works" — 400–600 words explaining the methodology (this is the SEO bulk)</li>
+    <li>"Why this matters for Charlotte SMBs" — local framing</li>
+    <li>Related services links — natural pitch</li>
+    <li>FAQ — schema-marked-up</li>
+  </ol>
+
+  <h4>Word count target</h4>
+  <p><strong>1,200–2,000 unique words per page</strong> including the methodology explainer. Critical: the explainer must be specific to <em>this calculator's methodology</em>, not boilerplate. Generic "what is a calculator" content is the failure mode.</p>
+
+  <h4>Build order</h4>
+  <ol>
+    <li>Week 4–5: <code>/tools/ai-readiness-scorecard</code> (10 yes/no Qs, A/B/C/D grade, PDF email gate — fastest to build)</li>
+    <li>Week 6–7: <code>/tools/build-vs-buy-calculator</code> (5 inputs, 3-year TCO comparison)</li>
+    <li>Week 8–10: <code>/tools/crm-cost-calculator</code> (more complex — Salesforce/HubSpot tier comparison vs custom build)</li>
+  </ol>
+
+  <h2>Template set 4 — <code>/vs/[alternative-slug]</code></h2>
+  <p><span class="tag">P1 · ship weeks 5–10</span></p>
+
+  <p>The most commercially-loaded queries in the entire plan. "[X] vs [Y]" searchers have credit card in hand. Six pages, each targeting a real buyer decision Ascend's ICP is making.</p>
+
+  <h4>URL pattern</h4>
+  <p><code>/vs/custom-crm-vs-salesforce</code>, <code>/vs/custom-crm-vs-hubspot</code>, <code>/vs/fractional-cto-vs-in-house-developer</code>, <code>/vs/custom-software-vs-bubble</code>, <code>/vs/ascend-vs-upwork-freelancer</code>, <code>/vs/ascend-vs-big-agency</code></p>
+
+  <h4>Target keywords (per page)</h4>
+  <table>
+    <thead><tr><th>Page</th><th>Primary KW</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>custom-crm-vs-salesforce</td><td>custom CRM vs Salesforce</td><td>200–500/mo. Highest-value tile in the set. Pair with crm-cost-calculator.</td></tr>
+      <tr><td>custom-crm-vs-hubspot</td><td>custom CRM vs HubSpot</td><td>100–300/mo. Same shape, different anchor.</td></tr>
+      <tr><td>fractional-cto-vs-in-house-developer</td><td>fractional CTO vs in-house developer</td><td>50–200/mo. Direct exec decision query.</td></tr>
+      <tr><td>custom-software-vs-bubble</td><td>custom software vs no-code</td><td>100–400/mo. Bubble shoppers hitting scale wall.</td></tr>
+      <tr><td>ascend-vs-upwork-freelancer</td><td>(brand defense, low volume)</td><td>Brand-defense page — internal linking target, not ranking goal</td></tr>
+      <tr><td>ascend-vs-big-agency</td><td>(brand defense, low volume)</td><td>Same. Both shape the conversation buyers have during eval.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>The honesty constraint</h4>
+  <p>Comparison pages have a famous failure mode: writing one-sided propaganda that no one trusts. Google ranks balanced comparison pages much higher than biased ones; buyers convert from balanced pages much higher than biased ones. <strong>Every <code>/vs/</code> page must include a clear "when you should pick the other option" section.</strong> Salesforce is right for some buyers. So is Bubble. Saying so builds the trust that makes the "when you should pick Ascend" section land.</p>
+
+  <h4>Data source</h4>
+  <pre><code>// src/data/comparisons.ts
+export interface ComparisonPage {
+  slug: string;
+  ascendSide: { name: string; tagline: string };
+  otherSide: { name: string; tagline: string; url?: string };
+  metaTitle: string;
+  metaDescription: string;
+  tldr: string;                       // 80–120 words, fair to both
+  comparisonTable: ComparisonRow[];   // 8–12 rows of attribute-by-attribute
+  pickAscendWhen: string[];           // 4–6 honest scenarios
+  pickOtherWhen: string[];            // 3–5 honest scenarios — required
+  embeddedTool?: string;              // slug of related /tools/* calculator
+  faqs: { q: string; a: string }[];
+}
+
+interface ComparisonRow {
+  attribute: string;
+  ascend: string;
+  other: string;
+  winner: 'ascend' | 'other' | 'tie';
+}</code></pre>
+
+  <h4>Content blocks rendered</h4>
+  <ol>
+    <li>Hero — "[X] vs [Y]: which one for your business?"</li>
+    <li>TL;DR — 80–120 word fair summary</li>
+    <li>Comparison table — 8–12 rows, structured data via Schema.org/Table</li>
+    <li>"Pick [Other] when…" — honest 4–6 scenarios</li>
+    <li>"Pick [Ascend] when…" — honest 4–6 scenarios</li>
+    <li>Embedded calculator — wherever it fits (CRM TCO calc on Salesforce/HubSpot pages)</li>
+    <li>FAQ — buying-process questions</li>
+    <li>Footer CTA — Discovery Sprint, not a hard sell</li>
+  </ol>
+
+  <h4>Word count target</h4>
+  <p><strong>1,500–2,200 unique words per page.</strong> Comparison pages need depth to be trusted.</p>
+
+  <h2>Template set 5 — <code>/industries/[slug]</code></h2>
+  <p><span class="tag">P2 · ship weeks 8–12</span></p>
+
+  <p>The lowest-priority of the five but a high-leverage sales-call asset. These pages don't have to win Google to pay off — they have to exist so that when a property-management buyer asks "have you worked with property managers?" Brian can reply with a link, not a pitch. Any organic traffic is a bonus.</p>
+
+  <h4>URL pattern</h4>
+  <p><code>/industries/property-management</code>, <code>/industries/law-firms</code>, <code>/industries/multi-location-services</code>, <code>/industries/trades-and-contractors</code>, <code>/industries/healthcare-and-dental-groups</code></p>
+
+  <h4>The ranking reality</h4>
+  <p>SERP analysis on "custom software for property management companies" shows page 1 is entirely owned by property-management SaaS vendors (Buildium, Yardi, Propertyware). Same for "AI for law firms" (Clio, Spellbook, Harvey). <strong>We will not rank for the head term.</strong> What we <em>can</em> rank for: long-tail intent variations the SaaS vendors don't target, like "custom integrations for Buildium" or "AI document review for solo law firms."</p>
+
+  <h4>Why we still build them</h4>
+  <p>Three reasons, in order of value:</p>
+  <ol>
+    <li><strong>Sales-cycle compression.</strong> When a property-management buyer arrives via warm intro or an event, having <code>/industries/property-management</code> to send before the discovery call shortens the sales cycle by 1–2 weeks.</li>
+    <li><strong>Long-tail capture.</strong> 10–30 sessions per month per page on niche, high-intent variations is enough to produce one quality lead per quarter per industry.</li>
+    <li><strong>Internal linking destination.</strong> Every other template set links here naturally. Builds topical authority for the broader domain.</li>
+  </ol>
+
+  <h4>Data source</h4>
+  <pre><code>// src/data/industries.ts
+export interface IndustryPage {
+  slug: string;
+  industryName: string;
+  metaTitle: string;
+  metaDescription: string;
+  topPainPoints: { pain: string; solution: string }[]; // 5–7 per industry
+  saasLandscape: {                                       // what they already use
+    incumbents: { name: string; url: string; whatItDoes: string }[];
+    gapsAscendFills: string[];
+  };
+  exampleBuilds: {            // 3–4 hypothetical or real engagement examples
+    title: string;
+    scope: string;
+    outcome: string;
+    priceRange: string;
+  }[];
+  relevantPortfolio?: string; // portfolio slug to feature inline
+  faqs: { q: string; a: string }[];
+}</code></pre>
+
+  <h4>Content blocks rendered</h4>
+  <ol>
+    <li>Hero — "Custom software &amp; AI integrations for [industry]"</li>
+    <li>Industry pain section — 5–7 specific operational pains, named</li>
+    <li>SaaS landscape — name the incumbents (Buildium, Clio, ServiceTitan, etc.) and where their gaps live</li>
+    <li>Example builds — 3–4 concrete scoped engagement examples with prices</li>
+    <li>Portfolio cite — if a real one exists for the industry; if not, a clearly-labeled hypothetical</li>
+    <li>Industry-specific FAQ — 5–7 questions</li>
+    <li>Footer — Discovery Sprint CTA</li>
+  </ol>
+
+  <h4>Word count target</h4>
+  <p><strong>1,200–1,800 unique words per page.</strong> Heavier on industry-specific operational detail than generic copy.</p>
+
+  <h2>Build sequencing — 12-week plan</h2>
+
+  <p>Calibrated to ~5–10 hr/wk of marketing/SEO time. Building plus writing both counted. The plan front-loads the easiest wins and back-loads the experimental ones.</p>
+
+  <table>
+    <thead>
+      <tr><th>Week</th><th>Ship</th><th>Effort</th><th>Cumulative pages live</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Routing scaffolding: <code>:slug</code> routes wired up, prerender configured, sitemap.xml generator. Ship all 5 <code>/services/[slug]</code> pages by week-end (mostly decomposing existing copy).</td><td>8–10h</td><td>5</td></tr>
+      <tr><td>2</td><td><code>/charlotte/custom-crm-development</code> — the priority keyword page, fully built and indexed.</td><td>3–4h</td><td>6</td></tr>
+      <tr><td>3</td><td><code>/charlotte/fractional-cto</code> + <code>/charlotte/ai-integration</code>.</td><td>5–6h</td><td>8</td></tr>
+      <tr><td>4</td><td><code>/charlotte/custom-software-development</code> + <code>/charlotte/process-automation</code>. First-pass internal linking audit.</td><td>5–6h</td><td>10</td></tr>
+      <tr><td>5</td><td><code>/tools/ai-readiness-scorecard</code> — 10-question quiz, A–D grade output, email gate.</td><td>8–10h</td><td>11</td></tr>
+      <tr><td>6</td><td><code>/vs/custom-crm-vs-salesforce</code> + <code>/vs/fractional-cto-vs-in-house-developer</code>. Internal links from <code>/services/custom-crm</code> + <code>/charlotte/fractional-cto</code>.</td><td>6–8h</td><td>13</td></tr>
+      <tr><td>7</td><td><code>/tools/build-vs-buy-calculator</code> — 5-input TCO calculator.</td><td>6–8h</td><td>14</td></tr>
+      <tr><td>8</td><td><code>/vs/custom-crm-vs-hubspot</code> + <code>/vs/custom-software-vs-bubble</code>. <code>/industries/property-management</code>.</td><td>7–9h</td><td>17</td></tr>
+      <tr><td>9</td><td><code>/industries/law-firms</code> + <code>/industries/multi-location-services</code>. Schema markup pass.</td><td>5–7h</td><td>19</td></tr>
+      <tr><td>10</td><td><code>/tools/crm-cost-calculator</code> — Salesforce/HubSpot vs custom TCO. Pair with <code>/vs/custom-crm-vs-salesforce</code>.</td><td>8–10h</td><td>20</td></tr>
+      <tr><td>11</td><td><code>/industries/trades-and-contractors</code> + <code>/industries/healthcare-and-dental-groups</code>. Brand-defense <code>/vs/ascend-vs-upwork-freelancer</code>.</td><td>5–7h</td><td>23</td></tr>
+      <tr><td>12</td><td><code>/vs/ascend-vs-big-agency</code>. Full internal-linking audit, sitemap resubmit, GSC coverage review. Capture week-12 baselines for measurement.</td><td>4–5h</td><td>24</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Total: 24 pages over 12 weeks at 70–90 hours of work.</strong> If the actual bandwidth is closer to 5 than 10 hr/wk, drop the Industries set (Set 5) entirely — the other four still deliver the strategic objective.</p>
+
+  <h2>Thin-content risk register</h2>
+
+  <p>Programmatic SEO penalizes the careless. The five risks below are the ones that actually end programmatic experiments, ordered by probability for Ascend's plan.</p>
+
+  <div class="callout">
+    <h3>Risk 1 — Duplicate content between <code>/services/[slug]</code> and <code>/charlotte/[service-slug]</code></h3>
+    <p><strong>Probability:</strong> High if not policed. <strong>Impact:</strong> Google folds the two pages, only ranks one. <strong>Mitigation:</strong> Different content templates entirely (Set 1 organized by methodology, Set 2 organized by local proof + competitor context + meeting options). Different headings, different example projects, different CTA copy. Run a Copyscape or simple Jaccard-similarity check between each pair before publishing — target &lt;40% overlap by sentence.</p>
+
+    <h3>Risk 2 — Generic FAQ blocks that repeat across pages</h3>
+    <p><strong>Probability:</strong> High. The lazy default is to copy 3 generic FAQs across every page ("how long does this take?", "how much does it cost?"). <strong>Impact:</strong> FAQPage schema gets ignored, page perceived as templated. <strong>Mitigation:</strong> Every FAQ block is hand-written per page. Minimum 5 questions per page, minimum 80 words per answer, minimum 50% of questions unique to that page (not appearing on any other page).</p>
+
+    <h3>Risk 3 — Comparison pages with no honest "pick the other option" section</h3>
+    <p><strong>Probability:</strong> Medium. <strong>Impact:</strong> Google's quality raters explicitly flag biased comparison content. Comparison pages with no concession to the alternative rank poorly and convert poorly. <strong>Mitigation:</strong> Required content block. PR checklist item before any <code>/vs/</code> page ships.</p>
+
+    <h3>Risk 4 — Industry pages without real industry-specific content</h3>
+    <p><strong>Probability:</strong> Medium. Easy to write generic "we help property managers" copy with no actual property-management expertise on the page. <strong>Impact:</strong> Thin-content downgrade, low rankings, low conversion. <strong>Mitigation:</strong> Every industry page must name at least 3 specific SaaS incumbents in the space with accurate descriptions, and at least 3 specific operational pain points. If Brian doesn't have the domain knowledge to write that page, hold it until he does.</p>
+
+    <h3>Risk 5 — CSR routes not getting indexed</h3>
+    <p><strong>Probability:</strong> Medium-high without prerendering. <strong>Impact:</strong> Pages exist but never rank. <strong>Mitigation:</strong> <code>vite-plugin-ssg</code> or <code>react-snap</code> in the build pipeline. Each <code>/services/[slug]</code> and <code>/charlotte/[slug]</code> must produce a fully-rendered HTML file at build time, not a JS-only shell. This is a hard blocker — do not ship the strategy without it.</p>
+  </div>
+
+  <h3>Operational discipline</h3>
+  <p>Before any new <code>:slug</code> page goes live, it gets a one-page checklist review:</p>
+  <ul>
+    <li>Unique title and meta description, 50–60 / 150–160 chars</li>
+    <li>One H1, hierarchical H2/H3</li>
+    <li>≥1,000 unique words (verified against existing pages on the domain)</li>
+    <li>≥3 internal links into the page and ≥3 out</li>
+    <li>Named portfolio reference or working calculator embedded</li>
+    <li>FAQPage schema, valid in Schema validator</li>
+    <li>Renders to static HTML in <code>dist/</code> at build time</li>
+    <li>Listed in <code>sitemap.xml</code></li>
+  </ul>
+
+  <h2>Measurement</h2>
+
+  <p>Honesty: a brand-new domain does not rank on commercial-intent terms in month 1. Realistic timeline is <strong>3–4 months</strong> to begin seeing indexation-level rankings (positions 30–70), <strong>5–6 months</strong> for meaningful traffic (positions 10–30 on long-tail), and <strong>9–12 months</strong> for top-10 positions on the priority terms. Anyone promising faster on a DA-1 site is selling something.</p>
+
+  <h4>Weekly measurement (Sunday review, 15 min)</h4>
+  <table>
+    <thead><tr><th>Metric</th><th>Source</th><th>What we're watching for</th></tr></thead>
+    <tbody>
+      <tr><td>Pages indexed</td><td>GSC Coverage</td><td>Should reach 100% of published pages within 2 weeks of publish</td></tr>
+      <tr><td>Impressions by page type</td><td>GSC Performance</td><td>Tools and /vs/ pages should be first to show impressions</td></tr>
+      <tr><td>Avg position on tracked priority keywords</td><td>GSC Performance with KW filter</td><td>Movement, not absolute position; positions 90→60 is success in month 2</td></tr>
+      <tr><td>Sessions to /tools/* pages</td><td>GA4</td><td>Leading indicator for the highest-converting page type</td></tr>
+      <tr><td>Email captures from tools</td><td>Ascend CRM leads table</td><td>The actual ROI metric — captured emails are the unit of value</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Month-3 review gate</h4>
+  <p>By end of week 12: 24 pages live, 100% indexed, 3+ priority keywords showing in GSC (any position), 1+ email capture per week from a tool page. If indexation &lt; 80%, the prerendering setup is broken — fix before adding pages. If 0 priority keywords visible, the content is too generic — revisit the keyword map before doubling down.</p>
+
+  <h4>Month-6 review gate</h4>
+  <p>The honest target: <strong>200–500 organic sessions per month cumulative across all 24 pages</strong>, with 3–10% of tool-page sessions converting to email captures. That's 6–50 captured leads per month, of which 1–5 should be ICP-fit Charlotte SMBs. From a starting point of zero, that's a hummingly-good outcome for a consultancy site in month 6. <strong>Numbers above are estimates, needs verification against actual indexation curve.</strong></p>
+
+  <h4>Month-12 honesty check</h4>
+  <p>If by month 12 we have not cracked top-10 on at least one of the four <code>/charlotte/[service]</code> pages, the assumption that local SERPs are winnable for Ascend's wedge was wrong. At that point the right move is to reallocate the SEO time into outbound and in-person — the marketing strategy already says these are higher-conversion channels in the early days. Programmatic SEO is a hedge, not the lead engine.</p>
+
+  <h2>The one sentence</h2>
+
+  <blockquote>Build 24 honest pages across 5 templates organized around buyer intent, not 1,000 thin pages organized around variable swaps — and treat the Cost Calculator pattern as the engine, the Charlotte+service pages as the prize, and everything else as connective tissue that makes the first two rank.</blockquote>
+
+  <div class="doc-footer">
+    Ascend Systems · prepared 2026-05-12 · <code>docs/seo/2026-05-12-programmatic-seo.html</code>
+  </div>
+
+</div>
+
+</body>
+</html>
