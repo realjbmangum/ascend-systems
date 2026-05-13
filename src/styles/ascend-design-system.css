@@ -127,7 +127,10 @@ body {
 
 h1, h2, h3, h4, h5 {
   font-family: var(--font-heading);
-  color: var(--color-gray-900);
+  /* color: inherit so headings adopt the surrounding section's color.
+     Light sections set color via .section-light / body default.
+     Dark sections (.section-dark / .section-darker / bg-charcoal) set white. */
+  color: inherit;
   text-wrap: balance;
   margin: 0;
 }
