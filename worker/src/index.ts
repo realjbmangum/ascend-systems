@@ -25,8 +25,11 @@ app.use(
     origin: [
       "https://ascendsystems.ai",
       "https://www.ascendsystems.ai",
+      "https://admin.ascendsystems.ai",
       "https://ascend-systems.pages.dev",
+      "https://ascend-admin.pages.dev",
       "http://localhost:5173",
+      "http://localhost:4321",
     ],
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type"],

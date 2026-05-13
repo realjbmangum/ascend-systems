@@ -1,0 +1,68 @@
+---
+/**
+ * Home page — `/`
+ *
+ * Renders the existing React <Home /> via PageIsland (single React island,
+ * MemoryRouter-wrapped so react-router-dom call sites resolve). Astro SSRs
+ * the island into HTML at build time so the full marketing copy ships in
+ * the first response. `client:load` hydrates for interactivity (FAQ
+ * accordion, smooth scroll, framer-motion enter animations).
+ */
+import Layout from '../layouts/Layout.astro';
+import JsonLd from '../components/JsonLd.astro';
+import PageIsland from '../components/PageIsland';
+
+const title = 'Ascend Systems | Custom Software & AI for Growing Businesses | Charlotte, NC';
+const description =
+  'Software that moves legacy businesses forward. Custom SaaS, AI agents, and internal tools built by senior engineers. Based in Charlotte, NC.';
+
+// FAQPage schema — Phase 1 per-page block. Source of truth for the QA
+// list is src/components/FAQSection.tsx; keep this array in sync. (A
+// future refactor should hoist FAQ_QA into src/data/faq.ts.)
+const FAQ_QA = [
+  {
+    q: 'What size engagement do you take on?',
+    a: 'Projects typically range from $5k discovery sprints to $50k+ build engagements, scoped as a weekly retainer or fixed-scope. The fit is owner-operators and mid-market teams who want a senior engineer doing the work, not an agency layer between them and it.',
+  },
+  {
+    q: 'Are you a team or a solo operator?',
+    a: "Solo. I'm the entire shop — discovery, architecture, build, deploy, handoff. You talk to me, I do the work. No offshore team, no junior account manager, no PM between us and the build. When the scope demands it, I bring in trusted contractors I've worked with before, but you always know who's touching your code.",
+  },
+  {
+    q: 'Do you work on-site in Charlotte?',
+    a: "Yes. I'm based in Charlotte and most local clients get at least one on-site session per engagement — usually for discovery, architecture review, and launch. The rest is remote.",
+  },
+  {
+    q: 'Who owns the code?',
+    a: 'You do, from day one. Your GitHub, your infra accounts, your IP. No proprietary platforms, no vendor lock-in. When the engagement ends, you get a runbook and a clean handoff package.',
+  },
+  {
+    q: 'How is this different from a consultancy or an offshore agency?',
+    a: 'Consultancies sell slides and senior attention you rarely get. Offshore agencies sell hours and you manage the quality. I sell shipped software at a fixed weekly cost, with one person — me — accountable from discovery to handoff.',
+  },
+  {
+    q: 'Can you work alongside our internal engineering team?',
+    a: "That's often the best fit. I embed with your team, adopt your conventions, attend your standups, and transfer ownership as we go. By the end, your team has shipped every major component at least once.",
+  },
+  {
+    q: "What's the first step?",
+    a: "A 30-minute discovery call. If there's a fit, we run a paid two-week discovery sprint that ends in a scoped blueprint with a fixed-price build proposal. If the blueprint isn't worth the paper it's printed on, the sprint is refunded.",
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': 'https://ascendsystems.ai/#faq',
+  mainEntity: FAQ_QA.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+---
+
+<Layout title={title} description={description} canonical="/">
+  <JsonLd slot="head" data={faqSchema} />
+  <PageIsland page="home" initialPath="/" client:load />
+</Layout>

@@ -1,0 +1,18 @@
+---
+/**
+ * Contact page — the React component has a form that submits to the
+ * Workers API. Needs hydration. client:load preserves form state +
+ * client-side validation. The pre-rendered HTML still contains every
+ * label, helper text, and value option for SEO crawl.
+ */
+import Layout from '../layouts/Layout.astro';
+import PageIsland from '../components/PageIsland';
+
+const title = 'Contact — Get in Touch with Ascend Systems | Charlotte NC';
+const description =
+  'Tell us about your project. Book a 30-minute discovery call. Based in Charlotte, NC; serving mid-market SMBs across the Carolinas and remotely nationwide.';
+---
+
+<Layout title={title} description={description} canonical="/contact">
+  <PageIsland page="contact" initialPath="/contact" client:load />
+</Layout>

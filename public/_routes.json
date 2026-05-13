@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "description": "Cloudflare Pages serves the Astro static dist for everything. Admin/portal/proposal routes will be re-added once the React SPA co-deploy is wired (see _redirects).",
+  "include": ["/*"],
+  "exclude": []
+}

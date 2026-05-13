@@ -1,0 +1,68 @@
+---
+/**
+ * Cost Calculator — interactive React island. Hydrated client:visible
+ * because it's below the fold on first paint and uses recharts.
+ *
+ * Page-specific schema: SoftwareApplication + HowTo (Phase 2 from the
+ * audit). HowTo steps mirror the 3 calculator inputs.
+ */
+import Layout from '../../layouts/Layout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import PageIsland from '../../components/PageIsland';
+
+const title = 'Free Software Cost Calculator | Ascend Systems';
+const description =
+  'Estimate the cost of your custom software, AI integration, or internal tool in 60 seconds. Free, no signup. Based on real Ascend Systems engagement pricing.';
+
+const softwareAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  '@id': 'https://ascendsystems.ai/tools/cost-calculator#app',
+  name: 'Custom Software Cost Calculator',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  url: 'https://ascendsystems.ai/tools/cost-calculator',
+  description,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  provider: { '@id': 'https://ascendsystems.ai/#organization' },
+};
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  '@id': 'https://ascendsystems.ai/tools/cost-calculator#howto',
+  name: 'How to Estimate Custom Software Cost',
+  description:
+    'Three-step process to get a realistic budget for custom software, AI, or internal tooling work.',
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: 'Pick your project type',
+      text: 'Select web app, AI integration, internal tool, or legacy modernization to anchor the estimate to the right base price range.',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: 'Choose scope and complexity',
+      text: 'Indicate the number of major features and any integrations with existing systems. Each adds engineering weeks.',
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: 'Review your range and book a call',
+      text: 'You get a price range based on actual engagement history. Book a free 30-minute discovery call to refine the estimate.',
+    },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical="/tools/cost-calculator">
+  <JsonLd slot="head" data={softwareAppSchema} />
+  <JsonLd slot="head" data={howToSchema} />
+  <PageIsland page="cost-calculator" initialPath="/tools/cost-calculator" client:visible />
+</Layout>
