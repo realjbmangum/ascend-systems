@@ -274,7 +274,7 @@ export default function ClientDetail() {
             <p className="text-sm text-gray-400">No invoices yet.</p>
           ) : (
             <>
-              <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-surface-100">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 pb-4 border-b border-surface-100">
                 <div>
                   <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Billed</div>
                   <div className="text-xl font-bold text-charcoal tabular-nums">{fmtMoney(totalBilled)}</div>

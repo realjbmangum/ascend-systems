@@ -98,8 +98,19 @@ export default function About() {
                 ))}
 
                 <div className="relative z-10 p-1 bg-gradient-to-br from-orange to-orange-dark rounded-2xl shadow-lg">
-                  <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center">
-                    <span className="text-4xl font-bold text-orange">BM</span>
+                  <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center overflow-hidden">
+                    <img
+                      src="/images/brian-mangum.jpg"
+                      alt="Brian Mangum, Founder of Ascend Systems"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Photo not yet uploaded — fall back to Ascend logo as visual anchor.
+                        const img = e.currentTarget as HTMLImageElement;
+                        img.src = '/images/logo.png';
+                        img.alt = 'Ascend Systems';
+                        img.className = 'w-full h-full object-contain opacity-90 p-12';
+                      }}
+                    />
                   </div>
                 </div>
               </div>

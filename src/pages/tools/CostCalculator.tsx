@@ -126,7 +126,11 @@ export default function CostCalculator() {
 
       {/* Result section (shown after submit) */}
       {status === 'success' && result && (
-        <section className="bg-white py-16 sm:py-20">
+        <section
+          className="bg-white py-16 sm:py-20"
+          role="status"
+          aria-live="polite"
+        >
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="rounded-2xl bg-charcoal text-white p-8 sm:p-12 shadow-lg">
               <p className="font-mono text-xs uppercase tracking-[0.18em] text-orange mb-3">
@@ -207,9 +211,13 @@ export default function CostCalculator() {
       {status !== 'success' && (
         <section className="bg-white py-16 sm:py-24">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <form onSubmit={handleSubmit} noValidate className="space-y-6" aria-label="Manual process cost calculator">
               {status === 'error' && (
-                <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-red-700 text-sm">
+                <div
+                  className="rounded-lg bg-red-50 border border-red-200 p-4 text-red-700 text-sm"
+                  role="alert"
+                  aria-live="assertive"
+                >
                   {errorMessage}
                 </div>
               )}
@@ -263,11 +271,16 @@ export default function CostCalculator() {
                 suffix="%"
               />
 
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-1.5">
-                  Customer impact <span className="text-red-500">*</span>
-                </label>
-                <div className="space-y-2">
+              <fieldset
+                className="border-0 p-0 m-0"
+                aria-describedby={errors.customer_impact ? 'customer_impact-error' : undefined}
+                aria-invalid={errors.customer_impact ? true : undefined}
+              >
+                <legend className="block text-sm font-medium text-charcoal mb-1.5 p-0">
+                  Customer impact <span className="text-red-500" aria-hidden="true">*</span>
+                  <span className="sr-only"> (required)</span>
+                </legend>
+                <div className="space-y-2" role="radiogroup" aria-required="true">
                   {IMPACT_OPTIONS.map((opt) => (
                     <label
                       key={opt.value}
@@ -289,10 +302,15 @@ export default function CostCalculator() {
                     </label>
                   ))}
                 </div>
-                {errors.customer_impact && (
-                  <p className="mt-1 text-sm text-red-500">{errors.customer_impact}</p>
-                )}
-              </div>
+                <p
+                  id="customer_impact-error"
+                  className="mt-1 text-sm text-red-500"
+                  aria-live="polite"
+                  role={errors.customer_impact ? 'alert' : undefined}
+                >
+                  {errors.customer_impact || ''}
+                </p>
+              </fieldset>
 
               <div>
                 <label htmlFor="process_description" className="block text-sm font-medium text-charcoal mb-1.5">
@@ -305,8 +323,9 @@ export default function CostCalculator() {
                   onChange={(e) => update('process_description', e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
                   placeholder="e.g. Our ops team copies quote info from email into a spreadsheet, then re-keys it into QuickBooks and our scheduling tool."
+                  aria-describedby="process_description-hint"
                 />
-                <p className="mt-1 text-xs text-gray-500">If you write a line here, the email report comes with a more specific recommendation.</p>
+                <p id="process_description-hint" className="mt-1 text-xs text-gray-500">If you write a line here, the email report comes with a more specific recommendation.</p>
               </div>
 
               <div className="pt-6 border-t border-gray-200">
@@ -392,12 +411,16 @@ type FieldProps = {
 };
 
 function Field({ id, label, hint, type = 'text', step, min, max, value, onChange, error, placeholder, prefix, suffix }: FieldProps) {
+  const hintId = hint ? `${id}-hint` : undefined;
+  const errorId = `${id}-error`;
+  const describedBy = [hintId, error ? errorId : undefined].filter(Boolean).join(' ') || undefined;
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-charcoal mb-1.5">
-        {label} <span className="text-red-500">*</span>
+        {label} <span className="text-red-500" aria-hidden="true">*</span>
+        <span className="sr-only"> (required)</span>
       </label>
-      {hint && <p className="text-xs text-gray-500 mb-2">{hint}</p>}
+      {hint && <p id={hintId} className="text-xs text-gray-500 mb-2">{hint}</p>}
       <div className="relative">
         {prefix && (
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium pointer-events-none">
@@ -416,6 +439,9 @@ function Field({ id, label, hint, type = 'text', step, min, max, value, onChange
             prefix ? 'pl-7' : ''
           } ${suffix ? 'pr-24' : ''} ${error ? 'border-red-400' : 'border-gray-300'}`}
           placeholder={placeholder}
+          aria-required="true"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
         />
         {suffix && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
@@ -423,7 +449,13 @@ function Field({ id, label, hint, type = 'text', step, min, max, value, onChange
           </span>
         )}
       </div>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      <div aria-live="polite">
+        {error && (
+          <p id={errorId} className="mt-1 text-sm text-red-500" role="alert">
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -441,11 +473,17 @@ type SimpleFieldProps = {
 };
 
 function SimpleField({ id, label, required, optional, type = 'text', value, onChange, error, placeholder }: SimpleFieldProps) {
+  const errorId = `${id}-error`;
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-charcoal mb-1.5">
         {label}
-        {required && <span className="text-red-500"> *</span>}
+        {required && (
+          <>
+            <span className="text-red-500" aria-hidden="true"> *</span>
+            <span className="sr-only"> (required)</span>
+          </>
+        )}
         {optional && <span className="text-gray-400"> (optional)</span>}
       </label>
       <input
@@ -457,8 +495,17 @@ function SimpleField({ id, label, required, optional, type = 'text', value, onCh
           error ? 'border-red-400' : 'border-gray-300'
         }`}
         placeholder={placeholder}
+        aria-required={required ? true : undefined}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : undefined}
       />
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      <div aria-live="polite">
+        {error && (
+          <p id={errorId} className="mt-1 text-sm text-red-500" role="alert">
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

@@ -220,7 +220,7 @@ export default function ProjectResourcesPanel({ projectId }: Props) {
               Cancel
             </button>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Type</label>
               <select

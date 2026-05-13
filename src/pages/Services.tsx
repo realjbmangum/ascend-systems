@@ -245,6 +245,41 @@ export default function Services() {
         </motion.section>
       ))}
 
+      {/* Free Cost Calculator CTA */}
+      <section className="bg-charcoal py-20 sm:py-24 border-t border-charcoal-light">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="bg-charcoal-light/50 border border-white/10 rounded-2xl p-8 sm:p-12 grid md:grid-cols-[1.4fr,1fr] gap-8 items-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: '-50px' }}
+          >
+            <div>
+              <p className="text-xs font-mono font-semibold uppercase tracking-[0.18em] text-orange mb-4">
+                Free tool — no signup
+              </p>
+              <h3 className="text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
+                Not sure if a custom build pays for itself?
+              </h3>
+              <p className="mt-4 text-gray-300 text-base sm:text-lg leading-relaxed">
+                Plug four numbers into our Cost Calculator. Get back annual
+                waste, build price range, and payback in months — emailed in
+                60 seconds.
+              </p>
+            </div>
+            <div className="flex md:justify-end">
+              <Link
+                to="/tools/cost-calculator"
+                className="inline-flex items-center gap-2 bg-orange hover:bg-orange-dark text-white text-base font-semibold px-7 py-4 rounded-lg transition-colors whitespace-nowrap"
+              >
+                Try the Calculator <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* How We Work — Interactive Timeline */}
       <section className="bg-surface py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

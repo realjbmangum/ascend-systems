@@ -55,3 +55,26 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ============================================================
+   Accessibility — reduced motion
+   Honors OS-level "Reduce Motion" preference. Disables decorative
+   animations (fadeUp, pulseGlow, marquee scroll, scroll reveals)
+   and any CSS transitions. framer-motion respects this automatically
+   via useReducedMotion; this block is the broad-stroke CSS fallback.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

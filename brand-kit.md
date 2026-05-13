@@ -55,42 +55,46 @@
 
 ## Color Palette
 
+> [!info] Source of truth
+> These hex values mirror `src/styles/globals.css` `@theme` block, which is what the live site renders. If the live site ever changes, update this section to match — don't let the doc drift.
+
 ### Primary Colors
 
 | Role | Name | Hex | RGB | Usage |
 |------|------|-----|-----|-------|
-| **Primary** | Deep Charcoal | `#1C1C1E` | 28, 28, 30 | Hero backgrounds, navigation, footer, dark sections |
-| **Accent** | Burnt Orange | `#C45A2C` | 196, 90, 44 | CTAs, buttons, icons, highlights, logo accent |
-| **Background** | Off-White | `#FAFAF8` | 250, 250, 248 | Page backgrounds, card fills |
+| **Primary** | Deep Charcoal | `#1E2A32` | 30, 42, 50 | Hero backgrounds, navigation, footer, dark sections |
+| **Accent** | Burnt Orange | `#D4632C` | 212, 99, 44 | CTAs, buttons, icons, highlights, logo accent |
+| **Background** | Surface | `#EDF2F7` | 237, 242, 247 | Page backgrounds, card fills |
 
 ### Extended Palette
 
 | Role | Name | Hex | RGB | Usage |
 |------|------|-----|-----|-------|
-| **Primary Light** | Soft Charcoal | `#2A2A2E` | 42, 42, 46 | Hover states on dark, card backgrounds |
-| **Primary Lighter** | Graphite | `#3A3A3F` | 58, 58, 63 | Secondary dark backgrounds, borders on dark |
-| **Accent Light** | Warm Orange | `#D4703F` | 212, 112, 63 | Hover states on orange buttons |
-| **Accent Dark** | Deep Ember | `#A84820` | 168, 72, 32 | Orange text on light backgrounds (better contrast) |
-| **Accent Glow** | Faint Orange | `#FDF3ED` | 253, 243, 237 | Light orange background for callouts/highlights |
+| **Primary Light** | Soft Charcoal | `#263540` | 38, 53, 64 | Hover states on dark, card backgrounds |
+| **Primary Lighter** | Graphite | `#2E4050` | 46, 64, 80 | Secondary dark backgrounds, borders on dark |
+| **Primary Darker** | Near Black | `#162028` | 22, 32, 40 | Footer, darkest sections |
+| **Accent Light** | Warm Orange | `#E07A4F` | 224, 122, 79 | Hover states on orange buttons |
+| **Accent Dark** | Deep Ember | `#B85328` | 184, 83, 40 | Orange text on light backgrounds (better contrast) |
+| **Accent Glow** | Faint Orange | `#FEF5F0` | 254, 245, 240 | Light orange background for callouts/highlights |
 
 ### Neutral Palette
 
 | Role | Name | Hex | Usage |
 |------|------|-----|-------|
 | **White** | Pure White | `#FFFFFF` | Text on dark backgrounds, card backgrounds |
-| **Off-White** | Warm Off-White | `#FAFAF8` | Page background |
-| **Gray 100** | Light Gray | `#F3F3F2` | Alternate section backgrounds |
-| **Gray 200** | Border Gray | `#E5E5E3` | Borders, dividers |
+| **Surface** | Page Surface | `#EDF2F7` | Page background |
+| **Surface 100** | Light Surface | `#E2E8F0` | Alternate section backgrounds |
+| **Surface 200** | Border | `#CBD5E0` | Borders, dividers |
 | **Gray 400** | Mid Gray | `#9CA3AF` | Placeholder text, disabled states |
 | **Gray 600** | Dark Gray | `#6B7280` | Secondary text, captions, metadata |
-| **Gray 900** | Near Black | `#1C1C1E` | Primary text on light backgrounds |
+| **Gray 900** | Near Black | `#1E2A32` | Primary text on light backgrounds |
 
 ### Semantic Colors
 
 | Purpose | Hex | Usage |
 |---------|-----|-------|
 | **Success** | `#22C55E` | Success messages, active badges, positive metrics |
-| **Warning** | `#C45A2C` | Uses brand orange for warnings |
+| **Warning** | `#D4632C` | Uses brand orange for warnings |
 | **Error** | `#DC2626` | Error states, destructive actions |
 | **Info** | `#3B82F6` | Informational callouts (use sparingly) |
 
@@ -98,15 +102,15 @@
 
 | Combination | Contrast Ratio | WCAG |
 |-------------|---------------|------|
-| White `#FFF` on Charcoal `#1C1C1E` | **16.4:1** | AAA |
-| Off-White `#FAFAF8` on Charcoal `#1C1C1E` | **15.8:1** | AAA |
-| Burnt Orange `#C45A2C` on Charcoal `#1C1C1E` | **3.6:1** | AA Large Text |
-| Deep Ember `#A84820` on Off-White `#FAFAF8` | **5.2:1** | AA |
-| Near Black `#1C1C1E` on Off-White `#FAFAF8` | **15.8:1** | AAA |
-| Burnt Orange `#C45A2C` on White `#FFF` | **3.9:1** | AA Large Text |
+| White `#FFF` on Charcoal `#1E2A32` | **14.8:1** | AAA |
+| Surface `#EDF2F7` on Charcoal `#1E2A32` | **13.5:1** | AAA |
+| Burnt Orange `#D4632C` on Charcoal `#1E2A32` | **4.0:1** | AA Large Text |
+| Deep Ember `#B85328` on Surface `#EDF2F7` | **4.7:1** | AA |
+| Near Black `#1E2A32` on Surface `#EDF2F7` | **13.5:1** | AAA |
+| Burnt Orange `#D4632C` on White `#FFF` | **3.5:1** | AA Large Text |
 
 > [!warning] Orange Accessibility Note
-> Burnt orange is a mid-tone color. Use it for large text (headings, buttons, CTAs), icons, and accents. For small body text on light backgrounds, use Deep Ember `#A84820` or Charcoal `#1C1C1E`.
+> Burnt orange is a mid-tone color. Use it for large text (headings, buttons, CTAs), icons, and accents. For small body text on light backgrounds, use Deep Ember `#B85328` or Charcoal `#1E2A32`.
 
 ---
 
@@ -179,8 +183,8 @@ Modern tech brand with authority. Sans-serif headings for clean tech energy. A s
 
 | Context | Logo Color | Background |
 |---------|-----------|------------|
-| **Primary (dark bg)** | White wordmark + orange mark | Charcoal `#1C1C1E` |
-| **Primary (light bg)** | Charcoal wordmark + orange mark | Off-White `#FAFAF8` |
+| **Primary (dark bg)** | White wordmark + orange mark | Charcoal `#1E2A32` |
+| **Primary (light bg)** | Charcoal wordmark + orange mark | Surface `#EDF2F7` |
 | **Single color (dark bg)** | White | Charcoal |
 | **Single color (light bg)** | Charcoal | White |
 | **Favicon** | Orange mark on charcoal | Dark background |
@@ -261,41 +265,36 @@ A matte black business card with white text and a single burnt orange accent is 
 ### CSS Custom Properties
 
 ```css
-:root {
+/* Live tokens from src/styles/globals.css @theme — Tailwind 4 reads from here */
+@theme {
   /* Colors */
-  --color-primary: #1C1C1E;
-  --color-primary-light: #2A2A2E;
-  --color-primary-lighter: #3A3A3F;
-  --color-accent: #C45A2C;
-  --color-accent-light: #D4703F;
-  --color-accent-dark: #A84820;
-  --color-accent-glow: #FDF3ED;
-  --color-bg: #FAFAF8;
-  --color-white: #FFFFFF;
-  --color-gray-100: #F3F3F2;
-  --color-gray-200: #E5E5E3;
-  --color-gray-400: #9CA3AF;
-  --color-gray-600: #6B7280;
-  --color-gray-900: #1C1C1E;
+  --color-charcoal:         #1E2A32;
+  --color-charcoal-light:   #263540;
+  --color-charcoal-lighter: #2E4050;
+  --color-charcoal-900:     #162028;
+
+  --color-orange:       #D4632C;
+  --color-orange-light: #E07A4F;
+  --color-orange-dark:  #B85328;
+  --color-orange-glow:  #FEF5F0;
+
+  --color-surface:     #EDF2F7;
+  --color-surface-100: #E2E8F0;
+  --color-surface-200: #CBD5E0;
+
   --color-success: #22C55E;
-  --color-error: #DC2626;
+  --color-error:   #DC2626;
 
   /* Typography */
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Spacing */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
-
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(28, 28, 30, 0.06);
-  --shadow-md: 0 4px 16px rgba(28, 28, 30, 0.08);
-  --shadow-lg: 0 8px 32px rgba(28, 28, 30, 0.12);
-  --shadow-orange-glow: 0 0 24px rgba(196, 90, 44, 0.15);
+  --shadow-sm:             0 1px 3px rgba(28, 28, 30, 0.06);
+  --shadow-md:             0 4px 16px rgba(28, 28, 30, 0.08);
+  --shadow-lg:             0 8px 32px rgba(28, 28, 30, 0.12);
+  --shadow-orange-glow:    0 0 24px rgba(212, 99, 44, 0.12);
+  --shadow-orange-glow-lg: 0 0 48px rgba(212, 99, 44, 0.20);
 }
 ```
 
@@ -303,11 +302,11 @@ A matte black business card with white text and a single burnt orange accent is 
 
 | Type | Background | Text | Border | Hover |
 |------|-----------|------|--------|-------|
-| **Primary** | `#C45A2C` | White | None | `#D4703F` + slight shadow |
-| **Primary on dark** | `#C45A2C` | White | None | `#D4703F` + orange glow |
-| **Secondary** | Transparent | `#1C1C1E` | 1.5px `#E5E5E3` | Gray-100 fill |
-| **Secondary on dark** | Transparent | White | 1.5px `#3A3A3F` | `#2A2A2E` fill |
-| **Ghost** | Transparent | `#C45A2C` | None | Underline |
+| **Primary** | `#D4632C` | White | None | `#E07A4F` + slight shadow |
+| **Primary on dark** | `#D4632C` | White | None | `#E07A4F` + orange glow |
+| **Secondary** | Transparent | `#1E2A32` | 1.5px `#CBD5E0` | Surface-100 fill |
+| **Secondary on dark** | Transparent | White | 1.5px `#2E4050` | `#263540` fill |
+| **Ghost** | Transparent | `#D4632C` | None | Underline |
 
 All buttons: Inter SemiBold 15px, 6px border-radius, 14px 28px padding, 150ms ease transition.
 
@@ -315,20 +314,20 @@ All buttons: Inter SemiBold 15px, 6px border-radius, 14px 28px padding, 150ms ea
 
 | Section | Background | Notes |
 |---------|-----------|-------|
-| **Hero** | Charcoal `#1C1C1E` | Dark hero with white text, orange CTA |
-| **Features** | Off-White `#FAFAF8` | Light section, charcoal text |
-| **How It Works** | Gray-100 `#F3F3F2` | Subtle alternate background |
-| **Stats** | Charcoal `#1C1C1E` | Dark section, monospace numbers in orange |
-| **Testimonials** | Off-White `#FAFAF8` | Light, warm |
+| **Hero** | Charcoal `#1E2A32` | Dark hero with white text, orange CTA |
+| **Features** | Surface `#EDF2F7` | Light section, charcoal text |
+| **How It Works** | Surface-100 `#E2E8F0` | Subtle alternate background |
+| **Stats** | Charcoal `#1E2A32` | Dark section, monospace numbers in orange |
+| **Testimonials** | Surface `#EDF2F7` | Light, warm |
 | **Pricing** | White `#FFFFFF` | Clean, cards with subtle borders |
-| **CTA** | Charcoal `#1C1C1E` | Dark, orange button, bold close |
-| **Footer** | Near Black `#141415` | Darkest section, gray text |
+| **CTA** | Charcoal `#1E2A32` | Dark, orange button, bold close |
+| **Footer** | Near Black `#162028` | Darkest section, gray text |
 
 ### Hero Section Spec
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  ████████ CHARCOAL BACKGROUND (#1C1C1E) ████████████    │
+│  ████████ CHARCOAL BACKGROUND (#1E2A32) ████████████    │
 │                                                         │
 │  ▲ ASCEND SYSTEMS          [Nav links]    [Get Started] │
 │                                                         │

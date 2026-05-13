@@ -9,27 +9,31 @@ interface FAQItem {
 const QA: FAQItem[] = [
   {
     q: 'What size engagement do you take on?',
-    a: 'Our typical engagement is $80K–$400K across 3–12 months. We work weekly-retainer or fixed-scope, and we staff 2–5 people per project. Smaller than that, we\'re the wrong fit. Larger than that, we partner with a Big 4 on delivery.',
+    a: 'Projects typically range from $5k discovery sprints to $50k+ build engagements, scoped as a weekly retainer or fixed-scope. The fit is owner-operators and mid-market teams who want a senior engineer doing the work, not an agency layer between them and it.',
+  },
+  {
+    q: 'Are you a team or a solo operator?',
+    a: 'Solo. I\'m the entire shop — discovery, architecture, build, deploy, handoff. You talk to me, I do the work. No offshore team, no junior account manager, no PM between us and the build. When the scope demands it, I bring in trusted contractors I\'ve worked with before, but you always know who\'s touching your code.',
   },
   {
     q: 'Do you work on-site in Charlotte?',
-    a: 'Yes. We\'re headquartered in Charlotte and most mid-market clients get at least one on-site week per month — usually discovery, architecture review, and launch. The rest is remote, but never offshore. Every engineer is U.S.-based and senior.',
+    a: 'Yes. I\'m based in Charlotte and most local clients get at least one on-site session per engagement — usually for discovery, architecture review, and launch. The rest is remote.',
   },
   {
     q: 'Who owns the code?',
-    a: 'You do, from day one. Your GitHub, your infra accounts, your IP. We don\'t use proprietary platforms and we don\'t lock you in. When the engagement ends, we hand you a runbook and a handoff package and walk away clean.',
+    a: 'You do, from day one. Your GitHub, your infra accounts, your IP. No proprietary platforms, no vendor lock-in. When the engagement ends, you get a runbook and a clean handoff package.',
   },
   {
     q: 'How is this different from a consultancy or an offshore agency?',
-    a: 'Consultancies sell slides and senior attention you rarely get. Offshore agencies sell hours and you manage the quality. We sell shipped software at a fixed weekly cost, staffed by the same senior team from discovery to handoff.',
+    a: 'Consultancies sell slides and senior attention you rarely get. Offshore agencies sell hours and you manage the quality. I sell shipped software at a fixed weekly cost, with one person — me — accountable from discovery to handoff.',
   },
   {
     q: 'Can you work alongside our internal engineering team?',
-    a: 'That\'s our preference. We embed with your team, adopt your conventions, attend your standups, and transfer ownership as we go. By the time we leave, your team has shipped every major component at least once.',
+    a: 'That\'s often the best fit. I embed with your team, adopt your conventions, attend your standups, and transfer ownership as we go. By the end, your team has shipped every major component at least once.',
   },
   {
     q: 'What\'s the first step?',
-    a: 'A 30-minute discovery call. If there\'s a fit, we run a paid two-week discovery sprint that ends in a scoped blueprint. If the blueprint isn\'t worth the paper it\'s printed on, we refund it.',
+    a: 'A 30-minute discovery call. If there\'s a fit, we run a paid two-week discovery sprint that ends in a scoped blueprint with a fixed-price build proposal. If the blueprint isn\'t worth the paper it\'s printed on, the sprint is refunded.',
   },
 ];
 

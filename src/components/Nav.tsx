@@ -5,6 +5,7 @@ import { siteConfig } from '../config/site';
 const navLinks = [
   { to: '/services', label: 'Services' },
   { to: '/portfolio', label: 'Portfolio' },
+  { to: '/tools/cost-calculator', label: 'Free Tools' },
   { to: '/about', label: 'About' },
 ];
 

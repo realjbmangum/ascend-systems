@@ -1,19 +1,25 @@
 /* ============================================================
    Ascend Systems — Design Tokens
    Colors, typography, spacing, shadows.
+
+   NOTE: globals.css `@theme` block is the source of truth for brand
+   colors (used by the live marketing site via Tailwind 4 tokens).
+   The :root vars below are kept in lock-step with globals.css so any
+   non-Tailwind CSS in admin pages or legacy components renders the
+   same palette. Do not introduce a competing hex value here.
    ============================================================ */
 
 :root {
-  /* ---------- Brand colors ---------- */
-  --color-primary:         #1C1C1E;
-  --color-primary-light:   #2A2A2E;
-  --color-primary-lighter: #3A3A3F;
-  --color-primary-darker:  #141415;
+  /* ---------- Brand colors (mirrors globals.css @theme) ---------- */
+  --color-primary:         #1E2A32;
+  --color-primary-light:   #263540;
+  --color-primary-lighter: #2E4050;
+  --color-primary-darker:  #162028;
 
-  --color-accent:          #C45A2C;
-  --color-accent-light:    #D4703F;
-  --color-accent-dark:     #A84820;
-  --color-accent-glow:     #FDF3ED;
+  --color-accent:          #D4632C;
+  --color-accent-light:    #E07A4F;
+  --color-accent-dark:     #B85328;
+  --color-accent-glow:     #FEF5F0;
 
   /* ---------- Neutrals ---------- */
   --color-white:           #FFFFFF;
@@ -22,11 +28,11 @@
   --color-gray-200:        #E5E5E3;
   --color-gray-400:        #9CA3AF;
   --color-gray-600:        #6B7280;
-  --color-gray-900:        #1C1C1E;
+  --color-gray-900:        #1E2A32;
 
   /* ---------- Semantic ---------- */
   --color-success:         #22C55E;
-  --color-warning:         #C45A2C;
+  --color-warning:         #D4632C;
   --color-error:           #DC2626;
   --color-info:            #3B82F6;
 
@@ -96,7 +102,7 @@
   --shadow-md:        0 4px 16px rgba(28, 28, 30, 0.08);
   --shadow-lg:        0 8px 32px rgba(28, 28, 30, 0.12);
   --shadow-xl:        0 16px 48px rgba(28, 28, 30, 0.16);
-  --shadow-orange-glow: 0 0 24px rgba(196, 90, 44, 0.15);
+  --shadow-orange-glow: 0 0 24px rgba(212, 99, 44, 0.15);
 
   /* ---------- Motion ---------- */
   --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
@@ -291,7 +297,7 @@ code, pre, .mono {
 
 .btn-primary:hover {
   background: var(--color-accent-light);
-  box-shadow: 0 8px 24px rgba(196, 90, 44, 0.32);
+  box-shadow: 0 8px 24px rgba(212, 99, 44, 0.32);
 }
 
 .btn-primary:active {

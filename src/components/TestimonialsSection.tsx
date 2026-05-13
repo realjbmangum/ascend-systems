@@ -1,34 +1,5 @@
 import { motion } from 'framer-motion';
-
-interface Testimonial {
-  quote: string;
-  name: string;
-  role: string;
-  meta: string;
-}
-
-const TESTIMONIALS: Testimonial[] = [
-  {
-    quote:
-      'Ascend is the only outside team we let touch production code. They read our legacy stack faster than engineers we hired full-time.',
-    name: 'Priya Shankar',
-    role: 'COO, Meridian Freight',
-    meta: '18-month engagement',
-  },
-  {
-    quote:
-      'I came in expecting a dev shop. I got a product team. The architecture doc they delivered in week two was better than what we paid a Big 4 firm $400K for.',
-    name: 'Jordan Albrecht',
-    role: 'CEO, Keystone Health Partners',
-    meta: '9-month engagement',
-  },
-  {
-    quote: 'They told us what not to build. That alone paid for the engagement.',
-    name: 'Marcus Okafor',
-    role: 'Managing Partner, Blackwood & Co.',
-    meta: '6-month engagement',
-  },
-];
+import { Link } from 'react-router-dom';
 
 const TestimonialsSection = () => {
   return (
@@ -45,7 +16,7 @@ const TestimonialsSection = () => {
           }}
         >
           <div className="eyebrow eyebrow-centered" style={{ marginBottom: 16 }}>
-            What clients say
+            Featured engagement
           </div>
           <h2
             style={{
@@ -55,76 +26,87 @@ const TestimonialsSection = () => {
               lineHeight: 1.05,
             }}
           >
-            The work speaks.
+            The work speaks
             <br />
-            So do they.
+            for itself.
           </h2>
         </motion.div>
 
-        <div
+        <motion.figure
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.6 }}
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 24,
+            margin: '0 auto',
+            maxWidth: 880,
+            padding: '48px 44px',
+            background: 'var(--color-primary)',
+            border: '1px solid var(--color-primary-lighter)',
+            borderRadius: 'var(--radius-lg)',
           }}
         >
-          {TESTIMONIALS.map((t, i) => (
-            <motion.figure
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
-              style={{
-                margin: 0,
-                padding: '36px 32px',
-                background: 'var(--color-primary)',
-                border: '1px solid var(--color-primary-lighter)',
-                borderRadius: 'var(--radius-lg)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                minHeight: 320,
-              }}
-            >
-              <blockquote
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'var(--color-accent)',
+              marginBottom: 20,
+            }}
+          >
+            City of Charlotte · EV Charging Dashboard
+          </div>
+          <blockquote
+            style={{
+              margin: 0,
+              marginBottom: 28,
+              fontSize: 22,
+              lineHeight: 1.5,
+              color: 'rgba(255,255,255,0.92)',
+              fontWeight: 400,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            "We built the City of Charlotte's EV charging analytics dashboard —
+            208 stations across the city, real-time session tracking, demoed to
+            the Office of the CTO."
+          </blockquote>
+          <figcaption
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 24,
+              flexWrap: 'wrap',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              paddingTop: 24,
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: 600, color: '#fff', fontSize: 15 }}>
+                Public-sector engagement
+              </div>
+              <div
                 style={{
-                  margin: 0,
-                  marginBottom: 24,
-                  fontSize: 16,
-                  lineHeight: 1.6,
-                  color: 'rgba(255,255,255,0.8)',
+                  fontSize: 13,
+                  color: 'rgba(255,255,255,0.6)',
+                  marginTop: 4,
                 }}
               >
-                "{t.quote}"
-              </blockquote>
-              <figcaption style={{ margin: 0 }}>
-                <div style={{ fontWeight: 600, color: '#fff' }}>{t.name}</div>
-                <div
-                  style={{
-                    fontSize: 13,
-                    color: 'rgba(255,255,255,0.6)',
-                    marginTop: 4,
-                  }}
-                >
-                  {t.role}
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    letterSpacing: '0.08em',
-                    color: 'rgba(255,255,255,0.4)',
-                    marginTop: 8,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t.meta}
-                </div>
-              </figcaption>
-            </motion.figure>
-          ))}
-        </div>
+                Built and demoed 2026 · Charlotte, NC
+              </div>
+            </div>
+            <Link
+              to="/portfolio"
+              className="btn btn-ghost-dark"
+              style={{ fontSize: 14 }}
+            >
+              See the work →
+            </Link>
+          </figcaption>
+        </motion.figure>
       </div>
     </section>
   );

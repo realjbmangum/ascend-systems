@@ -2,6 +2,7 @@ import SEO from '../components/SEO';
 import HeroSection from '../components/HeroSection';
 import TrustedBySection from '../components/TrustedBySection';
 import ServicesSection from '../components/ServicesSection';
+import CalculatorCTASection from '../components/CalculatorCTASection';
 import ProcessSection from '../components/ProcessSection';
 import CaseStudiesSection from '../components/CaseStudiesSection';
 import TestimonialsSection from '../components/TestimonialsSection';
@@ -22,6 +23,7 @@ export default function Home() {
       <CaseStudiesSection />
       <TestimonialsSection />
       <FAQSection />
+      <CalculatorCTASection />
       <FinalCTASection />
     </>
   );

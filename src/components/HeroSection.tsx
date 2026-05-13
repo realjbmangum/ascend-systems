@@ -31,11 +31,11 @@ const HeroStatsComponent = ({ items }: { items: HeroStats[] }) => (
         <div
           style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: 36,
+            fontSize: s.num.length > 6 ? 22 : 36,
             fontWeight: 500,
             color: 'var(--color-accent)',
             letterSpacing: '-0.02em',
-            lineHeight: 1,
+            lineHeight: 1.1,
           }}
         >
           {s.num}
@@ -123,9 +123,9 @@ const HeroConservative = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        We partner with mid-market operators to replace aging systems with custom
-        SaaS, AI automations, and internal tools — delivered by a senior team,
-        built to last.
+        I partner with Charlotte mid-market operators to replace aging systems
+        with custom SaaS, AI automations, and internal tools — built by one
+        senior engineer who owns the work end to end.
       </motion.p>
 
       <motion.div
@@ -149,10 +149,9 @@ const HeroConservative = () => (
 
       <HeroStatsComponent
         items={[
-          { num: '47', label: 'Engagements shipped' },
-          { num: '$18M', label: 'Legacy systems retired' },
-          { num: '11yr', label: 'Avg. engineer tenure' },
-          { num: '4.9', label: 'Client NPS' },
+          { num: '14+', label: 'Products shipped' },
+          { num: 'City of Charlotte', label: 'Recent client' },
+          { num: '1:1', label: 'Founder-led, no PMs' },
         ]}
       />
     </div>

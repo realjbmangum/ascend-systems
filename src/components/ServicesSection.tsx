@@ -257,7 +257,7 @@ export default function ServicesSection() {
             >
               Five practices.
               <br />
-              One senior team.
+              One senior engineer.
             </h2>
           </div>
           <p
