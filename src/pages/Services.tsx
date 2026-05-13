@@ -119,9 +119,10 @@ export default function Services() {
       {/* Hero */}
       <section className="relative bg-charcoal py-24 sm:py-32 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
         <div className="absolute inset-0 bg-charcoal/60" />
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight"
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight"
+            style={{ color: '#ffffff' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -129,7 +130,8 @@ export default function Services() {
             Your Business Has a Technology Problem. We Fix It.
           </motion.h1>
           <motion.p
-            className="mt-6 text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
+            className="mt-6 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
+            style={{ color: 'rgba(255,255,255,0.78)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}

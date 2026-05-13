@@ -47,9 +47,10 @@ export default function About() {
       />
       {/* Hero */}
       <section className="bg-charcoal text-white py-28 sm:py-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h1
             className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight"
+            style={{ color: '#ffffff' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -57,7 +58,8 @@ export default function About() {
             A Technology Partner You Can Actually Trust.
           </motion.h1>
           <motion.p
-            className="mt-8 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed"
+            className="mt-8 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed"
+            style={{ color: 'rgba(255,255,255,0.8)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
