@@ -18,7 +18,7 @@
  * file re-hydrates it client-side for interactivity.
  */
 
-import { type MouseEvent } from 'react';
+import { useEffect } from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 import Home from '../pages/Home';
@@ -65,51 +65,56 @@ interface Props {
  * MemoryRouter doesn't change the browser URL, so internal react-router
  * <Link> clicks navigate in-memory only — the user sees nothing happen.
  *
- * react-router's Link calls e.preventDefault() during its own onClick
- * handler, so a bubble-phase listener arrives too late (defaultPrevented
- * is already true). Using onClickCapture lets us intercept BEFORE the
- * Link handler runs and force a real navigation.
+ * react-router's Link calls e.preventDefault() during its own onClick,
+ * so we need to intercept BEFORE react-router gets the click. Attaching
+ * a document-level capture-phase listener via useEffect runs before any
+ * React handler. This also avoids wrapping the island in an extra
+ * <div>, which was triggering a hydration mismatch on /contact.
  */
-function handleInternalLinkCapture(e: MouseEvent<HTMLDivElement>) {
-  if (e.button !== 0) return; // ignore middle/right click
-  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // let cmd+click open new tab
-  const anchor = (e.target as HTMLElement).closest('a');
-  if (!anchor) return;
-  const href = anchor.getAttribute('href');
-  if (!href) return;
-  // Only intercept same-origin, non-hash, non-mailto/tel/external links.
-  if (
-    href.startsWith('http') ||
-    href.startsWith('//') ||
-    href.startsWith('#') ||
-    href.startsWith('mailto:') ||
-    href.startsWith('tel:')
-  ) {
-    return;
-  }
-  if (anchor.getAttribute('target') === '_blank') return;
-  e.preventDefault();
-  e.stopPropagation();
-  window.location.assign(href);
+function useInternalLinkInterceptor() {
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const anchor = (e.target as HTMLElement | null)?.closest?.('a');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+      if (
+        href.startsWith('http') ||
+        href.startsWith('//') ||
+        href.startsWith('#') ||
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:')
+      ) {
+        return;
+      }
+      if (anchor.getAttribute('target') === '_blank') return;
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.assign(href);
+    }
+    document.addEventListener('click', onClick, true); // capture phase
+    return () => document.removeEventListener('click', onClick, true);
+  }, []);
 }
 
 export default function PageIsland({ page, initialPath, routePattern }: Props) {
+  useInternalLinkInterceptor();
   const Component = COMPONENTS[page];
   if (!Component) {
     return <div>Unknown page: {page}</div>;
   }
 
   return (
-    <div onClickCapture={handleInternalLinkCapture}>
-      <MemoryRouter initialEntries={[initialPath]} initialIndex={0}>
-        {routePattern ? (
-          <Routes>
-            <Route path={routePattern} element={<Component />} />
-          </Routes>
-        ) : (
-          <Component />
-        )}
-      </MemoryRouter>
-    </div>
+    <MemoryRouter initialEntries={[initialPath]} initialIndex={0}>
+      {routePattern ? (
+        <Routes>
+          <Route path={routePattern} element={<Component />} />
+        </Routes>
+      ) : (
+        <Component />
+      )}
+    </MemoryRouter>
   );
 }
