@@ -21,6 +21,7 @@
 import { useEffect } from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
+import ScrollReveal from './ScrollReveal';
 import Home from '../pages/Home';
 import Services from '../pages/Services';
 import About from '../pages/About';
@@ -108,6 +109,7 @@ export default function PageIsland({ page, initialPath, routePattern }: Props) {
 
   return (
     <MemoryRouter initialEntries={[initialPath]} initialIndex={0}>
+      <ScrollReveal />
       {routePattern ? (
         <Routes>
           <Route path={routePattern} element={<Component />} />
