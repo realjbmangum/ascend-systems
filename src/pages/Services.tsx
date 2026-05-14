@@ -127,7 +127,8 @@ export default function Services() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Your Business Has a Technology Problem. We Fix It.
+            Your Business Has a Technology Problem.{' '}
+            <span className="text-orange">We Fix It.</span>
           </motion.h1>
           <motion.p
             className="mt-6 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"

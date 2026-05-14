@@ -273,7 +273,7 @@ export default function About() {
           >
             Skip the sales process. Talk to the person who does the work.
           </motion.h2>
-          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed text-center">
             30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.
           </p>
           <Link
