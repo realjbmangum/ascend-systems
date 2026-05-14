@@ -63,13 +63,14 @@ interface Props {
 
 /**
  * MemoryRouter doesn't change the browser URL, so internal react-router
- * <Link> clicks (e.g., portfolio cards → /portfolio/:slug) navigate
- * in-memory only and the user sees nothing happen. We bubble-intercept
- * clicks on internal anchor elements and force a real navigation so the
- * Astro static page actually loads.
+ * <Link> clicks navigate in-memory only — the user sees nothing happen.
+ *
+ * react-router's Link calls e.preventDefault() during its own onClick
+ * handler, so a bubble-phase listener arrives too late (defaultPrevented
+ * is already true). Using onClickCapture lets us intercept BEFORE the
+ * Link handler runs and force a real navigation.
  */
-function handleInternalLinkClick(e: MouseEvent<HTMLDivElement>) {
-  if (e.defaultPrevented) return;
+function handleInternalLinkCapture(e: MouseEvent<HTMLDivElement>) {
   if (e.button !== 0) return; // ignore middle/right click
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // let cmd+click open new tab
   const anchor = (e.target as HTMLElement).closest('a');
@@ -88,6 +89,7 @@ function handleInternalLinkClick(e: MouseEvent<HTMLDivElement>) {
   }
   if (anchor.getAttribute('target') === '_blank') return;
   e.preventDefault();
+  e.stopPropagation();
   window.location.assign(href);
 }
 
@@ -98,7 +100,7 @@ export default function PageIsland({ page, initialPath, routePattern }: Props) {
   }
 
   return (
-    <div onClick={handleInternalLinkClick}>
+    <div onClickCapture={handleInternalLinkCapture}>
       <MemoryRouter initialEntries={[initialPath]} initialIndex={0}>
         {routePattern ? (
           <Routes>
