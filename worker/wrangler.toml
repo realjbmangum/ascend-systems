@@ -5,6 +5,8 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 APP_ORIGIN = "https://ascendsystems.ai"
+ADMIN_ORIGIN = "https://admin.ascendsystems.ai"
+PORTAL_ORIGIN = "https://admin.ascendsystems.ai"
 ADMIN_EMAILS = "bmangum1@gmail.com"
 
 [[d1_databases]]

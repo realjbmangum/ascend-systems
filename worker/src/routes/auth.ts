@@ -44,7 +44,13 @@ auth.post("/magic-link", async (c) => {
     .bind(normalized, token, role)
     .run();
 
-  const origin = c.env.APP_ORIGIN ?? new URL(c.req.url).origin;
+  // Admin + portal moved to subdomains after the Astro migration so the
+  // public marketing site doesn't ship the SPA shell. Magic-link URLs
+  // must point at the role's origin, not the public site origin.
+  const defaultOrigin = c.env.APP_ORIGIN ?? new URL(c.req.url).origin;
+  const adminOrigin = c.env.ADMIN_ORIGIN ?? defaultOrigin;
+  const portalOrigin = c.env.PORTAL_ORIGIN ?? defaultOrigin;
+  const origin = role === "admin" ? adminOrigin : portalOrigin;
   if (!c.env.SENDGRID_API_KEY) {
     console.error("[AUTH] SENDGRID_API_KEY not configured");
     return c.json({ error: "email service not configured" }, 500);

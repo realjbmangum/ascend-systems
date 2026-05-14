@@ -2,7 +2,12 @@ export type Bindings = {
   DB: D1Database;
   FILES_BUCKET: R2Bucket;
   SENDGRID_API_KEY?: string;
+  /** Public marketing site origin — used for footer links, contact-page CTAs, etc. */
   APP_ORIGIN?: string;
+  /** Admin SPA origin — used for admin magic-link emails. Defaults to APP_ORIGIN when unset. */
+  ADMIN_ORIGIN?: string;
+  /** Client portal origin — used for portal magic-link emails. Defaults to APP_ORIGIN when unset. */
+  PORTAL_ORIGIN?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   ADMIN_EMAILS?: string;
