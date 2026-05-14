@@ -13,7 +13,7 @@ import Layout from '../../layouts/Layout.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import PageIsland from '../../components/PageIsland';
 import { PROJECTS } from '../../data/portfolio';
-import { getEntry, type CollectionEntry } from 'astro:content';
+import { getEntry, render, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
   return PROJECTS.map((p) => ({
@@ -34,7 +34,7 @@ try {
 } catch {
   caseStudyEntry = undefined;
 }
-const CaseStudyBody = caseStudyEntry ? (await caseStudyEntry.render()).Content : null;
+const CaseStudyBody = caseStudyEntry ? (await render(caseStudyEntry)).Content : null;
 
 const title = `${project.name} — Case Study | Ascend Systems`;
 const description = project.tagline;

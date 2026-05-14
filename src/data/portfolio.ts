@@ -73,7 +73,7 @@ export const PROJECTS: Project[] = [
     url: 'https://sendmylove.app',
     screenshot: '/images/portfolio/sendmylove-card.svg',
     status: 'live',
-    tags: ['SvelteKit', 'Stripe', 'Supabase', 'Consumer SaaS'],
+    tags: ['Next.js 15', 'Cloudflare Workers', 'D1', 'Stripe', 'Consumer SaaS'],
     metrics: [
       { label: 'Messages delivered', value: '2,515' },
       { label: 'Subscription price', value: '$5/mo' },
@@ -97,7 +97,7 @@ export const PROJECTS: Project[] = [
     url: 'https://vault.ascendsystems.ai',
     screenshot: '/images/deadrop.png',
     status: 'live',
-    tags: ['Security', 'Self-hosted', 'Cloudflare Workers', 'D1'],
+    tags: ['Security', 'Self-hosted', 'Cloudflare Pages Functions', 'KV', 'Web Crypto'],
     metrics: [
       { label: 'Retention after view', value: '0 days' },
       { label: 'Infrastructure cost', value: '$0/mo' },
