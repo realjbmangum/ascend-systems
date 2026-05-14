@@ -18,6 +18,7 @@
  * file re-hydrates it client-side for interactivity.
  */
 
+import { type MouseEvent } from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 import Home from '../pages/Home';
@@ -60,6 +61,36 @@ interface Props {
   routePattern?: string;
 }
 
+/**
+ * MemoryRouter doesn't change the browser URL, so internal react-router
+ * <Link> clicks (e.g., portfolio cards → /portfolio/:slug) navigate
+ * in-memory only and the user sees nothing happen. We bubble-intercept
+ * clicks on internal anchor elements and force a real navigation so the
+ * Astro static page actually loads.
+ */
+function handleInternalLinkClick(e: MouseEvent<HTMLDivElement>) {
+  if (e.defaultPrevented) return;
+  if (e.button !== 0) return; // ignore middle/right click
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // let cmd+click open new tab
+  const anchor = (e.target as HTMLElement).closest('a');
+  if (!anchor) return;
+  const href = anchor.getAttribute('href');
+  if (!href) return;
+  // Only intercept same-origin, non-hash, non-mailto/tel/external links.
+  if (
+    href.startsWith('http') ||
+    href.startsWith('//') ||
+    href.startsWith('#') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('tel:')
+  ) {
+    return;
+  }
+  if (anchor.getAttribute('target') === '_blank') return;
+  e.preventDefault();
+  window.location.assign(href);
+}
+
 export default function PageIsland({ page, initialPath, routePattern }: Props) {
   const Component = COMPONENTS[page];
   if (!Component) {
@@ -67,14 +98,16 @@ export default function PageIsland({ page, initialPath, routePattern }: Props) {
   }
 
   return (
-    <MemoryRouter initialEntries={[initialPath]} initialIndex={0}>
-      {routePattern ? (
-        <Routes>
-          <Route path={routePattern} element={<Component />} />
-        </Routes>
-      ) : (
-        <Component />
-      )}
-    </MemoryRouter>
+    <div onClick={handleInternalLinkClick}>
+      <MemoryRouter initialEntries={[initialPath]} initialIndex={0}>
+        {routePattern ? (
+          <Routes>
+            <Route path={routePattern} element={<Component />} />
+          </Routes>
+        ) : (
+          <Component />
+        )}
+      </MemoryRouter>
+    </div>
   );
 }
