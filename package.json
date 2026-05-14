@@ -7,7 +7,7 @@
     "dev:admin": "vite",
     "build": "astro build",
     "build:public": "astro build",
-    "build:admin": "vite build && printf '/*    /index.html    200\\n' > dist-admin/_redirects",
+    "build:admin": "vite build && printf '/    /admin/login    302\\n/*    /index.html    200\\n' > dist-admin/_redirects",
     "preview": "astro preview",
     "preview:admin": "vite preview --outDir dist-admin"
   },
