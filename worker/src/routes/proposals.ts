@@ -8,10 +8,12 @@ proposals.use("*", requireAuth("admin"));
 
 proposals.get("/", async (c) => {
   const { results } = await c.env.DB.prepare(
-    `SELECT pr.*, c.company_name AS client_name, p.name AS project_name
+    `SELECT pr.*, c.company_name AS client_name, p.name AS project_name,
+            l.name AS lead_name, l.company AS lead_company
      FROM proposals pr
      LEFT JOIN clients c ON c.id = pr.client_id
      LEFT JOIN projects p ON p.id = pr.project_id
+     LEFT JOIN leads l ON l.id = pr.lead_id
      ORDER BY pr.created_at DESC`
   ).all();
   return c.json(results);
@@ -20,10 +22,12 @@ proposals.get("/", async (c) => {
 proposals.get("/:id", async (c) => {
   const proposal = await c.env.DB.prepare(
     `SELECT pr.*, c.company_name AS client_name, c.contact_name, c.email AS client_email,
-            p.name AS project_name
+            p.name AS project_name,
+            l.name AS lead_name, l.company AS lead_company, l.email AS lead_email
      FROM proposals pr
      LEFT JOIN clients c ON c.id = pr.client_id
      LEFT JOIN projects p ON p.id = pr.project_id
+     LEFT JOIN leads l ON l.id = pr.lead_id
      WHERE pr.id = ?`
   )
     .bind(c.req.param("id"))
@@ -36,6 +40,7 @@ proposals.post("/", async (c) => {
   const body = await c.req.json<{
     client_id?: number | null;
     project_id?: number | null;
+    lead_id?: number | null;
     title?: string;
     intro?: string;
     scope?: string;
@@ -50,13 +55,14 @@ proposals.post("/", async (c) => {
   const sign_token = crypto.randomUUID();
   const result = await c.env.DB.prepare(
     `INSERT INTO proposals
-       (client_id, project_id, title, intro, scope, deliverables, timeline,
-        price_summary, total_cents, sign_token)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       (client_id, project_id, lead_id, title, intro, scope, deliverables,
+        timeline, price_summary, total_cents, sign_token)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       body.client_id ?? null,
       body.project_id ?? null,
+      body.lead_id ?? null,
       body.title,
       body.intro ?? null,
       body.scope ?? null,
@@ -112,6 +118,8 @@ proposals.delete("/:id", async (c) => {
   return c.json({ success: true });
 });
 
+// Marks the proposal sent and returns the signing URL. By design it does not
+// email the recipient — the admin copies the link and sends it themselves.
 proposals.post("/:id/send", async (c) => {
   const id = c.req.param("id");
   const proposal = await c.env.DB.prepare(

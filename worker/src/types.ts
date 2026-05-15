@@ -12,6 +12,12 @@ export type Bindings = {
   STRIPE_WEBHOOK_SECRET?: string;
   ADMIN_EMAILS?: string;
   CF_API_TOKEN?: string;
+  /** Microsoft Graph calendar sync — all four required for sync to activate. */
+  MS_GRAPH_TENANT_ID?: string;
+  MS_GRAPH_CLIENT_ID?: string;
+  MS_GRAPH_CLIENT_SECRET?: string;
+  /** Mailbox UPN whose calendar activities sync into (e.g. brian@ascendsystems.ai). */
+  MS_GRAPH_CALENDAR_USER?: string;
 };
 
 export type SessionRow = {

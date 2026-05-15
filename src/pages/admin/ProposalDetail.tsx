@@ -167,6 +167,14 @@ export default function ProposalDetail() {
               {proposal.client_name}
             </Link>
           )}
+          {!proposal.client_id && proposal.lead_id && (
+            <Link
+              to={`/admin/leads/${proposal.lead_id}`}
+              className="text-sm text-orange hover:text-orange-dark transition-colors"
+            >
+              {proposal.lead_company || proposal.lead_name} (Lead)
+            </Link>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <span
@@ -431,6 +439,14 @@ export default function ProposalDetail() {
                     <dt className="text-gray-400 text-xs">Client</dt>
                     <dd className="text-charcoal font-medium">
                       {proposal.client_name}
+                    </dd>
+                  </div>
+                )}
+                {!proposal.client_id && proposal.lead_id && (
+                  <div>
+                    <dt className="text-gray-400 text-xs">Lead</dt>
+                    <dd className="text-charcoal font-medium">
+                      {proposal.lead_company || proposal.lead_name}
                     </dd>
                   </div>
                 )}

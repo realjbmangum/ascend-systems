@@ -104,6 +104,25 @@ export const api = {
   getProjectFileUrl: (projectId: number, filekey: string) =>
     `${BASE}/projects/${projectId}/files/${encodeURIComponent(filekey)}`,
 
+  // Admin — Lead Files (R2)
+  getLeadFiles: (leadId: number) => request<any[]>(`/leads/${leadId}/files`),
+  uploadLeadFile: (leadId: number, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return fetch(`${BASE}/leads/${leadId}/files`, {
+      method: 'POST',
+      body: form,
+      credentials: 'include',
+    }).then((r) => {
+      if (!r.ok) throw new Error('Upload failed');
+      return r.json() as Promise<{ key: string; name: string; size: number }>;
+    });
+  },
+  deleteLeadFile: (leadId: number, filekey: string) =>
+    request(`/leads/${leadId}/files/${encodeURIComponent(filekey)}`, { method: 'DELETE' }),
+  getLeadFileUrl: (leadId: number, filekey: string) =>
+    `${BASE}/leads/${leadId}/files/${encodeURIComponent(filekey)}`,
+
   // Admin — Tasks
   getTasks: (params?: { status?: string; type?: string }) => {
     const q = new URLSearchParams();
@@ -147,6 +166,19 @@ export const api = {
     request(`/invoices/${id}/send`, { method: 'POST' }),
   pushRecurringInvoice: (id: number) =>
     request(`/invoices/${id}/push-recurring`, { method: 'POST' }),
+
+  // Admin — Lead Activities
+  getActivities: (leadId: number) =>
+    request<any[]>(`/activities?lead_id=${leadId}`),
+  createActivity: (data: Record<string, any>) =>
+    request<{ success: boolean; id: number }>('/activities', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateActivity: (id: number, data: Record<string, any>) =>
+    request(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteActivity: (id: number) =>
+    request(`/activities/${id}`, { method: 'DELETE' }),
 
   // Admin — Proposals
   getProposals: () => request<any[]>('/proposals'),

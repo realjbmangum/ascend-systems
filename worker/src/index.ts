@@ -15,6 +15,7 @@ import proposalRoutes from "./routes/proposals";
 import analyticsRoutes, { refreshAllProjectAnalytics } from "./routes/analytics";
 import resourceRoutes from "./routes/resources";
 import toolsRoutes from "./routes/tools";
+import activityRoutes from "./routes/activities";
 import { sendFormConfirmation, sendAdminAlert } from "./email";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -326,21 +327,52 @@ admin.get("/leads/:id", async (c) => {
 admin.delete("/leads/:id", async (c) => {
   const id = c.req.param("id");
   await c.env.DB.prepare("DELETE FROM tasks WHERE lead_id = ?").bind(id).run();
+  await c.env.DB.prepare("DELETE FROM lead_activities WHERE lead_id = ?")
+    .bind(id)
+    .run();
+  const files = await c.env.FILES_BUCKET.list({ prefix: `leads/${id}/` });
+  await Promise.all(
+    files.objects.map((obj) => c.env.FILES_BUCKET.delete(obj.key))
+  );
   await c.env.DB.prepare("DELETE FROM leads WHERE id = ?").bind(id).run();
   return c.json({ success: true });
 });
 
+const LEAD_EDITABLE_FIELDS = [
+  "name",
+  "email",
+  "company",
+  "project_type",
+  "budget_range",
+  "message",
+  "status",
+  "notes",
+  "phone",
+  "website",
+  "linkedin",
+  "title",
+  "address",
+  "industry",
+  "employee_count",
+  "annual_revenue",
+  "deal_value_cents",
+  "expected_close_date",
+  "source_origin",
+  "source_channel",
+  "source_channel_id",
+  "owner",
+  "labels",
+] as const;
+
 admin.patch("/leads/:id", async (c) => {
-  const body = await c.req.json<{ status?: string; notes?: string }>();
+  const body = await c.req.json<Record<string, unknown>>();
   const sets: string[] = [];
-  const params: (string | number)[] = [];
-  if (body.status) {
-    sets.push("status = ?");
-    params.push(body.status);
-  }
-  if (body.notes !== undefined) {
-    sets.push("notes = ?");
-    params.push(body.notes);
+  const params: (string | number | null)[] = [];
+  for (const key of LEAD_EDITABLE_FIELDS) {
+    if (key in body) {
+      sets.push(`${key} = ?`);
+      params.push(body[key] as string | number | null);
+    }
   }
   if (sets.length === 0) return c.json({ error: "nothing to update" }, 400);
   sets.push("updated_at = datetime('now')");
@@ -362,14 +394,23 @@ admin.post("/leads/:id/convert", async (c) => {
       company: string | null;
       project_type: string | null;
       message: string | null;
+      phone: string | null;
+      website: string | null;
     }>();
   if (!lead) return c.json({ error: "lead not found" }, 404);
 
   const clientResult = await c.env.DB.prepare(
-    `INSERT INTO clients (company_name, contact_name, email, lead_id)
-     VALUES (?, ?, ?, ?)`
+    `INSERT INTO clients (company_name, contact_name, email, phone, website_url, lead_id)
+     VALUES (?, ?, ?, ?, ?, ?)`
   )
-    .bind(lead.company ?? lead.name, lead.name, lead.email, lead.id)
+    .bind(
+      lead.company ?? lead.name,
+      lead.name,
+      lead.email,
+      lead.phone ?? null,
+      lead.website ?? null,
+      lead.id
+    )
     .run();
   const clientId = clientResult.meta.last_row_id;
 
@@ -384,6 +425,24 @@ admin.post("/leads/:id/convert", async (c) => {
       lead.message ?? null
     )
     .run();
+
+  // Carry the lead's uploaded files (PRDs, docs) over to the new project.
+  const newProjectId = projectResult.meta.last_row_id;
+  const leadFiles = await c.env.FILES_BUCKET.list({
+    prefix: `leads/${leadId}/`,
+  });
+  await Promise.all(
+    leadFiles.objects.map(async (obj) => {
+      const src = await c.env.FILES_BUCKET.get(obj.key);
+      if (!src) return;
+      const filename = obj.key.slice(`leads/${leadId}/`.length);
+      await c.env.FILES_BUCKET.put(
+        `projects/${newProjectId}/${filename}`,
+        src.body,
+        { httpMetadata: src.httpMetadata }
+      );
+    })
+  );
 
   await c.env.DB.prepare(
     `UPDATE leads SET status = 'won', updated_at = datetime('now') WHERE id = ?`
@@ -561,6 +620,66 @@ function r2FileName(key: string): string {
   return (key.split("/").pop() ?? key).replace(/^\d+-/, "");
 }
 
+// Map a filename extension to a content type when the browser didn't supply
+// one (common for locally-generated .html PRDs dragged in from disk).
+const EXT_CONTENT_TYPES: Record<string, string> = {
+  html: "text/html",
+  htm: "text/html",
+  pdf: "application/pdf",
+  txt: "text/plain",
+  md: "text/markdown",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+};
+
+function contentTypeFor(filename: string, providedType: string): string {
+  if (providedType && providedType !== "application/octet-stream")
+    return providedType;
+  const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+  return EXT_CONTENT_TYPES[ext] ?? providedType ?? "application/octet-stream";
+}
+
+// Files the browser can render in a tab; everything else downloads.
+function isInlineType(contentType: string): boolean {
+  return (
+    contentType.startsWith("text/html") ||
+    contentType.startsWith("application/pdf") ||
+    contentType.startsWith("text/plain") ||
+    contentType.startsWith("image/")
+  );
+}
+
+function serveR2Object(obj: R2ObjectBody, key: string): Response {
+  const contentType =
+    obj.httpMetadata?.contentType ?? "application/octet-stream";
+  const filename = r2FileName(key);
+  const inline = isInlineType(contentType);
+  // Strip CR/LF so a crafted filename can't inject response headers.
+  const safeName = filename.replace(/[\r\n"]/g, "");
+  const headers = new Headers();
+  headers.set("Content-Type", contentType);
+  headers.set(
+    "Content-Disposition",
+    `${inline ? "inline" : "attachment"}; filename="${safeName}"`
+  );
+  // Uploaded HTML (e.g. PRDs) renders in-browser. The `sandbox` directive
+  // gives the document an opaque origin: no scripts, no forms, no access to
+  // the admin session cookie — so a malicious uploaded doc is inert.
+  if (contentType.startsWith("text/html")) {
+    headers.set(
+      "Content-Security-Policy",
+      "default-src 'none'; img-src data: https:; style-src 'unsafe-inline' https:; font-src https: data:; sandbox"
+    );
+  }
+  return new Response(obj.body, { headers });
+}
+
+// Uploaded file keys always have the shape `<timestamp>-<sanitized-name>`.
+// Reject anything else so a client-supplied :filekey can't address an
+// arbitrary R2 object outside the intended prefix.
+const FILE_KEY_RE = /^\d+-[A-Za-z0-9._-]+$/;
+
 admin.get("/projects/:id/files", async (c) => {
   const prefix = `projects/${c.req.param("id")}/`;
   const listed = await c.env.FILES_BUCKET.list({ prefix });
@@ -582,23 +701,73 @@ admin.post("/projects/:id/files", async (c) => {
   const filekey = `${Date.now()}-${sanitized}`;
   const key = `projects/${c.req.param("id")}/${filekey}`;
   await c.env.FILES_BUCKET.put(key, file.stream(), {
-    httpMetadata: { contentType: file.type || "application/octet-stream" },
+    httpMetadata: { contentType: contentTypeFor(file.name, file.type) },
   });
   return c.json({ key: filekey, name: file.name, size: file.size });
 });
 
 admin.get("/projects/:id/files/:filekey", async (c) => {
-  const key = `projects/${c.req.param("id")}/${c.req.param("filekey")}`;
+  const filekey = c.req.param("filekey");
+  if (!FILE_KEY_RE.test(filekey))
+    return c.json({ error: "invalid file key" }, 400);
+  const key = `projects/${c.req.param("id")}/${filekey}`;
   const obj = await c.env.FILES_BUCKET.get(key);
   if (!obj) return c.json({ error: "not found" }, 404);
-  const headers = new Headers();
-  headers.set("Content-Type", obj.httpMetadata?.contentType ?? "application/octet-stream");
-  headers.set("Content-Disposition", `attachment; filename="${r2FileName(key)}"`);
-  return new Response(obj.body, { headers });
+  return serveR2Object(obj, key);
 });
 
 admin.delete("/projects/:id/files/:filekey", async (c) => {
-  const key = `projects/${c.req.param("id")}/${c.req.param("filekey")}`;
+  const filekey = c.req.param("filekey");
+  if (!FILE_KEY_RE.test(filekey))
+    return c.json({ error: "invalid file key" }, 400);
+  const key = `projects/${c.req.param("id")}/${filekey}`;
+  await c.env.FILES_BUCKET.delete(key);
+  return c.json({ success: true });
+});
+
+// ---- Lead files (R2) — mirrors the project files pattern ----
+
+admin.get("/leads/:id/files", async (c) => {
+  const prefix = `leads/${c.req.param("id")}/`;
+  const listed = await c.env.FILES_BUCKET.list({ prefix });
+  return c.json(
+    listed.objects.map((obj) => ({
+      key: obj.key.slice(prefix.length),
+      name: r2FileName(obj.key),
+      size: obj.size,
+      uploaded: obj.uploaded.toISOString(),
+    }))
+  );
+});
+
+admin.post("/leads/:id/files", async (c) => {
+  const formData = await c.req.formData();
+  const file = formData.get("file") as File | null;
+  if (!file || !file.name) return c.json({ error: "no file provided" }, 400);
+  const sanitized = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const filekey = `${Date.now()}-${sanitized}`;
+  const key = `leads/${c.req.param("id")}/${filekey}`;
+  await c.env.FILES_BUCKET.put(key, file.stream(), {
+    httpMetadata: { contentType: contentTypeFor(file.name, file.type) },
+  });
+  return c.json({ key: filekey, name: file.name, size: file.size });
+});
+
+admin.get("/leads/:id/files/:filekey", async (c) => {
+  const filekey = c.req.param("filekey");
+  if (!FILE_KEY_RE.test(filekey))
+    return c.json({ error: "invalid file key" }, 400);
+  const key = `leads/${c.req.param("id")}/${filekey}`;
+  const obj = await c.env.FILES_BUCKET.get(key);
+  if (!obj) return c.json({ error: "not found" }, 404);
+  return serveR2Object(obj, key);
+});
+
+admin.delete("/leads/:id/files/:filekey", async (c) => {
+  const filekey = c.req.param("filekey");
+  if (!FILE_KEY_RE.test(filekey))
+    return c.json({ error: "invalid file key" }, 400);
+  const key = `leads/${c.req.param("id")}/${filekey}`;
   await c.env.FILES_BUCKET.delete(key);
   return c.json({ success: true });
 });
@@ -744,6 +913,7 @@ admin.post("/email-sequences/process", async (c) => {
 
 admin.route("/analytics", analyticsRoutes);
 admin.route("/resources", resourceRoutes);
+admin.route("/activities", activityRoutes);
 
 app.route("/api", admin);
 

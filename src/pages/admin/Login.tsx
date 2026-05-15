@@ -27,8 +27,13 @@ export default function AdminLogin() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-charcoal">Ascend Admin</h1>
-            <p className="text-gray-500 text-sm mt-2">Sign in with your email</p>
+            <img
+              src="/images/logo.png"
+              alt="Ascend Systems"
+              className="h-12 mx-auto mb-4"
+            />
+            <h1 className="text-xl font-bold text-charcoal">Admin</h1>
+            <p className="text-gray-500 text-sm mt-1">Sign in with your email</p>
           </div>
 
           {status === 'sent' ? (

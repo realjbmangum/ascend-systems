@@ -8,6 +8,22 @@ CREATE TABLE leads (
   message TEXT,
   status TEXT NOT NULL DEFAULT 'new',
   notes TEXT,
+  -- Migration 007: pipeline fields
+  phone TEXT,
+  website TEXT,
+  linkedin TEXT,
+  title TEXT,
+  address TEXT,
+  industry TEXT,
+  employee_count TEXT,
+  annual_revenue TEXT,
+  deal_value_cents INTEGER NOT NULL DEFAULT 0,
+  expected_close_date TEXT,
+  source_origin TEXT,
+  source_channel TEXT,
+  source_channel_id TEXT,
+  owner TEXT,
+  labels TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -149,3 +165,22 @@ CREATE TABLE email_enrollments (
 );
 CREATE INDEX idx_enrollments_sequence ON email_enrollments(sequence_id);
 CREATE INDEX idx_enrollments_active ON email_enrollments(completed_at, last_sent_at);
+
+-- ===== Migration 008: lead activities =====
+
+CREATE TABLE lead_activities (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  lead_id INTEGER NOT NULL REFERENCES leads(id),
+  type TEXT NOT NULL DEFAULT 'task',
+  subject TEXT NOT NULL,
+  notes TEXT,
+  due_at TEXT,
+  duration_minutes INTEGER,
+  done INTEGER NOT NULL DEFAULT 0,
+  done_at TEXT,
+  graph_event_id TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX idx_lead_activities_lead ON lead_activities(lead_id);
+CREATE INDEX idx_lead_activities_due ON lead_activities(due_at);

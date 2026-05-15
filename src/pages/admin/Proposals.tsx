@@ -48,10 +48,22 @@ export default function Proposals() {
     },
     {
       key: 'client_name',
-      label: 'Client',
+      label: 'Recipient',
       sortable: true,
       filterable: true,
-      render: (row) => row.client_name || <span className="text-gray-400">--</span>,
+      render: (row) =>
+        row.client_name ? (
+          row.client_name
+        ) : row.lead_name ? (
+          <span>
+            {row.lead_company || row.lead_name}
+            <span className="ml-1.5 text-xs font-semibold text-orange-dark bg-orange-glow rounded px-1.5 py-0.5">
+              Lead
+            </span>
+          </span>
+        ) : (
+          <span className="text-gray-400">--</span>
+        ),
     },
     {
       key: 'status',
