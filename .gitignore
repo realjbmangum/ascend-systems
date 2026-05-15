@@ -29,3 +29,6 @@ Thumbs.db
 # Playwright
 .playwright-mcp/
 dist-admin/
+
+# Scraped third-party contact data — PII, never commit
+docs/outscraper/
