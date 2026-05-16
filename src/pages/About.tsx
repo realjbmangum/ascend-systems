@@ -100,11 +100,11 @@ export default function About() {
                 ))}
 
                 <div className="relative z-10 p-1 bg-gradient-to-br from-orange to-orange-dark rounded-2xl shadow-lg">
-                  <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center overflow-hidden">
+                  <div className="w-[280px] h-[372px] rounded-2xl bg-charcoal-light flex items-center justify-center overflow-hidden">
                     <img
                       src="/images/brian.png"
                       alt="Brian Mangum, Founder of Ascend Systems"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       onError={(e) => {
                         // Photo not yet uploaded — fall back to Ascend logo as visual anchor.
                         const img = e.currentTarget as HTMLImageElement;
