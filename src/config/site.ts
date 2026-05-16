@@ -19,7 +19,7 @@ export const siteConfig: {
   // TODO: real phone — current value was a fake (555-) placeholder.
   // Leaving empty until a real number is wired so it never renders.
   phone: '',
-  email: 'bmangum1@gmail.com',
+  email: 'hello@ascendsystems.ai',
   // TODO: replace with real booking URL when Calendly / Cal.com is set up.
   // Falsy values cause buttons to route to /contact instead.
   calendlyUrl: '',

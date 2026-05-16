@@ -102,7 +102,7 @@ export default function About() {
                 <div className="relative z-10 p-1 bg-gradient-to-br from-orange to-orange-dark rounded-2xl shadow-lg">
                   <div className="w-[280px] h-[280px] rounded-2xl bg-charcoal-light flex items-center justify-center overflow-hidden">
                     <img
-                      src="/images/brian-mangum.jpg"
+                      src="/images/brian.png"
                       alt="Brian Mangum, Founder of Ascend Systems"
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -265,7 +265,7 @@ export default function About() {
       <section className="bg-charcoal py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
-            className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight"
+            className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight text-center mx-auto max-w-3xl"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}

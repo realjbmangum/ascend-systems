@@ -5,6 +5,8 @@ export interface Project {
   description: string
   url?: string
   screenshot?: string
+  /** Wordmark/logo shown on a light card when no screenshot exists. */
+  logo?: string
   status: 'live' | 'building' | 'on-hold'
   tags: string[]
   metrics: { label: string; value: string }[]
@@ -16,6 +18,29 @@ export interface Project {
 }
 
 export const PROJECTS: Project[] = [
+  {
+    slug: 'clt-ev',
+    name: 'CLT EV Analytics',
+    tagline: 'EV charging analytics for the City of Charlotte.',
+    description:
+      'The City of Charlotte runs 208 ChargePoint EV stations across 46 locations but had no way to see utilization, cost, or station health without an operator portal built for someone else. We built the analytics dashboard their staff actually needed.',
+    screenshot: '/images/clt-ev-ss.png',
+    status: 'live',
+    tags: ['React', 'Cloudflare Workers', 'D1', 'ChargePoint API'],
+    metrics: [
+      { label: 'Stations monitored', value: '208' },
+      { label: 'Locations covered', value: '46' },
+      { label: 'Org units unified', value: '3' },
+    ],
+    story: {
+      problem:
+        "City staff had to log into ChargePoint's operator portal — a tool built for station operators, not municipal decision-makers — to check utilization, electricity cost, and which stations were down. Data for the three org units (City, Airport, Water) lived in separate views with no consolidated picture.",
+      solution:
+        "A purpose-built analytics dashboard on Cloudflare's edge. A Worker pulls the ChargePoint API every 30 minutes into D1; the front end surfaces utilization, cost intelligence, and operational health — including the UNREACHABLE and FAULTED stations that need maintenance — with role-based views for operations, finance, and leadership.",
+      result:
+        'All 208 stations across 46 locations in a single pane, refreshed every 30 minutes. Sub-100ms response times from the edge. City staff get answers without touching an operator portal again.',
+    },
+  },
   {
     slug: 'scdmv-alerts',
     name: 'SC DMV Alerts',
@@ -166,6 +191,7 @@ export const PROJECTS: Project[] = [
     tagline: "Family stories. Preserved before they're gone.",
     description:
       'Heirloom helps families record, organize, and share the stories that are one generation away from being lost forever. Interview prompts, audio recording, and a private family feed.',
+    logo: '/images/portfolio/heirloom-logo.png',
     status: 'building',
     tags: ['iOS', 'React Native', 'Supabase', 'Consumer App'],
     metrics: [

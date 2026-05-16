@@ -67,7 +67,7 @@ export const SITEWIDE_GRAPH = {
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'sales',
-        email: 'bmangum1@gmail.com',
+        email: 'hello@ascendsystems.ai',
         areaServed: 'US',
         availableLanguage: ['English'],
       },
@@ -80,7 +80,7 @@ export const SITEWIDE_GRAPH = {
       name: 'Ascend Systems',
       image: 'https://ascendsystems.ai/og-image.png',
       url: 'https://ascendsystems.ai',
-      email: 'bmangum1@gmail.com',
+      email: 'hello@ascendsystems.ai',
       priceRange: '$$$',
       address: {
         '@type': 'PostalAddress',
@@ -148,7 +148,7 @@ export const SITEWIDE_GRAPH = {
         'Senior full-stack engineer and fractional CTO based in Charlotte, NC. Founder of Ascend Systems (Lighthouse 27 LLC). Ships custom SaaS, AI agents, and internal tooling for owner-operator businesses.',
       image: 'https://ascendsystems.ai/images/brian-mangum.jpg',
       url: 'https://ascendsystems.ai/about',
-      email: 'bmangum1@gmail.com',
+      email: 'hello@ascendsystems.ai',
       worksFor: { '@id': 'https://ascendsystems.ai/#organization' },
       founder: { '@id': 'https://ascendsystems.ai/#organization' },
       address: {

@@ -107,7 +107,9 @@ export default function Portfolio() {
                       height: 200,
                       background: project.screenshot
                         ? undefined
-                        : 'linear-gradient(135deg, #1C1C1E 0%, #2A2A2E 100%)',
+                        : project.logo
+                          ? '#F3F3F2'
+                          : 'linear-gradient(135deg, #1C1C1E 0%, #2A2A2E 100%)',
                       overflow: 'hidden',
                       flexShrink: 0,
                       position: 'relative',
@@ -124,6 +126,26 @@ export default function Portfolio() {
                           objectPosition: 'top',
                         }}
                       />
+                    ) : project.logo ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%',
+                          padding: '40px 48px',
+                        }}
+                      >
+                        <img
+                          src={project.logo}
+                          alt={project.name}
+                          style={{
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            objectFit: 'contain',
+                          }}
+                        />
+                      </div>
                     ) : (
                       <div
                         style={{

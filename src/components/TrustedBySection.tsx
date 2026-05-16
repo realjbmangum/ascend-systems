@@ -6,7 +6,6 @@ interface Client {
 const TrustedBySection = () => {
   const clients: Client[] = [
     { name: 'City of Charlotte', logo: '/images/city.png' },
-    { name: 'Stancil Services', logo: '/images/stancil.png' },
   ];
 
   const row = clients;
