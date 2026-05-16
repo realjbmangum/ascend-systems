@@ -33,8 +33,6 @@ ChargePoint's own portal is a capable tool — for station operators. It surface
 
 To get even partial answers, staff were exporting CSVs and rebuilding the same picture by hand, every reporting cycle. The data existed. The decision-grade view of it did not.
 
-![CLT EV platform architecture and security overview](/images/case-studies/clt-ev-overview.png)
-
 ## The technical approach
 
 The build is deliberately lean. A municipal internal tool does not need a sprawling backend — it needs to be correct, cheap to run, and fast enough that staff actually open it.
@@ -46,8 +44,6 @@ The build is deliberately lean. A municipal internal tool does not need a sprawl
 **Role-based access.** The dashboard ships four roles — Admin, Operations, Finance, and Leadership. Operations gets station status and maintenance queues. Finance gets cost breakdowns and trend lines. Leadership gets the high-altitude utilization and capacity view. The roles are not cosmetic; they decide which queries run and which data a session is allowed to see.
 
 **Operational health, surfaced not buried.** At the time of the build the network had 29 stations reporting UNREACHABLE and 2 reporting FAULTED. In ChargePoint's portal those are individual status flags you find one station at a time. In the dashboard they are a count on the landing view with a drill-down — so a facilities lead sees the maintenance backlog the moment they log in.
-
-![CLT EV system and security blueprint](/images/case-studies/clt-ev-architecture.png)
 
 ## What we shipped
 
