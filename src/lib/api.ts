@@ -193,7 +193,12 @@ export const api = {
   deleteProposal: (id: number) =>
     request(`/proposals/${id}`, { method: 'DELETE' }),
   sendProposal: (id: number) =>
-    request<{ success: boolean; sign_url: string }>(`/proposals/${id}/send`, {
+    request<{
+      success: boolean;
+      sign_url: string;
+      emailed: boolean;
+      recipient: string | null;
+    }>(`/proposals/${id}/send`, {
       method: 'POST',
     }),
 

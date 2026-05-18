@@ -37,6 +37,7 @@ export default function ProposalDetail() {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
   const [signUrl, setSignUrl] = useState<string | null>(null);
+  const [emailNote, setEmailNote] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [editForm, setEditForm] = useState({
     title: '',
@@ -133,6 +134,17 @@ export default function ProposalDetail() {
     try {
       const result = await api.sendProposal(Number(id));
       setSignUrl(result.sign_url);
+      if (result.emailed) {
+        setEmailNote(`Emailed the sign link to ${result.recipient}.`);
+      } else if (result.recipient) {
+        setEmailNote(
+          `Could not email ${result.recipient} — copy the link below and send it manually.`
+        );
+      } else {
+        setEmailNote(
+          'No email on file for this recipient — copy the link below and send it manually.'
+        );
+      }
       load();
     } catch (e: any) {
       setError(e?.message || 'Failed to send proposal');
@@ -243,6 +255,11 @@ export default function ProposalDetail() {
           <h2 className="text-sm font-semibold text-charcoal mb-2">
             Client sign link
           </h2>
+          {emailNote && (
+            <p className="text-xs font-medium text-charcoal mb-2">
+              {emailNote}
+            </p>
+          )}
           <p className="text-xs text-gray-600 mb-3">
             Share this URL with the client to review and sign the proposal.
           </p>

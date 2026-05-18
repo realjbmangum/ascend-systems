@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
 import { requireAuth } from "../middleware";
+import { sendProposalEmail } from "../email";
 
 const proposals = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -138,15 +139,30 @@ proposals.delete("/:id", async (c) => {
   return c.json({ success: true });
 });
 
-// Marks the proposal sent and returns the signing URL. By design it does not
-// email the recipient — the admin copies the link and sends it themselves.
+// Marks the proposal sent, emails the recipient the sign link, and returns
+// the signing URL. If no recipient email is on file (or SendGrid is not
+// configured), it still returns the link so the admin can send it manually.
 proposals.post("/:id/send", async (c) => {
   const id = c.req.param("id");
   const proposal = await c.env.DB.prepare(
-    "SELECT id, sign_token FROM proposals WHERE id = ?"
+    `SELECT pr.id, pr.sign_token, pr.title,
+            c.email AS client_email, c.contact_name,
+            l.email AS lead_email, l.name AS lead_name
+     FROM proposals pr
+     LEFT JOIN clients c ON c.id = pr.client_id
+     LEFT JOIN leads l ON l.id = pr.lead_id
+     WHERE pr.id = ?`
   )
     .bind(id)
-    .first<{ id: number; sign_token: string | null }>();
+    .first<{
+      id: number;
+      sign_token: string | null;
+      title: string;
+      client_email: string | null;
+      contact_name: string | null;
+      lead_email: string | null;
+      lead_name: string | null;
+    }>();
   if (!proposal) return c.json({ error: "not found" }, 404);
 
   let token = proposal.sign_token;
@@ -171,9 +187,27 @@ proposals.post("/:id/send", async (c) => {
   // client-facing sign link must point at the admin origin — not APP_ORIGIN.
   const origin =
     c.env.ADMIN_ORIGIN ?? c.env.APP_ORIGIN ?? "https://admin.ascendsystems.ai";
+  const signUrl = `${origin}/proposals/${token}`;
+
+  const recipientEmail = proposal.client_email ?? proposal.lead_email ?? null;
+  const recipientName =
+    proposal.contact_name ?? proposal.lead_name ?? undefined;
+
+  let emailed = false;
+  if (recipientEmail && c.env.SENDGRID_API_KEY) {
+    emailed = await sendProposalEmail(c.env.SENDGRID_API_KEY, {
+      to: recipientEmail,
+      recipientName,
+      proposalTitle: proposal.title,
+      signUrl,
+    });
+  }
+
   return c.json({
     success: true,
-    sign_url: `${origin}/proposals/${token}`,
+    sign_url: signUrl,
+    emailed,
+    recipient: recipientEmail,
   });
 });
 

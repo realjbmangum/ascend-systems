@@ -6,18 +6,30 @@ const FROM_EMAIL = "noreply@ascendsystems.ai";
 const FROM_NAME = "Ascend Systems";
 const ADMIN_EMAIL = "bmangum1@gmail.com";
 
+// Blind-copied on every client-facing email so the owner keeps a record
+// of all outbound client communication. Internal mail (sign-in / magic
+// links) is intentionally NOT copied here.
+const COPY_EMAIL = "brian@ascendsystems.ai";
+
 type SendArgs = {
   to: string;
   subject: string;
   html: string;
   text?: string;
+  /** When true, blind-copy COPY_EMAIL — used for client-facing mail. */
+  copyOwner?: boolean;
 };
 
 async function sendEmail(
   apiKey: string,
-  { to, subject, html, text }: SendArgs
+  { to, subject, html, text, copyOwner }: SendArgs
 ): Promise<boolean> {
   try {
+    const personalization: Record<string, unknown> = { to: [{ email: to }] };
+    // Don't BCC when the message is already going to the owner.
+    if (copyOwner && to.toLowerCase() !== COPY_EMAIL.toLowerCase()) {
+      personalization.bcc = [{ email: COPY_EMAIL }];
+    }
     const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
       method: "POST",
       headers: {
@@ -25,7 +37,7 @@ async function sendEmail(
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        personalizations: [{ to: [{ email: to }] }],
+        personalizations: [personalization],
         from: { email: FROM_EMAIL, name: FROM_NAME },
         subject,
         content: [
@@ -100,7 +112,7 @@ export async function sendSequenceStep(
   subject: string,
   bodyHtml: string
 ): Promise<boolean> {
-  return sendEmail(apiKey, { to, subject, html: bodyHtml });
+  return sendEmail(apiKey, { to, subject, html: bodyHtml, copyOwner: true });
 }
 
 export async function sendFormConfirmation(
@@ -146,6 +158,64 @@ export async function sendFormConfirmation(
         ? "We got your project intake — Ascend Systems"
         : "We got your message — Ascend Systems",
     html,
+    copyOwner: true,
+  });
+}
+
+export async function sendProposalEmail(
+  apiKey: string,
+  args: {
+    to: string;
+    recipientName?: string;
+    proposalTitle: string;
+    signUrl: string;
+  }
+): Promise<boolean> {
+  const { to, recipientName, proposalTitle, signUrl } = args;
+  const greeting = recipientName
+    ? `Hi ${escapeHtml(recipientName.split(" ")[0])},`
+    : "Hi there,";
+  const html = `
+    <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#1C1C1E;background:#ffffff">
+      <div style="background:#1C1C1E;padding:24px 32px">
+        <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.5px">Ascend Systems</span>
+      </div>
+      <div style="padding:40px 32px;border-top:4px solid #C45A2C">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 16px;color:#1C1C1E">Your Statement of Work is ready</h1>
+        <p style="font-size:15px;line-height:1.6;color:#1C1C1E;margin:0 0 16px">${greeting}</p>
+        <p style="font-size:15px;line-height:1.6;color:#444;margin:0 0 16px">
+          We've prepared the Statement of Work for
+          <strong style="color:#1C1C1E">${escapeHtml(proposalTitle)}</strong>.
+          Review the scope, deliverables, and pricing, then sign online when
+          you're ready.
+        </p>
+        <p style="font-size:15px;line-height:1.6;color:#444;margin:0 0 32px">
+          Signing accepts this Statement of Work and our Master Services
+          Agreement together — both are linked on the page.
+        </p>
+        <p style="margin:0 0 32px">
+          <a href="${signUrl}"
+             style="display:inline-block;background:#C45A2C;color:#ffffff;padding:14px 28px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">
+            Review &amp; sign
+          </a>
+        </p>
+        <p style="font-size:13px;color:#888;margin:0">
+          Questions before you sign? Just reply to this email.
+        </p>
+      </div>
+      <div style="padding:16px 32px;background:#f9f9f9;border-top:1px solid #eee">
+        <p style="font-size:12px;color:#aaa;margin:0">
+          Or copy this link into your browser:<br>
+          <a href="${signUrl}" style="color:#C45A2C;word-break:break-all">${signUrl}</a>
+        </p>
+      </div>
+    </div>
+  `;
+  return sendEmail(apiKey, {
+    to,
+    subject: `Review and sign: ${proposalTitle} — Ascend Systems`,
+    html,
+    copyOwner: true,
   });
 }
 
@@ -399,5 +469,6 @@ export async function sendCalculatorReport(
     to: args.to,
     subject: `Your Manual Process Cost Report — ${fmtMoney(result.total_annual)}/yr`,
     html,
+    copyOwner: true,
   });
 }
