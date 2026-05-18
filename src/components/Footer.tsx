@@ -40,6 +40,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link to="/msa" className="hover:text-white transition-colors">Master Services Agreement</Link></li>
             </ul>
             <div className="mt-6">
               <h4 className="text-white text-sm font-semibold mb-2">Get in Touch</h4>

@@ -1,0 +1,376 @@
+---
+/**
+ * /msa — Ascend Systems' standard Master Services Agreement.
+ *
+ * Public, indexable page linked from the footer so prospective clients
+ * can pre-read the standard terms. This is a static page (no React
+ * island) — it is long-form legal copy with no interactivity.
+ *
+ * The per-project Statement of Work and the internal client checklist
+ * are intentionally NOT published — only the MSA is client-facing.
+ */
+import Layout from '../layouts/Layout.astro';
+
+const title = 'Master Services Agreement | Ascend Systems';
+const description =
+  'The standard Master Services Agreement used by Ascend Systems (Lighthouse 27 LLC) for client engagements — scope, IP ownership, payment, and liability terms.';
+
+const updated = 'May 2026';
+---
+
+<Layout title={title} description={description} canonical="/msa">
+  <div class="bg-white py-20 sm:py-28">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 msa-doc">
+      <h1 class="text-3xl sm:text-4xl font-bold text-charcoal mb-2">
+        Master Services Agreement
+      </h1>
+      <p class="text-sm text-charcoal-lighter mb-8">
+        Last updated: {updated} &middot; Ascend Systems (Lighthouse 27 LLC)
+      </p>
+
+      <div class="rounded-xl border border-orange/30 bg-orange-glow p-6 mb-12">
+        <p class="text-sm text-charcoal leading-relaxed">
+          <strong>About this page.</strong> This is the standard Master
+          Services Agreement (the &ldquo;Agreement&rdquo;) that Ascend
+          Systems uses for client engagements. It sets the legal terms of
+          working together. The specifics of any individual project —
+          scope, deliverables, rates, and timeline — are set out
+          separately in a <strong>Statement of Work (SOW)</strong> signed
+          for that project. The version that binds the parties is the copy
+          signed by both Ascend Systems and the client; this page is
+          provided so prospective clients can review the terms in advance.
+        </p>
+      </div>
+
+      <div class="space-y-10 text-charcoal-lighter leading-relaxed">
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">Parties</h2>
+          <p>
+            This Agreement is between <strong>Lighthouse 27 LLC</strong>, a
+            North Carolina limited liability company doing business as
+            <strong>Ascend Systems</strong>, with a principal place of
+            business in Charlotte, North Carolina (&ldquo;Provider&rdquo;),
+            and the client identified on the signed Agreement
+            (&ldquo;Client&rdquo;). Provider and Client are each a
+            &ldquo;Party&rdquo; and together the &ldquo;Parties.&rdquo;
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            1. Services
+          </h2>
+          <p>
+            <strong>1.1 Statements of Work.</strong> Provider will perform
+            the software design, development, integration, automation, and
+            related professional services (the &ldquo;Services&rdquo;)
+            described in one or more written Statements of Work
+            (&ldquo;SOW&rdquo;) executed by both Parties and incorporated
+            into this Agreement by reference.
+          </p>
+          <p class="mt-3">
+            <strong>1.2 Order of precedence.</strong> If a SOW conflicts
+            with this Agreement, this Agreement controls — unless the SOW
+            expressly states that it overrides a specific section of this
+            Agreement.
+          </p>
+          <p class="mt-3">
+            <strong>1.3 No obligation.</strong> This Agreement does not
+            obligate either Party to enter into any SOW.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            2. Fees and Payment
+          </h2>
+          <p>
+            <strong>2.1 Fees.</strong> Client will pay the fees stated in
+            each SOW. Each SOW specifies whether the engagement is billed
+            time-and-materials at the rates set out in the SOW, fixed-fee,
+            or on a monthly retainer.
+          </p>
+          <p class="mt-3">
+            <strong>2.2 Expenses.</strong> Client reimburses pre-approved,
+            reasonable out-of-pocket expenses (for example, third-party
+            software, infrastructure, and licenses) at cost. Individual
+            expenses over $500 require written pre-approval.
+          </p>
+          <p class="mt-3">
+            <strong>2.3 Invoicing.</strong> Provider invoices monthly or
+            per milestone, as stated in the SOW. Payment is due net 30 days
+            from the invoice date.
+          </p>
+          <p class="mt-3">
+            <strong>2.4 Late payment.</strong> Undisputed amounts unpaid
+            after the due date accrue interest at 1.5% per month (or the
+            maximum allowed by law, if lower). Provider may suspend Services
+            on ten days' written notice of non-payment.
+          </p>
+          <p class="mt-3">
+            <strong>2.5 Taxes.</strong> Fees are exclusive of sales, use,
+            and similar taxes, which Client is responsible for unless
+            Client provides a valid exemption certificate.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            3. Intellectual Property
+          </h2>
+          <p>
+            <strong>3.1 Background IP.</strong> Each Party retains
+            ownership of all intellectual property it owned or developed
+            before this Agreement, or develops outside the scope of a SOW
+            (&ldquo;Background IP&rdquo;). This includes Provider's
+            pre-existing tools, libraries, frameworks, templates, and
+            know-how.
+          </p>
+          <p class="mt-3">
+            <strong>3.2 Deliverables.</strong> Upon full payment of all
+            fees due under the applicable SOW, Provider assigns to Client
+            all right, title, and interest in the custom deliverables
+            created specifically for Client and identified as
+            &ldquo;Deliverables&rdquo; in that SOW.
+          </p>
+          <p class="mt-3">
+            <strong>3.3 License to Provider Background IP.</strong> To the
+            extent any Provider Background IP is embedded in a Deliverable,
+            Provider grants Client a perpetual, worldwide, non-exclusive,
+            royalty-free license to use that Background IP solely as part
+            of the Deliverable. Provider is not transferring ownership of
+            Background IP.
+          </p>
+          <p class="mt-3">
+            <strong>3.4 Provider retained rights.</strong> Provider may
+            reuse the general knowledge, skills, and experience gained
+            while performing the Services. Nothing in this Agreement
+            prevents Provider from developing similar work for other
+            clients.
+          </p>
+          <p class="mt-3">
+            <strong>3.5 Portfolio rights.</strong> Provider may identify
+            Client as a client and describe the engagement at a general
+            level in Provider's portfolio and marketing, excluding any
+            Confidential Information, unless Client objects in writing.
+          </p>
+          <p class="mt-3">
+            <strong>3.6 Pre-payment status.</strong> Until fees are paid in
+            full, Provider retains all ownership of work product, and
+            Client receives only a limited license to evaluate it.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            4. Confidentiality
+          </h2>
+          <p>
+            <strong>4.1</strong> &ldquo;Confidential Information&rdquo;
+            means non-public information disclosed by one Party to the
+            other that is marked confidential or that a reasonable person
+            would understand to be confidential.
+          </p>
+          <p class="mt-3">
+            <strong>4.2</strong> The receiving Party will use Confidential
+            Information only to perform under this Agreement, and will
+            protect it with at least the care it uses for its own
+            confidential information.
+          </p>
+          <p class="mt-3">
+            <strong>4.3 Exclusions.</strong> Confidentiality obligations do
+            not apply to information that is public, independently
+            developed, rightfully received from a third party, or required
+            to be disclosed by law (with notice to the disclosing Party
+            where permitted).
+          </p>
+          <p class="mt-3">
+            <strong>4.4 Survival.</strong> Confidentiality obligations
+            survive for three years after termination; trade secrets are
+            protected for as long as they remain trade secrets.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            5. Warranties and Disclaimer
+          </h2>
+          <p>
+            <strong>5.1 Mutual.</strong> Each Party warrants that it has
+            the authority to enter into this Agreement.
+          </p>
+          <p class="mt-3">
+            <strong>5.2 Services warranty.</strong> Provider warrants that
+            the Services will be performed in a professional and
+            workmanlike manner. Provider's sole obligation for a breach of
+            this warranty is to re-perform the deficient Services, provided
+            Client notifies Provider within thirty days.
+          </p>
+          <p class="mt-3">
+            <strong>5.3 Disclaimer.</strong> Except as expressly stated,
+            the Services and Deliverables are provided &ldquo;as is.&rdquo;
+            Provider disclaims all other warranties, express or implied,
+            including merchantability, fitness for a particular purpose,
+            and non-infringement. Provider does not warrant that software
+            will be error-free or uninterrupted.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            6. Limitation of Liability
+          </h2>
+          <p>
+            <strong>6.1</strong> Neither Party is liable for indirect,
+            incidental, special, consequential, or punitive damages, or for
+            lost profits or data.
+          </p>
+          <p class="mt-3">
+            <strong>6.2</strong> Each Party's total aggregate liability
+            arising out of this Agreement will not exceed the total fees
+            paid by Client under the SOW giving rise to the claim in the
+            twelve months before the claim.
+          </p>
+          <p class="mt-3">
+            <strong>6.3</strong> The caps in this Section do not apply to
+            Client's payment obligations, a Party's breach of
+            confidentiality, or a Party's indemnification obligations.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            7. Indemnification
+          </h2>
+          <p>
+            <strong>7.1 By Provider.</strong> Provider will defend and
+            indemnify Client against third-party claims that a Deliverable,
+            as delivered, infringes that third party's U.S. intellectual
+            property rights — excluding claims arising from Client
+            materials, Client-directed designs, or modifications not made
+            by Provider.
+          </p>
+          <p class="mt-3">
+            <strong>7.2 By Client.</strong> Client will defend and
+            indemnify Provider against third-party claims arising from
+            Client materials, Client data, or Client's use of the
+            Deliverables in violation of law or this Agreement.
+          </p>
+          <p class="mt-3">
+            <strong>7.3</strong> The indemnified Party will give prompt
+            notice and reasonable cooperation; the indemnifying Party
+            controls the defense.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            8. Term and Termination
+          </h2>
+          <p>
+            <strong>8.1 Term.</strong> This Agreement starts on its
+            effective date and continues until terminated.
+          </p>
+          <p class="mt-3">
+            <strong>8.2 Termination for convenience.</strong> Either Party
+            may terminate this Agreement or any SOW on fifteen days'
+            written notice. Termination of this Agreement does not
+            terminate active SOWs unless stated.
+          </p>
+          <p class="mt-3">
+            <strong>8.3 Termination for cause.</strong> Either Party may
+            terminate for a material breach not cured within fifteen days
+            of written notice.
+          </p>
+          <p class="mt-3">
+            <strong>8.4 Effect.</strong> On termination, Client pays for
+            all Services performed and expenses incurred through the
+            termination date (for time-and-materials, all hours worked;
+            for fixed-fee, the pro-rata portion). Sections 3, 4, 5, 6, 7,
+            9, and 10 survive termination.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            9. Independent Contractor; Insurance
+          </h2>
+          <p>
+            <strong>9.1 Independent contractor.</strong> Provider is an
+            independent contractor. Nothing in this Agreement creates an
+            employment, partnership, joint venture, or agency relationship.
+            Provider is responsible for its own taxes and controls the
+            manner and means of performing the Services.
+          </p>
+          <p class="mt-3">
+            <strong>9.2 No employee benefits.</strong> Provider's personnel
+            are not eligible for Client benefits.
+          </p>
+          <p class="mt-3">
+            <strong>9.3 Insurance.</strong> Provider will maintain
+            commercially reasonable general liability and professional
+            liability (errors &amp; omissions) insurance and, on request,
+            provide a certificate of insurance.
+          </p>
+          <p class="mt-3">
+            <strong>9.4 Non-solicitation.</strong> During the term and for
+            twelve months after, neither Party will knowingly solicit for
+            employment the other Party's personnel directly involved in the
+            Services. General job postings are not a breach.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-charcoal mb-3">
+            10. General
+          </h2>
+          <p>
+            <strong>10.1 Governing law.</strong> This Agreement is governed
+            by the laws of the State of North Carolina, without regard to
+            conflict-of-laws rules.
+          </p>
+          <p class="mt-3">
+            <strong>10.2 Dispute resolution.</strong> The Parties will
+            first attempt to resolve disputes through good-faith
+            negotiation. Unresolved disputes are subject to the exclusive
+            jurisdiction of the state and federal courts located in
+            Mecklenburg County, North Carolina.
+          </p>
+          <p class="mt-3">
+            <strong>10.3 Force majeure.</strong> Neither Party is liable
+            for delay caused by events beyond its reasonable control.
+          </p>
+          <p class="mt-3">
+            <strong>10.4 Assignment.</strong> Neither Party may assign this
+            Agreement without the other's written consent, except to a
+            successor of all or substantially all of its business.
+          </p>
+          <p class="mt-3">
+            <strong>10.5 Notices.</strong> Notices must be in writing and
+            sent to the addresses on the signed Agreement. Email with
+            confirmation is acceptable for routine notices.
+          </p>
+          <p class="mt-3">
+            <strong>10.6 Entire agreement.</strong> This Agreement and its
+            SOWs are the entire agreement between the Parties and supersede
+            all prior discussions. Amendments must be in writing and signed
+            by both Parties.
+          </p>
+          <p class="mt-3">
+            <strong>10.7 Severability.</strong> If any provision is
+            unenforceable, the remaining provisions remain in effect.
+          </p>
+        </section>
+
+        <section class="border-t border-gray-200 pt-8">
+          <p class="text-sm text-charcoal-lighter">
+            Questions about these terms before an engagement?
+            <a href="/contact" class="text-orange hover:text-orange-dark font-medium">
+              Get in touch
+            </a> — happy to walk through any section.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+</Layout>
