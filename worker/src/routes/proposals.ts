@@ -48,6 +48,12 @@ proposals.post("/", async (c) => {
     timeline?: string;
     price_summary?: string;
     total_cents?: number;
+    out_of_scope?: string;
+    pricing_model?: string;
+    payment_schedule?: string;
+    client_responsibilities?: string;
+    acceptance_criteria?: string;
+    msa_version?: string;
   }>();
   if (!body.title) {
     return c.json({ error: "title is required" }, 400);
@@ -56,8 +62,10 @@ proposals.post("/", async (c) => {
   const result = await c.env.DB.prepare(
     `INSERT INTO proposals
        (client_id, project_id, lead_id, title, intro, scope, deliverables,
-        timeline, price_summary, total_cents, sign_token)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        timeline, price_summary, total_cents, out_of_scope, pricing_model,
+        payment_schedule, client_responsibilities, acceptance_criteria,
+        msa_version, sign_token)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       body.client_id ?? null,
@@ -70,6 +78,12 @@ proposals.post("/", async (c) => {
       body.timeline ?? null,
       body.price_summary ?? null,
       body.total_cents ?? 0,
+      body.out_of_scope ?? null,
+      body.pricing_model ?? null,
+      body.payment_schedule ?? null,
+      body.client_responsibilities ?? null,
+      body.acceptance_criteria ?? null,
+      body.msa_version ?? "2026-05",
       sign_token
     )
     .run();
@@ -90,6 +104,12 @@ proposals.patch("/:id", async (c) => {
     "timeline",
     "price_summary",
     "total_cents",
+    "out_of_scope",
+    "pricing_model",
+    "payment_schedule",
+    "client_responsibilities",
+    "acceptance_criteria",
+    "msa_version",
     "status",
   ];
   const sets: string[] = [];

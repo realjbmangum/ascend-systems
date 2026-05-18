@@ -2,6 +2,13 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 
+export const PRICING_MODELS: { value: string; label: string }[] = [
+  { value: '', label: 'Not specified' },
+  { value: 'time_materials', label: 'Time & Materials' },
+  { value: 'fixed', label: 'Fixed Fee' },
+  { value: 'retainer', label: 'Monthly Retainer' },
+];
+
 export default function CreateProposal() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -18,8 +25,13 @@ export default function CreateProposal() {
     intro: '',
     scope: '',
     deliverables: '',
+    out_of_scope: '',
     timeline: '',
+    pricing_model: '',
     price_summary: '',
+    payment_schedule: '',
+    client_responsibilities: '',
+    acceptance_criteria: '',
     total: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -83,8 +95,13 @@ export default function CreateProposal() {
         intro: form.intro || null,
         scope: form.scope || null,
         deliverables: form.deliverables || null,
+        out_of_scope: form.out_of_scope || null,
         timeline: form.timeline || null,
+        pricing_model: form.pricing_model || null,
         price_summary: form.price_summary || null,
+        payment_schedule: form.payment_schedule || null,
+        client_responsibilities: form.client_responsibilities || null,
+        acceptance_criteria: form.acceptance_criteria || null,
         total_cents,
       };
       const created = await api.createProposal(payload);
@@ -266,6 +283,20 @@ export default function CreateProposal() {
           />
         </div>
 
+        <div>
+          <label htmlFor="out_of_scope" className="block text-sm font-medium text-charcoal mb-1.5">
+            Out of Scope
+          </label>
+          <textarea
+            id="out_of_scope"
+            rows={3}
+            value={form.out_of_scope}
+            onChange={(e) => update('out_of_scope', e.target.value)}
+            placeholder="What is explicitly excluded — anything added later needs a change order."
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
+          />
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-5">
           <div>
             <label htmlFor="timeline" className="block text-sm font-medium text-charcoal mb-1.5">
@@ -298,6 +329,24 @@ export default function CreateProposal() {
         </div>
 
         <div>
+          <label htmlFor="pricing_model" className="block text-sm font-medium text-charcoal mb-1.5">
+            Pricing Model
+          </label>
+          <select
+            id="pricing_model"
+            value={form.pricing_model}
+            onChange={(e) => update('pricing_model', e.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal bg-white focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
+          >
+            {PRICING_MODELS.map((m) => (
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <label htmlFor="price_summary" className="block text-sm font-medium text-charcoal mb-1.5">
             Price Summary
           </label>
@@ -309,6 +358,55 @@ export default function CreateProposal() {
             placeholder="Describe the pricing structure (e.g. fixed fee, milestones, retainer)."
             className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
           />
+        </div>
+
+        <div>
+          <label htmlFor="payment_schedule" className="block text-sm font-medium text-charcoal mb-1.5">
+            Payment Schedule
+          </label>
+          <textarea
+            id="payment_schedule"
+            rows={3}
+            value={form.payment_schedule}
+            onChange={(e) => update('payment_schedule', e.target.value)}
+            placeholder="Milestones or triggers and when each invoice is due (e.g. 30% deposit on signature, balance on acceptance)."
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="client_responsibilities" className="block text-sm font-medium text-charcoal mb-1.5">
+            Client Responsibilities
+          </label>
+          <textarea
+            id="client_responsibilities"
+            rows={3}
+            value={form.client_responsibilities}
+            onChange={(e) => update('client_responsibilities', e.target.value)}
+            placeholder="What the client must provide and by when — access, content, timely feedback, a point of contact."
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="acceptance_criteria" className="block text-sm font-medium text-charcoal mb-1.5">
+            Acceptance Criteria
+          </label>
+          <textarea
+            id="acceptance_criteria"
+            rows={3}
+            value={form.acceptance_criteria}
+            onChange={(e) => update('acceptance_criteria', e.target.value)}
+            placeholder="How a deliverable is confirmed complete and accepted."
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
+          />
+        </div>
+
+        <div className="rounded-lg bg-orange/5 border border-orange/30 p-4 text-sm text-charcoal">
+          <strong>Governed by the Master Services Agreement.</strong> When the
+          client signs, this becomes a binding Statement of Work under the
+          standard MSA (v2026-05). The sign page shows the MSA link and
+          requires the client to accept it.
         </div>
 
         <div className="flex gap-3 pt-2">

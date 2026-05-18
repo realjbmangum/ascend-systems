@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
+import { PRICING_MODELS } from './CreateProposal';
+
+const pricingLabel = (v?: string) =>
+  PRICING_MODELS.find((m) => m.value === (v || ''))?.label || 'Not specified';
 
 const statusStyles: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-700',
@@ -39,8 +43,13 @@ export default function ProposalDetail() {
     intro: '',
     scope: '',
     deliverables: '',
+    out_of_scope: '',
     timeline: '',
+    pricing_model: '',
     price_summary: '',
+    payment_schedule: '',
+    client_responsibilities: '',
+    acceptance_criteria: '',
     total: '',
     status: 'draft',
   });
@@ -56,8 +65,13 @@ export default function ProposalDetail() {
           intro: data.intro || '',
           scope: data.scope || '',
           deliverables: data.deliverables || '',
+          out_of_scope: data.out_of_scope || '',
           timeline: data.timeline || '',
+          pricing_model: data.pricing_model || '',
           price_summary: data.price_summary || '',
+          payment_schedule: data.payment_schedule || '',
+          client_responsibilities: data.client_responsibilities || '',
+          acceptance_criteria: data.acceptance_criteria || '',
           total:
             data.total_cents != null ? (data.total_cents / 100).toFixed(2) : '',
           status: data.status || 'draft',
@@ -79,8 +93,13 @@ export default function ProposalDetail() {
         intro: editForm.intro || null,
         scope: editForm.scope || null,
         deliverables: editForm.deliverables || null,
+        out_of_scope: editForm.out_of_scope || null,
         timeline: editForm.timeline || null,
+        pricing_model: editForm.pricing_model || null,
         price_summary: editForm.price_summary || null,
+        payment_schedule: editForm.payment_schedule || null,
+        client_responsibilities: editForm.client_responsibilities || null,
+        acceptance_criteria: editForm.acceptance_criteria || null,
         status: editForm.status,
       };
       if (editForm.total !== '' && !isNaN(totalNum)) {
@@ -311,6 +330,19 @@ export default function ProposalDetail() {
               className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
             />
           </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Out of Scope
+            </label>
+            <textarea
+              rows={3}
+              value={editForm.out_of_scope}
+              onChange={(e) =>
+                setEditForm({ ...editForm, out_of_scope: e.target.value })
+              }
+              className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+            />
+          </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
@@ -343,6 +375,24 @@ export default function ProposalDetail() {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
+              Pricing Model
+            </label>
+            <select
+              value={editForm.pricing_model}
+              onChange={(e) =>
+                setEditForm({ ...editForm, pricing_model: e.target.value })
+              }
+              className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+            >
+              {PRICING_MODELS.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
               Price Summary
             </label>
             <textarea
@@ -350,6 +400,51 @@ export default function ProposalDetail() {
               value={editForm.price_summary}
               onChange={(e) =>
                 setEditForm({ ...editForm, price_summary: e.target.value })
+              }
+              className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Payment Schedule
+            </label>
+            <textarea
+              rows={3}
+              value={editForm.payment_schedule}
+              onChange={(e) =>
+                setEditForm({ ...editForm, payment_schedule: e.target.value })
+              }
+              className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Client Responsibilities
+            </label>
+            <textarea
+              rows={3}
+              value={editForm.client_responsibilities}
+              onChange={(e) =>
+                setEditForm({
+                  ...editForm,
+                  client_responsibilities: e.target.value,
+                })
+              }
+              className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Acceptance Criteria
+            </label>
+            <textarea
+              rows={3}
+              value={editForm.acceptance_criteria}
+              onChange={(e) =>
+                setEditForm({
+                  ...editForm,
+                  acceptance_criteria: e.target.value,
+                })
               }
               className="w-full text-sm border border-surface-200 rounded-lg px-3 py-2 bg-white text-charcoal focus:outline-none focus:ring-2 focus:ring-orange/30"
             />
@@ -394,11 +489,38 @@ export default function ProposalDetail() {
             {proposal.deliverables && (
               <Section title="Deliverables" body={proposal.deliverables} />
             )}
+            {proposal.out_of_scope && (
+              <Section title="Out of Scope" body={proposal.out_of_scope} />
+            )}
             {proposal.timeline && (
               <Section title="Timeline" body={proposal.timeline} />
             )}
+            {proposal.pricing_model && (
+              <Section
+                title="Pricing Model"
+                body={pricingLabel(proposal.pricing_model)}
+              />
+            )}
             {proposal.price_summary && (
               <Section title="Price Summary" body={proposal.price_summary} />
+            )}
+            {proposal.payment_schedule && (
+              <Section
+                title="Payment Schedule"
+                body={proposal.payment_schedule}
+              />
+            )}
+            {proposal.client_responsibilities && (
+              <Section
+                title="Client Responsibilities"
+                body={proposal.client_responsibilities}
+              />
+            )}
+            {proposal.acceptance_criteria && (
+              <Section
+                title="Acceptance Criteria"
+                body={proposal.acceptance_criteria}
+              />
             )}
             {proposal.total_cents > 0 && (
               <div className="border-t border-surface-100 pt-4 flex items-center justify-between">
@@ -413,8 +535,13 @@ export default function ProposalDetail() {
             {!proposal.intro &&
               !proposal.scope &&
               !proposal.deliverables &&
+              !proposal.out_of_scope &&
               !proposal.timeline &&
+              !proposal.pricing_model &&
               !proposal.price_summary &&
+              !proposal.payment_schedule &&
+              !proposal.client_responsibilities &&
+              !proposal.acceptance_criteria &&
               proposal.total_cents <= 0 && (
                 <p className="text-sm text-gray-400">
                   This proposal has no content yet. Click Edit to add details.
@@ -482,9 +609,28 @@ export default function ProposalDetail() {
                     <dt className="text-gray-400 text-xs">Signer</dt>
                     <dd className="text-charcoal font-medium">
                       {proposal.signer_name}
+                      {proposal.signer_title
+                        ? `, ${proposal.signer_title}`
+                        : ''}
                     </dd>
+                    {proposal.signer_email && (
+                      <dd className="text-gray-500 text-xs">
+                        {proposal.signer_email}
+                      </dd>
+                    )}
                   </div>
                 )}
+                <div>
+                  <dt className="text-gray-400 text-xs">Governing terms</dt>
+                  <dd className="text-charcoal font-medium">
+                    MSA v{proposal.msa_version || '2026-05'}
+                    {proposal.msa_accepted ? (
+                      <span className="text-green-700"> · accepted</span>
+                    ) : (
+                      <span className="text-gray-400"> · not yet accepted</span>
+                    )}
+                  </dd>
+                </div>
               </dl>
             </div>
           </div>

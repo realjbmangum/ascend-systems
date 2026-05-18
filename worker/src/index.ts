@@ -230,8 +230,10 @@ app.get("/api/proposals/sign/:token", async (c) => {
   const token = c.req.param("token");
   const proposal = await c.env.DB.prepare(
     `SELECT pr.id, pr.status, pr.title, pr.intro, pr.scope, pr.deliverables,
-            pr.timeline, pr.price_summary, pr.total_cents, pr.signed_at,
-            pr.signer_name, c.company_name AS client_name
+            pr.timeline, pr.price_summary, pr.total_cents, pr.out_of_scope,
+            pr.pricing_model, pr.payment_schedule, pr.client_responsibilities,
+            pr.acceptance_criteria, pr.msa_version, pr.signed_at,
+            pr.signer_name, pr.signer_title, c.company_name AS client_name
      FROM proposals pr
      LEFT JOIN clients c ON c.id = pr.client_id
      WHERE pr.sign_token = ?`
@@ -244,10 +246,26 @@ app.get("/api/proposals/sign/:token", async (c) => {
 
 app.post("/api/proposals/sign/:token", async (c) => {
   const token = c.req.param("token");
-  const body = await c.req.json<{ signer_name?: string }>();
+  const body = await c.req.json<{
+    signer_name?: string;
+    signer_title?: string;
+    signer_email?: string;
+    msa_accepted?: boolean;
+  }>();
   const signerName = (body.signer_name ?? "").trim();
+  const signerTitle = (body.signer_title ?? "").trim();
+  const signerEmail = (body.signer_email ?? "").trim();
   if (!signerName) {
     return c.json({ error: "signer_name is required" }, 400);
+  }
+  if (!signerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signerEmail)) {
+    return c.json({ error: "a valid signer_email is required" }, 400);
+  }
+  if (body.msa_accepted !== true) {
+    return c.json(
+      { error: "the Master Services Agreement must be accepted to sign" },
+      400
+    );
   }
   const proposal = await c.env.DB.prepare(
     "SELECT id, status FROM proposals WHERE sign_token = ?"
@@ -267,11 +285,14 @@ app.post("/api/proposals/sign/:token", async (c) => {
        SET status = 'accepted',
            signed_at = datetime('now'),
            signer_name = ?,
+           signer_title = ?,
+           signer_email = ?,
            signer_ip = ?,
+           msa_accepted = 1,
            updated_at = datetime('now')
      WHERE id = ?`
   )
-    .bind(signerName, ip, proposal.id)
+    .bind(signerName, signerTitle || null, signerEmail, ip, proposal.id)
     .run();
   const updated = await c.env.DB.prepare(
     "SELECT signed_at FROM proposals WHERE id = ?"

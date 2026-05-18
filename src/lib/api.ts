@@ -200,12 +200,20 @@ export const api = {
   // Public — Proposal sign
   getProposalByToken: (token: string) =>
     request<any>(`/proposals/sign/${token}`),
-  signProposal: (token: string, signerName: string) =>
+  signProposal: (
+    token: string,
+    data: {
+      signer_name: string;
+      signer_title?: string;
+      signer_email: string;
+      msa_accepted: boolean;
+    }
+  ) =>
     request<{ success: boolean; signed_at: string }>(
       `/proposals/sign/${token}`,
       {
         method: 'POST',
-        body: JSON.stringify({ signer_name: signerName }),
+        body: JSON.stringify(data),
       }
     ),
 
