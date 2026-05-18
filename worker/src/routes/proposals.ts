@@ -167,7 +167,10 @@ proposals.post("/:id/send", async (c) => {
       .run();
   }
 
-  const origin = c.env.APP_ORIGIN ?? "https://ascendsystems.ai";
+  // The public sign page (ProposalSign) is served by the admin SPA, so the
+  // client-facing sign link must point at the admin origin — not APP_ORIGIN.
+  const origin =
+    c.env.ADMIN_ORIGIN ?? c.env.APP_ORIGIN ?? "https://admin.ascendsystems.ai";
   return c.json({
     success: true,
     sign_url: `${origin}/proposals/${token}`,
