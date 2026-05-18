@@ -219,6 +219,54 @@ export async function sendProposalEmail(
   });
 }
 
+export async function sendProposalSignedAlert(
+  apiKey: string,
+  args: {
+    proposalTitle: string;
+    signerName: string;
+    signerTitle?: string | null;
+    signerEmail: string;
+    signedAt: string;
+    proposalUrl: string;
+  }
+): Promise<boolean> {
+  const { proposalTitle, signerName, signerTitle, signerEmail, signedAt, proposalUrl } =
+    args;
+  const signerLine = signerTitle
+    ? `${signerName}, ${signerTitle}`
+    : signerName;
+  const html = `
+    <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#1C1C1E;background:#ffffff">
+      <div style="background:#1C1C1E;padding:24px 32px">
+        <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.5px">Ascend Systems</span>
+      </div>
+      <div style="padding:40px 32px;border-top:4px solid #22C55E">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 16px;color:#1C1C1E">Statement of Work signed</h1>
+        <p style="font-size:15px;line-height:1.6;color:#444;margin:0 0 20px">
+          <strong style="color:#1C1C1E">${escapeHtml(proposalTitle)}</strong>
+          was just accepted and signed.
+        </p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;margin:0 0 28px">
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;width:120px">Signed by</td><td style="padding:8px 12px;border-bottom:1px solid #eee">${escapeHtml(signerLine)}</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600">Email</td><td style="padding:8px 12px;border-bottom:1px solid #eee">${escapeHtml(signerEmail)}</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600">Signed at</td><td style="padding:8px 12px;border-bottom:1px solid #eee">${escapeHtml(signedAt)} UTC</td></tr>
+        </table>
+        <p style="margin:0">
+          <a href="${proposalUrl}"
+             style="display:inline-block;background:#C45A2C;color:#ffffff;padding:14px 28px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">
+            View signed proposal
+          </a>
+        </p>
+      </div>
+    </div>
+  `;
+  return sendEmail(apiKey, {
+    to: COPY_EMAIL,
+    subject: `Signed: ${proposalTitle}`,
+    html,
+  });
+}
+
 export async function sendAdminAlert(
   apiKey: string,
   formData: Record<string, string | null | undefined>,

@@ -16,7 +16,11 @@ import analyticsRoutes, { refreshAllProjectAnalytics } from "./routes/analytics"
 import resourceRoutes from "./routes/resources";
 import toolsRoutes from "./routes/tools";
 import activityRoutes from "./routes/activities";
-import { sendFormConfirmation, sendAdminAlert } from "./email";
+import {
+  sendFormConfirmation,
+  sendAdminAlert,
+  sendProposalSignedAlert,
+} from "./email";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -268,10 +272,10 @@ app.post("/api/proposals/sign/:token", async (c) => {
     );
   }
   const proposal = await c.env.DB.prepare(
-    "SELECT id, status FROM proposals WHERE sign_token = ?"
+    "SELECT id, status, title FROM proposals WHERE sign_token = ?"
   )
     .bind(token)
-    .first<{ id: number; status: string }>();
+    .first<{ id: number; status: string; title: string }>();
   if (!proposal) return c.json({ error: "not found" }, 404);
   if (proposal.status !== "draft" && proposal.status !== "sent") {
     return c.json({ error: "proposal is not signable" }, 400);
@@ -299,6 +303,25 @@ app.post("/api/proposals/sign/:token", async (c) => {
   )
     .bind(proposal.id)
     .first<{ signed_at: string }>();
+
+  // Notify the owner that a Statement of Work was just executed.
+  if (c.env.SENDGRID_API_KEY) {
+    const adminOrigin =
+      c.env.ADMIN_ORIGIN ??
+      c.env.APP_ORIGIN ??
+      "https://admin.ascendsystems.ai";
+    c.executionCtx.waitUntil(
+      sendProposalSignedAlert(c.env.SENDGRID_API_KEY, {
+        proposalTitle: proposal.title,
+        signerName,
+        signerTitle: signerTitle || null,
+        signerEmail,
+        signedAt: updated?.signed_at ?? new Date().toISOString(),
+        proposalUrl: `${adminOrigin}/admin/proposals/${proposal.id}`,
+      })
+    );
+  }
+
   return c.json({ success: true, signed_at: updated?.signed_at });
 });
 
