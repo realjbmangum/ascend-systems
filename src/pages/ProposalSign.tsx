@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../lib/api';
+import RichText from '../components/RichText';
 
 function formatMoney(cents: number) {
   return `$${((cents || 0) / 100).toFixed(2)}`;
@@ -117,6 +118,24 @@ export default function ProposalSign() {
   const acceptedAt = signedJustNow?.at || proposal.signed_at;
   const msaVersion = proposal.msa_version || '2026-05';
 
+  const contentSections = (
+    [
+      ['Introduction', proposal.intro],
+      ['Scope of Work', proposal.scope],
+      ['Deliverables', proposal.deliverables],
+      ['Out of Scope', proposal.out_of_scope],
+      ['Timeline', proposal.timeline],
+      ['Client Responsibilities', proposal.client_responsibilities],
+      ['Acceptance Criteria', proposal.acceptance_criteria],
+    ] as [string, string | null | undefined][]
+  ).filter(([, body]) => body && String(body).trim()) as [string, string][];
+
+  const hasInvestment =
+    !!proposal.pricing_model ||
+    !!proposal.price_summary ||
+    !!proposal.payment_schedule ||
+    proposal.total_cents > 0;
+
   return (
     <div className="min-h-screen bg-surface">
       {/* Brand header */}
@@ -148,60 +167,25 @@ export default function ProposalSign() {
           </div>
 
           {/* Sections */}
-          <div className="px-8 sm:px-12 py-10 space-y-8">
-            {proposal.intro && (
-              <Section title="Introduction" body={proposal.intro} />
-            )}
-            {proposal.scope && <Section title="Scope" body={proposal.scope} />}
-            {proposal.deliverables && (
-              <Section title="Deliverables" body={proposal.deliverables} />
-            )}
-            {proposal.out_of_scope && (
-              <Section title="Out of Scope" body={proposal.out_of_scope} />
-            )}
-            {proposal.timeline && (
-              <Section title="Timeline" body={proposal.timeline} />
-            )}
-            {proposal.pricing_model && (
-              <Section
-                title="Pricing Model"
-                body={
-                  PRICING_LABELS[proposal.pricing_model] ||
-                  proposal.pricing_model
-                }
-              />
-            )}
-            {proposal.price_summary && (
-              <Section title="Pricing" body={proposal.price_summary} />
-            )}
-            {proposal.payment_schedule && (
-              <Section
-                title="Payment Schedule"
-                body={proposal.payment_schedule}
-              />
-            )}
-            {proposal.client_responsibilities && (
-              <Section
-                title="Client Responsibilities"
-                body={proposal.client_responsibilities}
-              />
-            )}
-            {proposal.acceptance_criteria && (
-              <Section
-                title="Acceptance Criteria"
-                body={proposal.acceptance_criteria}
-              />
+          <div className="px-8 sm:px-12 py-10 space-y-10">
+            {contentSections.length === 0 && !hasInvestment && (
+              <p className="text-sm text-gray-400">
+                This Statement of Work has no content yet.
+              </p>
             )}
 
-            {proposal.total_cents > 0 && (
-              <div className="border-t border-surface-100 pt-6 flex items-baseline justify-between">
-                <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">
-                  Total
-                </span>
-                <span className="text-3xl font-bold text-charcoal">
-                  {formatMoney(proposal.total_cents)}
-                </span>
-              </div>
+            {contentSections.map(([title, body], i) => (
+              <Section key={title} index={i + 1} title={title} body={body} />
+            ))}
+
+            {hasInvestment && (
+              <Investment
+                index={contentSections.length + 1}
+                pricingModel={proposal.pricing_model}
+                priceSummary={proposal.price_summary}
+                paymentSchedule={proposal.payment_schedule}
+                totalCents={proposal.total_cents}
+              />
             )}
           </div>
 
@@ -359,13 +343,102 @@ export default function ProposalSign() {
   );
 }
 
-function Section({ title, body }: { title: string; body: string }) {
+function SectionHeading({ index, title }: { index: number; title: string }) {
   return (
-    <div>
-      <h2 className="text-xs uppercase tracking-widest text-gray-400 font-semibold mb-3">
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-xs font-bold text-orange tabular-nums">
+        {String(index).padStart(2, '0')}
+      </span>
+      <h2 className="text-lg font-bold text-charcoal tracking-tight">
         {title}
       </h2>
-      <p className="text-charcoal whitespace-pre-wrap leading-relaxed">{body}</p>
+      <span className="flex-1 border-t border-surface-100" />
     </div>
+  );
+}
+
+function Section({
+  index,
+  title,
+  body,
+}: {
+  index: number;
+  title: string;
+  body: string;
+}) {
+  return (
+    <section>
+      <SectionHeading index={index} title={title} />
+      <div className="sm:pl-8">
+        <RichText text={body} />
+      </div>
+    </section>
+  );
+}
+
+function Investment({
+  index,
+  pricingModel,
+  priceSummary,
+  paymentSchedule,
+  totalCents,
+}: {
+  index: number;
+  pricingModel?: string;
+  priceSummary?: string;
+  paymentSchedule?: string;
+  totalCents?: number;
+}) {
+  const modelLabel = pricingModel
+    ? PRICING_LABELS[pricingModel] || pricingModel
+    : null;
+  const showTotal = (totalCents ?? 0) > 0;
+
+  return (
+    <section>
+      <SectionHeading index={index} title="Investment" />
+      <div className="sm:pl-8">
+        <div className="rounded-2xl border border-surface-100 overflow-hidden">
+          {showTotal && (
+            <div className="flex items-baseline justify-between gap-4 bg-charcoal px-6 py-5">
+              <span className="text-xs uppercase tracking-widest text-white/50 font-semibold">
+                {modelLabel ? `Total · ${modelLabel}` : 'Total'}
+              </span>
+              <span className="text-3xl font-bold text-white">
+                {formatMoney(totalCents || 0)}
+              </span>
+            </div>
+          )}
+          {(priceSummary || paymentSchedule || (!showTotal && modelLabel)) && (
+            <div className="px-6 py-6 space-y-6 bg-surface/30">
+              {!showTotal && modelLabel && (
+                <div>
+                  <h3 className="text-xs uppercase tracking-widest text-gray-400 font-semibold mb-2">
+                    Pricing Model
+                  </h3>
+                  <p className="text-charcoal font-medium">{modelLabel}</p>
+                </div>
+              )}
+              {priceSummary && (
+                <div>
+                  <h3 className="text-xs uppercase tracking-widest text-gray-400 font-semibold mb-3">
+                    Pricing
+                  </h3>
+                  <RichText text={priceSummary} />
+                </div>
+              )}
+              {paymentSchedule && (
+                <div>
+                  <h3 className="text-xs uppercase tracking-widest text-gray-400 font-semibold mb-3">
+                    Payment Schedule
+                  </h3>
+                  <RichText text={paymentSchedule} />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }

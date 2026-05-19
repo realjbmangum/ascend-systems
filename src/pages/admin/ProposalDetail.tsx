@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { PRICING_MODELS } from './CreateProposal';
+import RichText from '../../components/RichText';
 
 const pricingLabel = (v?: string) =>
   PRICING_MODELS.find((m) => m.value === (v || ''))?.label || 'Not specified';
@@ -663,7 +664,7 @@ function Section({ title, body }: { title: string; body: string }) {
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
         {title}
       </h2>
-      <p className="text-charcoal whitespace-pre-wrap leading-relaxed">{body}</p>
+      <RichText text={body} />
     </div>
   );
 }
