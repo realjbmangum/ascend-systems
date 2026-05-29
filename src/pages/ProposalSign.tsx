@@ -139,21 +139,33 @@ export default function ProposalSign() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Brand header */}
-      <header className="bg-charcoal text-white">
+      <header className="bg-charcoal text-white print:hidden">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-lg font-bold tracking-tight">
               Ascend Systems
             </span>
           </div>
-          <span className="text-xs text-gray-400 uppercase tracking-wider">
-            Statement of Work
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-gray-400 uppercase tracking-wider">
+              Statement of Work
+            </span>
+            <button
+              onClick={() => window.print()}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+            >
+              Download PDF
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-10">
-        <div className="bg-white rounded-2xl border border-surface-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-surface-100 shadow-sm overflow-hidden print:border-0 print:shadow-none print:rounded-none">
+          {/* Print-only brand line (the dark header is hidden when printing) */}
+          <div className="hidden print:block px-8 sm:px-12 pt-8 text-xs uppercase tracking-widest text-gray-500 font-semibold">
+            Ascend Systems &middot; Statement of Work
+          </div>
           {/* Hero */}
           <div className="px-8 sm:px-12 py-10 border-b border-surface-100">
             {proposal.client_name && (
@@ -212,7 +224,7 @@ export default function ProposalSign() {
           </div>
 
           {/* Sign / accepted */}
-          <div className="px-8 sm:px-12 py-10 bg-surface/50 border-t border-surface-100">
+          <div className="px-8 sm:px-12 py-10 bg-surface/50 border-t border-surface-100 print:hidden">
             {accepted ? (
               <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
                 <div className="text-green-700 text-sm font-semibold uppercase tracking-widest mb-1">
@@ -400,11 +412,11 @@ function Investment({
       <div className="sm:pl-8">
         <div className="rounded-2xl border border-surface-100 overflow-hidden">
           {showTotal && (
-            <div className="flex items-baseline justify-between gap-4 bg-charcoal px-6 py-5">
-              <span className="text-xs uppercase tracking-widest text-white/50 font-semibold">
+            <div className="flex items-baseline justify-between gap-4 bg-charcoal px-6 py-5 print:bg-white print:border-b print:border-surface-100">
+              <span className="text-xs uppercase tracking-widest text-white/50 font-semibold print:text-gray-500">
                 {modelLabel ? `Total · ${modelLabel}` : 'Total'}
               </span>
-              <span className="text-3xl font-bold text-white">
+              <span className="text-3xl font-bold text-white print:text-charcoal">
                 {formatMoney(totalCents || 0)}
               </span>
             </div>
