@@ -169,51 +169,160 @@ export async function sendProposalEmail(
     recipientName?: string;
     proposalTitle: string;
     signUrl: string;
+    clientName?: string;
+    proposalNumber?: number;
+    pricingHeadline?: string; // e.g. "$3,000 / month" or "Two-tier retainer"
   }
 ): Promise<boolean> {
-  const { to, recipientName, proposalTitle, signUrl } = args;
-  const greeting = recipientName
-    ? `Hi ${escapeHtml(recipientName.split(" ")[0])},`
-    : "Hi there,";
+  const {
+    to,
+    recipientName,
+    proposalTitle,
+    signUrl,
+    clientName,
+    proposalNumber,
+    pricingHeadline,
+  } = args;
+  const firstName = recipientName?.split(/\s+/)[0] || null;
+  const greetingName = firstName ? escapeHtml(firstName) : "there";
+
+  // Email-safe font stack — system fonts only. Web fonts are unreliable in
+  // Gmail/Outlook; matches the calculator-report email's approach.
+  const FF =
+    "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  const MONO = "'SF Mono',Menlo,Consolas,monospace";
+  const LOGO_URL = "https://ascendsystems.ai/images/logo.png";
+  const SITE_URL = "https://ascendsystems.ai";
+
+  const safeTitle = escapeHtml(proposalTitle);
+  const safeClient = clientName ? escapeHtml(clientName) : null;
+  const safePricing = pricingHeadline ? escapeHtml(pricingHeadline) : null;
+  const proposalId = proposalNumber
+    ? `#${String(proposalNumber).padStart(4, "0")}`
+    : "";
+
   const html = `
-    <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:0;color:#1C1C1E;background:#ffffff">
-      <div style="background:#1C1C1E;padding:24px 32px">
-        <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.5px">Ascend Systems</span>
-      </div>
-      <div style="padding:40px 32px;border-top:4px solid #C45A2C">
-        <h1 style="font-size:22px;font-weight:700;margin:0 0 16px;color:#1C1C1E">Your Statement of Work is ready</h1>
-        <p style="font-size:15px;line-height:1.6;color:#1C1C1E;margin:0 0 16px">${greeting}</p>
-        <p style="font-size:15px;line-height:1.6;color:#444;margin:0 0 16px">
-          We've prepared the Statement of Work for
-          <strong style="color:#1C1C1E">${escapeHtml(proposalTitle)}</strong>.
-          Review the scope, deliverables, and pricing, then sign online when
-          you're ready.
-        </p>
-        <p style="font-size:15px;line-height:1.6;color:#444;margin:0 0 32px">
-          Signing accepts this Statement of Work and our Master Services
-          Agreement together — both are linked on the page.
-        </p>
-        <p style="margin:0 0 32px">
-          <a href="${signUrl}"
-             style="display:inline-block;background:#C45A2C;color:#ffffff;padding:14px 28px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">
-            Review &amp; sign
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${safeTitle} — Ascend Systems</title>
+</head>
+<body style="margin:0;padding:0;background:#EDF2F7;font-family:${FF};color:#1E2A32;">
+
+<!-- Preheader -->
+<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#EDF2F7;opacity:0;">
+  Your Statement of Work from Ascend Systems is ready to review and sign.
+</div>
+
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#EDF2F7;padding:24px 0;">
+  <tr><td align="center">
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="640" style="max-width:640px;width:100%;background:#FFFFFF;border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(28,28,30,0.10);">
+
+    <!-- DARK COVER -->
+    <tr><td style="background:#1E2A32;padding:36px 40px 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td align="left" style="vertical-align:middle;">
+            <img src="${LOGO_URL}" alt="Ascend Systems" width="160" style="display:block;border:0;width:160px;max-width:160px;height:auto;outline:none;text-decoration:none;">
+          </td>
+          <td align="right" style="vertical-align:middle;font-family:${MONO};font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.4);">
+            Statement of Work${proposalId ? "&nbsp;·&nbsp;" + proposalId : ""}
+          </td>
+        </tr>
+      </table>
+
+      <p style="margin:40px 0 10px;font-family:${MONO};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#E07A4F;">Ready for your signature</p>
+      <h1 style="margin:0 0 18px;font-family:${FF};font-size:28px;line-height:1.15;font-weight:800;color:#FFFFFF;letter-spacing:-0.5px;">${safeTitle}</h1>
+
+      ${
+        safeClient
+          ? `<p style="margin:0;font-family:${MONO};font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Prepared for</p>
+             <p style="margin:4px 0 0;font-size:15px;color:#FFFFFF;font-weight:600;">${safeClient}</p>`
+          : ""
+      }
+    </td></tr>
+
+    <!-- Orange accent strip -->
+    <tr><td style="background:#D4632C;line-height:0;font-size:0;height:3px;">&nbsp;</td></tr>
+
+    <!-- Greeting + body -->
+    <tr><td style="padding:36px 40px 8px;background:#FFFFFF;">
+      <p style="margin:0 0 18px;font-size:16px;line-height:1.6;color:#1E2A32;">Hi ${greetingName},</p>
+      <p style="margin:0 0 18px;font-size:16px;line-height:1.65;color:#1E2A32;">
+        Your Statement of Work is ready to review. It covers scope,
+        deliverables, timeline, and pricing — everything we&rsquo;ve discussed,
+        documented in one place.
+      </p>
+      <p style="margin:0;font-size:16px;line-height:1.65;color:#1E2A32;">
+        Signing it accepts both this SOW and our Master Services Agreement —
+        both are linked on the page.
+      </p>
+    </td></tr>
+
+    ${
+      safePricing
+        ? `
+    <!-- At-a-glance pricing chip -->
+    <tr><td style="padding:24px 40px 8px;background:#FFFFFF;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FEF5F0;border-left:4px solid #D4632C;border-radius:0 10px 10px 0;">
+        <tr><td style="padding:18px 22px;">
+          <p style="margin:0 0 4px;font-family:${MONO};font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#B85328;">At a glance</p>
+          <p style="margin:0;font-family:${FF};font-size:18px;line-height:1.3;font-weight:700;color:#1E2A32;letter-spacing:-0.2px;">${safePricing}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+    `
+        : ""
+    }
+
+    <!-- Primary CTA -->
+    <tr><td style="padding:28px 40px 16px;background:#FFFFFF;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="left">
+        <tr><td style="background:#D4632C;border-radius:8px;">
+          <a href="${signUrl}" style="display:inline-block;padding:16px 32px;font-family:${FF};font-size:15px;font-weight:600;color:#FFFFFF;text-decoration:none;letter-spacing:0.01em;">
+            Review &amp; sign &rarr;
           </a>
-        </p>
-        <p style="font-size:13px;color:#888;margin:0">
-          Questions before you sign? Just reply to this email.
-        </p>
-      </div>
-      <div style="padding:16px 32px;background:#f9f9f9;border-top:1px solid #eee">
-        <p style="font-size:12px;color:#aaa;margin:0">
-          Or copy this link into your browser:<br>
-          <a href="${signUrl}" style="color:#C45A2C;word-break:break-all">${signUrl}</a>
-        </p>
-      </div>
-    </div>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- Sign-off -->
+    <tr><td style="padding:8px 40px 32px;background:#FFFFFF;">
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#6B7280;">Questions before you sign? Just reply to this email — it lands in my inbox.</p>
+      <p style="margin:6px 0 0;font-size:14px;line-height:1.6;color:#1E2A32;font-weight:600;">— Brian Mangum, Ascend Systems</p>
+    </td></tr>
+
+    <!-- Plain-link fallback -->
+    <tr><td style="padding:18px 40px;background:#F9FAFB;border-top:1px solid #E5E7EB;">
+      <p style="margin:0 0 4px;font-family:${MONO};font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#9CA3AF;">Or paste this link</p>
+      <p style="margin:0;font-family:${MONO};font-size:12px;color:#4B5563;word-break:break-all;">
+        <a href="${signUrl}" style="color:#B85328;text-decoration:none;">${signUrl}</a>
+      </p>
+    </td></tr>
+
+    <!-- Footer -->
+    <tr><td style="padding:24px 32px;background:#1E2A32;text-align:center;">
+      <p style="margin:0 0 6px;font-family:${MONO};font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#9CA3AF;">Ascend Systems</p>
+      <p style="margin:0;font-size:12px;color:#6B7280;">
+        Charlotte, NC &middot; <a href="${SITE_URL}" style="color:#E07A4F;text-decoration:none;">ascendsystems.ai</a>
+      </p>
+    </td></tr>
+
+  </table>
+
+  </td></tr>
+</table>
+
+</body>
+</html>
   `;
+
   return sendEmail(apiKey, {
     to,
-    subject: `Review and sign: ${proposalTitle} — Ascend Systems`,
+    subject: `Review &amp; sign: ${proposalTitle}`,
     html,
     copyOwner: true,
   });

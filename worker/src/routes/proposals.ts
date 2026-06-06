@@ -146,8 +146,9 @@ proposals.post("/:id/send", async (c) => {
   const id = c.req.param("id");
   const proposal = await c.env.DB.prepare(
     `SELECT pr.id, pr.sign_token, pr.title,
-            c.email AS client_email, c.contact_name,
-            l.email AS lead_email, l.name AS lead_name
+            pr.pricing_model, pr.total_cents,
+            c.email AS client_email, c.contact_name, c.company_name,
+            l.email AS lead_email, l.name AS lead_name, l.company AS lead_company
      FROM proposals pr
      LEFT JOIN clients c ON c.id = pr.client_id
      LEFT JOIN leads l ON l.id = pr.lead_id
@@ -158,10 +159,14 @@ proposals.post("/:id/send", async (c) => {
       id: number;
       sign_token: string | null;
       title: string;
+      pricing_model: string | null;
+      total_cents: number | null;
       client_email: string | null;
       contact_name: string | null;
+      company_name: string | null;
       lead_email: string | null;
       lead_name: string | null;
+      lead_company: string | null;
     }>();
   if (!proposal) return c.json({ error: "not found" }, 404);
 
@@ -193,6 +198,19 @@ proposals.post("/:id/send", async (c) => {
   const recipientName =
     proposal.contact_name ?? proposal.lead_name ?? undefined;
 
+  // Build a tight pricing headline for the "At a glance" chip in the email.
+  // Retainer → "$3,000 / month". Fixed → "$X total". Time/Materials → label only.
+  let pricingHeadline: string | undefined;
+  if (proposal.pricing_model === "retainer" && (proposal.total_cents ?? 0) > 0) {
+    pricingHeadline = `$${((proposal.total_cents ?? 0) / 100).toLocaleString("en-US")} / month retainer`;
+  } else if (proposal.pricing_model === "fixed" && (proposal.total_cents ?? 0) > 0) {
+    pricingHeadline = `$${((proposal.total_cents ?? 0) / 100).toLocaleString("en-US")} fixed`;
+  } else if (proposal.pricing_model === "time_materials") {
+    pricingHeadline = "Time & Materials";
+  }
+
+  const clientName = proposal.company_name ?? proposal.lead_company ?? undefined;
+
   let emailed = false;
   if (recipientEmail && c.env.SENDGRID_API_KEY) {
     emailed = await sendProposalEmail(c.env.SENDGRID_API_KEY, {
@@ -200,6 +218,9 @@ proposals.post("/:id/send", async (c) => {
       recipientName,
       proposalTitle: proposal.title,
       signUrl,
+      clientName,
+      proposalNumber: proposal.id,
+      pricingHeadline,
     });
   }
 
