@@ -112,6 +112,7 @@ proposals.patch("/:id", async (c) => {
     "acceptance_criteria",
     "msa_version",
     "status",
+    "tiers", // JSON string — admin pricing-tier editor
   ];
   const sets: string[] = [];
   const params: (string | number | null)[] = [];

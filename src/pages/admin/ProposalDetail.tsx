@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { PRICING_MODELS } from './CreateProposal';
 import ProposalDocument from '../../components/ProposalDocument';
+import type { Tier } from '../../components/ProposalDocument';
+import TierEditor from '../../components/TierEditor';
 
 const statusStyles: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-700 border-gray-200',
@@ -41,6 +43,7 @@ export default function ProposalDetail() {
     total: '',
     status: 'draft',
   });
+  const [tierEdit, setTierEdit] = useState<Tier[]>([]);
 
   const load = () => {
     setLoading(true);
@@ -63,6 +66,17 @@ export default function ProposalDetail() {
           total: data.total_cents != null ? (data.total_cents / 100).toFixed(2) : '',
           status: data.status || 'draft',
         });
+        // Parse tiers JSON into the editable array (defaults to [] when null).
+        let parsedTiers: Tier[] = [];
+        if (data.tiers) {
+          try {
+            const arr = JSON.parse(data.tiers);
+            if (Array.isArray(arr)) parsedTiers = arr;
+          } catch {
+            // ignore — start fresh
+          }
+        }
+        setTierEdit(parsedTiers);
       })
       .catch(() => navigate('/admin/proposals'))
       .finally(() => setLoading(false));
@@ -92,6 +106,10 @@ export default function ProposalDetail() {
       if (editForm.total !== '' && !isNaN(totalNum)) {
         payload.total_cents = Math.round(totalNum * 100);
       }
+      // Tiers go up as a JSON-encoded string. Empty array → null so the
+      // proposal falls back to the legacy resolver.
+      payload.tiers =
+        tierEdit && tierEdit.length > 0 ? JSON.stringify(tierEdit) : null;
       await api.updateProposal(Number(id), payload);
       setEditing(false);
       load();
@@ -310,6 +328,8 @@ export default function ProposalDetail() {
         <EditForm
           form={editForm}
           setForm={setEditForm}
+          tiers={tierEdit}
+          setTiers={setTierEdit}
           onSave={handleSaveEdit}
           saving={saving}
         />
@@ -338,16 +358,20 @@ export default function ProposalDetail() {
 function EditForm({
   form,
   setForm,
+  tiers,
+  setTiers,
   onSave,
   saving,
 }: {
   form: any;
   setForm: (f: any) => void;
+  tiers: Tier[];
+  setTiers: (t: Tier[]) => void;
   onSave: () => void;
   saving: boolean;
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-surface-100 p-6 space-y-4 max-w-3xl">
+    <div className="bg-white rounded-2xl border border-surface-100 p-6 space-y-6 max-w-3xl">
       <TextInput
         label="Title"
         value={form.title}
@@ -396,8 +420,13 @@ function EditForm({
         onChange={(v) => setForm({ ...form, pricing_model: v })}
         options={PRICING_MODELS}
       />
+
+      <div className="pt-2 border-t border-surface-100">
+        <TierEditor value={tiers} onChange={setTiers} />
+      </div>
+
       <TextArea
-        label="Price Summary"
+        label="Price Summary (fallback prose)"
         rows={5}
         value={form.price_summary}
         onChange={(v) => setForm({ ...form, price_summary: v })}

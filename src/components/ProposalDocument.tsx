@@ -35,6 +35,7 @@ interface ProposalLike {
   created_at?: string;
   msa_version?: string | null;
   selected_tier?: string | null;
+  tiers?: string | null; // JSON-encoded Tier[]
 }
 
 const PRICING_LABELS: Record<string, string> = {
@@ -64,7 +65,9 @@ function formatRefDate(iso?: string) {
 
 /* ─────────────────────────────────────── Tier definitions ── */
 
-interface Tier {
+export type PortalModel = 'included' | 'separate' | 'none';
+
+export interface Tier {
   key: string;                 // 'a' | 'b'
   optionKey: string;           // "Option A" / "Option B"
   name: string;                // "Bucket" / "Unlimited"
@@ -72,25 +75,43 @@ interface Tier {
   sub: string;
   features: string[];
   recommended: boolean;
-  portalIncluded: boolean;     // true → Portal bundled in monthly
-  portalPerPropertyDollars?: number; // only when portalIncluded=false
+  portalModel: PortalModel;
+  portalPerPropertyDollars?: number; // when portalModel='separate'
+  portalPropertyCount?: number;      // when portalModel='separate'
   totalBandTagline: string;
 }
 
-/* Suite Manager's active property count — used for "Portal at 32 × $35"
-   math on the Bucket tier. Hard-coded for now; future enhancement: derive
-   from a structured field on the proposal or a join. */
-const PORTAL_PROPERTY_COUNT = 32;
+/* Default property count fallback when a tier's portalPropertyCount is not
+   set (e.g. legacy data from the hard-coded resolver). */
+const DEFAULT_PORTAL_PROPERTY_COUNT = 32;
 
 /**
- * Return the structured tier set for this proposal — or null when the
- * proposal isn't a tiered offering (e.g. fixed-fee one-off). Hard-coded
- * for the CTO retainer pattern; other tiered shapes can opt in later.
+ * Return the structured tier set for this proposal.
+ *
+ * Priority order:
+ *   1. `proposal.tiers` — JSON column populated by the admin tier editor.
+ *      This is the source of truth going forward.
+ *   2. Legacy fallback for retainer proposals whose price_summary references
+ *      the original two-tier convention but predate the JSON column.
+ *
+ * Returns null when the proposal has no tier-based pricing.
  */
 function resolveTiers(proposal: ProposalLike): Tier[] | null {
+  // 1) Structured tier data from the admin editor
+  if (proposal.tiers) {
+    try {
+      const parsed = JSON.parse(proposal.tiers) as Tier[];
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map(normalizeTier);
+      }
+    } catch {
+      // Fall through to legacy resolver on bad JSON.
+    }
+  }
+
+  // 2) Legacy fallback
   if (proposal.pricing_model !== 'retainer') return null;
   const blob = proposal.price_summary || '';
-  // Signal: the price_summary references the two-tier convention.
   if (!/OPTION\s+A/i.test(blob) || !/OPTION\s+B/i.test(blob)) return null;
 
   return [
@@ -107,8 +128,9 @@ function resolveTiers(proposal: ProposalLike): Tier[] | null {
         '**Document Portal not included** — billed separately at **$35 per active property / month**',
       ],
       recommended: false,
-      portalIncluded: false,
+      portalModel: 'separate',
       portalPerPropertyDollars: 35,
+      portalPropertyCount: 32,
       totalBandTagline:
         'Monthly retainer + Document Portal billed per property',
     },
@@ -125,11 +147,45 @@ function resolveTiers(proposal: ProposalLike): Tier[] | null {
         '**Document Portal included** — every active property, no separate billing',
       ],
       recommended: true,
-      portalIncluded: true,
+      portalModel: 'included',
       totalBandTagline:
         'Monthly retainer · Document Portal included · weekly calls',
     },
   ];
+}
+
+/* Tolerate older saved tier shapes (e.g. portalIncluded:true instead of
+   portalModel:'included'). Coerce numeric fields. */
+function normalizeTier(raw: any): Tier {
+  const portalModel: PortalModel =
+    raw.portalModel === 'included' ||
+    raw.portalModel === 'separate' ||
+    raw.portalModel === 'none'
+      ? raw.portalModel
+      : raw.portalIncluded
+      ? 'included'
+      : raw.portalPerPropertyDollars
+      ? 'separate'
+      : 'none';
+  return {
+    key: String(raw.key || ''),
+    optionKey: String(raw.optionKey || ''),
+    name: String(raw.name || ''),
+    monthlyDollars: Number(raw.monthlyDollars) || 0,
+    sub: String(raw.sub || ''),
+    features: Array.isArray(raw.features) ? raw.features.map(String) : [],
+    recommended: !!raw.recommended,
+    portalModel,
+    portalPerPropertyDollars:
+      raw.portalPerPropertyDollars != null
+        ? Number(raw.portalPerPropertyDollars) || 0
+        : undefined,
+    portalPropertyCount:
+      raw.portalPropertyCount != null
+        ? Number(raw.portalPropertyCount) || 0
+        : undefined,
+    totalBandTagline: String(raw.totalBandTagline || ''),
+  };
 }
 
 /* ─────────────────────────────────────── Rich-ish renderers ── */
@@ -633,8 +689,8 @@ function TotalBand({
     ? `Selected — ${tier.optionKey} · ${tier.name} (Recommended)`
     : `Selected — ${tier.optionKey} · ${tier.name}`;
 
-  if (tier.portalIncluded) {
-    // Single number: Unlimited rolls Portal into the monthly retainer.
+  if (tier.portalModel !== 'separate') {
+    // Single number: Portal included (or no Portal at all). One headline.
     return (
       <div className="pd-total-band">
         <div className="pd-tb-glow" />
@@ -650,9 +706,10 @@ function TotalBand({
     );
   }
 
-  // Bucket: show retainer + portal breakdown + computed total.
+  // Separate Portal billing: show retainer + portal breakdown + computed total.
   const portalRate = tier.portalPerPropertyDollars || 35;
-  const portalMonthly = portalRate * PORTAL_PROPERTY_COUNT;
+  const portalCount = tier.portalPropertyCount || DEFAULT_PORTAL_PROPERTY_COUNT;
+  const portalMonthly = portalRate * portalCount;
   const allInMonthly = tier.monthlyDollars + portalMonthly;
 
   return (
@@ -671,7 +728,7 @@ function TotalBand({
           <span className="pd-tb-line-l">
             Document Portal
             <span className="pd-tb-line-sub">
-              ${portalRate} × {PORTAL_PROPERTY_COUNT} properties
+              ${portalRate} × {portalCount} properties
             </span>
           </span>
           <span className="pd-tb-line-v">{formatDollars(portalMonthly)}</span>

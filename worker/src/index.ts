@@ -237,7 +237,7 @@ app.get("/api/proposals/sign/:token", async (c) => {
             pr.timeline, pr.price_summary, pr.total_cents, pr.out_of_scope,
             pr.pricing_model, pr.payment_schedule, pr.client_responsibilities,
             pr.acceptance_criteria, pr.msa_version, pr.signed_at,
-            pr.signer_name, pr.signer_title, pr.selected_tier,
+            pr.signer_name, pr.signer_title, pr.selected_tier, pr.tiers,
             pr.created_at,
             c.company_name AS client_name
      FROM proposals pr

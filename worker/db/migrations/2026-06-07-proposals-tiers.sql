@@ -1,0 +1,30 @@
+-- Migration: structured pricing tier data on proposals.
+--
+-- tiers is a JSON array of Tier objects so the admin can author per-proposal
+-- pricing tier cards (option key, name, monthly $, sub, features, Portal
+-- model, recommended flag) instead of relying on the hard-coded resolver
+-- in ProposalDocument. Old proposals leave it NULL and fall through to the
+-- legacy resolver.
+--
+-- Tier shape:
+--   {
+--     key: "a" | "b" | ...
+--     optionKey: "Option A" | ...
+--     name: "Bucket" | "Unlimited" | ...
+--     monthlyDollars: number
+--     sub: string
+--     features: string[]    // **bold** inline supported
+--     recommended: boolean
+--     portalModel: "included" | "separate" | "none"
+--     portalPerPropertyDollars?: number
+--     portalPropertyCount?: number
+--     totalBandTagline: string
+--     // Reserved for Round 2 Stripe wiring (no migration needed since JSON):
+--     stripeRetainerPriceId?: string
+--     stripePortalPriceId?: string
+--   }
+--
+-- Apply with:
+--   wrangler d1 execute ascend-db --remote --file=./worker/db/migrations/2026-06-07-proposals-tiers.sql
+
+ALTER TABLE proposals ADD COLUMN tiers TEXT;
