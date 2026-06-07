@@ -354,7 +354,16 @@ export default function ProposalDocument({
               </div>
               <div className="pd-cell">
                 <div className="pd-k">Governing terms</div>
-                <div className="pd-v pd-mono">MSA v{msaVersion}</div>
+                <div className="pd-v pd-mono">
+                  <a
+                    href="https://ascendsystems.ai/msa/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="pd-msa-link"
+                  >
+                    MSA v{msaVersion}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -524,7 +533,15 @@ export default function ProposalDocument({
                 lineHeight: 1.6,
               }}
             >
-              Governing terms: MSA v{msaVersion}
+              Governing terms:{' '}
+              <a
+                href="https://ascendsystems.ai/msa/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pd-msa-link"
+              >
+                MSA v{msaVersion}
+              </a>
               {accepted ? ' (accepted).' : ' (not yet accepted).'} This proposal
               is confidential and intended solely for{' '}
               {proposal.client_name || 'the named recipient'}. Pricing valid for 30

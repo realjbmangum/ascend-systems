@@ -208,6 +208,25 @@
   color: var(--pd-accent-light);
 }
 
+/* MSA link — appears on the dark cover ("Governing terms" cell) and again
+   in the light fine-print line at the bottom. Inherits color so it picks
+   up the surrounding accent in either context. */
+.proposal-document .pd-msa-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(196, 90, 44, 0.5);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 160ms ease, color 160ms ease;
+}
+.proposal-document .pd-msa-link:hover {
+  text-decoration-color: var(--pd-accent);
+  color: var(--pd-accent);
+}
+.proposal-document .pd-cover .pd-msa-link:hover {
+  color: #fff;
+}
+
 /* ── CONTENT SECTIONS ────────────────────────────── */
 .proposal-document .pd-sec + .pd-sec {
   margin-top: 18pt;

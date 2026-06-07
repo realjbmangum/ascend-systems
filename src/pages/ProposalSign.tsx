@@ -201,7 +201,7 @@ export default function ProposalSign() {
                   <span>
                     I have read and agree to this Statement of Work and the{' '}
                     <a
-                      href="https://ascendsystems.ai/msa"
+                      href="https://ascendsystems.ai/msa/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-orange hover:text-orange-light font-medium underline underline-offset-2"
