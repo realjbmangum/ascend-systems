@@ -1,17 +1,23 @@
 /**
- * ProposalDocument — the badass branded document body used on BOTH
- *   - /admin/proposals/:id (admin preview, with edit controls layered above)
- *   - /proposals/:token    (public sign page, with sign form layered below)
+ * ProposalDocument — Ascend V2 paginated-sheet design.
  *
- * Same content rendering on both surfaces, so the admin always sees
- * exactly what the client will see. Brand: Ascend Systems — charcoal +
- * burnt orange, Inter display, JetBrains Mono for eyebrows/data.
+ * Translated from the Ascend V2 CTO Proposal HTML reference into a
+ * data-driven React renderer. Used in two places:
+ *   - /admin/proposals/:id  (admin preview — what your client will see)
+ *   - /proposals/:token     (public sign page)
+ *
+ * Styles live in ../styles/proposal-document.css and are scoped to the
+ * `.proposal-document` root class so V2 brand tokens (warmer charcoal
+ * #1C1C1E, deeper orange #C45A2C, paper #FAFAF8) don't leak into the
+ * rest of the admin (which still uses the older site tokens).
  */
 
-import RichText from './RichText';
+import { Fragment, useEffect, useState } from 'react';
+import '../styles/proposal-document.css';
 
 interface ProposalLike {
   id: number;
+  status?: string;
   title: string;
   intro?: string | null;
   scope?: string | null;
@@ -28,6 +34,7 @@ interface ProposalLike {
   project_name?: string | null;
   created_at?: string;
   msa_version?: string | null;
+  selected_tier?: string | null;
 }
 
 const PRICING_LABELS: Record<string, string> = {
@@ -38,317 +45,753 @@ const PRICING_LABELS: Record<string, string> = {
 
 function formatMoney(cents: number) {
   const n = (cents || 0) / 100;
-  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
-function formatDate(iso?: string) {
+function formatDollars(dollars: number) {
+  return `$${dollars.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+function formatRefDate(iso?: string) {
   if (!iso) return '';
   const d = new Date(iso);
   if (isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const y = d.getFullYear();
+  return `${m}/${day}/${y}`;
 }
 
-function BrandMark({ className = 'w-6 h-6' }: { className?: string }) {
-  // Ascending chevron — the geometric mark from the brand kit.
+/* ─────────────────────────────────────── Tier definitions ── */
+
+interface Tier {
+  key: string;                 // 'a' | 'b'
+  optionKey: string;           // "Option A" / "Option B"
+  name: string;                // "Bucket" / "Unlimited"
+  monthlyDollars: number;      // 2000 / 3000
+  sub: string;
+  features: string[];
+  recommended: boolean;
+  portalIncluded: boolean;     // true → Portal bundled in monthly
+  portalPerPropertyDollars?: number; // only when portalIncluded=false
+  totalBandTagline: string;
+}
+
+/* Suite Manager's active property count — used for "Portal at 32 × $35"
+   math on the Bucket tier. Hard-coded for now; future enhancement: derive
+   from a structured field on the proposal or a join. */
+const PORTAL_PROPERTY_COUNT = 32;
+
+/**
+ * Return the structured tier set for this proposal — or null when the
+ * proposal isn't a tiered offering (e.g. fixed-fee one-off). Hard-coded
+ * for the CTO retainer pattern; other tiered shapes can opt in later.
+ */
+function resolveTiers(proposal: ProposalLike): Tier[] | null {
+  if (proposal.pricing_model !== 'retainer') return null;
+  const blob = proposal.price_summary || '';
+  // Signal: the price_summary references the two-tier convention.
+  if (!/OPTION\s+A/i.test(blob) || !/OPTION\s+B/i.test(blob)) return null;
+
+  return [
+    {
+      key: 'a',
+      optionKey: 'Option A',
+      name: 'Bucket',
+      monthlyDollars: 2000,
+      sub: 'Up to 10 hours of strategic advisory + vendor management each month.',
+      features: [
+        'Up to 10 hours/month of advisory + vendor management',
+        'Monthly strategy call',
+        'Additional hours at $200/hr (with prior notice)',
+        '**Document Portal not included** — billed separately at **$35 per active property / month**',
+      ],
+      recommended: false,
+      portalIncluded: false,
+      portalPerPropertyDollars: 35,
+      totalBandTagline:
+        'Monthly retainer + Document Portal billed per property',
+    },
+    {
+      key: 'b',
+      optionKey: 'Option B',
+      name: 'Unlimited',
+      monthlyDollars: 3000,
+      sub: 'Unlimited strategic advisory + vendor management (fair use).',
+      features: [
+        '**Unlimited** advisory + vendor management hours',
+        '**Weekly** strategy call (in lieu of monthly)',
+        'Vendor contract reviews **bundled** at no extra cost',
+        '**Document Portal included** — every active property, no separate billing',
+      ],
+      recommended: true,
+      portalIncluded: true,
+      totalBandTagline:
+        'Monthly retainer · Document Portal included · weekly calls',
+    },
+  ];
+}
+
+/* ─────────────────────────────────────── Rich-ish renderers ── */
+
+function Paragraphs({ text }: { text: string }) {
+  if (!text) return null;
+  const blocks = text
+    .replace(/\r\n/g, '\n')
+    .split(/\n{2,}/)
+    .map((b) => b.trim())
+    .filter(Boolean);
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
+    <>
+      {blocks.map((b, i) => (
+        <p key={i}>{renderInline(b)}</p>
+      ))}
+    </>
+  );
+}
+
+function renderInline(text: string) {
+  const parts: (string | JSX.Element)[] = [];
+  const re = /\*\*([^*]+)\*\*/g;
+  let last = 0;
+  let key = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    parts.push(<strong key={key++}>{m[1]}</strong>);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return <Fragment>{parts}</Fragment>;
+}
+
+function NumberedList({ text }: { text: string }) {
+  const items = extractListItems(text);
+  if (items.length === 0) return <Paragraphs text={text} />;
+  return (
+    <ul className="pd-delv">
+      {items.map((it, i) => (
+        <li key={i}>{renderInline(it)}</li>
+      ))}
+    </ul>
+  );
+}
+
+function extractListItems(text: string): string[] {
+  const cleaned = text.replace(/\r\n/g, '\n').trim();
+  const inline = cleaned.match(/(?:^|\s)\d+[).]\s+/g);
+  if (inline && inline.length >= 2) {
+    return cleaned
+      .split(/(?:^|\s)\d+[).]\s+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => s.replace(/\.\s*$/, ''));
+  }
+  const lineItems = cleaned
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const bulleted = lineItems
+    .map((l) => l.replace(/^[-*•]\s+/, '').replace(/^\d+[).]\s+/, ''))
+    .filter((l, idx) => l !== lineItems[idx] || /^[-*•\d]/.test(lineItems[idx]));
+  if (bulleted.length >= 2 && bulleted.length === lineItems.length) {
+    return bulleted.map((s) => s.replace(/\.\s*$/, ''));
+  }
+  return [];
+}
+
+/* ─────────────────────────────────────── Document ── */
+
+export default function ProposalDocument({
+  proposal,
+  onSelectedTierChange,
+}: {
+  proposal: ProposalLike;
+  /** Notifies parent when the visible selection changes (so the sign form
+   *  can pass it on submit). Optional — preview-only contexts ignore it. */
+  onSelectedTierChange?: (tier: string | null) => void;
+}) {
+  const msaVersion = proposal.msa_version || '2026-05';
+  const refDate = formatRefDate(proposal.created_at);
+  const refId = `ASC-${new Date(proposal.created_at || Date.now()).getFullYear()} · #${String(
+    proposal.id
+  ).padStart(4, '0')}`;
+  const statusLabel = (proposal.status || 'DRAFT').toUpperCase();
+
+  const tiers = resolveTiers(proposal);
+  const accepted = proposal.status === 'accepted';
+  // Default to recommended; respect any prior selection on a signed proposal.
+  const defaultTier =
+    proposal.selected_tier ||
+    (tiers ? tiers.find((t) => t.recommended)?.key || tiers[0].key : null);
+  const [selectedTierKey, setSelectedTierKey] = useState<string | null>(defaultTier);
+
+  useEffect(() => {
+    onSelectedTierChange?.(selectedTierKey);
+  }, [selectedTierKey, onSelectedTierChange]);
+
+  // Re-sync if the proposal's stored selection changes after sign.
+  useEffect(() => {
+    if (proposal.selected_tier && proposal.selected_tier !== selectedTierKey) {
+      setSelectedTierKey(proposal.selected_tier);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposal.selected_tier]);
+
+  const selectedTier = tiers?.find((t) => t.key === selectedTierKey) || null;
+
+  const isRetainer = proposal.pricing_model === 'retainer';
+  const totalCents = proposal.total_cents ?? 0;
+
+  const oosChips = chunkOutOfScope(proposal.out_of_scope || '');
+  const facts = facetTimeline(proposal.timeline || '', proposal.pricing_model || '');
+  const finePrint = stripTierBlocks(proposal.price_summary || '');
+
+  return (
+    <div className="proposal-document">
+      <div className="pd-stage">
+
+        {/* ════════ COVER ════════ */}
+        <div className="pd-sheet pd-cover">
+          <div className="pd-cover-photo" />
+          <div className="pd-cover-grid" />
+          <div className="pd-cover-glow" />
+          <div className="pd-pad">
+            <div className="pd-cover-top">
+              <div className="pd-cover-brand">
+                <img src="/brand-v2/logo-mark-only.png" alt="Ascend Systems mark" />
+                <div>
+                  <div className="pd-wm">ASCEND&nbsp;SYSTEMS</div>
+                  <div className="pd-sub">LEGACY MODERNIZATION · AI · SAAS</div>
+                </div>
+              </div>
+              <div className="pd-cover-ref">
+                PROPOSAL<br />
+                {refId}<br />
+                <span className="pd-ref-status">
+                  {statusLabel}
+                  {refDate ? ` · ${refDate}` : ''}
+                </span>
+              </div>
+            </div>
+
+            <div className="pd-cover-mid">
+              <div className="pd-cover-eyebrow">
+                {coverEyebrow(proposal.title)}
+              </div>
+              <h1>{splitTitle(proposal.title)}</h1>
+              {proposal.intro && (
+                <div className="pd-cover-for">{firstSentence(proposal.intro)}</div>
+              )}
+            </div>
+
+            <div className="pd-cover-bottom">
+              <div className="pd-cell">
+                <div className="pd-k">Prepared for</div>
+                <div className="pd-v">{proposal.client_name || '—'}</div>
+              </div>
+              <div className="pd-cell">
+                <div className="pd-k">Engagement</div>
+                <div className="pd-v">
+                  {PRICING_LABELS[proposal.pricing_model || ''] || 'See pricing'}
+                </div>
+              </div>
+              <div className="pd-cell">
+                <div className="pd-k">Governing terms</div>
+                <div className="pd-v pd-mono">MSA v{msaVersion}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ════════ BODY SHEET ════════ */}
+        <div className="pd-sheet">
+          <div className="pd-pad">
+
+            {proposal.intro && (
+              <Section number="01" title="Introduction">
+                <Paragraphs text={proposal.intro} />
+              </Section>
+            )}
+
+            {proposal.scope && (
+              <Section number="02" title="Scope">
+                <ScopeBlock text={proposal.scope} />
+              </Section>
+            )}
+
+            {proposal.deliverables && (
+              <Section number="03" title="Deliverables">
+                <NumberedList text={proposal.deliverables} />
+              </Section>
+            )}
+
+            {(oosChips.length > 0 || proposal.out_of_scope) && (
+              <Section number="04" title="Out of Scope">
+                <p>The following are explicitly excluded from this engagement:</p>
+                {oosChips.length > 0 ? (
+                  <div className="pd-oos">
+                    {oosChips.map((c, i) => (
+                      <span key={i}>{c}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <Paragraphs text={proposal.out_of_scope || ''} />
+                )}
+              </Section>
+            )}
+
+            {(proposal.timeline || facts.length > 0) && (
+              <Section number="05" title="Timeline & Terms">
+                {facts.length > 0 ? (
+                  <div className="pd-facts">
+                    {facts.map((f, i) => (
+                      <div key={i} className="pd-f">
+                        <div className="pd-k">{f.label}</div>
+                        <div className="pd-v">{f.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <Paragraphs text={proposal.timeline || ''} />
+                )}
+              </Section>
+            )}
+
+            {/* ════════ PRICING ════════ */}
+            {(tiers || proposal.price_summary) && (
+              <div className="pd-sec" style={{ marginTop: '24pt' }}>
+                <div className="pd-section-eyebrow">06 — Pricing</div>
+                <div
+                  className="pd-sec-head"
+                  style={{ border: 'none', paddingBottom: 0, marginBottom: '6pt' }}
+                >
+                  <h2 className="pd-sec-title" style={{ fontSize: '17pt' }}>
+                    {tiers ? 'Two tiers. Pick the fit.' : 'Pricing'}
+                  </h2>
+                </div>
+                {tiers && (
+                  <p style={{ marginBottom: '6pt' }}>
+                    Both tiers sit well below standard fractional-CTO market pricing,
+                    reflecting a remote, advisory-only engagement with no on-site
+                    presence and no board service.
+                  </p>
+                )}
+                {tiers && !accepted && (
+                  <p
+                    style={{
+                      marginBottom: '14pt',
+                      fontFamily: 'var(--pd-font-mono)',
+                      fontSize: '8.5pt',
+                      letterSpacing: '0.16em',
+                      textTransform: 'uppercase',
+                      color: 'var(--pd-accent-dark)',
+                    }}
+                  >
+                    Click a card to select it — the total below updates to match.
+                  </p>
+                )}
+
+                {tiers ? (
+                  <div className="pd-tiers">
+                    {tiers.map((t) => (
+                      <TierCard
+                        key={t.key}
+                        tier={t}
+                        selected={t.key === selectedTierKey}
+                        locked={accepted}
+                        onSelect={() => !accepted && setSelectedTierKey(t.key)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <Paragraphs text={proposal.price_summary || ''} />
+                )}
+              </div>
+            )}
+
+            {finePrint && (
+              <div className="pd-fineprint">
+                <Paragraphs text={finePrint} />
+              </div>
+            )}
+
+            {proposal.payment_schedule && (
+              <Section number="07" title="Payment Schedule">
+                <Paragraphs text={proposal.payment_schedule} />
+              </Section>
+            )}
+
+            {proposal.client_responsibilities && (
+              <Section number="08" title="Client Responsibilities">
+                <NumberedList text={proposal.client_responsibilities} />
+              </Section>
+            )}
+
+            {proposal.acceptance_criteria && (
+              <Section number="09" title="Acceptance Criteria">
+                <NumberedList text={proposal.acceptance_criteria} />
+              </Section>
+            )}
+
+            {/* Total band */}
+            {(selectedTier || totalCents > 0) && (
+              <TotalBand
+                tier={selectedTier}
+                fallbackTotalCents={totalCents}
+                fallbackTagline={
+                  isRetainer ? 'Monthly retainer' : 'Total investment'
+                }
+                accepted={accepted}
+              />
+            )}
+
+            {/* Signature lines */}
+            <div className="pd-sign">
+              <div>
+                <div className="pd-line" />
+                <div className="pd-role">For {proposal.client_name || 'Client'}</div>
+                <div className="pd-nm">Signature &amp; date</div>
+              </div>
+              <div>
+                <div className="pd-line" />
+                <div className="pd-role">For Ascend Systems</div>
+                <div className="pd-nm">Brian Mangum · Founder</div>
+              </div>
+            </div>
+
+            <p
+              style={{
+                fontSize: '8.5pt',
+                color: 'var(--pd-gray-400)',
+                marginTop: '20pt',
+                lineHeight: 1.6,
+              }}
+            >
+              Governing terms: MSA v{msaVersion}
+              {accepted ? ' (accepted).' : ' (not yet accepted).'} This proposal
+              is confidential and intended solely for{' '}
+              {proposal.client_name || 'the named recipient'}. Pricing valid for 30
+              days from the date above.
+            </p>
+
+            <div className="pd-foot">
+              <span>Ascend Systems · brian@ascendsystems.ai</span>
+              <span className="pd-accent">ascendsystems.ai</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────── Pieces ── */
+
+function Section({
+  number,
+  title,
+  children,
+}: {
+  number: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="pd-sec">
+      <div className="pd-sec-head">
+        <span className="pd-sec-num">{number}</span>
+        <h2 className="pd-sec-title">{title}</h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function TierCard({
+  tier,
+  selected,
+  locked,
+  onSelect,
+}: {
+  tier: Tier;
+  selected: boolean;
+  locked: boolean;
+  onSelect: () => void;
+}) {
+  const className = [
+    'pd-tier',
+    tier.recommended ? 'pd-rec' : '',
+    selected ? 'pd-selected' : '',
+    locked ? 'pd-locked' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <div
       className={className}
-      aria-hidden="true"
+      role={locked ? undefined : 'button'}
+      tabIndex={locked ? -1 : 0}
+      onClick={onSelect}
+      onKeyDown={(e) => {
+        if (!locked && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
+      aria-pressed={!locked ? selected : undefined}
     >
-      <path d="M12 3 L22 19 H15.5 L12 13 L8.5 19 H2 L12 3 Z" />
+      {tier.recommended && <span className="pd-rec-flag">Recommended</span>}
+      {selected && !locked && (
+        <span className="pd-select-flag" aria-hidden="true">
+          ✓ Selected
+        </span>
+      )}
+      <div className="pd-opt">
+        {tier.optionKey} — {tier.name}
+      </div>
+      <div className="pd-price">
+        {formatDollars(tier.monthlyDollars)}
+        <span>/mo</span>
+      </div>
+      <div className="pd-price-sub">{tier.sub}</div>
+      <div className="pd-divider" />
+      <ul>
+        {tier.features.map((f, i) => (
+          <li key={i}>
+            <Check accent={tier.recommended || selected} />
+            <span>{renderInline(f)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Check({ accent }: { accent: boolean }) {
+  if (accent) {
+    return (
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <circle cx="7" cy="7" r="6" fill="var(--pd-accent)" />
+        <path
+          d="M4.5 7l1.8 1.8L9.5 5.3"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+      <circle cx="7" cy="7" r="6" fill="none" stroke="#9CA3AF" strokeWidth="1.3" />
+      <path
+        d="M4.5 7l1.8 1.8L9.5 5.3"
+        fill="none"
+        stroke="#6B7280"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-export default function ProposalDocument({
-  proposal,
+function TotalBand({
+  tier,
+  fallbackTotalCents,
+  fallbackTagline,
+  accepted,
 }: {
-  proposal: ProposalLike;
+  tier: Tier | null;
+  fallbackTotalCents: number;
+  fallbackTagline: string;
+  accepted: boolean;
 }) {
-  const contentSections = (
-    [
-      ['Introduction', proposal.intro],
-      ['Scope of Work', proposal.scope],
-      ['Deliverables', proposal.deliverables],
-      ['Out of Scope', proposal.out_of_scope],
-      ['Timeline', proposal.timeline],
-      ['Client Responsibilities', proposal.client_responsibilities],
-      ['Acceptance Criteria', proposal.acceptance_criteria],
-    ] as [string, string | null | undefined][]
-  ).filter(([, body]) => body && String(body).trim()) as [string, string][];
+  // When no tier is resolved, show the proposal's flat total_cents value.
+  if (!tier) {
+    if (fallbackTotalCents <= 0) return null;
+    return (
+      <div className="pd-total-band">
+        <div className="pd-tb-glow" />
+        <div className="pd-tb-l">
+          <div className="pd-tb-k">{accepted ? 'Signed total' : 'Total'}</div>
+          <div className="pd-tb-desc">{fallbackTagline}</div>
+        </div>
+        <div className="pd-tb-v">{formatMoney(fallbackTotalCents)}</div>
+      </div>
+    );
+  }
 
-  const hasInvestment =
-    !!proposal.pricing_model ||
-    !!proposal.price_summary ||
-    !!proposal.payment_schedule ||
-    (proposal.total_cents ?? 0) > 0;
+  const headerLabel = accepted
+    ? `Selected — ${tier.optionKey} · ${tier.name}`
+    : tier.recommended
+    ? `Selected — ${tier.optionKey} · ${tier.name} (Recommended)`
+    : `Selected — ${tier.optionKey} · ${tier.name}`;
 
-  const msaVersion = proposal.msa_version || '2026-05';
+  if (tier.portalIncluded) {
+    // Single number: Unlimited rolls Portal into the monthly retainer.
+    return (
+      <div className="pd-total-band">
+        <div className="pd-tb-glow" />
+        <div className="pd-tb-l">
+          <div className="pd-tb-k">{headerLabel}</div>
+          <div className="pd-tb-desc">{tier.totalBandTagline}</div>
+        </div>
+        <div className="pd-tb-v">
+          {formatDollars(tier.monthlyDollars)}
+          <span>/mo</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Bucket: show retainer + portal breakdown + computed total.
+  const portalRate = tier.portalPerPropertyDollars || 35;
+  const portalMonthly = portalRate * PORTAL_PROPERTY_COUNT;
+  const allInMonthly = tier.monthlyDollars + portalMonthly;
 
   return (
-    <article className="bg-surface print:bg-white">
-      {/* ───────────────────────────────────────────── Cover ── */}
-      <section className="relative bg-charcoal text-white overflow-hidden print:bg-white print:text-charcoal print:border-b print:border-surface-200">
-        {/* Subtle orange ambient glow in top-right (web only) */}
-        <div
-          className="absolute top-0 right-0 w-[420px] h-[420px] -translate-y-1/2 translate-x-1/4 bg-orange/15 rounded-full blur-3xl pointer-events-none print:hidden"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute bottom-0 left-0 w-px h-12 bg-orange print:hidden"
-          aria-hidden="true"
-        />
-
-        <div className="relative max-w-3xl mx-auto px-8 sm:px-12 py-14 sm:py-20">
-          {/* Brand row */}
-          <div className="flex items-center gap-3 mb-12 sm:mb-16">
-            <BrandMark className="w-5 h-5 text-orange" />
-            <span className="text-sm font-bold tracking-tight text-white print:text-charcoal">
-              ASCEND&nbsp;SYSTEMS
+    <div className="pd-total-band pd-total-band-split">
+      <div className="pd-tb-glow" />
+      <div className="pd-tb-l">
+        <div className="pd-tb-k">{headerLabel}</div>
+        <div className="pd-tb-desc">{tier.totalBandTagline}</div>
+      </div>
+      <div className="pd-tb-r">
+        <div className="pd-tb-line">
+          <span className="pd-tb-line-l">Monthly retainer</span>
+          <span className="pd-tb-line-v">{formatDollars(tier.monthlyDollars)}</span>
+        </div>
+        <div className="pd-tb-line">
+          <span className="pd-tb-line-l">
+            Document Portal
+            <span className="pd-tb-line-sub">
+              ${portalRate} × {PORTAL_PROPERTY_COUNT} properties
             </span>
-            <span className="ml-auto font-mono text-[11px] text-white/40 uppercase tracking-[0.18em] print:text-gray-500">
-              MSA v{msaVersion}
-            </span>
-          </div>
-
-          {/* Eyebrow */}
-          <p className="font-mono text-[11px] text-orange uppercase tracking-[0.22em] mb-4 print:text-orange-dark">
-            Statement of Work&nbsp;&nbsp;·&nbsp;&nbsp;#
-            {String(proposal.id).padStart(4, '0')}
-          </p>
-
-          {/* Title */}
-          <h1 className="text-4xl sm:text-5xl font-extrabold leading-[1.05] tracking-tight mb-8 print:text-charcoal">
-            {proposal.title}
-          </h1>
-
-          {/* Meta block */}
-          <div className="flex flex-wrap items-baseline gap-x-8 gap-y-3 text-sm">
-            {proposal.client_name && (
-              <div>
-                <div className="font-mono text-[10px] text-white/40 uppercase tracking-[0.18em] mb-1 print:text-gray-500">
-                  Prepared for
-                </div>
-                <div className="text-base font-semibold text-white print:text-charcoal">
-                  {proposal.client_name}
-                </div>
-              </div>
-            )}
-            {proposal.project_name && (
-              <div>
-                <div className="font-mono text-[10px] text-white/40 uppercase tracking-[0.18em] mb-1 print:text-gray-500">
-                  Project
-                </div>
-                <div className="text-base font-semibold text-white print:text-charcoal">
-                  {proposal.project_name}
-                </div>
-              </div>
-            )}
-            {proposal.created_at && (
-              <div>
-                <div className="font-mono text-[10px] text-white/40 uppercase tracking-[0.18em] mb-1 print:text-gray-500">
-                  Issued
-                </div>
-                <div className="text-base font-semibold text-white print:text-charcoal">
-                  {formatDate(proposal.created_at)}
-                </div>
-              </div>
-            )}
-          </div>
+          </span>
+          <span className="pd-tb-line-v">{formatDollars(portalMonthly)}</span>
         </div>
-      </section>
-
-      {/* ───────────────────────────────────────────── Body ── */}
-      <section className="bg-white">
-        <div className="max-w-3xl mx-auto px-8 sm:px-12 py-16 space-y-16 print:py-10 print:space-y-12">
-          {contentSections.length === 0 && !hasInvestment && (
-            <p className="text-sm text-gray-400">
-              This Statement of Work has no content yet.
-            </p>
-          )}
-
-          {contentSections.map(([title, body], i) => (
-            <DocSection key={title} index={i + 1} title={title} body={body} />
-          ))}
-
-          {hasInvestment && (
-            <InvestmentBlock
-              index={contentSections.length + 1}
-              pricingModel={proposal.pricing_model || undefined}
-              priceSummary={proposal.price_summary || undefined}
-              paymentSchedule={proposal.payment_schedule || undefined}
-              totalCents={proposal.total_cents ?? 0}
-            />
-          )}
+        <div className="pd-tb-line pd-tb-line-total">
+          <span className="pd-tb-line-l">All-in / month</span>
+          <span className="pd-tb-line-v pd-tb-line-v-total">
+            {formatDollars(allInMonthly)}
+          </span>
         </div>
-      </section>
-
-      {/* ──────────────────────────────────────── Governing band ── */}
-      <section className="bg-orange-glow border-y border-orange/20 print:bg-white print:border-surface-200">
-        <div className="max-w-3xl mx-auto px-8 sm:px-12 py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-3 gap-x-8">
-            <div className="font-mono text-[11px] text-orange-dark uppercase tracking-[0.22em] pt-1">
-              Governing
-              <br />
-              Agreement
-            </div>
-            <div>
-              <p className="text-sm text-charcoal leading-relaxed">
-                This Statement of Work is governed by the{' '}
-                <strong className="font-semibold">
-                  Ascend Systems Master Services Agreement (v{msaVersion})
-                </strong>
-                . The MSA sets the legal terms — intellectual property,
-                confidentiality, liability, and termination. Signing this
-                Statement of Work also accepts the MSA.
-              </p>
-              <a
-                href="https://ascendsystems.ai/msa"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-orange-dark hover:text-orange transition-colors"
-              >
-                Read the Master Services Agreement
-                <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-    </article>
+      </div>
+    </div>
   );
 }
 
-/* ─────────────────────────────────────────── helpers ── */
+/* ─────────────────────────────────────── Small text helpers ── */
 
-function DocSection({
-  index,
-  title,
-  body,
-}: {
-  index: number;
-  title: string;
-  body: string;
-}) {
+function coverEyebrow(title: string) {
+  if (/fractional\s+cto/i.test(title)) return 'Fractional CTO Engagement';
+  if (/document\s+portal/i.test(title)) return 'Document Portal Engagement';
+  if (/acumatica/i.test(title)) return 'Acumatica Integration';
+  return 'Statement of Work';
+}
+
+function splitTitle(title: string) {
+  const clean = title.split(/\s+[—–-]\s+/)[0] || title;
+  const words = clean.trim().split(/\s+/);
+  if (words.length <= 1) return clean;
+  const lead = words.slice(0, -1).join(' ');
+  const last = words[words.length - 1];
   return (
-    <section className="grid grid-cols-[42px_1fr] sm:grid-cols-[72px_1fr] gap-x-5 sm:gap-x-8">
-      <div>
-        <div className="font-mono text-xs font-medium text-orange-dark tracking-wide tabular-nums pt-1">
-          {String(index).padStart(2, '0')}
-        </div>
-        <div className="h-px w-8 bg-orange/40 mt-3" aria-hidden="true" />
-      </div>
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-4 tracking-tight">
-          {title}
-        </h2>
-        <div className="text-charcoal leading-relaxed">
-          <RichText text={body} />
-        </div>
-      </div>
-    </section>
+    <>
+      {lead}
+      <br />
+      <span className="pd-accent">{last}</span>
+    </>
   );
 }
 
-function InvestmentBlock({
-  index,
-  pricingModel,
-  priceSummary,
-  paymentSchedule,
-  totalCents,
-}: {
-  index: number;
-  pricingModel?: string;
-  priceSummary?: string;
-  paymentSchedule?: string;
-  totalCents: number;
-}) {
-  const modelLabel = pricingModel ? PRICING_LABELS[pricingModel] || pricingModel : null;
-  const isRetainer = pricingModel === 'retainer';
-  const showTotal = totalCents > 0;
+function firstSentence(text: string): string {
+  const s = text.split(/(?<=[.!?])\s+/)[0] || text;
+  return s.length > 320 ? s.slice(0, 320).trim() + '…' : s;
+}
 
-  return (
-    <section className="grid grid-cols-[42px_1fr] sm:grid-cols-[72px_1fr] gap-x-5 sm:gap-x-8">
-      <div>
-        <div className="font-mono text-xs font-medium text-orange-dark tracking-wide tabular-nums pt-1">
-          {String(index).padStart(2, '0')}
-        </div>
-        <div className="h-px w-8 bg-orange/40 mt-3" aria-hidden="true" />
-      </div>
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-charcoal mb-5 tracking-tight">
-          Investment
-        </h2>
+function ScopeBlock({ text }: { text: string }) {
+  const m = text.match(/^([^:]+):\s*(.+)$/s);
+  if (m && /\(\d+\)/.test(m[2])) {
+    const lead = m[1].trim() + ':';
+    const items = m[2]
+      .split(/\(\d+\)/)
+      .map((s) => s.trim().replace(/^[;,]\s*|[;,]\s*$/g, ''))
+      .filter(Boolean)
+      .map((s) => s.replace(/\.\s*$/, ''));
+    if (items.length >= 2) {
+      return (
+        <>
+          <p>{lead}</p>
+          <ul className="pd-delv">
+            {items.map((it, i) => (
+              <li key={i}>{renderInline(it)}.</li>
+            ))}
+          </ul>
+        </>
+      );
+    }
+  }
+  return <Paragraphs text={text} />;
+}
 
-        {/* Headline card */}
-        {showTotal && (
-          <div className="relative rounded-2xl bg-charcoal text-white overflow-hidden mb-6 print:bg-surface print:text-charcoal print:border print:border-surface-200">
-            <div
-              className="absolute inset-0 bg-gradient-to-br from-orange/12 via-transparent to-transparent pointer-events-none print:hidden"
-              aria-hidden="true"
-            />
-            <div
-              className="absolute top-0 right-0 w-64 h-64 -translate-y-1/2 translate-x-1/4 bg-orange/10 rounded-full blur-3xl pointer-events-none print:hidden"
-              aria-hidden="true"
-            />
-            <div className="relative px-7 py-7 sm:px-9 sm:py-9">
-              <p className="font-mono text-[11px] text-orange uppercase tracking-[0.22em] mb-4 print:text-orange-dark">
-                {modelLabel || 'Total Investment'}
-              </p>
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <p className="text-5xl sm:text-6xl font-extrabold tracking-tight tabular-nums">
-                  {formatMoney(totalCents)}
-                </p>
-                {isRetainer && (
-                  <span className="font-mono text-sm text-white/50 print:text-gray-500 tracking-wide">
-                    /&nbsp;month
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+function chunkOutOfScope(text: string): string[] {
+  if (!text) return [];
+  const firstChunk = text.split(/\.(?=\s|$)/)[0] || text;
+  const parts = firstChunk
+    .split(/;\s*|—\s+|,\s+(?=which|and\s+(?:hands|legal|board))/i)
+    .map((p) => p.trim().replace(/^and\s+/i, ''))
+    .filter(Boolean);
+  if (parts.length < 2) return [];
+  return parts
+    .map((p) =>
+      p
+        .replace(/^The /, '')
+        .replace(/\s+/g, ' ')
+        .replace(/\.\s*$/, '')
+        .trim()
+    )
+    .map((p) => (p.length > 0 ? p[0].toUpperCase() + p.slice(1) : p))
+    .filter((p) => p.length > 0 && p.length < 120);
+}
 
-        {/* If no total but we have a pricing model only */}
-        {!showTotal && modelLabel && (
-          <div className="mb-6">
-            <h3 className="font-mono text-[11px] text-charcoal uppercase tracking-[0.22em] font-semibold mb-2">
-              Pricing model
-            </h3>
-            <p className="text-charcoal font-medium">{modelLabel}</p>
-          </div>
-        )}
+function facetTimeline(
+  text: string,
+  pricingModel: string
+): { label: string; value: string }[] {
+  const facts: { label: string; value: string }[] = [];
+  const term = text.match(/(\d+)\s*-?month\s+initial\s+term[^.]*month[-\s]to[-\s]month/i);
+  if (term) {
+    facts.push({ label: 'Initial term', value: `${term[1]} months, then month-to-month` });
+  }
+  const notice = text.match(/(\d+)\s+days[''’]?\s+(?:written\s+)?notice/i);
+  if (notice) {
+    facts.push({
+      label: 'Notice to terminate',
+      value: `${notice[1]} days, written, either party`,
+    });
+  }
+  if (pricingModel) {
+    facts.push({
+      label: 'Pricing model',
+      value: PRICING_LABELS[pricingModel] || pricingModel,
+    });
+  }
+  facts.push({ label: 'Invoicing', value: 'Monthly · net 15 days' });
+  return facts.length >= 2 ? facts : [];
+}
 
-        {/* Pricing detail */}
-        {priceSummary && (
-          <div className="mb-6 last:mb-0">
-            <h3 className="font-mono text-[11px] text-charcoal uppercase tracking-[0.22em] font-semibold mb-3">
-              Pricing details
-            </h3>
-            <div className="text-charcoal leading-relaxed">
-              <RichText text={priceSummary} />
-            </div>
-          </div>
-        )}
-
-        {/* Payment schedule */}
-        {paymentSchedule && (
-          <div>
-            <h3 className="font-mono text-[11px] text-charcoal uppercase tracking-[0.22em] font-semibold mb-3">
-              Payment schedule
-            </h3>
-            <div className="text-charcoal leading-relaxed">
-              <RichText text={paymentSchedule} />
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
+function stripTierBlocks(text: string): string {
+  if (!text) return '';
+  const cleaned = text.replace(
+    /OPTION\s+[AB][\s\S]*?(?=\n\s*(?:Reversion|Either tier|$))/gi,
+    ''
   );
+  return cleaned.trim();
 }

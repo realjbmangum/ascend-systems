@@ -237,7 +237,9 @@ app.get("/api/proposals/sign/:token", async (c) => {
             pr.timeline, pr.price_summary, pr.total_cents, pr.out_of_scope,
             pr.pricing_model, pr.payment_schedule, pr.client_responsibilities,
             pr.acceptance_criteria, pr.msa_version, pr.signed_at,
-            pr.signer_name, pr.signer_title, c.company_name AS client_name
+            pr.signer_name, pr.signer_title, pr.selected_tier,
+            pr.created_at,
+            c.company_name AS client_name
      FROM proposals pr
      LEFT JOIN clients c ON c.id = pr.client_id
      WHERE pr.sign_token = ?`
@@ -255,10 +257,15 @@ app.post("/api/proposals/sign/:token", async (c) => {
     signer_title?: string;
     signer_email?: string;
     msa_accepted?: boolean;
+    selected_tier?: string;
   }>();
   const signerName = (body.signer_name ?? "").trim();
   const signerTitle = (body.signer_title ?? "").trim();
   const signerEmail = (body.signer_email ?? "").trim();
+  // selected_tier: lowercased single-letter ("a", "b", ...). Null when the
+  // proposal has no tiered pricing.
+  const rawTier = (body.selected_tier ?? "").trim().toLowerCase();
+  const selectedTier = /^[a-z]$/.test(rawTier) ? rawTier : null;
   if (!signerName) {
     return c.json({ error: "signer_name is required" }, 400);
   }
@@ -293,10 +300,11 @@ app.post("/api/proposals/sign/:token", async (c) => {
            signer_email = ?,
            signer_ip = ?,
            msa_accepted = 1,
+           selected_tier = ?,
            updated_at = datetime('now')
      WHERE id = ?`
   )
-    .bind(signerName, signerTitle || null, signerEmail, ip, proposal.id)
+    .bind(signerName, signerTitle || null, signerEmail, ip, selectedTier, proposal.id)
     .run();
   const updated = await c.env.DB.prepare(
     "SELECT signed_at FROM proposals WHERE id = ?"

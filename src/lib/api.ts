@@ -212,6 +212,7 @@ export const api = {
       signer_title?: string;
       signer_email: string;
       msa_accepted: boolean;
+      selected_tier?: string | null;
     }
   ) =>
     request<{ success: boolean; signed_at: string }>(

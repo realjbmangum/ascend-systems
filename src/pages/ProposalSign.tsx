@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import ProposalDocument from '../components/ProposalDocument';
@@ -14,12 +14,17 @@ export default function ProposalSign() {
   const [signerTitle, setSignerTitle] = useState('');
   const [signerEmail, setSignerEmail] = useState('');
   const [msaAccepted, setMsaAccepted] = useState(false);
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [signedJustNow, setSignedJustNow] = useState<{
     name: string;
     at: string;
   } | null>(null);
+
+  const handleTierChange = useCallback((t: string | null) => {
+    setSelectedTier(t);
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -52,6 +57,7 @@ export default function ProposalSign() {
         signer_title: title,
         signer_email: email,
         msa_accepted: true,
+        selected_tier: selectedTier,
       });
       setSignedJustNow({ name, at: result.signed_at });
       setProposal((prev: any) => ({
@@ -60,6 +66,7 @@ export default function ProposalSign() {
         signed_at: result.signed_at,
         signer_name: name,
         signer_title: title,
+        selected_tier: selectedTier,
       }));
       // Scroll the success state into view smoothly.
       setTimeout(() => {
@@ -122,7 +129,10 @@ export default function ProposalSign() {
       </div>
 
       <main>
-        <ProposalDocument proposal={proposal} />
+        <ProposalDocument
+          proposal={proposal}
+          onSelectedTierChange={handleTierChange}
+        />
 
         {/* Sign / accepted block */}
         <section
