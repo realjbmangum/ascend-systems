@@ -262,12 +262,15 @@ invoices.post("/:id/push-recurring", async (c) => {
 
   const description =
     invoice.description ?? `Invoice #${invoice.id} (recurring)`;
+  // Stripe shows this as the product name on the customer's invoice/receipt —
+  // keep it to the headline (first sentence), not the full itemized blurb.
+  const productName = description.split(". ")[0].slice(0, 250).trim();
   const subscription = await createSubscription(
     c.env.STRIPE_SECRET_KEY,
     customer.id,
     invoice.amount_cents,
     interval,
-    description
+    productName
   );
 
   const hostedUrl = subscription.latest_invoice?.hosted_invoice_url ?? null;
