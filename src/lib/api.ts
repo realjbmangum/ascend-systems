@@ -201,6 +201,11 @@ export const api = {
     }>(`/proposals/${id}/send`, {
       method: 'POST',
     }),
+  generateInvoiceFromProposal: (id: number) =>
+    request<{ success: boolean; id: number; already_existed: boolean }>(
+      `/proposals/${id}/generate-invoice`,
+      { method: 'POST' }
+    ),
 
   // Public — Proposal sign
   getProposalByToken: (token: string) =>

@@ -93,6 +93,20 @@ export default function Invoices() {
     [projects, clientId]
   );
 
+  // Ledger totals — computed across ALL invoices, not the current filter view.
+  const summary = useMemo(() => {
+    let outstanding = 0;
+    let paid = 0;
+    let draft = 0;
+    for (const i of invoices) {
+      const amt = i.amount_cents || 0;
+      if (i.status === 'sent' || i.status === 'overdue') outstanding += amt;
+      else if (i.status === 'paid') paid += amt;
+      else if (i.status === 'draft') draft += amt;
+    }
+    return { outstanding, paid, draft };
+  }, [invoices]);
+
   const total = items.reduce((sum, it) => sum + (it.quantity || 0) * (it.unit_price_cents || 0), 0);
 
   const updateItem = (idx: number, patch: Partial<LineItem>) => {
@@ -181,6 +195,26 @@ export default function Invoices() {
       ),
     },
     {
+      key: 'proposal_id',
+      label: 'Source',
+      sortable: true,
+      render: (row) =>
+        row.proposal_id ? (
+          <span
+            className="inline-flex items-center gap-1 text-xs font-medium text-orange"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/admin/proposals/${row.proposal_id}`);
+            }}
+            role="link"
+          >
+            Proposal #{row.proposal_id}
+          </span>
+        ) : (
+          <span className="text-xs text-gray-400">One-off</span>
+        ),
+    },
+    {
       key: 'amount_cents',
       label: 'Amount',
       sortable: true,
@@ -259,6 +293,34 @@ export default function Invoices() {
           </button>
         </div>
       </div>
+
+      {!loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl border border-surface-100 p-4">
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Outstanding
+            </div>
+            <div className="text-2xl font-bold text-charcoal mt-1">
+              {formatMoney(summary.outstanding)}
+            </div>
+            <div className="text-xs text-gray-400 mt-0.5">Sent + overdue, awaiting payment</div>
+          </div>
+          <div className="bg-white rounded-xl border border-surface-100 p-4">
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Paid</div>
+            <div className="text-2xl font-bold text-green-700 mt-1">
+              {formatMoney(summary.paid)}
+            </div>
+            <div className="text-xs text-gray-400 mt-0.5">Collected to date</div>
+          </div>
+          <div className="bg-white rounded-xl border border-surface-100 p-4">
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Draft</div>
+            <div className="text-2xl font-bold text-gray-500 mt-1">
+              {formatMoney(summary.draft)}
+            </div>
+            <div className="text-xs text-gray-400 mt-0.5">Not yet sent</div>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center h-64">

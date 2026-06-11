@@ -23,6 +23,7 @@ export default function ProposalDetail() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
+  const [billing, setBilling] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
   const [signUrl, setSignUrl] = useState<string | null>(null);
@@ -157,6 +158,19 @@ export default function ProposalDetail() {
     }
   };
 
+  const handleBill = async () => {
+    setBilling(true);
+    setError('');
+    try {
+      const res = await api.generateInvoiceFromProposal(Number(id));
+      // Land on the draft invoice so the admin can review and push to Stripe.
+      navigate(`/admin/invoices/${res.id}`);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to generate invoice from proposal');
+      setBilling(false);
+    }
+  };
+
   const handleCopy = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
@@ -252,6 +266,24 @@ export default function ProposalDetail() {
                   : 'Resend'}
               </button>
             )}
+            {proposal.status === 'accepted' &&
+              (proposal.linked_invoice ? (
+                <Link
+                  to={`/admin/invoices/${proposal.linked_invoice.id}`}
+                  className="inline-flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                >
+                  View Invoice #{proposal.linked_invoice.id} →
+                </Link>
+              ) : (
+                <button
+                  onClick={handleBill}
+                  disabled={billing}
+                  className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                  title="Generate a draft invoice from this proposal, then review and push to Stripe"
+                >
+                  {billing ? 'Generating…' : 'Bill via Stripe'}
+                </button>
+              ))}
             {linkToShow && (
               <a
                 href={linkToShow}
@@ -320,6 +352,27 @@ export default function ProposalDetail() {
               <> on {new Date(proposal.signed_at).toLocaleString()}</>
             )}
           </p>
+          {proposal.linked_invoice ? (
+            <p className="text-xs text-green-700 mt-1.5">
+              Billing:{' '}
+              <Link
+                to={`/admin/invoices/${proposal.linked_invoice.id}`}
+                className="font-semibold underline hover:text-green-900"
+              >
+                Invoice #{proposal.linked_invoice.id}
+              </Link>{' '}
+              ·{' '}
+              {proposal.linked_invoice.billing_type === 'recurring'
+                ? `recurring / ${proposal.linked_invoice.recurring_interval || 'month'}`
+                : 'one-time'}{' '}
+              · <span className="capitalize">{proposal.linked_invoice.status}</span>
+            </p>
+          ) : (
+            <p className="text-xs text-green-700 mt-1.5">
+              Not yet billed — click <span className="font-semibold">Bill via Stripe</span> to
+              generate the invoice.
+            </p>
+          )}
         </div>
       )}
 

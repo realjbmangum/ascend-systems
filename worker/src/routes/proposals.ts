@@ -34,7 +34,104 @@ proposals.get("/:id", async (c) => {
     .bind(c.req.param("id"))
     .first();
   if (!proposal) return c.json({ error: "not found" }, 404);
-  return c.json(proposal);
+
+  // Attach the most recent invoice generated from this proposal (if any), so
+  // the admin UI can show "View Invoice #X" instead of re-billing.
+  const linkedInvoice = await c.env.DB.prepare(
+    `SELECT id, status, billing_type, recurring_interval, amount_cents,
+            stripe_invoice_id, stripe_subscription_id
+     FROM invoices WHERE proposal_id = ? ORDER BY id DESC LIMIT 1`
+  )
+    .bind(c.req.param("id"))
+    .first();
+
+  return c.json({ ...proposal, linked_invoice: linkedInvoice ?? null });
+});
+
+// Generate a draft invoice from a signed proposal. Maps the pricing model to a
+// recurring (retainer) or one-time invoice, links it back to the proposal, and
+// is idempotent — if an invoice already exists for this proposal, it returns
+// that one instead of creating a duplicate. Does NOT touch Stripe; the admin
+// reviews the draft and pushes it from the invoice page.
+proposals.post("/:id/generate-invoice", async (c) => {
+  const id = c.req.param("id");
+  const proposal = await c.env.DB.prepare(
+    `SELECT id, client_id, project_id, title, total_cents, pricing_model,
+            status, signed_at
+     FROM proposals WHERE id = ?`
+  )
+    .bind(id)
+    .first<{
+      id: number;
+      client_id: number | null;
+      project_id: number | null;
+      title: string;
+      total_cents: number | null;
+      pricing_model: string | null;
+      status: string | null;
+      signed_at: string | null;
+    }>();
+  if (!proposal) return c.json({ error: "not found" }, 404);
+  if (proposal.status !== "accepted" && !proposal.signed_at) {
+    return c.json(
+      { error: "Proposal must be signed/accepted before it can be billed." },
+      400
+    );
+  }
+  if (!proposal.client_id) {
+    return c.json(
+      { error: "Proposal has no client — convert the lead to a client first." },
+      400
+    );
+  }
+  const amount = proposal.total_cents ?? 0;
+  if (amount <= 0) {
+    return c.json({ error: "Proposal has no amount to bill." }, 400);
+  }
+
+  // Idempotent guard against double-billing.
+  const existing = await c.env.DB.prepare(
+    `SELECT id FROM invoices WHERE proposal_id = ? ORDER BY id DESC LIMIT 1`
+  )
+    .bind(id)
+    .first<{ id: number }>();
+  if (existing) {
+    return c.json({ success: true, id: existing.id, already_existed: true });
+  }
+
+  const recurring = proposal.pricing_model === "retainer";
+  const billingType = recurring ? "recurring" : "one_time";
+  const interval = recurring ? "month" : null;
+  const description = recurring
+    ? `${proposal.title} — monthly retainer`
+    : proposal.title;
+
+  const result = await c.env.DB.prepare(
+    `INSERT INTO invoices
+       (client_id, project_id, proposal_id, amount_cents, description,
+        billing_type, recurring_interval, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 'draft')`
+  )
+    .bind(
+      proposal.client_id,
+      proposal.project_id ?? null,
+      id,
+      amount,
+      description,
+      billingType,
+      interval
+    )
+    .run();
+  const invoiceId = result.meta.last_row_id as number;
+
+  await c.env.DB.prepare(
+    `INSERT INTO invoice_line_items (invoice_id, description, quantity, unit_price_cents)
+     VALUES (?, ?, 1, ?)`
+  )
+    .bind(invoiceId, description, amount)
+    .run();
+
+  return c.json({ success: true, id: invoiceId, already_existed: false });
 });
 
 proposals.post("/", async (c) => {
