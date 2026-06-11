@@ -273,6 +273,15 @@ invoices.post("/:id/push-recurring", async (c) => {
     productName
   );
 
+  // Surface Stripe's real error (e.g. a restricted key missing Subscriptions/
+  // Products/Prices permission) instead of letting a missing id throw opaquely.
+  if (!subscription?.id) {
+    const stripeMsg =
+      (subscription as { error?: { message?: string } })?.error?.message ??
+      "Stripe did not return a subscription — check the API key's Write permissions for Customers, Invoices, Invoice Items, Subscriptions, Products and Prices.";
+    return c.json({ error: `Stripe error: ${stripeMsg}` }, 502);
+  }
+
   const hostedUrl = subscription.latest_invoice?.hosted_invoice_url ?? null;
 
   await c.env.DB.prepare(
