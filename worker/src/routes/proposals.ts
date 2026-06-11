@@ -57,7 +57,8 @@ proposals.post("/:id/generate-invoice", async (c) => {
   const id = c.req.param("id");
   const proposal = await c.env.DB.prepare(
     `SELECT id, client_id, project_id, title, total_cents, pricing_model,
-            status, signed_at
+            status, signed_at, selected_tier, tiers, payment_schedule,
+            price_summary
      FROM proposals WHERE id = ?`
   )
     .bind(id)
@@ -70,6 +71,10 @@ proposals.post("/:id/generate-invoice", async (c) => {
       pricing_model: string | null;
       status: string | null;
       signed_at: string | null;
+      selected_tier: string | null;
+      tiers: string | null;
+      payment_schedule: string | null;
+      price_summary: string | null;
     }>();
   if (!proposal) return c.json({ error: "not found" }, 404);
   if (proposal.status !== "accepted" && !proposal.signed_at) {
@@ -102,34 +107,97 @@ proposals.post("/:id/generate-invoice", async (c) => {
   const recurring = proposal.pricing_model === "retainer";
   const billingType = recurring ? "recurring" : "one_time";
   const interval = recurring ? "month" : null;
-  const description = recurring
+
+  // Carry the proposal's real detail onto the invoice. When the proposal has
+  // pricing tiers, pull the SELECTED tier's name + included features so the
+  // invoice itemizes what the retainer covers instead of a bare one-liner.
+  const stripMd = (s: string | null | undefined) =>
+    (s || "").replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
+
+  let selectedTier:
+    | { name?: string; optionKey?: string; features?: string[] }
+    | null = null;
+  if (proposal.tiers && proposal.selected_tier) {
+    try {
+      const arr = JSON.parse(proposal.tiers);
+      if (Array.isArray(arr)) {
+        selectedTier =
+          arr.find(
+            (t: { key?: string }) =>
+              String(t.key).toLowerCase() ===
+              String(proposal.selected_tier).toLowerCase()
+          ) ?? null;
+      }
+    } catch {
+      // malformed tiers JSON — fall back to the title
+    }
+  }
+
+  // Main billable line + optional $0 "included" lines describing the tier.
+  let mainLabel = recurring
     ? `${proposal.title} — monthly retainer`
     : proposal.title;
+  let invoiceDescription = mainLabel;
+  const includedFeatures: string[] = [];
+
+  if (selectedTier) {
+    const tierLabel = [
+      stripMd(selectedTier.name),
+      selectedTier.optionKey ? `(${stripMd(selectedTier.optionKey)})` : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    mainLabel = `Fractional CTO Retainer — ${tierLabel}`.trim();
+    for (const f of selectedTier.features ?? []) {
+      const clean = stripMd(f);
+      if (clean) includedFeatures.push(clean);
+    }
+    const terms = stripMd(proposal.payment_schedule) || "Net 15 days.";
+    invoiceDescription =
+      `${mainLabel}.` +
+      (includedFeatures.length
+        ? ` Includes: ${includedFeatures.join("; ")}.`
+        : "") +
+      ` ${terms}`;
+  } else if (proposal.price_summary) {
+    invoiceDescription = stripMd(proposal.price_summary).slice(0, 600);
+  }
 
   const result = await c.env.DB.prepare(
     `INSERT INTO invoices
        (client_id, project_id, proposal_id, amount_cents, description,
-        billing_type, recurring_interval, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 'draft')`
+        billing_type, recurring_interval, status, due_date)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', date('now','+15 day'))`
   )
     .bind(
       proposal.client_id,
       proposal.project_id ?? null,
       id,
       amount,
-      description,
+      invoiceDescription,
       billingType,
       interval
     )
     .run();
   const invoiceId = result.meta.last_row_id as number;
 
+  // Main billable line.
   await c.env.DB.prepare(
     `INSERT INTO invoice_line_items (invoice_id, description, quantity, unit_price_cents)
      VALUES (?, ?, 1, ?)`
   )
-    .bind(invoiceId, description, amount)
+    .bind(invoiceId, mainLabel, amount)
     .run();
+  // Included tier features as $0 informational lines (CRM detail only — the
+  // recurring push bills by amount, so these never affect the Stripe charge).
+  for (const f of includedFeatures) {
+    await c.env.DB.prepare(
+      `INSERT INTO invoice_line_items (invoice_id, description, quantity, unit_price_cents)
+       VALUES (?, ?, 1, 0)`
+    )
+      .bind(invoiceId, `Included — ${f}`)
+      .run();
+  }
 
   return c.json({ success: true, id: invoiceId, already_existed: false });
 });
