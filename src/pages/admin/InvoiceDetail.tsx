@@ -87,29 +87,20 @@ export default function InvoiceDetail() {
     }
   };
 
-  const handleSend = async () => {
-    if (!confirm('Send this invoice to the client via Stripe?')) return;
+  const handlePushDraft = async () => {
+    if (
+      !confirm(
+        'Push this invoice to Stripe as a DRAFT?\n\nIt will NOT be sent. You finalize it, set up recurring, and send it inside Stripe (where your branding applies).'
+      )
+    )
+      return;
     setSending(true);
     setError('');
     try {
-      await api.sendInvoice(Number(id));
+      await api.pushInvoiceToStripe(Number(id));
       load();
     } catch (e: any) {
-      setError(e?.message || 'Failed to send invoice');
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handlePushRecurring = async () => {
-    if (!confirm('Set up recurring billing for this invoice in Stripe?')) return;
-    setSending(true);
-    setError('');
-    try {
-      await api.pushRecurringInvoice(Number(id));
-      load();
-    } catch (e: any) {
-      setError(e?.message || 'Failed to set up recurring billing');
+      setError(e?.message || 'Failed to push invoice to Stripe');
     } finally {
       setSending(false);
     }
@@ -170,39 +161,24 @@ export default function InvoiceDetail() {
           >
             {invoice.status}
           </span>
-          {invoice.status === 'draft' && invoice.billing_type === 'recurring' && (
+          {invoice.status === 'draft' && !invoice.stripe_invoice_id && (
             <button
-              onClick={handlePushRecurring}
+              onClick={handlePushDraft}
               disabled={sending}
-              className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+              className="bg-[#635bff] hover:opacity-90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
             >
-              {sending ? 'Setting up...' : 'Set up Recurring'}
+              {sending ? 'Pushing…' : 'Push to Stripe (draft)'}
             </button>
           )}
-          {invoice.status === 'draft' && invoice.billing_type !== 'recurring' && (
-            <button
-              onClick={handleSend}
-              disabled={sending}
-              className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+          {invoice.stripe_invoice_id && (
+            <a
+              href={`https://dashboard.stripe.com/invoices/${invoice.stripe_invoice_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 bg-[#635bff] hover:opacity-90 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
             >
-              {sending ? 'Sending...' : 'Send via Stripe'}
-            </button>
-          )}
-          {invoice.status !== 'draft' && invoice.stripe_invoice_id && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-              </svg>
-              Sent to Stripe
-            </span>
-          )}
-          {invoice.stripe_subscription_id && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-              </svg>
-              Subscription Active
-            </span>
+              Open draft in Stripe →
+            </a>
           )}
           {invoice.status === 'sent' && (
             <button
@@ -291,6 +267,27 @@ export default function InvoiceDetail() {
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-700 mb-4">
           {error}
+        </div>
+      )}
+
+      {invoice.stripe_invoice_id && (
+        <div className="bg-[#635bff]/5 border border-[#635bff]/30 rounded-xl p-4 mb-6">
+          <p className="text-sm font-semibold text-charcoal">
+            Pushed to Stripe as a draft.
+          </p>
+          <p className="text-sm text-gray-600 mt-1">
+            Finish in Stripe:{' '}
+            <a
+              href={`https://dashboard.stripe.com/invoices/${invoice.stripe_invoice_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#635bff] font-semibold hover:underline"
+            >
+              open the draft →
+            </a>{' '}
+            then set up recurring, confirm your branding, and send it. Stripe emails the
+            branded invoice and the webhook marks it paid here automatically.
+          </p>
         </div>
       )}
 

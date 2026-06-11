@@ -164,6 +164,11 @@ export const api = {
   deleteInvoice: (id: number) => request(`/invoices/${id}`, { method: 'DELETE' }),
   sendInvoice: (id: number) =>
     request(`/invoices/${id}/send`, { method: 'POST' }),
+  pushInvoiceToStripe: (id: number) =>
+    request<{ success: boolean; stripe_invoice_id: string; already_pushed?: boolean }>(
+      `/invoices/${id}/push-draft`,
+      { method: 'POST' }
+    ),
   pushRecurringInvoice: (id: number) =>
     request(`/invoices/${id}/push-recurring`, { method: 'POST' }),
 

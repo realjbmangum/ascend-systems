@@ -212,6 +212,90 @@ invoices.post("/:id/send", async (c) => {
   });
 });
 
+// Push the invoice to Stripe as a DRAFT — creates the customer + line items +
+// a draft invoice, but does NOT finalize or send it. The admin then configures
+// recurring, branding, and sending inside Stripe. Idempotent on stripe_invoice_id.
+invoices.post("/:id/push-draft", async (c) => {
+  if (!c.env.STRIPE_SECRET_KEY) {
+    return c.json({ error: "STRIPE_SECRET_KEY not configured" }, 500);
+  }
+  const id = c.req.param("id");
+  const invoice = await c.env.DB.prepare(
+    `SELECT i.*, c.email AS client_email, c.contact_name, c.stripe_customer_id
+     FROM invoices i JOIN clients c ON c.id = i.client_id WHERE i.id = ?`
+  )
+    .bind(id)
+    .first<{
+      id: number;
+      client_id: number;
+      client_email: string;
+      contact_name: string;
+      stripe_customer_id: string | null;
+      description: string | null;
+      stripe_invoice_id: string | null;
+    }>();
+  if (!invoice) return c.json({ error: "not found" }, 404);
+  if (invoice.stripe_invoice_id) {
+    return c.json({
+      success: true,
+      stripe_invoice_id: invoice.stripe_invoice_id,
+      already_pushed: true,
+    });
+  }
+
+  const { results: lineItems } = await c.env.DB.prepare(
+    "SELECT * FROM invoice_line_items WHERE invoice_id = ?"
+  )
+    .bind(id)
+    .all<{ description: string; quantity: number; unit_price_cents: number }>();
+
+  const customer = await findOrCreateCustomer(
+    c.env.STRIPE_SECRET_KEY,
+    invoice.client_email,
+    invoice.contact_name
+  );
+  if (!customer?.id) {
+    const msg =
+      (customer as { error?: { message?: string } })?.error?.message ??
+      "could not create the Stripe customer — check the key's Customers permission.";
+    return c.json({ error: `Stripe error: ${msg}` }, 502);
+  }
+  if (!invoice.stripe_customer_id || invoice.stripe_customer_id !== customer.id) {
+    await c.env.DB.prepare("UPDATE clients SET stripe_customer_id = ? WHERE id = ?")
+      .bind(customer.id, invoice.client_id)
+      .run();
+  }
+
+  // Only bill positive lines; $0 "Included —" lines are CRM detail, not Stripe
+  // invoice items (Stripe rejects/clutters with zero-amount items).
+  for (const li of lineItems) {
+    const amount = li.unit_price_cents * li.quantity;
+    if (amount <= 0) continue;
+    await createInvoiceItem(c.env.STRIPE_SECRET_KEY, customer.id, amount, li.description);
+  }
+
+  const stripeInvoice = await createStripeInvoice(
+    c.env.STRIPE_SECRET_KEY,
+    customer.id,
+    invoice.description ?? undefined
+  );
+  if (!stripeInvoice?.id) {
+    const msg =
+      (stripeInvoice as { error?: { message?: string } })?.error?.message ??
+      "could not create the draft invoice — check the key's Invoices and Invoice Items permissions.";
+    return c.json({ error: `Stripe error: ${msg}` }, 502);
+  }
+
+  // Stays a DRAFT in Stripe (createStripeInvoice uses auto_advance=false).
+  await c.env.DB.prepare(
+    `UPDATE invoices SET stripe_invoice_id = ?, updated_at = datetime('now') WHERE id = ?`
+  )
+    .bind(stripeInvoice.id, id)
+    .run();
+
+  return c.json({ success: true, stripe_invoice_id: stripeInvoice.id });
+});
+
 invoices.post("/:id/push-recurring", async (c) => {
   if (!c.env.STRIPE_SECRET_KEY) {
     return c.json({ error: "STRIPE_SECRET_KEY not configured" }, 500);

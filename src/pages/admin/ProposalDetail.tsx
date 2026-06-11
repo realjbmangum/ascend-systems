@@ -279,9 +279,9 @@ export default function ProposalDetail() {
                   onClick={handleBill}
                   disabled={billing}
                   className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-                  title="Generate a draft invoice from this proposal, then review and push to Stripe"
+                  title="Convert this signed proposal into a detailed draft invoice, then push it to Stripe"
                 >
-                  {billing ? 'Generating…' : 'Bill via Stripe'}
+                  {billing ? 'Converting…' : 'Convert to Invoice'}
                 </button>
               ))}
             {linkToShow && (
@@ -369,8 +369,8 @@ export default function ProposalDetail() {
             </p>
           ) : (
             <p className="text-xs text-green-700 mt-1.5">
-              Not yet billed — click <span className="font-semibold">Bill via Stripe</span> to
-              generate the invoice.
+              Not yet invoiced — click <span className="font-semibold">Convert to Invoice</span> to
+              generate the detailed draft.
             </p>
           )}
         </div>
