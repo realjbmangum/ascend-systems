@@ -266,24 +266,32 @@ invoices.post("/:id/push-draft", async (c) => {
       .run();
   }
 
-  // Only bill positive lines; $0 "Included —" lines are CRM detail, not Stripe
-  // invoice items (Stripe rejects/clutters with zero-amount items).
-  for (const li of lineItems) {
-    const amount = li.unit_price_cents * li.quantity;
-    if (amount <= 0) continue;
-    await createInvoiceItem(c.env.STRIPE_SECRET_KEY, customer.id, amount, li.description);
-  }
-
-  const stripeInvoice = await createStripeInvoice(
-    c.env.STRIPE_SECRET_KEY,
-    customer.id,
-    invoice.description ?? undefined
-  );
+  // Create the draft FIRST (empty, no memo — the detail belongs in the line
+  // items, not the memo), then attach each line item directly to this invoice
+  // so they land in the line-item table.
+  const stripeInvoice = await createStripeInvoice(c.env.STRIPE_SECRET_KEY, customer.id);
   if (!stripeInvoice?.id) {
     const msg =
-      (stripeInvoice as { error?: { message?: string } })?.error?.message ??
-      "could not create the draft invoice — check the key's Invoices and Invoice Items permissions.";
+      stripeInvoice?.error?.message ??
+      "could not create the draft invoice — check the key's Invoices permission.";
     return c.json({ error: `Stripe error: ${msg}` }, 502);
+  }
+
+  for (const li of lineItems) {
+    const amount = li.unit_price_cents * li.quantity;
+    const item = await createInvoiceItem(
+      c.env.STRIPE_SECRET_KEY,
+      customer.id,
+      amount,
+      li.description,
+      stripeInvoice.id
+    );
+    if (!item?.id) {
+      const msg =
+        item?.error?.message ??
+        "could not add a line item — check the key's Invoice Items permission.";
+      return c.json({ error: `Stripe error: ${msg}` }, 502);
+    }
   }
 
   // Stays a DRAFT in Stripe (createStripeInvoice uses auto_advance=false).

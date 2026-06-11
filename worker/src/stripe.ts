@@ -68,35 +68,41 @@ export async function createInvoiceItem(
   secretKey: string,
   customerId: string,
   amountCents: number,
-  description: string
-): Promise<{ id: string }> {
+  description: string,
+  invoiceId?: string
+): Promise<{ id?: string; error?: { message?: string } }> {
+  const body = new URLSearchParams({
+    customer: customerId,
+    amount: String(amountCents),
+    currency: "usd",
+    description,
+  });
+  // Attach directly to a specific draft invoice rather than leaving it pending.
+  if (invoiceId) body.append("invoice", invoiceId);
   const res = await fetch(`${STRIPE_API}/invoiceitems`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${secretKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: new URLSearchParams({
-      customer: customerId,
-      amount: String(amountCents),
-      currency: "usd",
-      description,
-    }),
+    body,
   });
 
-  const item = (await res.json()) as { id: string };
-  return item;
+  return res.json() as Promise<{ id?: string; error?: { message?: string } }>;
 }
 
 export async function createStripeInvoice(
   secretKey: string,
   customerId: string,
   description?: string
-): Promise<{ id: string }> {
+): Promise<{ id?: string; error?: { message?: string } }> {
   const body = new URLSearchParams({
     customer: customerId,
     currency: "usd",
     auto_advance: "false",
+    // Start empty — we attach line items explicitly via invoiceitem.invoice,
+    // so don't auto-sweep stray pending items onto this draft.
+    pending_invoice_items_behavior: "exclude",
   });
   if (description) {
     body.append("description", description);
@@ -111,8 +117,7 @@ export async function createStripeInvoice(
     body,
   });
 
-  const invoice = (await res.json()) as { id: string };
-  return invoice;
+  return res.json() as Promise<{ id?: string; error?: { message?: string } }>;
 }
 
 export async function sendStripeInvoice(
