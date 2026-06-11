@@ -137,10 +137,31 @@ export async function createSubscription(
   interval: "month" | "year" | "week",
   description: string
 ): Promise<{
-  id: string;
-  status: string;
+  id?: string;
+  status?: string;
   latest_invoice?: { hosted_invoice_url?: string };
+  error?: { message?: string };
 }> {
+  // Subscription price_data requires an EXISTING product id (inline
+  // product_data is only valid for Checkout/invoice items, not subscriptions),
+  // so create the product first and reference it.
+  const productRes = await fetch(`${STRIPE_API}/products`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({ name: description }),
+  });
+  const product = (await productRes.json()) as {
+    id?: string;
+    error?: { message?: string };
+  };
+  if (!product?.id) return product; // bubble the Stripe error up to the caller
+
+  // Bill by emailed invoice each period (net 15), matching the engagement's
+  // "invoiced monthly in advance, net 15" — no saved card required; the client
+  // pays via the hosted invoice link Stripe emails them.
   const res = await fetch(`${STRIPE_API}/subscriptions`, {
     method: "POST",
     headers: {
@@ -150,13 +171,12 @@ export async function createSubscription(
     body: new URLSearchParams({
       customer: customerId,
       "items[0][price_data][currency]": "usd",
-      "items[0][price_data][product_data][name]": description,
+      "items[0][price_data][product]": product.id,
       "items[0][price_data][unit_amount]": String(amountCents),
       "items[0][price_data][recurring][interval]": interval,
-      expand: "latest_invoice.payment_intent",
-      payment_behavior: "default_incomplete",
-      "payment_settings[payment_method_types][]": "card",
-      "payment_settings[save_default_payment_method]": "on_subscription",
+      collection_method: "send_invoice",
+      days_until_due: "15",
+      expand: "latest_invoice",
     }),
   });
   return res.json() as Promise<any>;
