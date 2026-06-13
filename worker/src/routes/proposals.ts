@@ -58,7 +58,7 @@ proposals.post("/:id/generate-invoice", async (c) => {
   const proposal = await c.env.DB.prepare(
     `SELECT id, client_id, project_id, title, total_cents, pricing_model,
             status, signed_at, selected_tier, tiers, payment_schedule,
-            price_summary
+            price_summary, deliverables, scope
      FROM proposals WHERE id = ?`
   )
     .bind(id)
@@ -75,6 +75,8 @@ proposals.post("/:id/generate-invoice", async (c) => {
       tiers: string | null;
       payment_schedule: string | null;
       price_summary: string | null;
+      deliverables: string | null;
+      scope: string | null;
     }>();
   if (!proposal) return c.json({ error: "not found" }, 404);
   if (proposal.status !== "accepted" && !proposal.signed_at) {
@@ -133,12 +135,25 @@ proposals.post("/:id/generate-invoice", async (c) => {
     }
   }
 
-  // Main billable line + optional $0 "included" lines describing the tier.
+  // Itemize what the price covers as $0 detail lines under the main billable
+  // line — tier features for a tiered retainer, or the deliverables list for a
+  // fixed-fee / project proposal. Falls back to the title when there's nothing.
+  const parseList = (raw: string | null | undefined): string[] => {
+    if (!raw) return [];
+    // Split a "1) ... 2) ... 3) ..." or semicolon-separated list into items.
+    const parts = /\d+\)/.test(raw)
+      ? raw.split(/\s*\d+\)\s*/)
+      : raw.split(/;\s*/);
+    return parts
+      .map((p) => stripMd(p).replace(/[;.]+$/, "").trim())
+      .filter(Boolean);
+  };
+
+  const detailLines: string[] = [];
   let mainLabel = recurring
     ? `${proposal.title} — monthly retainer`
     : proposal.title;
   let invoiceDescription = mainLabel;
-  const includedFeatures: string[] = [];
 
   if (selectedTier) {
     const tierLabel = [
@@ -148,19 +163,22 @@ proposals.post("/:id/generate-invoice", async (c) => {
       .filter(Boolean)
       .join(" ");
     mainLabel = `Fractional CTO Retainer — ${tierLabel}`.trim();
-    for (const f of selectedTier.features ?? []) {
-      const clean = stripMd(f);
-      if (clean) includedFeatures.push(clean);
-    }
+    const feats = (selectedTier.features ?? []).map(stripMd).filter(Boolean);
+    for (const f of feats) detailLines.push(`Included — ${f}`);
     const terms = stripMd(proposal.payment_schedule) || "Net 15 days.";
     invoiceDescription =
       `${mainLabel}.` +
-      (includedFeatures.length
-        ? ` Includes: ${includedFeatures.join("; ")}.`
-        : "") +
+      (feats.length ? ` Includes: ${feats.join("; ")}.` : "") +
       ` ${terms}`;
-  } else if (proposal.price_summary) {
-    invoiceDescription = stripMd(proposal.price_summary).slice(0, 600);
+  } else {
+    for (const d of parseList(proposal.deliverables)) {
+      detailLines.push(`Deliverable — ${d}`);
+    }
+    const summary = stripMd(proposal.scope) || stripMd(proposal.price_summary) || "";
+    const terms = stripMd(proposal.payment_schedule);
+    invoiceDescription =
+      [`${mainLabel}.`, summary, terms].filter(Boolean).join(" ").slice(0, 800) ||
+      mainLabel;
   }
 
   const result = await c.env.DB.prepare(
@@ -188,14 +206,13 @@ proposals.post("/:id/generate-invoice", async (c) => {
   )
     .bind(invoiceId, mainLabel, amount)
     .run();
-  // Included tier features as $0 informational lines (CRM detail only — the
-  // recurring push bills by amount, so these never affect the Stripe charge).
-  for (const f of includedFeatures) {
+  // Itemized detail as $0 lines (tier inclusions or project deliverables).
+  for (const line of detailLines) {
     await c.env.DB.prepare(
       `INSERT INTO invoice_line_items (invoice_id, description, quantity, unit_price_cents)
        VALUES (?, ?, 1, 0)`
     )
-      .bind(invoiceId, `Included — ${f}`)
+      .bind(invoiceId, line)
       .run();
   }
 
