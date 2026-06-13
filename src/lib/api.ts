@@ -211,6 +211,11 @@ export const api = {
       `/proposals/${id}/generate-invoice`,
       { method: 'POST' }
     ),
+  markProposalAccepted: (id: number, signer_name?: string) =>
+    request<{ success: boolean; signer_name: string }>(
+      `/proposals/${id}/mark-accepted`,
+      { method: 'POST', body: JSON.stringify({ signer_name }) }
+    ),
 
   // Public — Proposal sign
   getProposalByToken: (token: string) =>

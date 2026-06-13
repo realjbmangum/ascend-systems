@@ -398,4 +398,37 @@ proposals.post("/:id/send", async (c) => {
   });
 });
 
+// Mark a proposal accepted on the client's behalf (e.g. a verbal yes), so it
+// can be converted to an invoice without the public e-sign flow. Records
+// signed_at + a signer name for the audit trail.
+proposals.post("/:id/mark-accepted", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req
+    .json<{ signer_name?: string }>()
+    .catch(() => ({} as { signer_name?: string }));
+  const row = await c.env.DB.prepare(
+    `SELECT pr.id, c.contact_name
+     FROM proposals pr LEFT JOIN clients c ON c.id = pr.client_id
+     WHERE pr.id = ?`
+  )
+    .bind(id)
+    .first<{ id: number; contact_name: string | null }>();
+  if (!row) return c.json({ error: "not found" }, 404);
+
+  const signer =
+    body.signer_name?.trim() ||
+    (row.contact_name ? `${row.contact_name} (verbal)` : "Accepted offline");
+
+  await c.env.DB.prepare(
+    `UPDATE proposals
+     SET status = 'accepted', signed_at = datetime('now'),
+         signer_name = ?, updated_at = datetime('now')
+     WHERE id = ?`
+  )
+    .bind(signer, id)
+    .run();
+
+  return c.json({ success: true, signer_name: signer });
+});
+
 export default proposals;

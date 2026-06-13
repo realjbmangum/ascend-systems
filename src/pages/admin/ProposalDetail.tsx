@@ -24,6 +24,7 @@ export default function ProposalDetail() {
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const [billing, setBilling] = useState(false);
+  const [accepting, setAccepting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
   const [signUrl, setSignUrl] = useState<string | null>(null);
@@ -158,6 +159,27 @@ export default function ProposalDetail() {
     }
   };
 
+  const handleMarkAccepted = async () => {
+    const defaultName = proposal?.contact_name
+      ? `${proposal.contact_name} (verbal)`
+      : '';
+    const signer = window.prompt(
+      'Mark this proposal accepted on the client’s behalf (e.g. a verbal yes).\n\nWho approved it? (recorded as the signer)',
+      defaultName
+    );
+    if (signer === null) return; // cancelled
+    setAccepting(true);
+    setError('');
+    try {
+      await api.markProposalAccepted(Number(id), signer.trim() || undefined);
+      load();
+    } catch (e: any) {
+      setError(e?.message || 'Failed to mark proposal accepted');
+    } finally {
+      setAccepting(false);
+    }
+  };
+
   const handleBill = async () => {
     setBilling(true);
     setError('');
@@ -264,6 +286,16 @@ export default function ProposalDetail() {
                   : proposal.status === 'draft'
                   ? 'Send Proposal'
                   : 'Resend'}
+              </button>
+            )}
+            {(proposal.status === 'draft' || proposal.status === 'sent') && (
+              <button
+                onClick={handleMarkAccepted}
+                disabled={accepting}
+                className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                title="Mark accepted on the client's behalf (e.g. a verbal yes), then convert to an invoice"
+              >
+                {accepting ? 'Marking…' : 'Mark Accepted (offline)'}
               </button>
             )}
             {proposal.status === 'accepted' &&
