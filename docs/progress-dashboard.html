@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ascend Systems — Progress Dashboard</title>
+<style>
+  :root{
+    --charcoal:#1E2A32; --charcoal-light:#263540; --charcoal-lighter:#2E4050;
+    --charcoal-900:#162028; --orange:#D4632C; --orange-light:#E07A4F;
+    --orange-dark:#B85328; --orange-glow:#FEF5F0;
+    --surface:#EDF2F7; --surface-100:#E2E8F0; --surface-200:#CBD5E0;
+    --gray-400:#9CA3AF; --gray-600:#6B7280;
+    --green:#22C55E; --amber:#D97706; --red:#DC2626;
+    --bg:#FAFAF8; --card:#fff; --text:#1E2A32; --muted:#6B7280; --line:#E2E8F0;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#12191E; --card:#1A232A; --text:#E8EDF1; --muted:#93A1AC; --line:#2A3742; --surface:#1A232A; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px}
+
+  header{background:var(--charcoal);color:#fff;padding:36px 0 30px;margin-bottom:32px;border-bottom:4px solid var(--orange)}
+  header .wrap{padding-bottom:0}
+  .eyebrow{font:600 11px/1 ui-monospace,'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin:0 0 10px}
+  h1{margin:0 0 6px;font-size:30px;letter-spacing:-.02em}
+  .sub{color:#B6C2CC;margin:0;font-size:14px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:26px 0 34px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .stat b{display:block;font-size:26px;line-height:1.1;letter-spacing:-.02em}
+  .stat span{font:600 10px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .stat.done b{color:var(--green)} .stat.blocked b{color:var(--red)} .stat.next b{color:var(--orange)}
+
+  .bar{height:8px;border-radius:99px;background:var(--surface-100);overflow:hidden;margin-top:10px}
+  .bar i{display:block;height:100%;background:var(--orange);border-radius:99px;transition:width .35s ease}
+  @media (prefers-color-scheme:dark){ .bar{background:#2A3742} }
+
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:20px;overflow:hidden}
+  .sh{display:flex;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .sh h2{margin:0;font-size:17px;letter-spacing:-.01em;flex:1;min-width:220px}
+  .sh .why{width:100%;margin:2px 0 0;font-size:13px;color:var(--muted)}
+  .pct{font:600 12px/1 ui-monospace,monospace;color:var(--muted);white-space:nowrap}
+  .sbar{width:120px}
+
+  ul{list-style:none;margin:0;padding:6px 0}
+  li{display:flex;gap:12px;padding:11px 22px;align-items:flex-start;border-bottom:1px solid transparent}
+  li:hover{background:rgba(212,99,44,.045)}
+  input[type=checkbox]{margin:3px 0 0;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;flex-shrink:0}
+  .txt{flex:1;min-width:0}
+  .t{display:block}
+  li.on .t{text-decoration:line-through;color:var(--muted)}
+  .note{display:block;font-size:13px;color:var(--muted);margin-top:3px}
+  .note code{background:var(--surface-100);padding:1px 5px;border-radius:4px;font:12px ui-monospace,monospace}
+  @media (prefers-color-scheme:dark){ .note code{background:#2A3742} }
+
+  .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;padding:4px 7px;border-radius:5px;flex-shrink:0;margin-top:1px}
+  .blocked{background:#FEE2E2;color:#991B1B}
+  .next{background:var(--orange-glow);color:var(--orange-dark)}
+  .live{background:#DCFCE7;color:#166534}
+  .later{background:var(--surface-100);color:var(--gray-600)}
+  @media (prefers-color-scheme:dark){
+    .blocked{background:#3A1B1B;color:#FCA5A5} .next{background:#3A2418;color:#F0A882}
+    .live{background:#14301F;color:#86EFAC} .later{background:#2A3742;color:#93A1AC}
+  }
+
+  .callout{margin:0 22px 16px;padding:14px 16px;border-left:3px solid var(--orange);background:var(--orange-glow);border-radius:0 8px 8px 0;font-size:13.5px}
+  @media (prefers-color-scheme:dark){ .callout{background:#2A1D16} }
+  .callout b{color:var(--orange-dark)}
+  @media (prefers-color-scheme:dark){ .callout b{color:var(--orange-light)} }
+
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+  .reset{background:none;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12px;padding:5px 11px;border-radius:7px;cursor:pointer}
+  .reset:hover{border-color:var(--orange);color:var(--orange)}
+  a{color:var(--orange-dark)} @media (prefers-color-scheme:dark){a{color:var(--orange-light)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Ascend Systems · ascendsystems.ai</p>
+    <h1>Progress Dashboard</h1>
+    <p class="sub">Live tracker for SEO, AI search visibility, content, and ops. Tick boxes to update — progress saves in this browser.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="stats">
+    <div class="stat done"><b id="s-done">0</b><span>Done</span></div>
+    <div class="stat next"><b id="s-open">0</b><span>Open</span></div>
+    <div class="stat blocked"><b id="s-blocked">0</b><span>Blocked</span></div>
+    <div class="stat"><b id="s-pct">0%</b><span>Complete</span><div class="bar"><i id="s-bar" style="width:0"></i></div></div>
+  </div>
+
+  <!-- ============ GOOGLE SEO ============ -->
+  <section data-sec="google">
+    <div class="sh">
+      <h2>1 · SEO for Google</h2>
+      <span class="pct"></span><div class="bar sbar"><i></i></div>
+      <p class="why">Technical foundation and on-page. Mostly done — the gap now is measurement and page volume.</p>
+    </div>
+    <div class="callout"><b>Biggest gap:</b> Search Console still isn't set up, so none of this is measurable. Everything below is shipped blind — we don't know a single query the site ranks for.</div>
+    <ul>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Static pre-rendering (Astro) — real HTML per route</span><span class="note">Was the #1 blocker in the May audit. Googlebot sees full content in the first response.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">robots.txt + sitemap</span><span class="note"><code>/robots.txt</code> and <code>/sitemap-index.xml</code> both live and correct.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Canonical, Open Graph, Twitter card on every page</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">og-image.png + favicon.ico created</span><span class="note">Both were referenced sitewide but <b>did not exist</b> — every social share was a broken image.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Sitewide JSON-LD @graph</span><span class="note">Organization, ProfessionalService, Person, WebSite. 62 blocks sitewide, 0 invalid.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Per-page schema: Service, FAQPage, Article, BreadcrumbList, ProfilePage, ContactPage</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Case study meta wired up</span><span class="note">Hand-written <code>seoTitle</code>/<code>seoDescription</code> had sat unused for months; pages shipped 33–64 char descriptions instead.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Article dates from real git history</span><span class="note">Deliberately not engagement dates — those would have claimed a 2024 publish date.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Titles trimmed under 60 chars</span><span class="note">Home 76→53, Services 63→59.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">5 service pages live</span><span class="note">1,450–1,522 words each, 6 FAQs apiece, 1.8% cross-page overlap (target &lt;40%).</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Phone published → LocalBusiness schema complete</span><span class="note">(980) 577-1231. Must stay byte-identical everywhere it's listed.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">39 stray <code>{{screenshot}}</code> tokens removed</span><span class="note">Were rendering as visible text mid-article on six case studies.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Zero broken images sitewide</span></span></li>
+
+      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Set up Google Search Console</span><span class="note">Nothing here is measurable until this exists. Submit the sitemap once verified. <b>Do this first.</b></span></span></li>
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Google Business Profile</span><span class="note">Local pack eligibility for "Charlotte" queries. Needs the NAP to match the site exactly.</span></span></li>
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Regenerate <code>internal-tools.jpg</code></span><span class="note">Reads "Siter" instead of "Sites". Prompt with spelling guard is in <code>docs/image-generation-prompts.md</code>.</span></span></li>
+      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Charlotte page set — 5 local pages</span><span class="note">Highest-value set in the plan. Blocked: needs a real named local case study. Stancil is a prospect, not a client — the masonry contract work may now qualify.</span></span></li>
+      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Remaining page sets: /tools, /vs, /industries</span><span class="note">~14 more pages from the May plan. Re-validate keywords first.</span></span></li>
+      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Replace 62 hardcoded site origins with <code>Astro.site</code></span><span class="note">Maintenance risk, not urgent. A miss silently breaks canonicals.</span></span></li>
+    </ul>
+  </section>
+
+  <!-- ============ AI SEARCH ============ -->
+  <section data-sec="ai">
+    <div class="sh">
+      <h2>2 · SEO for AI Tools</h2>
+      <span class="pct"></span><div class="bar sbar"><i></i></div>
+      <p class="why">Getting cited by Claude, ChatGPT, Grok, and Perplexity. Crawlability is done; visibility isn't.</p>
+    </div>
+    <div class="callout"><b>The honest picture:</b> this isn't a separate tech checklist. The crawlers are already allowed and the schema is better than most. What actually drives citation is <b>Bing indexing</b> and <b>third-party mentions</b> — neither is done.</div>
+    <ul>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">AI crawlers explicitly allowed in robots.txt</span><span class="note">GPTBot, ClaudeBot, anthropic-ai, PerplexityBot, Bingbot.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">llms.txt published</span><span class="note">Live at <code>/llms.txt</code>. Cheap to maintain — but unproven, no major provider has committed to reading it. Don't expect much.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Structured data for clean extraction</span><span class="note">FAQPage and Service schema give models labelled Q&amp;A pairs rather than prose to guess at.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Specific, citable facts in the content</span><span class="note">"2–3 hours → 15 minutes", "208 stations across 46 locations", "683 organic visitors/month". Models cite specifics, not adjectives.</span></span></li>
+
+      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Set up Bing Webmaster Tools</span><span class="note"><b>Highest-leverage item on this page.</b> ChatGPT and Perplexity lean heavily on Bing's index. If you're only in Google, you're invisible to a large share of AI search.</span></span></li>
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Third-party mentions and directory listings</span><span class="note">Models cite roundups, directories, and review sites more than vendor homepages. "Best Charlotte software developers" listicles matter more than our own copy.</span></span></li>
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Baseline citation test</span><span class="note">Ask Claude / ChatGPT / Grok "who builds custom software in Charlotte NC" and record the answer. Repeat monthly — that's the only real measurement available.</span></span></li>
+      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Question-shaped content for extraction</span><span class="note">H2 = literal user query, followed by a 40–60 word direct answer. Works for both featured snippets and AI citation.</span></span></li>
+    </ul>
+  </section>
+
+  <!-- ============ CONTENT ============ -->
+  <section data-sec="content">
+    <div class="sh">
+      <h2>3 · Content</h2>
+      <span class="pct"></span><div class="bar sbar"><i></i></div>
+      <p class="why">The plan called for 12 pieces plus a blog. None of that exists yet.</p>
+    </div>
+    <ul>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">7 long-form case studies</span><span class="note">2,477–3,115 words on the substantial ones. Genuinely strong — the best asset on the site.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">5 service pages written</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">AI proof rewritten with real numbers</span><span class="note">Replaced a section headed "The honest position on AI proof" — meta-commentary that should never have shipped on a sales page.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Decision: case studies stay text-only</span><span class="note">34 planned screenshots dropped. The write-ups carry themselves.</span></span></li>
+
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Contract-review case study</span><span class="note">Best untold story: 2–3 hours → 15 minutes, 300-page subcontracts. Client anonymous. Would unblock the Charlotte page set and give the AI service real proof depth.</span></span></li>
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Cost calculator methodology content</span><span class="note">800–1,200 words. The May audit called this "the highest organic ROI on the site" — the tool exists but has no supporting prose.</span></span></li>
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Fix the Heirloom thin page</span><span class="note"><code>/portfolio/heirloom</code> has schema and a skeleton but no body. Either write it or noindex it.</span></span></li>
+      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Blog — 0 of 12 planned pieces</span><span class="note">No <code>/blog</code> exists. Slowest-compounding and most time-hungry; do it after the pages above.</span></span></li>
+      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Hub / pillar pages</span><span class="note">/custom-crm, /ai-for-smbs, /how-i-work, /charlotte.</span></span></li>
+    </ul>
+  </section>
+
+  <!-- ============ DESIGN ============ -->
+  <section data-sec="design">
+    <div class="sh">
+      <h2>4 · Design &amp; UX</h2>
+      <span class="pct"></span><div class="bar sbar"><i></i></div>
+      <p class="why">Layout and imagery on the new pages.</p>
+    </div>
+    <ul>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Service pages de-slabbed</span><span class="note">Hero 5/7 with image right, problem 4/8 sticky heading, approach 2-col, proof 7/5. Was full-width blocks stacked endlessly.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">CTA paragraph ragging fixed</span><span class="note"><code>text-balance</code> on the five centered CTA blocks.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">5 concept renders live on /services</span><span class="note">Dark abstract 3D. Replaced grey skeleton placeholders — also removed Recharts from the bundle.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Alt text carries meaning, not shapes</span><span class="note">Renders are abstract, so a literal description would tell a screen-reader user nothing.</span></span></li>
+
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Your visual design review</span><span class="note">Never verified in a browser on this end. Specifically: the renders are near-black but sections alternate light/dark — three of five sit on the light surface.</span></span></li>
+      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Mobile pass on the new service pages</span><span class="note">Grid collapses to single column by design, but unverified on a real device.</span></span></li>
+    </ul>
+  </section>
+
+  <!-- ============ OPS ============ -->
+  <section data-sec="ops">
+    <div class="sh">
+      <h2>5 · Ops &amp; Infrastructure</h2>
+      <span class="pct"></span><div class="bar sbar"><i></i></div>
+      <p class="why">Voice agent, security, and repo hygiene.</p>
+    </div>
+    <div class="callout"><b>Security — do not skip:</b> this repo is <b>public</b>. An invoice, a PO, and four business registration certificates were sitting untracked in the root, one <code>git add -A</code> from publication. Now gitignored, and git history is clean — but the same pattern is likely in your other repos.</div>
+    <ul>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Business documents gitignored</span><span class="note">Verified via <code>git log --all</code> that none were ever committed. No history rewrite needed.</span></span></li>
+      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Phone number wired sitewide</span></span></li>
+
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Audit other public repos for stray financial docs</span><span class="note">Same failure mode. Worth an hour.</span></span></li>
+      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Grok Voice Agent on (980) 577-1231</span><span class="note">~$0.05/min + $0.01/min for the number. Two agents needed: caller-facing and internal.</span></span></li>
+      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Voice agent knowledge bases — keep them SEPARATE</span><span class="note">The caller-facing agent must <b>never</b> receive <code>docs/charlotte-target-list.html</code>, <code>docs/outscraper/*</code> (scraped contact PII), the outreach playbook, the reactivation emails, or the security review. Caller-facing gets only: services data, case studies, website-copy.md, the MSA.</span></span></li>
+      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Strip EXIF from service images</span><span class="note">Generator provenance data, a few KB each. Cosmetic.</span></span></li>
+    </ul>
+  </section>
+
+  <footer>
+    <p><b>Live site verified:</b> <span id="ts"></span> — 11 pages, 6 assets, 5 concept images, all HTTP 200. 62 JSON-LD blocks, 0 invalid. 0 broken images. 0 stray tokens.</p>
+    <p>Source: <code>docs/progress-dashboard.html</code> · Session log: <code>progress.txt</code> · Prompts: <code>docs/image-generation-prompts.md</code> · <a href="https://ascendsystems.ai">ascendsystems.ai</a></p>
+    <p style="margin-top:14px"><button class="reset" onclick="if(confirm('Reset all checkboxes to their default state?')){localStorage.removeItem(KEY);location.reload()}">Reset checkboxes</button></p>
+  </footer>
+</div>
+
+<script>
+const KEY='ascend-progress-v1';
+const boxes=[...document.querySelectorAll('li input[type=checkbox]')];
+boxes.forEach((b,i)=>b.dataset.i=i);
+
+// tags
+document.querySelectorAll('li[data-tag]').forEach(li=>{
+  const t=li.dataset.tag, s=document.createElement('span');
+  s.className='tag '+t;
+  s.textContent={live:'Live',next:'Next',blocked:'Blocked',later:'Later'}[t]||t;
+  li.appendChild(s);
+});
+
+const saved=JSON.parse(localStorage.getItem(KEY)||'null');
+if(saved) boxes.forEach((b,i)=>{ if(typeof saved[i]==='boolean') b.checked=saved[i] });
+
+function render(){
+  let done=0, blocked=0;
+  boxes.forEach(b=>{
+    const li=b.closest('li');
+    li.classList.toggle('on', b.checked);
+    if(b.checked) done++;
+    else if(li.dataset.tag==='blocked') blocked++;
+  });
+  const total=boxes.length, pct=Math.round(done/total*100);
+  s_done.textContent=done;
+  s_open.textContent=total-done;
+  s_blocked.textContent=blocked;
+  s_pct.textContent=pct+'%';
+  s_bar.style.width=pct+'%';
+
+  document.querySelectorAll('section').forEach(sec=>{
+    const bs=[...sec.querySelectorAll('input[type=checkbox]')];
+    const d=bs.filter(b=>b.checked).length;
+    const p=Math.round(d/bs.length*100);
+    sec.querySelector('.pct').textContent=d+'/'+bs.length;
+    sec.querySelector('.sbar i').style.width=p+'%';
+  });
+  localStorage.setItem(KEY, JSON.stringify(boxes.map(b=>b.checked)));
+}
+boxes.forEach(b=>b.addEventListener('change',render));
+document.getElementById('ts').textContent=new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
+render();
+</script>
+</body>
+</html>
