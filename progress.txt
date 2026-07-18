@@ -351,3 +351,69 @@ value in the plan — these target the top-priority local keywords):**
   deleted-but-referenced (portfolio.ts:194) so it renders broken.
 - OPEN: Article `image` falls back to the generic og-image.png on 7 of 8 case
   studies because the hero files don't exist. Self-corrects once they land.
+
+---
+
+## Session - July 18, 2026 (continued) — phone, service alignment, image plumbing
+
+**Completed:**
+- Published the real phone: (980) 577-1231 in siteConfig (renders in AstroFooter,
+  Footer.tsx, and as a tel: link on /contact — all three were already
+  conditionally wired, just waiting on a value) and +1-980-577-1231 as
+  `telephone` on ProfessionalService. LocalBusiness schema is now complete.
+- Rewrote src/pages/Services.tsx from 4 services to the canonical 5. The
+  homepage (ServicesSection.tsx) and the Service schema BOTH already had the
+  correct 5 — only /services was stale. Each card now deep-links to its
+  /services/[slug] detail page.
+- Removed a false claim: the old AI entry said "We built an AI phone system
+  that answers calls around the clock... doing the job of a $3,000/month
+  answering service." No such project exists in the portfolio. Replaced with an
+  approach description, and the callout label is now data-driven
+  (`exampleLabel`) so it reads "How Engagements Start" instead of "Real
+  Example". Restore the default label when a real AI engagement ships.
+- Wired image rendering that never existed: the `screenshots` frontmatter was
+  declared in content.config.ts but NO template consumed it. Added a gallery to
+  portfolio/[slug].astro and an illustration slot to services/[slug].astro,
+  both guarded by build-time existsSync so missing files are skipped.
+- docs/image-generation-prompts.md — 39 prompts (5 service + 34 case study)
+  with exact target filenames, a shared house-style block, and a verification
+  script.
+
+**Correction to the earlier entry in this file:** I previously wrote that the
+34 missing case-study screenshots "render as broken images on live case study
+pages." That was WRONG. They were declared in frontmatter and never rendered at
+all. They render now (behind the existsSync guard) because I wired the gallery.
+
+**SECURITY — repo hygiene:**
+- github.com/realjbmangum/ascend-systems is PUBLIC. Found untracked in the repo
+  root: Invoice-EULMKGF7-0001.pdf, PO2610021167....pdf, four
+  A-Assumed-Business-Name-Certificate PDFs, and ascend-dba-filing-guide.html.
+  None were caught by .gitignore — a single `git add -A` would have published
+  business financial and registration records.
+- .gitignore now excludes *.pdf, Invoice-*, PO[0-9]*, the certificates, and
+  Ascend V2/. Verified via `git log --all` that none were EVER committed, so no
+  history rewrite is needed.
+- Worth auditing the other public repos for the same pattern.
+
+**Decisions:**
+- Committed on branch `feat/seo-service-pages` rather than straight to main,
+  and pushed. Not merged — Brian's call.
+- `IMAGES_ARE_ILLUSTRATIVE = true` in portfolio/[slug].astro adds an
+  "illustrative mockup" caption to case-study screenshots. Flip to false once
+  real captures replace the generated set. 4 of the 5 products (scdmvappointments,
+  recordstops, pottydirectory, sendmylove) are LIVE and can just be captured —
+  that is the better path than generating.
+- No generated screenshots for CLT EV (real City of Charlotte client work, real
+  capture already exists), Ringdocket, or Heirloom.
+
+**Next steps:**
+- [ ] Merge feat/seo-service-pages (PR or direct)
+- [ ] Grok Voice Agent: two agents, SEPARATE knowledge bases. Caller-facing gets
+      only services.ts, case studies, website-copy.md, MSA. It must NOT get
+      docs/charlotte-target-list.html, docs/outscraper/*, outreach-playbook,
+      warm-reactivation-emails, the security review, or competitive analysis.
+- [ ] Drop generated images per docs/image-generation-prompts.md
+- [ ] Google Search Console + Bing Webmaster Tools (Bing feeds ChatGPT/Perplexity)
+- [ ] Charlotte page set still deferred — now unblocked on phone, still blocked
+      on a real local case study (Stancil is a prospect, not a client)
+- [ ] Visual design review of the 5 new service pages still OUTSTANDING
