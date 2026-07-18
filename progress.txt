@@ -462,3 +462,74 @@ overlap, 62 JSON-LD blocks 0 invalid, no {{screenshot}} tokens anywhere in dist/
 - [ ] Audit other public repos for stray PDFs/invoices in the root
 - [ ] Charlotte set: unblocked on phone, still needs a real local case study
 - [ ] 62 hardcoded site origins in src/ — use Astro.site
+
+## Session - July 18, 2026 (final) — service images live, ready to merge
+
+**Completed:**
+- Five dark abstract 3D concept renders live on /services. Brian generated them
+  after two rejected directions (flat vector icons read as clip art). Final
+  direction: smoked glass + brushed metal on charcoal, single burnt-orange rim
+  light, shallow DOF. Files at public/images/services/concepts/*.jpg.
+- Alt text carries the MEANING of each metaphor, not the shapes — these are
+  abstract, so a screen reader and Google both need the interpretation.
+- AI proof section rewritten with the real engagement (see below).
+- Service detail page layout de-slabbed: hero 5/7 with image right, problem
+  4/8 with sticky heading, approach 2-col, proof 7/5. Padding tightened.
+- text-balance added to the five centered CTA paragraphs that were ragging badly.
+
+**Gotchas hit while placing the images:**
+- `custom-saas` downloaded with NO file extension. Cloudflare Pages serves by
+  extension — it would have downloaded rather than displayed. Renamed to .jpg.
+- Files arrived as .jpg but code expected .png, and landed in public/images/
+  root rather than concepts/. Both corrected.
+- The Set B detail-page images one directory up share four of the same
+  basenames (ai-integrations.jpg etc). Verified byte sizes before/after the
+  move — nothing overwritten.
+- Restored public/images/portfolio/heirloom-logo.png, which was deleted in the
+  working tree but still tracked in git. It is referenced by portfolio.ts:194
+  and was the only broken <img> on the site. Site is now zero broken images.
+
+**Side effect worth keeping:** with CONCEPT_IMAGES_READY a constant true,
+Rollup folds the dead branch and drops MockDashboard/MockPhoneUI, which removes
+**Recharts from the shipped PageIsland chunk entirely**. If that flag is ever
+set back to false, Recharts returns.
+
+**AI proof — replaced a bad piece of writing:**
+The page had shipped a section headed "The honest position on AI proof"
+explaining that no AI case study existed. That is meta-commentary about our own
+uncertainty on a sales page. Brian called it out. The correct move was to ASK
+him for an example rather than write the gap into the page.
+Replaced with the real work: a commercial masonry contractor (Carolina Masonry
+— ANONYMOUS by agreement, do NOT name them in source or output, this repo is
+public) spent 2-3 hours per contract prepping a 300-page subcontract for their
+attorney, plus attorney fees and missed bid deadlines from back-and-forth. The
+tool produces the structured pre-review in 15 minutes. The attorney still does
+the legal work — do not imply otherwise. Figures are the client's; do not inflate.
+Second integration (internal chatbot over back-office systems) is in the
+use-case list rather than the proof slot — one strong proof beats two vague ones.
+Note: app-subline was INSPIRED by this work but is a separate product.
+
+**Final gate — all green:**
+22 pages build clean · 5 service pages 1,450-1,522 words · titles <=60 ·
+descriptions 150-160 · 62 JSON-LD blocks 0 invalid · 0 broken images ·
+0 stray {{tokens}}.
+
+**Ready to merge: PR #1, 9 commits.**
+https://github.com/realjbmangum/ascend-systems/pull/1
+
+**Still open after merge:**
+- [ ] Brian's manual design review (he is doing this himself)
+- [ ] Concept renders are all near-black but service sections alternate
+      light/dark — 3 of 5 sit on light bg-surface. Eyeball whether that reads
+      heavy; fix is either all-dark sections or a container behind the image.
+- [ ] Regenerate internal-tools.jpg (Set B, detail page) — reads "Siter" not
+      "Sites". Prompt now has an explicit spelling guard.
+- [ ] Grok Voice Agent on (980) 577-1231 — two agents, SEPARATE knowledge
+      bases. Caller-facing must NEVER get charlotte-target-list.html,
+      docs/outscraper/*, outreach-playbook, warm-reactivation-emails, or the
+      security review.
+- [ ] GSC + Bing Webmaster Tools (Bing feeds ChatGPT/Perplexity)
+- [ ] Audit other public repos for stray PDFs/invoices in the root
+- [ ] Charlotte page set — unblocked on phone, still needs a real local case
+      study. The contract-review work may now qualify.
+- [ ] 62 hardcoded site origins in src/ — use Astro.site
