@@ -58,7 +58,7 @@ export default function About() {
             A Technology Partner You Can Actually Trust.
           </motion.h1>
           <motion.p
-            className="mt-8 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed"
+            className="mt-8 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed text-balance"
             style={{ color: 'rgba(255,255,255,0.8)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -273,7 +273,7 @@ export default function About() {
           >
             Skip the sales process. Talk to the person who does the work.
           </motion.h2>
-          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed text-center">
+          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed text-balance text-center">
             30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.
           </p>
           <Link

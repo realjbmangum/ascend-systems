@@ -20,6 +20,11 @@ const services = [
     tech: ['React', 'Astro', 'Next.js', 'TypeScript', 'Cloudflare', 'Supabase', 'Stripe'],
     example:
       'SC DMV Alerts went from idea to paying subscribers in under three weeks — 65 locations monitored every five minutes, three subscription tiers, Stripe billing, running on Cloudflare Workers and D1.',
+    concept: {
+      src: '/images/services/concepts/custom-saas.jpg',
+      alt:
+        'Stacked glass slabs circled by an unbroken ring of light — software built in layers that keeps running and earning every month, rather than delivered once and forgotten.',
+    },
     dark: false,
     mockType: 'dashboard' as const,
   },
@@ -29,16 +34,19 @@ const services = [
     description:
       'Getting an impressive AI demo takes an afternoon. Getting something that holds up against real inputs, at a cost you can predict, with a sensible answer for when the model is wrong, is the actual engineering.',
     useCases: [
+      'Long-document review — contracts, bids, specs — prepped for a human',
+      'Internal chatbots that answer from your own systems, in plain language',
       'Document processing and data extraction at volume',
-      'First-pass support triage and ticket routing',
       'LLM features wired into the systems you already run',
-      'Summarising long records a person would otherwise read',
     ],
     tech: ['Claude', 'OpenAI', 'Grok', 'RAG', 'Cloudflare Workers', 'Evaluation harnesses'],
-    // Not a delivered-work claim — see the label note in the callout below.
-    exampleLabel: 'How Engagements Start',
     example:
-      'Every AI engagement starts with an evaluation set built on your real data, so quality is measured before anything ships — not asserted. The AI integrations page covers why most pilots stall.',
+      'A commercial masonry contractor spent 2–3 hours per contract getting a 300-page subcontract ready for their attorney. We built a tool that produces the structured pre-review — risk clauses pulled out and flagged — in 15 minutes. The attorney still does the legal work; they just start from a package instead of a PDF.',
+    concept: {
+      src: '/images/services/concepts/ai-integrations.jpg',
+      alt:
+        'A dense wall of glass rods passing through a prism and emerging as three bright bars — a 300-page document distilled down to the few things that actually matter.',
+    },
     dark: true,
     mockType: 'phone' as const,
   },
@@ -56,6 +64,11 @@ const services = [
     tech: ['React', 'Cloudflare Workers', 'D1', 'PostgreSQL', 'Supabase', 'Third-party APIs'],
     example:
       'CLT EV Analytics put all 208 of the City of Charlotte’s EV stations across 46 locations into a single pane — three org units unified, refreshed every 30 minutes, sub-100ms from the edge.',
+    concept: {
+      src: '/images/services/concepts/internal-tools.jpg',
+      alt:
+        'Scattered fragments resolving into a single seamless panel — spreadsheets, portals, and half-remembered processes becoming one place your team finds the answer.',
+    },
     dark: false,
     mockType: 'dashboard' as const,
   },
@@ -73,6 +86,11 @@ const services = [
     tech: ['Strangler pattern', 'Cloudflare', 'PostgreSQL', 'D1', 'Data migration', 'Reconciliation'],
     example:
       'RecordStops replaced a $497/month CRM with a purpose-built outreach pipeline sized to the actual workflow — 296 stores across five states, 683 organic visitors a month, no subscription.',
+    concept: {
+      src: '/images/services/concepts/legacy-modernization.jpg',
+      alt:
+        'Two standing columns, one weathered concrete and one polished glass, with blocks crossing a bridge between them — an old system replaced one piece at a time while both stay running.',
+    },
     dark: true,
     mockType: 'dashboard' as const,
   },
@@ -90,10 +108,26 @@ const services = [
     tech: ['Architecture review', 'Vendor evaluation', 'Technical hiring', 'Roadmap'],
     example:
       'SendMyLove shipped in two weeks, delivered 2,515 messages, and earned $0 MRR — sunset deliberately with the post-mortem published. Knowing when to stop is a large part of what a technical partner is for.',
+    concept: {
+      src: '/images/services/concepts/fractional-cto.jpg',
+      alt:
+        'Three converging metal ribbons with a single glowing sphere at the junction — the judgement that picks one path when the other two fall into shadow.',
+    },
     dark: false,
     mockType: 'phone' as const,
   },
 ];
+
+/**
+ * The five concept renders live at public/images/services/concepts/*.jpg
+ * (prompts: docs/image-generation-prompts.md, Set A). Set this to `false` to
+ * fall back to the MockDashboard / MockPhoneUI placeholders — e.g. if the
+ * images are ever removed, so a missing file can't ship as a broken image.
+ *
+ * A React component can't do the existsSync check the .astro templates use,
+ * because this also runs in the browser. Hence the explicit flag.
+ */
+const CONCEPT_IMAGES_READY = true;
 
 const steps = [
   {
@@ -155,7 +189,7 @@ export default function Services() {
             <span className="text-orange">We Fix It.</span>
           </motion.h1>
           <motion.p
-            className="mt-6 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
+            className="mt-6 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed text-balance"
             style={{ color: 'rgba(255,255,255,0.78)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -251,11 +285,7 @@ export default function Services() {
                       service.dark ? 'text-orange-light' : 'text-orange'
                     }`}
                   >
-                    {/* AI integrations has no shipped case study yet, so its
-                        callout describes the approach and must NOT claim to be
-                        a real example. Restore the default label once a real
-                        AI engagement is published. */}
-                    {service.exampleLabel ?? 'Real Example'}
+                    Real Example
                   </p>
                   <p
                     className={`text-sm leading-relaxed ${
@@ -276,9 +306,26 @@ export default function Services() {
                 </Link>
               </div>
 
-              {/* Right: mock UI */}
+              {/* Right: concept render, or the placeholder mock until the
+                  images exist. Alt text carries the meaning of the metaphor,
+                  not just its shapes — these are abstract, so a screen reader
+                  (and Google) needs the interpretation, not a description. */}
               <div className="lg:col-span-2 hidden lg:flex items-center justify-center">
-                {service.mockType === 'phone' ? <MockPhoneUI /> : <MockDashboard />}
+                {CONCEPT_IMAGES_READY ? (
+                  <img
+                    src={service.concept.src}
+                    alt={service.concept.alt}
+                    width={960}
+                    height={960}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full rounded-xl shadow-lg"
+                  />
+                ) : service.mockType === 'phone' ? (
+                  <MockPhoneUI />
+                ) : (
+                  <MockDashboard />
+                )}
               </div>
             </div>
           </div>
@@ -421,7 +468,7 @@ export default function Services() {
           >
             Ready to get started? Let's talk about your project.
           </motion.h2>
-          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed text-balance">
             Tell us what you are working on and we will come back with a timeline, cost range, and recommended approach.
           </p>
           <Link
