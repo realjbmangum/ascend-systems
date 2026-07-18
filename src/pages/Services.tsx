@@ -20,6 +20,11 @@ const services = [
     tech: ['React', 'Astro', 'Next.js', 'TypeScript', 'Cloudflare', 'Supabase', 'Stripe'],
     example:
       'SC DMV Alerts went from idea to paying subscribers in under three weeks — 65 locations monitored every five minutes, three subscription tiers, Stripe billing, running on Cloudflare Workers and D1.',
+    concept: {
+      src: '/images/services/concepts/custom-saas.png',
+      alt:
+        'Stacked glass slabs circled by an unbroken ring of light — software built in layers that keeps running and earning every month, rather than delivered once and forgotten.',
+    },
     dark: false,
     mockType: 'dashboard' as const,
   },
@@ -37,6 +42,11 @@ const services = [
     tech: ['Claude', 'OpenAI', 'Grok', 'RAG', 'Cloudflare Workers', 'Evaluation harnesses'],
     example:
       'A commercial masonry contractor spent 2–3 hours per contract getting a 300-page subcontract ready for their attorney. We built a tool that produces the structured pre-review — risk clauses pulled out and flagged — in 15 minutes. The attorney still does the legal work; they just start from a package instead of a PDF.',
+    concept: {
+      src: '/images/services/concepts/ai-integrations.png',
+      alt:
+        'A dense wall of glass rods passing through a prism and emerging as three bright bars — a 300-page document distilled down to the few things that actually matter.',
+    },
     dark: true,
     mockType: 'phone' as const,
   },
@@ -54,6 +64,11 @@ const services = [
     tech: ['React', 'Cloudflare Workers', 'D1', 'PostgreSQL', 'Supabase', 'Third-party APIs'],
     example:
       'CLT EV Analytics put all 208 of the City of Charlotte’s EV stations across 46 locations into a single pane — three org units unified, refreshed every 30 minutes, sub-100ms from the edge.',
+    concept: {
+      src: '/images/services/concepts/internal-tools.png',
+      alt:
+        'Scattered fragments resolving into a single seamless panel — spreadsheets, portals, and half-remembered processes becoming one place your team finds the answer.',
+    },
     dark: false,
     mockType: 'dashboard' as const,
   },
@@ -71,6 +86,11 @@ const services = [
     tech: ['Strangler pattern', 'Cloudflare', 'PostgreSQL', 'D1', 'Data migration', 'Reconciliation'],
     example:
       'RecordStops replaced a $497/month CRM with a purpose-built outreach pipeline sized to the actual workflow — 296 stores across five states, 683 organic visitors a month, no subscription.',
+    concept: {
+      src: '/images/services/concepts/legacy-modernization.png',
+      alt:
+        'Two standing columns, one weathered concrete and one polished glass, with blocks crossing a bridge between them — an old system replaced one piece at a time while both stay running.',
+    },
     dark: true,
     mockType: 'dashboard' as const,
   },
@@ -88,10 +108,27 @@ const services = [
     tech: ['Architecture review', 'Vendor evaluation', 'Technical hiring', 'Roadmap'],
     example:
       'SendMyLove shipped in two weeks, delivered 2,515 messages, and earned $0 MRR — sunset deliberately with the post-mortem published. Knowing when to stop is a large part of what a technical partner is for.',
+    concept: {
+      src: '/images/services/concepts/fractional-cto.png',
+      alt:
+        'Three converging metal ribbons with a single glowing sphere at the junction — the judgement that picks one path when the other two fall into shadow.',
+    },
     dark: false,
     mockType: 'phone' as const,
   },
 ];
+
+/**
+ * Flip to `true` once the five concept renders exist at
+ * public/images/services/concepts/*.png — prompts are in
+ * docs/image-generation-prompts.md (Set A).
+ *
+ * Until then the pages render the MockDashboard / MockPhoneUI placeholders,
+ * so a missing file can never ship as a broken image. A React component can't
+ * check the filesystem (it runs in the browser too), hence the explicit flag
+ * rather than an existsSync guard like the .astro templates use.
+ */
+const CONCEPT_IMAGES_READY = false;
 
 const steps = [
   {
@@ -270,9 +307,26 @@ export default function Services() {
                 </Link>
               </div>
 
-              {/* Right: mock UI */}
+              {/* Right: concept render, or the placeholder mock until the
+                  images exist. Alt text carries the meaning of the metaphor,
+                  not just its shapes — these are abstract, so a screen reader
+                  (and Google) needs the interpretation, not a description. */}
               <div className="lg:col-span-2 hidden lg:flex items-center justify-center">
-                {service.mockType === 'phone' ? <MockPhoneUI /> : <MockDashboard />}
+                {CONCEPT_IMAGES_READY ? (
+                  <img
+                    src={service.concept.src}
+                    alt={service.concept.alt}
+                    width={960}
+                    height={960}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full rounded-xl shadow-lg"
+                  />
+                ) : service.mockType === 'phone' ? (
+                  <MockPhoneUI />
+                ) : (
+                  <MockDashboard />
+                )}
               </div>
             </div>
           </div>
