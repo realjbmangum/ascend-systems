@@ -29,16 +29,14 @@ const services = [
     description:
       'Getting an impressive AI demo takes an afternoon. Getting something that holds up against real inputs, at a cost you can predict, with a sensible answer for when the model is wrong, is the actual engineering.',
     useCases: [
+      'Long-document review — contracts, bids, specs — prepped for a human',
+      'Internal chatbots that answer from your own systems, in plain language',
       'Document processing and data extraction at volume',
-      'First-pass support triage and ticket routing',
       'LLM features wired into the systems you already run',
-      'Summarising long records a person would otherwise read',
     ],
     tech: ['Claude', 'OpenAI', 'Grok', 'RAG', 'Cloudflare Workers', 'Evaluation harnesses'],
-    // Not a delivered-work claim — see the label note in the callout below.
-    exampleLabel: 'How Engagements Start',
     example:
-      'Every AI engagement starts with an evaluation set built on your real data, so quality is measured before anything ships — not asserted. The AI integrations page covers why most pilots stall.',
+      'A commercial masonry contractor spent 2–3 hours per contract getting a 300-page subcontract ready for their attorney. We built a tool that produces the structured pre-review — risk clauses pulled out and flagged — in 15 minutes. The attorney still does the legal work; they just start from a package instead of a PDF.',
     dark: true,
     mockType: 'phone' as const,
   },
@@ -155,7 +153,7 @@ export default function Services() {
             <span className="text-orange">We Fix It.</span>
           </motion.h1>
           <motion.p
-            className="mt-6 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
+            className="mt-6 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed text-balance"
             style={{ color: 'rgba(255,255,255,0.78)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -251,11 +249,7 @@ export default function Services() {
                       service.dark ? 'text-orange-light' : 'text-orange'
                     }`}
                   >
-                    {/* AI integrations has no shipped case study yet, so its
-                        callout describes the approach and must NOT claim to be
-                        a real example. Restore the default label once a real
-                        AI engagement is published. */}
-                    {service.exampleLabel ?? 'Real Example'}
+                    Real Example
                   </p>
                   <p
                     className={`text-sm leading-relaxed ${
@@ -421,7 +415,7 @@ export default function Services() {
           >
             Ready to get started? Let's talk about your project.
           </motion.h2>
-          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed text-balance">
             Tell us what you are working on and we will come back with a timeline, cost range, and recommended approach.
           </p>
           <Link

@@ -415,9 +415,13 @@ export const SERVICE_PAGES: ServicePage[] = [
           'A review path for low-confidence outputs, and monitoring that surfaces quality drift after a model or prompt change.',
       },
     ],
+    // Client stays anonymous by agreement — do not name them here either, this
+    // repo is public. Figures are the client's own: 2-3 hours of contract prep
+    // down to 15 minutes. Do not inflate them.
     proof: {
-      headline: 'The honest position on AI proof',
-      body: 'The portfolio does not yet include a published AI integration case study — the shipped work in it covers custom SaaS, internal dashboards, and directory infrastructure. What it does demonstrate is the part that determines whether an AI feature survives production: the Cloudflare Workers and D1 pipelines behind CLT EV Analytics and SC DMV Alerts are the same scheduled-job, external-API, cost-controlled infrastructure that an AI integration runs on. Rather than point at a case study that is not there, the fair thing is to say that AI engagements start with an evaluation harness on your real data, so quality is measured rather than asserted before anything ships.',
+      headline: 'Contract review: two to three hours down to fifteen minutes',
+      body: 'A commercial masonry contractor was losing two to three hours per contract getting a 300-page subcontract ready for their attorney — reading it through, marking what mattered, and assembling questions. That prep time carried real attorney fees on top, and the back-and-forth that followed cost them bid deadlines more than once. We built a review tool that ingests the contract and produces the structured pre-review: the clauses that actually decide risk — indemnification, payment terms, scope creep, termination — pulled out with the relevant language attached and flagged for a human to confirm. The attorney still does the legal work. They just start from a package instead of a PDF. Same prep, fifteen minutes.',
+      outcome: '2–3 hours → 15 minutes per contract · 300-page subcontracts · attorney reviews a package, not a PDF',
     },
     image: {
       src: '/images/services/ai-integrations.jpg',

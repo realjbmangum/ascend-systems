@@ -81,7 +81,7 @@ export default function Contact() {
             <span style={{ color: 'var(--color-orange)' }}>We're the Right Fit</span>
           </h1>
           <p
-            className="mt-6 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed text-center"
+            className="mt-6 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed text-balance text-center"
             style={{ color: 'rgba(255,255,255,0.78)' }}
           >
             Tell us what you are working on. I will get back to you within one business day with an honest take on timeline, cost, and whether I can help.
