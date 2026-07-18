@@ -36,20 +36,39 @@ try {
 }
 const CaseStudyBody = caseStudyEntry ? (await render(caseStudyEntry)).Content : null;
 
-const title = `${project.name} — Case Study | Ascend Systems`;
-const description = project.tagline;
 const canonical = `/portfolio/${slug}`;
+const cs = caseStudyEntry?.data;
+
+// Prefer the hand-written SEO copy in the case study frontmatter; fall back
+// to the generated title / project tagline when no .md file exists.
+const title = cs?.seoTitle ?? `${project.name} — Case Study | Ascend Systems`;
+const description = cs?.seoDescription ?? project.tagline;
+
+// Case studies use the site OG image. Per-case-study hero images were removed
+// deliberately — the write-ups carry themselves on text.
+const ogImage = 'https://ascendsystems.ai/og-image.png';
 
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   '@id': `https://ascendsystems.ai${canonical}#article`,
-  headline: project.name,
-  description: project.description,
+  headline: cs?.title ?? project.name,
+  description: cs?.seoDescription ?? project.description,
+  image: ogImage,
   author: { '@id': 'https://ascendsystems.ai/#brian-mangum' },
   publisher: { '@id': 'https://ascendsystems.ai/#organization' },
   url: `https://ascendsystems.ai${canonical}`,
-  about: project.tags,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `https://ascendsystems.ai${canonical}`,
+  },
+  isPartOf: { '@id': 'https://ascendsystems.ai/#website' },
+  // Dates describe the case study article itself, not the engagement.
+  // Omitted entirely when unknown — a wrong date is worse than none.
+  ...(cs?.publishDate ? { datePublished: cs.publishDate } : {}),
+  ...(cs?.updatedDate ? { dateModified: cs.updatedDate } : {}),
+  about: (project.tags ?? []).map((t: string) => ({ '@type': 'Thing', name: t })),
+  ...(cs?.stack?.length ? { keywords: cs.stack.join(', ') } : {}),
 };
 
 const breadcrumbSchema = {
@@ -82,6 +101,7 @@ const breadcrumbSchema = {
   title={title}
   description={description}
   canonical={canonical}
+  ogImage={ogImage}
   ogType="article"
 >
   <JsonLd slot="head" data={articleSchema} />

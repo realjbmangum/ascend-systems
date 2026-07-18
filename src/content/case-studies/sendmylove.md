@@ -13,16 +13,10 @@ metrics:
   - "$5/mo V1 pricing — $0 MRR after 3.5 months"
   - "2 weeks build-to-launch"
   - "V2 concierge pivot at $99/yr planned"
-hero: "/images/case-studies/sendmylove-hero.jpg"
-screenshots:
-  - { src: "/images/case-studies/sendmylove-homepage.png", alt: "SendMyLove homepage with signup form" }
-  - { src: "/images/case-studies/sendmylove-composer.png", alt: "Message composer view" }
-  - { src: "/images/case-studies/sendmylove-schedule.png", alt: "Schedule view for recurring messages" }
-  - { src: "/images/case-studies/sendmylove-checkout.png", alt: "Stripe checkout flow" }
-  - { src: "/images/case-studies/sendmylove-admin.png", alt: "Admin and subscriber dashboard" }
-  - { src: "/images/case-studies/sendmylove-message-preview.png", alt: "Daily message preview in email" }
 seoTitle: "SendMyLove Case Study — A Consumer SaaS That Earned $0 (And What I Learned) | Ascend Systems"
 seoDescription: "An honest report on a self-funded consumer subscription: shipped in two weeks, delivered 2,515 messages, earned $0 MRR. The pivot, the psychology lesson, and the architecture that survived it."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR
@@ -30,8 +24,6 @@ seoDescription: "An honest report on a self-funded consumer subscription: shippe
 I built SendMyLove — a $5/month subscription that delivers a pre-written love message every day to the person you care about — in two weeks. I deployed it in late January 2026 on Cloudflare Workers, D1, Stripe, and SendGrid. Over the next 3.5 months, the system sent **2,515 messages**, processed signups, ran a daily cron without an outage, and earned **$0 in monthly recurring revenue**. Zero. The product worked. The business did not.
 
 This case study covers what I shipped, why it failed, and the pivot now in build — a $99/year anniversary and birthday concierge for husbands that scaffolds emotional labor instead of replacing it. The most important lesson in this engagement is not technical. It is a rule I now use to filter every consumer product idea before I write a line of code: **never sell a product that replaces emotional labor. Sell products that scaffold it.**
-
-{{screenshot: homepage}}
 
 ## The problem
 
@@ -63,8 +55,6 @@ The architecture was deliberately small. One database, one Worker, one SPA, one 
 
 **Cron** — A single scheduled trigger at 13:00 UTC (8am ET) ran every day. For each active subscriber, it picked a message from their preferred theme, skipped any message already sent in the last 60 days, prioritized occasion-specific messages around configured anniversaries and birthdays, hydrated the template, and queued the send. Idempotent by date — running it twice the same day didn't double-send.
 
-{{screenshot: schedule-view}}
-
 The whole thing was deployable in one `wrangler deploy` command. The whole thing fit in one engineer's head. That part of the project is the part I would do the same way again.
 
 ## What I shipped
@@ -75,15 +65,15 @@ By production launch on January 20, 2026 — eleven days after the first commit 
 
 2. **Stripe Checkout handoff** — signup created a draft subscriber, redirected to a Stripe-hosted checkout for the $5/month plan, and the webhook flipped the subscriber to `active` on `checkout.session.completed`. No card data ever touched my code.
 
-3. **Subscriber dashboard** — JWT-cookie-gated view at `/dashboard`. Showed the next message preview, the delivery schedule, the configured themes, anniversary and birthday fields, and a Stripe Billing Portal link for managing the subscription. {{screenshot: admin}}
+3. **Subscriber dashboard** — JWT-cookie-gated view at `/dashboard`. Showed the next message preview, the delivery schedule, the configured themes, anniversary and birthday fields, and a Stripe Billing Portal link for managing the subscription.
 
-4. **Message composer / theme picker** — five themes (romantic, funny, appreciative, encouraging, plus a "random" wildcard that rotated daily for variety). Theme could be changed from the dashboard and the next morning's cron picked up the new preference. {{screenshot: composer}}
+4. **Message composer / theme picker** — five themes (romantic, funny, appreciative, encouraging, plus a "random" wildcard that rotated daily for variety). Theme could be changed from the dashboard and the next morning's cron picked up the new preference.
 
-5. **Daily message preview** — the dashboard showed exactly what would land in her inbox the next morning, so the user could verify the tone before it went out. {{screenshot: daily-message-preview}}
+5. **Daily message preview** — the dashboard showed exactly what would land in her inbox the next morning, so the user could verify the tone before it went out.
 
 6. **Message library** — 2,500+ pre-written notes across the five themes plus 60 occasion-specific (anniversary, birthday, Valentine's, Mother's Day, Christmas) seeded into D1 from JSON via a compile script. `{wife_name}` placeholders interpolated at send time.
 
-7. **Stripe Checkout in production** — live keys, 14-day trial removed, full signup→checkout→active flow tested with real cards on a personal account. {{screenshot: subscription-checkout}}
+7. **Stripe Checkout in production** — live keys, 14-day trial removed, full signup→checkout→active flow tested with real cards on a personal account.
 
 8. **Daily cron + SendGrid delivery** — the production cron ran every day from January 21 forward without an outage. The `delivery_log` table tells the story of every send: 2,515 messages delivered across the operational lifetime of V1.
 

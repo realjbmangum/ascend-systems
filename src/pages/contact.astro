@@ -6,13 +6,40 @@
  * label, helper text, and value option for SEO crawl.
  */
 import Layout from '../layouts/Layout.astro';
+import JsonLd from '../components/JsonLd.astro';
 import PageIsland from '../components/PageIsland';
 
 const title = 'Contact — Get in Touch with Ascend Systems | Charlotte NC';
 const description =
   'Tell us about your project. Book a 30-minute discovery call. Based in Charlotte, NC; serving mid-market SMBs across the Carolinas and remotely nationwide.';
+
+// /contact is the strongest local-signal page on the site. Point it at the
+// existing ProfessionalService entity rather than duplicating NAP data.
+// No `telephone` until siteConfig.phone holds a real number — see
+// src/data/schema-graph.ts for why a placeholder would be worse than none.
+const contactSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  '@id': 'https://ascendsystems.ai/contact#contactpage',
+  url: 'https://ascendsystems.ai/contact',
+  name: title,
+  description,
+  isPartOf: { '@id': 'https://ascendsystems.ai/#website' },
+  mainEntity: { '@id': 'https://ascendsystems.ai/#localbusiness' },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ascendsystems.ai/' },
+    { '@type': 'ListItem', position: 2, name: 'Contact', item: 'https://ascendsystems.ai/contact' },
+  ],
+};
 ---
 
 <Layout title={title} description={description} canonical="/contact">
+  <JsonLd slot="head" data={contactSchema} />
+  <JsonLd slot="head" data={breadcrumbSchema} />
   <PageIsland page="contact" initialPath="/contact" client:load />
 </Layout>

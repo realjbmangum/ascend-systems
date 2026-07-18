@@ -21,18 +21,15 @@ const caseStudies = defineCollection({
     status: z.string().optional(),
     stack: z.array(z.string()).optional(),
     metrics: z.array(z.string()).optional(),
-    hero: z.string().optional(),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
-    screenshots: z
-      .array(
-        z.object({
-          key: z.string().optional(),
-          src: z.string(),
-          alt: z.string(),
-        })
-      )
-      .optional(),
+    /**
+     * When the case study itself was published / last revised — NOT the
+     * engagement dates above. Feeds Article datePublished/dateModified.
+     * Backfilled from git history; keep updatedDate current on real edits.
+     */
+    publishDate: z.string().optional(),
+    updatedDate: z.string().optional(),
   }),
 });
 

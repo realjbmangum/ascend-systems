@@ -6,10 +6,10 @@
  * Per-page schema (FAQPage, Service, HowTo, Article, BreadcrumbList) goes
  * through the `<JsonLd>` component instead.
  *
- * Note: `telephone` is intentionally omitted from ProfessionalService
- * because the live siteConfig.phone is empty. Re-add when a real number
- * is published. Do NOT use a 555 placeholder — Google penalizes NAP
- * inconsistency.
+ * `telephone` is now populated (+1-980-577-1231, added Jul 18 2026). It must
+ * match siteConfig.phone and every external listing exactly — Google treats
+ * NAP inconsistency as a negative local signal. Never substitute a
+ * placeholder number.
  */
 
 export const SITEWIDE_GRAPH = {
@@ -81,6 +81,10 @@ export const SITEWIDE_GRAPH = {
       image: 'https://ascendsystems.ai/og-image.png',
       url: 'https://ascendsystems.ai',
       email: 'hello@ascendsystems.ai',
+      // E.164 for schema. The human-readable form lives in siteConfig.phone
+      // as '(980) 577-1231' — keep BOTH in sync, and keep the human form
+      // byte-identical anywhere it's listed externally (GBP, directories).
+      telephone: '+1-980-577-1231',
       priceRange: '$$$',
       address: {
         '@type': 'PostalAddress',

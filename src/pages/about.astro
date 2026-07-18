@@ -1,12 +1,38 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import JsonLd from '../components/JsonLd.astro';
 import PageIsland from '../components/PageIsland';
 
 const title = 'About Brian Mangum — Founder, Ascend Systems | Charlotte NC';
 const description =
   'Senior full-stack engineer and fractional CTO based in Charlotte, NC. One operator, end-to-end product delivery for mid-market businesses.';
+
+// Marks this page as the canonical profile for the Person already declared
+// in the sitewide @graph, rather than restating the entity.
+const profileSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': 'https://ascendsystems.ai/about#profilepage',
+  url: 'https://ascendsystems.ai/about',
+  name: title,
+  description,
+  mainEntity: { '@id': 'https://ascendsystems.ai/#brian-mangum' },
+  isPartOf: { '@id': 'https://ascendsystems.ai/#website' },
+  about: { '@id': 'https://ascendsystems.ai/#organization' },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ascendsystems.ai/' },
+    { '@type': 'ListItem', position: 2, name: 'About', item: 'https://ascendsystems.ai/about' },
+  ],
+};
 ---
 
 <Layout title={title} description={description} canonical="/about">
+  <JsonLd slot="head" data={profileSchema} />
+  <JsonLd slot="head" data={breadcrumbSchema} />
   <PageIsland page="about" initialPath="/about" client:load />
 </Layout>

@@ -3,70 +3,94 @@ import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import MockDashboard from '../components/MockDashboard';
 import MockPhoneUI from '../components/MockPhoneUI';
+import { SERVICE_PAGES } from '../data/services';
 
 const services = [
   {
-    title: 'Web & App Development',
+    title: 'Custom SaaS Development',
+    slug: 'custom-saas-development',
     description:
-      'Your customers expect a smooth experience and your team needs tools that actually help them do their jobs — not a cookie-cutter template with your logo on it.',
+      'Subscription software with real billing, real auth, and real users. The hard part is never the feature you pitched — it is the plumbing underneath, and that is what gets built first.',
     useCases: [
-      'Customer portals and online tools that drive sales',
-      'Internal software your team will actually use',
-      'Online stores and marketplace platforms',
-      'Mobile-friendly apps that work on any device',
+      'Customer-facing products with subscription billing',
+      'Multi-tenant platforms with role-based permissions',
+      'Marketplaces and two-sided platforms',
+      'A working first version to test an idea before investing more',
     ],
-    tech: ['React', 'Astro', 'Next.js', 'Node.js', 'TypeScript', 'Cloudflare', 'Supabase'],
+    tech: ['React', 'Astro', 'Next.js', 'TypeScript', 'Cloudflare', 'Supabase', 'Stripe'],
     example:
-      'We built RecordStops.com — a searchable directory of 296 record stores across 5 states with city guides and a weekly newsletter, attracting 683 monthly visitors.',
+      'SC DMV Alerts went from idea to paying subscribers in under three weeks — 65 locations monitored every five minutes, three subscription tiers, Stripe billing, running on Cloudflare Workers and D1.',
     dark: false,
     mockType: 'dashboard' as const,
   },
   {
-    title: 'AI Integrations',
+    title: 'AI Integrations & Agents',
+    slug: 'ai-integrations',
     description:
-      'AI that handles real work for your business — answering phones, processing documents, running daily tasks — trained on your data, not a generic chatbot that frustrates your customers.',
+      'Getting an impressive AI demo takes an afternoon. Getting something that holds up against real inputs, at a cost you can predict, with a sensible answer for when the model is wrong, is the actual engineering.',
     useCases: [
-      'AI phone agents that book appointments and capture leads',
-      'Customer support chatbots trained on your actual business',
-      'Automatic processing of documents and paperwork',
-      'Routine tasks handled by AI so your team can focus',
+      'Document processing and data extraction at volume',
+      'First-pass support triage and ticket routing',
+      'LLM features wired into the systems you already run',
+      'Summarising long records a person would otherwise read',
     ],
-    tech: ['OpenAI', 'Claude', 'Voice AI', 'Twilio', 'Custom Integrations'],
+    tech: ['Claude', 'OpenAI', 'Grok', 'RAG', 'Cloudflare Workers', 'Evaluation harnesses'],
+    // Not a delivered-work claim — see the label note in the callout below.
+    exampleLabel: 'How Engagements Start',
     example:
-      'We built an AI phone system that answers calls around the clock, books appointments, and captures leads — doing the job of a $3,000/month answering service.',
+      'Every AI engagement starts with an evaluation set built on your real data, so quality is measured before anything ships — not asserted. The AI integrations page covers why most pilots stall.',
     dark: true,
     mockType: 'phone' as const,
   },
   {
-    title: 'Business Automation',
+    title: 'Internal Tools & Dashboards',
+    slug: 'internal-tools',
     description:
-      'Every hour your team spends copy-pasting between systems is an hour they\'re not spending on work that matters. We connect your tools so the data moves itself.',
+      'When someone on your team has built an elaborate spreadsheet with lookups and conditional formatting to compensate for what the software will not do, that spreadsheet is a specification.',
     useCases: [
-      'CRM setup and automatic follow-ups',
-      'Real-time notifications and alerts',
-      'Automated reports delivered on schedule',
-      'Payment and subscription management',
+      'Operations dashboards that answer real questions',
+      'Admin panels and back-office workflow software',
+      'Role-based views for operations, finance, and leadership',
+      'Scheduled jobs that end the Monday-morning CSV export',
     ],
-    tech: ['Cloudflare Workers', 'D1', 'Stripe', 'SendGrid', 'Twilio', 'APIs'],
+    tech: ['React', 'Cloudflare Workers', 'D1', 'PostgreSQL', 'Supabase', 'Third-party APIs'],
     example:
-      'We built SCDMV Alerts — a service that checks DMV appointments every 15 minutes and texts subscribers the moment a slot opens, with thousands of active users.',
+      'CLT EV Analytics put all 208 of the City of Charlotte’s EV stations across 46 locations into a single pane — three org units unified, refreshed every 30 minutes, sub-100ms from the edge.',
     dark: false,
     mockType: 'dashboard' as const,
   },
   {
-    title: 'Custom Solutions',
+    title: 'Legacy System Modernization',
+    slug: 'legacy-modernization',
     description:
-      'Some problems are unique to your business. If you have a challenge that technology can solve, we will map it out, build it, and put it to work for you.',
+      'Legacy systems do not get replaced because they are broken. They get replaced because the person who understood them has left. Big-bang rewrites fail; moving one workflow at a time does not.',
     useCases: [
-      'Software products for underserved markets',
-      'Data analysis and reporting dashboards',
-      'Industry-specific platforms',
-      'A working first version to test a business idea before investing more',
+      'Aging on-prem systems moved to modern cloud infrastructure',
+      'Replacing an expensive SaaS subscription with software you own',
+      'Getting data out of a system nobody wants to touch',
+      'Phased migration with no cutover weekend',
     ],
-    tech: [],
+    tech: ['Strangler pattern', 'Cloudflare', 'PostgreSQL', 'D1', 'Data migration', 'Reconciliation'],
     example:
-      'We built SendMyLove.app — a subscription messaging service that delivers personalized messages on a schedule, with over 2,500 messages sent and paying subscribers from day one.',
+      'RecordStops replaced a $497/month CRM with a purpose-built outreach pipeline sized to the actual workflow — 296 stores across five states, 683 organic visitors a month, no subscription.',
     dark: true,
+    mockType: 'dashboard' as const,
+  },
+  {
+    title: 'Fractional CTO',
+    slug: 'fractional-cto',
+    description:
+      'A business without an engineering leader still has to make engineering decisions. Senior technical judgement on retainer — from someone with no stake in which vendor you pick, who still writes code.',
+    useCases: [
+      'Reviewing a vendor quote before you sign it',
+      'Architecture decisions with a technical counterparty in the room',
+      'Writing the role, screening candidates, running technical interviews',
+      'An honest read on whether the thing you want is worth what it costs',
+    ],
+    tech: ['Architecture review', 'Vendor evaluation', 'Technical hiring', 'Roadmap'],
+    example:
+      'SendMyLove shipped in two weeks, delivered 2,515 messages, and earned $0 MRR — sunset deliberately with the post-mortem published. Knowing when to stop is a large part of what a technical partner is for.',
+    dark: false,
     mockType: 'phone' as const,
   },
 ];
@@ -227,7 +251,11 @@ export default function Services() {
                       service.dark ? 'text-orange-light' : 'text-orange'
                     }`}
                   >
-                    Real Example
+                    {/* AI integrations has no shipped case study yet, so its
+                        callout describes the approach and must NOT claim to be
+                        a real example. Restore the default label once a real
+                        AI engagement is published. */}
+                    {service.exampleLabel ?? 'Real Example'}
                   </p>
                   <p
                     className={`text-sm leading-relaxed ${
@@ -237,6 +265,15 @@ export default function Services() {
                     {service.example}
                   </p>
                 </div>
+
+                <Link
+                  to={`/services/${service.slug}`}
+                  className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold hover:underline underline-offset-4 ${
+                    service.dark ? 'text-orange-light' : 'text-orange-dark'
+                  }`}
+                >
+                  More on {service.title.toLowerCase()} →
+                </Link>
               </div>
 
               {/* Right: mock UI */}
@@ -335,6 +372,40 @@ export default function Services() {
               ))}
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Service detail pages — must sit ABOVE the closing CTA so the links
+          are not stranded below the page's conversion moment. Rendered here
+          rather than appended in services.astro for the same reason. This
+          content is SSR'd into the static HTML at build time. */}
+      <section className="bg-white py-24 sm:py-32 border-t border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-charcoal tracking-tight mb-4">
+            Go deeper on a service
+          </h2>
+          <p className="text-lg text-gray-600 leading-relaxed mb-12 max-w-2xl">
+            Each service has its own page covering how an engagement runs, what
+            it costs, a named project it produced, and the questions that come
+            up most.
+          </p>
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {SERVICE_PAGES.map((s) => (
+              <li key={s.slug}>
+                <Link
+                  to={`/services/${s.slug}`}
+                  className="block h-full rounded-xl border border-surface-200 bg-surface p-6 hover:border-orange transition-colors"
+                >
+                  <span className="block font-semibold text-charcoal mb-2">
+                    {s.shortName}
+                  </span>
+                  <span className="block text-sm leading-relaxed text-gray-600">
+                    {s.hero.subhead}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

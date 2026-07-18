@@ -13,23 +13,15 @@ metrics:
   - "~6,000 pages indexed"
   - "~325 real Google organic visitors/mo"
   - "4 organic leads in the first 72 hours after launching the lead funnel"
-hero: "/images/case-studies/pottydirectory-hero.jpg"
-screenshots:
-  - { src: "/images/case-studies/pottydirectory-city-page.png", alt: "City-level directory page with vendor cards and map" }
-  - { src: "/images/case-studies/pottydirectory-vendor-detail.png", alt: "Vendor detail page with Request a Quote form" }
-  - { src: "/images/case-studies/pottydirectory-admin-leads.png", alt: "Admin console for triaging incoming leads" }
-  - { src: "/images/case-studies/pottydirectory-request-quote-form.png", alt: "Branded Request a Quote form on a vendor page" }
-  - { src: "/images/case-studies/pottydirectory-data-page.png", alt: "Open Data page with Schema.org Dataset markup and citation block" }
-  - { src: "/images/case-studies/pottydirectory-methodology.png", alt: "Methodology page describing how the directory is built and maintained" }
 seoTitle: "PottyDirectory Case Study — Directory, Lead Funnel, AI Citations | Ascend Systems"
 seoDescription: "How a single developer built a 3,447-vendor portable restroom directory on Astro + Supabase + Cloudflare, shipped a real lead funnel that produced four organic leads in 72 hours, and turned the site into AI-engine source material."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR
 
 PottyDirectory is the largest portable-restroom rental directory in the United States — **3,447 vendors** across all 50 states, **~6,000 pages**, **~325 real Google organic visitors/month** verified after the bot floor was stripped out. It is built on Astro, Supabase (Postgres with row-level security), and Cloudflare Pages, with Pages Functions running the lead funnel and admin tools. After I shipped the Request-a-Quote flow on May 9, 2026, the site produced **four organic leads in the first 72 hours** with zero ad spend. The site is monetized through AdSense (live since Feb 9, 2026), the Amazon affiliate program, and a Verified-Badge / featured-listing program; a paid lead-priority tier is being built next. The current focus has shifted from "more pages" to **AI-engine citation** — the highest-quality real-user channel on the site, with Copilot users averaging 110 seconds of engagement versus Google's 35.
-
-{{screenshot: city-page}}
 
 ## The problem
 
@@ -47,11 +39,11 @@ The whole site is one Astro project deployed to Cloudflare Pages, with the data 
 
 **Programmatic directory pages.** Astro's `getStaticPaths` builds the page tree from Supabase at deploy time. State indexes (`/[state]`), city indexes (`/[state]/[city]`), and vendor detail pages (`/[state]/[city]/[vendor]`) are all driven by the same query layer in `src/lib/supabase.ts`. An early lesson: Supabase's PostgREST client caps responses at 1,000 rows, so the data layer paginates aggressively — without that, half the directory simply disappears from the build. Empty city pages are marked `noindex` rather than 410'd, so they exist for users who follow internal links but don't dilute the indexable surface.
 
-**Schema markup.** Every page emits Schema.org JSON-LD: `LocalBusiness` on vendor pages, `ItemList` of `LocalBusiness` on city pages, `Article` + `BreadcrumbList` on blog and trust pages, `Dataset` on the open-data page. An audit on May 7 caught that the city-page `ItemList` was missing `address`, `geo`, and `image` on the nested LocalBusiness items — a single template fix on May 9 unblocked LocalBusiness Carousel rich results across roughly 2,500 city pages. {{screenshot: vendor-detail}}
+**Schema markup.** Every page emits Schema.org JSON-LD: `LocalBusiness` on vendor pages, `ItemList` of `LocalBusiness` on city pages, `Article` + `BreadcrumbList` on blog and trust pages, `Dataset` on the open-data page. An audit on May 7 caught that the city-page `ItemList` was missing `address`, `geo`, and `image` on the nested LocalBusiness items — a single template fix on May 9 unblocked LocalBusiness Carousel rich results across roughly 2,500 city pages.
 
 **Lead funnel.** Cloudflare Pages Functions in `functions/` handle the dynamic surface — quote intake, listing intake, admin endpoints, lead forwarding, and a token-based claim flow. Two shared helpers do all the heavy lifting: a SendGrid wrapper that renders brand-matched HTML emails (Deep Navy header, Signal Green accent, Fredoka display font), and a thin PostgREST client that handles inserts, selects, and slug generation without bundling the Supabase SDK. Row-level security on the public tables is anon-INSERT-only; admin endpoints use the service-role key.
 
-**Admin console.** A single `/admin` Astro page, gated by Cloudflare Access to one Google account, exposes two tabs: Leads (incoming quote requests, with row-expansion, forward-to-vendor, and outcome tracking) and Submissions (new vendor approvals). A debounced vendor-picker combobox replaces the original "type the vendor slug by hand" prompt — a real friction point that bled into a misrouted lead before it got fixed. {{screenshot: admin-leads}}
+**Admin console.** A single `/admin` Astro page, gated by Cloudflare Access to one Google account, exposes two tabs: Leads (incoming quote requests, with row-expansion, forward-to-vendor, and outcome tracking) and Submissions (new vendor approvals). A debounced vendor-picker combobox replaces the original "type the vendor slug by hand" prompt — a real friction point that bled into a misrouted lead before it got fixed.
 
 **AI citation strategy.** The site ships an `llms.txt` source-of-truth file at the root, an `/methodology` page that documents how the directory is built and maintained (a Wirecutter-style trust page), and an `/data` page that publishes aggregate vendor statistics with full `Schema.org/Dataset` JSON-LD and a Markdown/APA/BibTeX citation block. The goal isn't more pages; it's to be the page an AI engine cites when it answers a porta-potty question.
 
@@ -59,19 +51,19 @@ The whole site is one Astro project deployed to Cloudflare Pages, with the data 
 
 **The directory itself.** 3,447 active vendors at this writing (down from 3,584 after a Tier 1 cleanup of 137 misclassified non-porta-potty businesses), all 50 states, ~6,000 indexed pages. Vendor records were assembled from scraping, manual research, the Portable Sanitation Association International (PSAI) operator roster, and a self-serve submission flow.
 
-**Programmatic city pages.** 2,924 city pages, each with a vendor list, an interactive Mapbox map with clustering, top-cities cross-links, and a unique SEO-content block for the 249 highest-traffic cities. {{screenshot: city-page}}
+**Programmatic city pages.** 2,924 city pages, each with a vendor list, an interactive Mapbox map with clustering, top-cities cross-links, and a unique SEO-content block for the 249 highest-traffic cities.
 
-**Vendor detail pages.** Every vendor gets a full page with map, hours, services, social links, schema.org markup, and — when we have an email on file — a Request-a-Quote form. Vendors without an email see a Call/Visit-website fallback instead of a form that would go nowhere. This gate was added after a real customer's request was misrouted through the form to a vendor that couldn't act on it. {{screenshot: vendor-detail}}
+**Vendor detail pages.** Every vendor gets a full page with map, hours, services, social links, schema.org markup, and — when we have an email on file — a Request-a-Quote form. Vendors without an email see a Call/Visit-website fallback instead of a form that would go nowhere. This gate was added after a real customer's request was misrouted through the form to a vendor that couldn't act on it.
 
-**Lead funnel.** Request-a-Quote form → `quote_requests` row → branded user acknowledgment email + branded admin alert. From the admin console, I forward the lead to the right vendor with one click. The vendor email includes a unique 30-day claim-token link they can use to update their own listing without an account — a self-healing data loop where every lead becomes a verification touchpoint. {{screenshot: request-quote-form}}
+**Lead funnel.** Request-a-Quote form → `quote_requests` row → branded user acknowledgment email + branded admin alert. From the admin console, I forward the lead to the right vendor with one click. The vendor email includes a unique 30-day claim-token link they can use to update their own listing without an account — a self-healing data loop where every lead becomes a verification touchpoint.
 
 **Admin console.** Leads tab with expand-row detail, vendor-picker autocomplete, and outcome tracking (`awaiting | won | lost | no_response`) on each forwarded lead. Submissions tab for approving new vendors with one click — approval promotes the row from `submissions` to `potty` and emails the vendor the live URL. Cloudflare Access at the edge does the auth so the function code carries no auth logic of its own.
 
-**Self-serve vendor flow.** `/submit` form for new vendors, `/get-verified` form for the badge program, claim links on every forwarded lead email so vendors can correct their own data. All three write to Supabase and notify me by email — no third-party form relays in the loop. {{screenshot: admin-leads}}
+**Self-serve vendor flow.** `/submit` form for new vendors, `/get-verified` form for the badge program, claim links on every forwarded lead email so vendors can correct their own data. All three write to Supabase and notify me by email — no third-party form relays in the loop.
 
-**Trust / AI surface.** `/methodology` (433-line Wirecutter-style trust page, Article schema), `/data` (full Dataset JSON-LD plus a downloadable summary of vendor counts by state, with a Markdown / APA / BibTeX citation block), and `/llms.txt` at the site root. Footer links to both Methodology and Open Data so the anchors are reachable from every page. {{screenshot: data-page}}
+**Trust / AI surface.** `/methodology` (433-line Wirecutter-style trust page, Article schema), `/data` (full Dataset JSON-LD plus a downloadable summary of vendor counts by state, with a Markdown / APA / BibTeX citation block), and `/llms.txt` at the site root. Footer links to both Methodology and Open Data so the anchors are reachable from every page.
 
-**Content layer.** 30 blog posts on luxury restroom trailers, cost guides, planning calculators, and city-specific guides — all under a single editorial layout with Inter for body, Fraunces for headings, and shared callout / FAQ / table components. The 10 highest-traffic posts were rewritten in May 2026 with H2 = literal user query + 40-60 word answer paragraph, aimed at featured-snippet capture. {{screenshot: methodology}}
+**Content layer.** 30 blog posts on luxury restroom trailers, cost guides, planning calculators, and city-specific guides — all under a single editorial layout with Inter for body, Fraunces for headings, and shared callout / FAQ / table components. The 10 highest-traffic posts were rewritten in May 2026 with H2 = literal user query + 40-60 word answer paragraph, aimed at featured-snippet capture.
 
 **Monetization.** AdSense live since Feb 9, 2026 (publisher `ca-pub-2962780862577949`), Amazon affiliate links across the supplies index, and a Verified-Badge program that exchanges badges for backlinks. The Sponsored Listing tier is being repositioned: not about placement on the page, about **lead priority** in the routing layer.
 
