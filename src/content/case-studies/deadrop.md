@@ -12,13 +12,6 @@ metrics:
   - "~$0/month infrastructure cost"
   - "White-label ready (no redeploy)"
   - "2 live instances (Lighthouse 27 + Ascend Systems)"
-hero: "/images/case-studies/deadrop-hero.png"
-screenshots:
-  - { src: "/images/case-studies/deadrop-create-link.png", alt: "Sender flow — paste secret, set TTL, get share link" }
-  - { src: "/images/case-studies/deadrop-view-once-receive.png", alt: "Receiver flow — secret decrypted in-browser, link is now dead" }
-  - { src: "/images/case-studies/deadrop-expired-state.png", alt: "Expired or already-burned link state" }
-  - { src: "/images/case-studies/deadrop-branding-config.png", alt: "Admin branding config — name, tagline, accent color, domain" }
-  - { src: "/images/case-studies/deadrop-architecture.png", alt: "Architecture diagram — browser-side crypto, KV-backed storage, TTL expiry" }
 seoTitle: "Deadrop Case Study — Self-Hostable Burn-on-Read Secret Sharing | Ascend Systems"
 seoDescription: "How I built a zero-knowledge, self-destructing password sharing tool on Cloudflare Pages — client-side AES-GCM encryption, KV TTL expiry, white-labelable in minutes, ~$0/month to run."
 publishDate: "2026-05-13T21:52:36-04:00"
@@ -28,8 +21,6 @@ updatedDate: "2026-05-13T21:52:36-04:00"
 ## TL;DR
 
 Every team I have ever worked with shares passwords and API keys the same way: paste it into Slack, hope nobody scrolls back. The third-party alternatives (`secrets.io`, password pushers, paste-and-pray utilities) trade one black box for another — your credentials now live on someone else's infrastructure with retention policies you cannot audit. Deadrop is the tool I wanted to exist instead. It is a self-hostable, zero-knowledge, burn-on-read secret sharing app that runs on Cloudflare Pages for roughly zero dollars a month. The decryption key never leaves the sender's browser. The server only ever sees ciphertext. Links self-destruct on first view and TTL-expire automatically if nobody opens them. There are two live instances right now — my own at the project's primary URL and a white-labeled deployment for Ascend Systems at `vault.ascendsystems.ai`. The codebase is MIT-licensed and any team can fork and deploy their own branded instance in under fifteen minutes.
-
-{{screenshot: deadrop-hero}}
 
 ## The problem
 
@@ -55,19 +46,17 @@ The architecture is deliberately small. There are three pieces and none of them 
 
 **Brandable UI without a redeploy.** Branding is stored as a separate KV entry (`config:brand`) and exposed through an admin panel at `/admin`. Site name, tagline, accent color, domain, support email — all editable through a form on the live deployment, gated by an `ADMIN_SECRET` environment variable that the operator sets at deploy time. Changes take effect on next page render. No code edit, no rebuild, no CI hop. This was the unlock for the white-label model — a partner can clone the repo, deploy to their own Cloudflare account, set their brand colors through `/admin`, and have a credentialed-looking product live in under a quarter-hour.
 
-{{screenshot: deadrop-architecture}}
-
 The stack rounds out as Astro 4 in SSR mode for the pages, Cloudflare Pages Functions (which compile from Astro's API routes and run as Workers under the hood) for the three endpoints, Cloudflare KV for storage, Tailwind plus JetBrains Mono for the look. Cost on the Cloudflare free tier is essentially zero — KV gives 100K reads and 1K writes per day, Pages deployments are unlimited, and a tool that exists to be used briefly and forgotten does not generate enough sustained traffic to threaten those limits.
 
 ## What I shipped
 
-**Sender flow.** A single page at `/`. Paste the secret, choose a TTL (5 minutes to 30 days, default 24 hours), pick a view limit (1 to 10, default 1), optionally add a passphrase. Click generate. The page produces a copy-able share link, with the decryption key already embedded in the fragment. The sender never sees a server roundtrip with the plaintext — the network tab shows ciphertext only. {{screenshot: deadrop-create-link}}
+**Sender flow.** A single page at `/`. Paste the secret, choose a TTL (5 minutes to 30 days, default 24 hours), pick a view limit (1 to 10, default 1), optionally add a passphrase. Click generate. The page produces a copy-able share link, with the decryption key already embedded in the fragment. The sender never sees a server roundtrip with the plaintext — the network tab shows ciphertext only.
 
-**Receiver flow.** The recipient opens the share link. The page reads the fragment, fetches the ciphertext from `/api/secret/{id}` (the server burns the entry in the same call), and decrypts in-browser. The plaintext renders with a copy button and a clear "this link is now dead" message. Reloading the page returns "not found or already burned" — verified, the KV entry is gone before the response leaves the worker. {{screenshot: deadrop-view-once-receive}}
+**Receiver flow.** The recipient opens the share link. The page reads the fragment, fetches the ciphertext from `/api/secret/{id}` (the server burns the entry in the same call), and decrypts in-browser. The plaintext renders with a copy button and a clear "this link is now dead" message. Reloading the page returns "not found or already burned" — verified, the KV entry is gone before the response leaves the worker.
 
-**Expired and already-burned states.** If the link is opened after TTL expiry, or after the view limit is hit, the same not-found state renders. There is no way for the UI to distinguish "this never existed" from "this was already viewed" from "this expired" — and that is the point. No oracle for an attacker scanning UUIDs to confirm a real ID. {{screenshot: deadrop-expired-state}}
+**Expired and already-burned states.** If the link is opened after TTL expiry, or after the view limit is hit, the same not-found state renders. There is no way for the UI to distinguish "this never existed" from "this was already viewed" from "this expired" — and that is the point. No oracle for an attacker scanning UUIDs to confirm a real ID.
 
-**Admin and branding.** The `/admin` route gates behind `ADMIN_SECRET` and exposes a form for the brand fields. Setting accent color repaints the live UI through CSS custom properties. Setting site name and tagline propagates to every page header. Setting domain affects the share link domain shown in the copy-paste affordance on the create page. No build step. {{screenshot: deadrop-branding-config}}
+**Admin and branding.** The `/admin` route gates behind `ADMIN_SECRET` and exposes a form for the brand fields. Setting accent color repaints the live UI through CSS custom properties. Setting site name and tagline propagates to every page header. Setting domain affects the share link domain shown in the copy-paste affordance on the create page. No build step.
 
 **White-label model in practice.** The Ascend deployment is a separate Cloudflare Pages project (`ascend-vault`) with its own KV namespace, pointed at the same GitHub repo. Brand fields are configured through `/admin` on that instance only. There is no shared database between deployments — each white-label instance is fully isolated, both from a data perspective and a Cloudflare billing perspective. A partner who deploys their own copy never has data sitting on my infrastructure.
 

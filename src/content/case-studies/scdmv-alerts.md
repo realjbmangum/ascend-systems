@@ -13,14 +13,6 @@ metrics:
   - "5-minute check frequency"
   - "3 subscription tiers"
   - "Concept to paid subscribers in under 3 weeks"
-hero: "/images/case-studies/scdmv-alerts-hero.jpg"
-screenshots:
-  - { src: "/images/case-studies/scdmv-homepage.png", alt: "SC DMV Alerts homepage with three pricing tiers" }
-  - { src: "/images/case-studies/scdmv-pricing.png", alt: "Free, Pro, and CDL Pro pricing cards" }
-  - { src: "/images/case-studies/scdmv-subscription-flow.png", alt: "Signup form with region and appointment-type preferences" }
-  - { src: "/images/case-studies/scdmv-locations.png", alt: "Locations page listing all 65 SC DMV offices" }
-  - { src: "/images/case-studies/scdmv-international-driver-guide.png", alt: "International driver guide page" }
-  - { src: "/images/case-studies/scdmv-alert-email.png", alt: "Sample alert email with available appointment slots" }
 seoTitle: "SC DMV Alerts Case Study — From Idea to Paying Subscribers in 3 Weeks | Ascend Systems"
 seoDescription: "How I built a real-time SC DMV appointment alert service on Cloudflare Workers + D1 + SendGrid. 65 locations monitored, 3 subscription tiers, live and paying in under three weeks."
 publishDate: "2026-05-13T21:52:36-04:00"
@@ -30,8 +22,6 @@ updatedDate: "2026-05-13T21:52:36-04:00"
 ## TL;DR
 
 South Carolina road-test appointments disappear in seconds. The state's scheduler offers no way to be notified when a slot opens, so people sit on the page hitting refresh for hours. I built [SC DMV Alerts](https://scdmvappointments.com) to fix that — a Cloudflare Worker scrapes the SC DMV scheduler API every five minutes, diffs the result against what every subscriber is watching for, and fires an email the second a match appears. The whole thing runs on Cloudflare end-to-end with SendGrid for delivery and Stripe for billing. Three tiers: free, Pro at $5.99/mo, CDL Pro at $19.99/mo. The site went from blank repo to paying subscribers in under three weeks and has been operating on autopilot since. This case study covers what I built, the scraping and notification architecture, the failure modes I had to engineer out, and the kind of business this pattern can be applied to.
-
-{{screenshot: homepage}}
 
 ## The problem
 
@@ -57,8 +47,6 @@ The architecture is small on purpose. Everything runs on Cloudflare. The build o
 
 **Payments.** Stripe Checkout for the two paid tiers, with a webhook endpoint that reads the tier metadata off the subscription and updates the subscriber row in D1. Self-serve cancellation lives at a `/cancel?token=` page that lets a paying subscriber kill their own subscription without an email to support.
 
-{{screenshot: subscription-flow}}
-
 **Cron reliability — the part nobody warns you about.** The first version used Cloudflare's built-in cron triggers running every five minutes. They worked beautifully for thirteen days, then silently stopped firing for five hours with no error, no alert, no entry in the logs. Cloudflare cron triggers are not as reliable as their documentation implies. I have hit silent cron failures three separate times on this project alone (January 27, February 5, February 12). The permanent fix was to replace the cron with a Durable Object alarm. The Durable Object holds the next-run timestamp in its own transactional storage; after each scrape, it schedules its next alarm. If the alarm fails, the DO re-schedules. Unlike cron triggers, DO alarms cannot silently stop — they live in storage the Worker controls directly. The cron is still wired up as a backup.
 
 **Subrequest limits.** Cloudflare Workers cap subrequests per invocation at 1,000. The first version of the matching endpoint hit that cap during routine operation — 700 appointments × 2 D1 queries each had the scraper failing silently every run for a week before I diagnosed it. The fix was to replace per-row queries with `db.batch()` calls. `ON CONFLICT (slot_id) DO UPDATE` handles the upsert. The whole endpoint now uses fewer than thirty subrequests per scrape regardless of appointment volume.
@@ -71,21 +59,13 @@ The product surface is small by design. A subscriber should be able to land on t
 
 **1. Three-tier subscription model.** Free covers road-test and motorcycle-test alerts, one email per day. Pro at $5.99/month gets three emails per day across all non-CDL appointment types. CDL Pro at $19.99/month covers CDL A/B/C with up to five emails per day. The pricing was anchored against the North Carolina competitor and against the actual urgency of the problem — if you need a road test and your insurance kicks in the day you pass it, $5.99 once is not the friction point.
 
-{{screenshot: pricing}}
-
 **2. City-aware filtering.** A subscriber picks their preferred SC region (Greenville, Columbia, Charleston, Myrtle Beach, Spartanburg, Florence, Rock Hill, Aiken) and the appointment types they want. The matcher only sends emails for slots in their region and their type. This single feature is what makes the service usable — without it, every subscriber would get notified for every slot statewide, and the unsubscribe rate would be catastrophic.
 
 **3. Branded transactional email.** A welcome email goes out the moment someone signs up — clear table of what they subscribed to, what they will and will not receive, how to cancel. The alert emails themselves are clean: appointment date, time, location, a direct link to the SC DMV scheduler. No marketing chrome. The subscriber is racing against other subscribers; the email's only job is to get them to the booking page faster than the next person.
 
-{{screenshot: alert-email}}
-
 **4. Locations page with all 65 SC DMV offices.** Pulled directly from the official SC DMV API at `dmv.sc.gov/scdmv/get-locations`, plus three SCDMV Express kiosk locations from the state's separate kiosk service. Each office has its address, hours, phone, and the services it offers. The page also flags 28 offices that serve international and non-citizen drivers — a distinction I would not have caught without input from a driving-school owner (more on that below).
 
-{{screenshot: location-list}}
-
 **5. International driver guide.** A standalone SEO page at `/guides/international-drivers` covering the citizenship rules, document requirements, and the multilingual computer terminals available at SC DMV testing sites. This page exists because a driving-school owner emailed me about errors in my original copy — the knowledge test isn't limited to four languages, and the citizenship rule around driving-school third-party examiners has specific edge cases. The guide is now correct, includes FAQPage JSON-LD schema, and ranks for queries the main pages would never have reached.
-
-{{screenshot: international-driver-guide}}
 
 **6. Admin dashboard.** A protected page that lets me see active subscribers, sync health, last scrape time, recent notifications sent, and per-subscriber tier and status. The "Sync Now" button manually triggers a scrape without waiting for the alarm. This is the panel I check when a subscriber emails support — it answers most questions in one click.
 

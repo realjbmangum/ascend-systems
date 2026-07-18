@@ -13,14 +13,6 @@ metrics:
   - "683 organic visitors / month"
   - "16 city guides live"
   - "4 production cron workers"
-hero: "/images/case-studies/recordstops-hero.jpg"
-screenshots:
-  - { src: "/images/case-studies/recordstops-homepage.png", alt: "RecordStops homepage with state-by-state directory navigation" }
-  - { src: "/images/case-studies/recordstops-city-guide.png", alt: "Charlotte city guide with curated record store list" }
-  - { src: "/images/case-studies/recordstops-store-detail.png", alt: "Store profile page with hours, map, and Discogs pricing" }
-  - { src: "/images/case-studies/recordstops-outreach-admin.png", alt: "Built-in outreach admin panel with V1-V3 / F1-F3 drip dots" }
-  - { src: "/images/case-studies/recordstops-sample-email.png", alt: "Branded outreach email — Verify 1 template" }
-  - { src: "/images/case-studies/recordstops-featured-listing.png", alt: "Featured listing upgrade with Stripe checkout" }
 seoTitle: "RecordStops Case Study — 683 Organic Visitors / Month From a Vinyl Directory"
 seoDescription: "How I built RecordStops, an independent record store directory across five states. 296 stores, 16 city guides, a custom outreach drip pipeline that replaced a $497/mo CRM, and 683 organic users a month with zero ad spend."
 publishDate: "2026-05-13T21:52:36-04:00"
@@ -30,8 +22,6 @@ updatedDate: "2026-05-13T21:52:36-04:00"
 ## TL;DR
 
 RecordStops is the directory for independent record stores in the US Southeast — 296 stores across North Carolina, South Carolina, Virginia, Maryland, and DC. I built it on Astro and Cloudflare D1 over December 2025 and January 2026, then spent the next four months turning it from a static directory into a working B2B pipeline. The site does 683 organic visitors a month with zero ad spend, ranking on long-tail city queries like "record stores in Greenville SC." The pitch motion runs on a custom outreach admin I built inside the site after canceling a $497/month CRM that was doing the same job worse. One inbound podcast lead — Patrick Foster at Rockin' the Suburbs — came in through the contact form. The product is live, monetizing through $15/month Featured Listings, and the work that remains is sales, not engineering.
-
-{{screenshot: homepage}}
 
 ## The problem
 
@@ -55,8 +45,6 @@ The sitemap fix was a turning point. Before February 15, Google Search Console h
 
 The admin panel at `/admin/outreach` reads from `outreach_log` (an append-only table of every send event) and renders, per store, six template-based dots: V1 / V2 / V3 for the three cold "verify your listing" emails, and F1 / F2 / F3 for the three Featured Listing pitches. Each dot is filled if that template has been sent. A "Stage" column derives where each store sits in the funnel — Cold, Verifying, Bridge, Featured, or Done — and a `nextTemplateSlug()` function walks the drip order and tells me exactly which template to send next. Verified stores skip the cold sequence and route straight to the Featured pitch.
 
-{{screenshot: outreach-admin}}
-
 **Organic SEO play.** The directory targets long-tail queries that no national content site will bother with — "record stores in Asheville NC", "where to buy vinyl in Richmond VA", "best record store Chapel Hill." Each city guide is hand-curated, not LLM-generated, because the difference shows in search results and shows even more in the few backlinks the site has earned. The state pages aggregate the city guides. The store pages are the long tail.
 
 A handful of supporting Cloudflare Workers keep the data fresh. `recordstops-sync` pulls Discogs marketplace pricing daily so each store page can show "this store has 1,200 listings on Discogs starting at $4.99." `recordstops-musicbrainz` pulls upcoming release dates for the weekly newsletter. `recordstops-newsletter` builds and sends the Saturday digest through SendGrid. A fourth worker, `recordstops-ghl-sync`, was built to bridge GHL into D1 — and is now mothballed after the GHL cancellation but kept in the repo as a reference implementation.
@@ -65,19 +53,11 @@ A handful of supporting Cloudflare Workers keep the data fresh. `recordstops-syn
 
 **The directory.** 296 stores across five states, each with hours, address, Mapbox-rendered map, phone, website, social links, and Discogs marketplace metadata where available. Image assets live in Cloudflare R2 under ID-based paths (`recordstops-images/stores/<store_id>/hero.webp`), keyed by store ID rather than slug so renames do not break references.
 
-{{screenshot: store-detail}}
-
 **16 city guides.** Columbia, Greenville, Charlotte, Asheville, Chapel Hill, Durham, Raleigh, Winston-Salem, Charleston, Richmond, Norfolk, Virginia Beach, Baltimore, DC, plus a couple more. Each guide opens with a paragraph of curator's voice — what the city's vinyl scene actually feels like — and then lists the stores worth knowing about with a one-liner each. Not "top 10 best record stores in X." A real, sortable, opinionated list.
-
-{{screenshot: city-guide}}
 
 **Outreach admin panel.** Six template-based drip dots per store (V1 V2 V3 / F1 F2 F3), Stage column with client-side filter chips, sortable headers on every column, dropdown to send the next template with one click, and a "last sent" timestamp that reads from `outreach_log` first and falls back to the legacy `email_N_sent_at` slots for backward compatibility. The drip itself is three cold "verify your listing" emails followed by three Featured Listing pitches. Two transactional emails — `featured-trial-start` and `featured-week-1-checkin` — fire automatically after Stripe payment.
 
-{{screenshot: sample-email}}
-
 **Featured Listings.** A $15/month or $150/year upgrade for store owners. Stripe checkout via a hosted payment link, with the resulting webhook flipping a flag on the store row in D1 and promoting the listing's position in its city guide. The Featured pitch emails reference real numbers — visits last month, search queries the store ranks for, the city guide it would be featured on — pulled from GA4 and from the database.
-
-{{screenshot: featured-listing}}
 
 **Newsletter.** Weekly Saturday digest covering new arrivals, upcoming releases, and one curated city pick. SendGrid for delivery, MusicBrainz for release data, a Cloudflare Worker for assembly. The send pipeline works; the content variety still needs a fix (a known bug where the same content sometimes ships two weeks in a row, traced to a stale date-range query in the digest worker).
 

@@ -14,8 +14,6 @@ import JsonLd from '../../components/JsonLd.astro';
 import PageIsland from '../../components/PageIsland';
 import { PROJECTS } from '../../data/portfolio';
 import { getEntry, render, type CollectionEntry } from 'astro:content';
-import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 
 export async function getStaticPaths() {
   return PROJECTS.map((p) => ({
@@ -46,30 +44,9 @@ const cs = caseStudyEntry?.data;
 const title = cs?.seoTitle ?? `${project.name} — Case Study | Ascend Systems`;
 const description = cs?.seoDescription ?? project.tagline;
 
-// Absolute OG image — the case study hero, but ONLY if the file actually
-// exists on disk. Several `hero:` paths in frontmatter point at images that
-// were never committed; a 404 OG image is worse than the site default, so we
-// verify at build time and fall back. Self-corrects once the file is added.
-/** True when a /public-relative path exists on disk at build time. */
-const onDisk = (p: string) =>
-  existsSync(fileURLToPath(new URL(`../../../public${p}`, import.meta.url)));
-
-const heroOnDisk = cs?.hero && onDisk(cs.hero);
-
-// Only render screenshots whose files are actually present.
-const shots = (cs?.screenshots ?? []).filter((s) => onDisk(s.src));
-
-/**
- * Set true while the screenshot set is AI-generated rather than captured from
- * the running product. Adds an "illustrative mockup" caption so the images are
- * never presented as real product captures. Flip to false once these are
- * replaced with real screenshots (4 of these 5 products are live and can
- * simply be captured).
- */
-const IMAGES_ARE_ILLUSTRATIVE = true;
-const ogImage = heroOnDisk
-  ? `https://ascendsystems.ai${cs!.hero}`
-  : 'https://ascendsystems.ai/og-image.png';
+// Case studies use the site OG image. Per-case-study hero images were removed
+// deliberately — the write-ups carry themselves on text.
+const ogImage = 'https://ascendsystems.ai/og-image.png';
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -139,28 +116,6 @@ const breadcrumbSchema = {
     <section class="bg-white border-t border-gray-200 py-20 sm:py-28">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 case-study-body">
         <CaseStudyBody />
-
-        {/* Screenshot gallery. The `screenshots` frontmatter was declared in
-            content.config.ts but never rendered — declaring an image is not
-            the same as showing it. Only files that actually exist on disk are
-            emitted, so partial sets degrade cleanly instead of producing
-            broken <img> tags. */}
-        {shots.length > 0 && (
-          <div class="mt-16 not-prose">
-            <h2>Screenshots</h2>
-            {shots.map((s) => (
-              <figure class="my-8">
-                <img src={s.src} alt={s.alt} loading="lazy" decoding="async" />
-                <figcaption class="mt-2 text-sm text-gray-500 leading-snug">
-                  {s.alt}
-                  {IMAGES_ARE_ILLUSTRATIVE && (
-                    <span class="ml-1 text-gray-400">— illustrative mockup</span>
-                  )}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        )}
       </div>
     </section>
   )}

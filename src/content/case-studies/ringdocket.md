@@ -31,8 +31,6 @@ updatedDate: "2026-05-13T21:52:36-04:00"
 
 Ringdocket is a community-sourced spam-call block list with a native iOS app and a public web dashboard at [ringdocket.com](https://ringdocket.com). I built it solo as a Lighthouse 27 product, starting with a four-phase PRD on April 18 and validating end-to-end blocking on my own iPhone eleven days later. The backend is a Cloudflare Worker against Supabase Postgres, seeded by a daily FTC complaints cron and grown by user reports that require three-account corroboration inside a 14-day window. The iOS app is native Swift with a Call Directory Extension that reads the same block list every other user reads. As of the snapshot for this write-up: **28,546 numbers on the public block list, 86,519 FTC complaints ingested, 15,049 programmatic SEO pages indexed, 13 clustered campaigns, and one real corroborated report from my own iPhone** — a number that does not exist in the FTC feed, which is exactly the coverage gap user reports are designed to close.
 
-{{screenshot: home}}
-
 ## The problem
 
 I get spam calls every day. Most people do. The carrier-level answers — Verizon Call Filter, T-Mobile Scam Shield, AT&T ActiveArmor — work, sort of, on numbers the carriers already know about. They miss rotating spoofers. They miss campaigns that move from one number to the next every 48 hours. They miss anything a real human reported yesterday but hasn't yet shown up in a carrier's threat-intel feed.
@@ -60,8 +58,6 @@ Three runtime services, one database, one block list.
 **Rate limiting (Cloudflare KV).** A single namespace `RATE_LIMIT` tracks free-tier report quota per device and per IP for the delist appeals endpoint (5/day per IP /24).
 
 **iOS (Swift + SwiftUI, two targets).** The main `Ringdocket` app target and a `RingdocketBlockList` Call Directory Extension target. Both share an App Group container — the main app writes the downloaded block list there, the extension reads it and calls `addBlockingEntry` for every E.164 number. The Call Directory Extension is the only mechanism Apple permits for actually blocking calls before they ring. There is no other path. The project is XcodeGen-driven (`project.yml` is the source of truth; `.xcodeproj` is gitignored) because hand-authored Xcode projects are notoriously fragile in git.
-
-{{screenshot: network-ledger}}
 
 ## What we shipped
 
@@ -93,8 +89,6 @@ Phase 4a was the smallest possible iOS scaffold to answer one question: *does iO
 
 The blocker on April 24 was that my macOS install was on Sequoia 15.7.1 and the App Store Xcode required Tahoe 26.x. Five days later I had Tahoe + Xcode installed, regenerated the project, signed with my personal Apple ID team, paired my iPhone, trusted the dev cert, enabled the extension at Settings → Apps → Phone → Call Blocking & Identification (Apple moved this from Settings → Phone in iOS 18+), and tapped Sync. **28,546 numbers active on my phone.** The hardest unknown ("does this actually work?") became a known yes.
 
-{{screenshot: extension-permissions}}
-
 Phase 4b shipped the full app the same session. Eleven new Swift files, about 1,200 lines of code:
 
 - `Config.swift` — endpoints + the custom `ringdocket://auth/callback` URL scheme
@@ -111,13 +105,9 @@ Phase 4b shipped the full app the same session. Eleven new Swift files, about 1,
 
 Two new worker endpoints supported the iOS HomeView: `POST /api/my-stats` (personal counts: reports all-time, reports this week, pending count, first-flag credits, top category) and an extension to `GET /api/network-stats` adding `recentCorroborated` for the Network Ledger.
 
-{{screenshot: report-flow}}
-
 ### The Network Ledger
 
 The Network Ledger is the part of the product I'm proudest of. It is the thing that makes Ringdocket feel like a public docket and not a black box. Every corroborated number shows up on the home screen of every user — what number, what campaign, when it crossed the threshold, where the first flag came from. The web equivalent is a per-campaign page that lists the top 25 numbers by reputation score with a narrative explaining what kind of scam this campaign represents. Users can see exactly how the list grows.
-
-{{screenshot: block-list}}
 
 ## Outcome
 
@@ -133,8 +123,6 @@ The pipeline numbers as of the snapshot:
 That last number is the most important one. The whole point of building user reports on top of the FTC seed was to cover numbers the FTC misses. The first real report from the iOS app was a number that does not exist in the FTC feed — `ftcComplaintCount: 0` in the health snapshot. The coverage gap is now observable, not theoretical.
 
 Three of my own personal spam numbers — (708) 794-3725, (973) 798-3891, and one incomplete I couldn't fully recover — are also absent from both the FTC feed and the block list. That's the gap. Closing it is what the corroboration flow exists for. "The faster we add users, the faster the list builds."
-
-{{screenshot: settings}}
 
 ## Lessons
 

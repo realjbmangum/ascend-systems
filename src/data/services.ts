@@ -112,7 +112,7 @@ export const SERVICE_PAGES: ServicePage[] = [
       outcome: '65 locations monitored · 5-minute check interval · 3 subscription tiers · live and paying',
     },
     image: {
-      src: '/images/services/custom-saas-development.png',
+      src: '/images/services/custom-saas-development.jpg',
       alt: 'Subscription billing dashboard with plan tiers, MRR chart, and a customer table',
     },
     pricing: {
@@ -215,7 +215,7 @@ export const SERVICE_PAGES: ServicePage[] = [
       outcome: '208 stations · 46 locations · 3 org units unified · sub-100ms edge response · refreshed every 30 minutes',
     },
     image: {
-      src: '/images/services/internal-tools.png',
+      src: '/images/services/internal-tools.jpg',
       alt: 'Operations dashboard with station status tiles, a utilization chart, and a maintenance table',
     },
     pricing: {
@@ -318,7 +318,7 @@ export const SERVICE_PAGES: ServicePage[] = [
       outcome: '$497/mo CRM replaced · 296 stores across 5 states · 16 city guides · 683 organic visitors/month',
     },
     image: {
-      src: '/images/services/legacy-modernization.png',
+      src: '/images/services/legacy-modernization.jpg',
       alt: 'Migration console showing legacy and modern systems running in parallel with reconciliation status',
     },
     pricing: {
@@ -420,7 +420,7 @@ export const SERVICE_PAGES: ServicePage[] = [
       body: 'The portfolio does not yet include a published AI integration case study — the shipped work in it covers custom SaaS, internal dashboards, and directory infrastructure. What it does demonstrate is the part that determines whether an AI feature survives production: the Cloudflare Workers and D1 pipelines behind CLT EV Analytics and SC DMV Alerts are the same scheduled-job, external-API, cost-controlled infrastructure that an AI integration runs on. Rather than point at a case study that is not there, the fair thing is to say that AI engagements start with an evaluation harness on your real data, so quality is measured rather than asserted before anything ships.',
     },
     image: {
-      src: '/images/services/ai-integrations.png',
+      src: '/images/services/ai-integrations.jpg',
       alt: 'Document processing queue with per-item confidence scores and a human review lane',
     },
     pricing: {
@@ -523,7 +523,7 @@ export const SERVICE_PAGES: ServicePage[] = [
       outcome: '2,515 messages delivered · $0 MRR · v1 sunset deliberately · full post-mortem published',
     },
     image: {
-      src: '/images/services/fractional-cto.png',
+      src: '/images/services/fractional-cto.jpg',
       alt: 'Technical roadmap board with architecture decisions, vendor reviews, and risk flags',
     },
     pricing: {

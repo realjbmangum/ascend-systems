@@ -21,7 +21,6 @@ const caseStudies = defineCollection({
     status: z.string().optional(),
     stack: z.array(z.string()).optional(),
     metrics: z.array(z.string()).optional(),
-    hero: z.string().optional(),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
     /**
@@ -31,15 +30,6 @@ const caseStudies = defineCollection({
      */
     publishDate: z.string().optional(),
     updatedDate: z.string().optional(),
-    screenshots: z
-      .array(
-        z.object({
-          key: z.string().optional(),
-          src: z.string(),
-          alt: z.string(),
-        })
-      )
-      .optional(),
   }),
 });
 
