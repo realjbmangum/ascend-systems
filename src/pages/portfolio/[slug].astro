@@ -14,6 +14,8 @@ import JsonLd from '../../components/JsonLd.astro';
 import PageIsland from '../../components/PageIsland';
 import { PROJECTS } from '../../data/portfolio';
 import { getEntry, render, type CollectionEntry } from 'astro:content';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 export async function getStaticPaths() {
   return PROJECTS.map((p) => ({
@@ -36,20 +38,60 @@ try {
 }
 const CaseStudyBody = caseStudyEntry ? (await render(caseStudyEntry)).Content : null;
 
-const title = `${project.name} — Case Study | Ascend Systems`;
-const description = project.tagline;
 const canonical = `/portfolio/${slug}`;
+const cs = caseStudyEntry?.data;
+
+// Prefer the hand-written SEO copy in the case study frontmatter; fall back
+// to the generated title / project tagline when no .md file exists.
+const title = cs?.seoTitle ?? `${project.name} — Case Study | Ascend Systems`;
+const description = cs?.seoDescription ?? project.tagline;
+
+// Absolute OG image — the case study hero, but ONLY if the file actually
+// exists on disk. Several `hero:` paths in frontmatter point at images that
+// were never committed; a 404 OG image is worse than the site default, so we
+// verify at build time and fall back. Self-corrects once the file is added.
+/** True when a /public-relative path exists on disk at build time. */
+const onDisk = (p: string) =>
+  existsSync(fileURLToPath(new URL(`../../../public${p}`, import.meta.url)));
+
+const heroOnDisk = cs?.hero && onDisk(cs.hero);
+
+// Only render screenshots whose files are actually present.
+const shots = (cs?.screenshots ?? []).filter((s) => onDisk(s.src));
+
+/**
+ * Set true while the screenshot set is AI-generated rather than captured from
+ * the running product. Adds an "illustrative mockup" caption so the images are
+ * never presented as real product captures. Flip to false once these are
+ * replaced with real screenshots (4 of these 5 products are live and can
+ * simply be captured).
+ */
+const IMAGES_ARE_ILLUSTRATIVE = true;
+const ogImage = heroOnDisk
+  ? `https://ascendsystems.ai${cs!.hero}`
+  : 'https://ascendsystems.ai/og-image.png';
 
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   '@id': `https://ascendsystems.ai${canonical}#article`,
-  headline: project.name,
-  description: project.description,
+  headline: cs?.title ?? project.name,
+  description: cs?.seoDescription ?? project.description,
+  image: ogImage,
   author: { '@id': 'https://ascendsystems.ai/#brian-mangum' },
   publisher: { '@id': 'https://ascendsystems.ai/#organization' },
   url: `https://ascendsystems.ai${canonical}`,
-  about: project.tags,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `https://ascendsystems.ai${canonical}`,
+  },
+  isPartOf: { '@id': 'https://ascendsystems.ai/#website' },
+  // Dates describe the case study article itself, not the engagement.
+  // Omitted entirely when unknown — a wrong date is worse than none.
+  ...(cs?.publishDate ? { datePublished: cs.publishDate } : {}),
+  ...(cs?.updatedDate ? { dateModified: cs.updatedDate } : {}),
+  about: (project.tags ?? []).map((t: string) => ({ '@type': 'Thing', name: t })),
+  ...(cs?.stack?.length ? { keywords: cs.stack.join(', ') } : {}),
 };
 
 const breadcrumbSchema = {
@@ -82,6 +124,7 @@ const breadcrumbSchema = {
   title={title}
   description={description}
   canonical={canonical}
+  ogImage={ogImage}
   ogType="article"
 >
   <JsonLd slot="head" data={articleSchema} />
@@ -96,6 +139,28 @@ const breadcrumbSchema = {
     <section class="bg-white border-t border-gray-200 py-20 sm:py-28">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 case-study-body">
         <CaseStudyBody />
+
+        {/* Screenshot gallery. The `screenshots` frontmatter was declared in
+            content.config.ts but never rendered — declaring an image is not
+            the same as showing it. Only files that actually exist on disk are
+            emitted, so partial sets degrade cleanly instead of producing
+            broken <img> tags. */}
+        {shots.length > 0 && (
+          <div class="mt-16 not-prose">
+            <h2>Screenshots</h2>
+            {shots.map((s) => (
+              <figure class="my-8">
+                <img src={s.src} alt={s.alt} loading="lazy" decoding="async" />
+                <figcaption class="mt-2 text-sm text-gray-500 leading-snug">
+                  {s.alt}
+                  {IMAGES_ARE_ILLUSTRATIVE && (
+                    <span class="ml-1 text-gray-400">— illustrative mockup</span>
+                  )}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )}

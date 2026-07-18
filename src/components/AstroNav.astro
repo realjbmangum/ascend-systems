@@ -16,7 +16,10 @@ const navLinks = [
 ];
 
 function isActive(href: string) {
-  return pathname === href || pathname === `${href}/`;
+  if (pathname === href || pathname === `${href}/`) return true;
+  // Child routes highlight their parent — /services/internal-tools lights up
+  // "Services". Guarded against "/" matching everything.
+  return href !== '/' && pathname.startsWith(`${href}/`);
 }
 ---
 

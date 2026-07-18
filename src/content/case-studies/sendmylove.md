@@ -23,6 +23,8 @@ screenshots:
   - { src: "/images/case-studies/sendmylove-message-preview.png", alt: "Daily message preview in email" }
 seoTitle: "SendMyLove Case Study — A Consumer SaaS That Earned $0 (And What I Learned) | Ascend Systems"
 seoDescription: "An honest report on a self-funded consumer subscription: shipped in two weeks, delivered 2,515 messages, earned $0 MRR. The pivot, the psychology lesson, and the architecture that survived it."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR

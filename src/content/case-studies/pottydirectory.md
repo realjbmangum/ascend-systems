@@ -23,6 +23,8 @@ screenshots:
   - { src: "/images/case-studies/pottydirectory-methodology.png", alt: "Methodology page describing how the directory is built and maintained" }
 seoTitle: "PottyDirectory Case Study — Directory, Lead Funnel, AI Citations | Ascend Systems"
 seoDescription: "How a single developer built a 3,447-vendor portable restroom directory on Astro + Supabase + Cloudflare, shipped a real lead funnel that produced four organic leads in 72 hours, and turned the site into AI-engine source material."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR

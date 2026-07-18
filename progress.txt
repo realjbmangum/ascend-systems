@@ -234,3 +234,120 @@
 - [ ] Seed welcome email sequence (lead_welcome trigger)
 - [ ] Consider adding PDF export for proposals
 - [ ] Consider adding invoice PDF download
+
+---
+
+## Session - July 18, 2026 — SEO: quick fixes + Set 1 programmatic pages
+
+**Context:** Site had four SEO strategy docs from May 12, 2026 (docs/seo/) with
+the technical foundation shipped but the content/programmatic backlog untouched.
+Audited docs vs. implementation, fixed the broken sitewide assets, then built
+the first programmatic page set.
+
+**Completed — sitewide fixes:**
+- Generated public/og-image.png, favicon.ico, apple-touch-icon.png. BOTH the OG
+  image and favicon were referenced by Layout.astro on every page but did not
+  exist — every social share was a broken image. Reproducible via
+  `python3 scripts/gen-brand-assets.py`.
+- Wired the hand-written seoTitle/seoDescription from case-study frontmatter
+  into portfolio/[slug].astro. They had been authored months ago and never
+  consumed — all 8 case studies were shipping 33–64 char meta descriptions.
+- Enriched Article schema: image, datePublished, dateModified, mainEntityOfPage,
+  isPartOf, keywords; `about` now uses Thing objects.
+- Added publishDate/updatedDate to the case-studies collection, backfilled from
+  git history.
+- Trimmed Home (76→53) and Services (63→59) titles under the 60-char SERP limit.
+- Added ProfilePage schema to /about and ContactPage schema to /contact, plus
+  BreadcrumbList on both. Both reference sitewide @ids rather than duplicating.
+- Added public/llms.txt for AI crawler/citation visibility.
+- Added apple-touch-icon link + sizes="any" on favicon in Layout.astro.
+- Nav isActive() now prefix-matches so child routes highlight their parent.
+
+**Completed — Set 1 programmatic pages (5 live):**
+- src/data/services.ts — SERVICE_PAGES, 5 entries, ~1,450 words each
+- src/pages/services/[slug].astro — template, plain Astro (not PageIsland)
+- Hub links section added to /services + Services column added to AstroFooter
+- Verified against the plan's pre-publish checklist: all 5 pages pass on word
+  count (1,441–1,501 vs 1,000 floor), title ≤60, description 150–160, 6 FAQs
+  each at 80+ words, ≥3 inbound/outbound internal links, static HTML, sitemap.
+- Cross-page sentence overlap 1.8% (plan target: <40%).
+- 22 pages build clean; 41+ JSON-LD blocks validate, 0 invalid.
+
+**Decisions:**
+- SERVICE SLUGS follow the five service lines actually sold (custom-saas-development,
+  internal-tools, legacy-modernization, ai-integrations, fractional-cto), NOT the
+  doc's proposed custom-crm / web-application-development / process-automation.
+  Only fractional-cto overlapped; the rest described services not on the site.
+- PRICING on the new pages uses the real site numbers ($5k discovery sprint,
+  $15k–$50k+ builds) from index.astro FAQ. The May doc's "$3,500 / $15K–$75K"
+  figures do NOT match what's actually sold — do not copy pricing from that doc.
+- Article datePublished uses real publish dates from git, NOT engagementStart.
+  Using engagement dates would have claimed the PottyDirectory article was
+  published in 2024.
+- OG image falls back to site default unless the hero file exists on disk
+  (build-time existsSync check) — several `hero:` frontmatter paths point at
+  images that were never committed.
+- CHARLOTTE PAGE SET (Set 2) DEFERRED — see blockers below.
+
+**Blockers on the Charlotte /charlotte/[service-slug] set (5 pages, highest
+value in the plan — these target the top-priority local keywords):**
+- [ ] No phone number. siteConfig.phone is '' — blocks the required NAP block
+      and LocalBusiness schema completeness. Brian has a number, needs to supply it.
+- [ ] Stancil Services is NOT a client. The plan builds these pages around
+      "City of Charlotte + Stancil Services" as named local proof, but Stancil
+      appears only in docs/outreach-playbook.html and charlotte-target-list.html
+      — it's a prospect. Only clt-ev is real local proof.
+- [ ] /charlotte/process-automation has no target keyword in the plan.
+- [ ] Pages need local pricing claims and fair competitor characterizations
+      (Designli, Bry AI, Dualboot) that need Brian's input, not invention.
+
+**Other outstanding SEO items:**
+- [ ] 34 case-study screenshots referenced in markdown bodies do not exist —
+      public/images/case-studies/ is missing entirely. These render as broken
+      images on live case study pages. Highest-priority content gap.
+- [ ] /portfolio/heirloom is a thin page — no .md file, builds with Article
+      schema but no body. Either write it or noindex it.
+- [ ] No AI-integration case study exists. /services/ai-integrations says so
+      honestly rather than implying one; replace that section when real AI work ships.
+- [ ] Google Search Console + Bing Webmaster Tools NOT set up. Bing matters —
+      it feeds ChatGPT and Perplexity.
+- [ ] Several case-study seoTitles exceed 60 chars (Deadrop is 78) — they now
+      render as-is rather than being silently rewritten.
+- [ ] Blog / content strategy (12 pieces) and remaining programmatic sets
+      (/tools, /vs, /industries) still unbuilt.
+
+**Gotchas:**
+- public/brand-v2/logo-mark-only.png is NOT mark-only — it has an "ASCEND
+  SYSTEMS" wordmark band below the glyph (~93% height). The asset script crops it.
+- The mark's cross detail is opaque WHITE on navy, so a naive navy→white recolor
+  erases it. gen-brand-assets.py recolors three ways and drops the cross at
+  favicon sizes where it's just noise.
+- Astro preview + the Chrome extension would not render the local site (extension
+  reported an error page on a URL curl served 200). Visual design review of the
+  new service pages is still OUTSTANDING — verified structurally only.
+
+**Code review (medium) — 6 findings, 2 fixed, 4 open:**
+- FIXED: the /services hub links were rendering BELOW the React island's
+  closing CTA ("Ready to get started?"), stranding them past the page's
+  conversion moment. Moved into src/pages/Services.tsx above its final CTA
+  section — still SSR'd into static HTML, so no SEO loss. services.astro no
+  longer appends its own section.
+- FIXED: AstroFooter brand column had md:col-span-2 but no sm:col-span-2 after
+  the grid gained an sm:grid-cols-2 breakpoint — brand block would squeeze
+  into a quarter-width column at tablet.
+- OPEN (needs Brian's call): THREE-WAY SERVICE NAME MISMATCH. The visible
+  /services page lists 4 services (Web & App Development, AI Integrations,
+  Business Automation, Custom Solutions — Services.tsx:9-57) while the Service
+  schema and the new detail pages use a different set of 5 (Custom SaaS
+  Development, Internal Tools & Dashboards, Legacy System Modernization,
+  AI Integrations & Agents, Fractional CTO). This predates the SEO work — the
+  schema and the UI already disagreed — but the new pages + footer now surface
+  the mismatch to visitors. Pick one canonical set of service names.
+- OPEN: site origin 'https://ascendsystems.ai' hardcoded in 62 places across
+  src/. astro.config.mjs already sets `site` and siteConfig has `domain`.
+  Should use Astro.site / a shared constant.
+- OPEN: the build-time existsSync OG guard covers `hero` only. `logo` and
+  `screenshot` in portfolio.ts get no check, and heirloom-logo.png is already
+  deleted-but-referenced (portfolio.ts:194) so it renders broken.
+- OPEN: Article `image` falls back to the generic og-image.png on 7 of 8 case
+  studies because the hero files don't exist. Self-corrects once they land.

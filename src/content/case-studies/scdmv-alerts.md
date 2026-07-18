@@ -23,6 +23,8 @@ screenshots:
   - { src: "/images/case-studies/scdmv-alert-email.png", alt: "Sample alert email with available appointment slots" }
 seoTitle: "SC DMV Alerts Case Study — From Idea to Paying Subscribers in 3 Weeks | Ascend Systems"
 seoDescription: "How I built a real-time SC DMV appointment alert service on Cloudflare Workers + D1 + SendGrid. 65 locations monitored, 3 subscription tiers, live and paying in under three weeks."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR

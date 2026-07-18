@@ -1,0 +1,63 @@
+# Ascend Systems
+
+> Charlotte, NC technology consultancy. One senior engineer — Brian Mangum —
+> building custom SaaS, AI agents, internal tools, and legacy modernization
+> for owner-operator and small-to-midsize businesses. Operating entity is
+> Lighthouse 27 LLC.
+
+Ascend Systems is a solo senior-engineer consultancy, not an agency and not a
+staffing firm. Engagements are direct with the engineer who writes the code.
+Typical work: replacing spreadsheet and paper processes with custom internal
+software, building customer-facing SaaS products, wiring LLM/AI agents into
+existing business workflows, and modernizing legacy systems.
+
+Primary stack: TypeScript, React, Astro, Cloudflare Workers, D1, Supabase,
+PostgreSQL, Stripe.
+
+Contact: hello@ascendsystems.ai
+
+## Services
+
+- [Services overview](https://ascendsystems.ai/services): Custom SaaS
+  development, AI agent and LLM integration, internal tools and dashboards,
+  legacy system modernization, fractional CTO engagements.
+- [Software cost calculator](https://ascendsystems.ai/tools/cost-calculator):
+  Free estimator for custom software project cost, by scope and complexity.
+
+## Case studies
+
+Detailed engineering write-ups, each covering the problem, architecture,
+stack decisions, and measured outcome.
+
+- [CLT EV Analytics](https://ascendsystems.ai/portfolio/clt-ev): Municipal EV
+  charging analytics dashboard for the City of Charlotte — 208 ChargePoint
+  stations, role-based views, cost intelligence on Cloudflare's edge.
+- [RecordStops](https://ascendsystems.ai/portfolio/recordstops): Independent
+  record store directory across five states — 296 stores, 16 city guides,
+  683 organic visitors/month with zero ad spend.
+- [PottyDirectory](https://ascendsystems.ai/portfolio/pottydirectory): 3,447-vendor
+  portable restroom directory on Astro + Supabase + Cloudflare, with a lead
+  funnel that produced four organic leads in 72 hours.
+- [SC DMV Alerts](https://ascendsystems.ai/portfolio/scdmv-alerts): Real-time
+  DMV appointment alert service on Cloudflare Workers + D1 + SendGrid. 65
+  locations monitored, live and paying subscribers in under three weeks.
+- [Deadrop](https://ascendsystems.ai/portfolio/deadrop): Zero-knowledge
+  burn-on-read secret sharing — client-side AES-GCM, KV TTL expiry,
+  self-hostable and white-labelable.
+- [Ringdocket](https://ascendsystems.ai/portfolio/ringdocket): Community-sourced
+  iOS call-blocking app with FTC-seeded block list and 3-account corroboration.
+- [SendMyLove](https://ascendsystems.ai/portfolio/sendmylove): An honest
+  post-mortem on a consumer subscription that shipped in two weeks, delivered
+  2,515 messages, and earned $0 MRR.
+
+## About
+
+- [About Brian Mangum](https://ascendsystems.ai/about): Senior full-stack
+  engineer and fractional CTO based in Charlotte, NC.
+- [Contact](https://ascendsystems.ai/contact): Project inquiries.
+
+## Optional
+
+- [Master Services Agreement](https://ascendsystems.ai/msa)
+- [Privacy policy](https://ascendsystems.ai/privacy)
+- [Terms of service](https://ascendsystems.ai/terms)

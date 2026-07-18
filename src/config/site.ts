@@ -16,9 +16,10 @@ export const siteConfig: {
   company: 'Lighthouse 27 LLC',
   location: 'Charlotte, NC',
   founder: 'Brian Mangum',
-  // TODO: real phone — current value was a fake (555-) placeholder.
-  // Leaving empty until a real number is wired so it never renders.
-  phone: '',
+  // Charlotte (980) line. Must stay byte-identical everywhere it appears —
+  // NAP consistency (name/address/phone) across the site, schema, and any
+  // external directory listing is a direct local-ranking signal.
+  phone: '(980) 577-1231',
   email: 'hello@ascendsystems.ai',
   // TODO: replace with real booking URL when Calendly / Cal.com is set up.
   // Falsy values cause buttons to route to /contact instead.

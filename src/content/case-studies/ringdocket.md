@@ -23,6 +23,8 @@ metrics:
   - "59 worker tests passing"
 seoTitle: "Ringdocket Case Study | Building a Community Spam Block List on Cloudflare + Supabase"
 seoDescription: "How I built Ringdocket — a community-sourced iOS call-blocking app with an FTC-seeded block list, 3-account corroboration, and a Cloudflare + Supabase backend that ships block lists to real phones."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR

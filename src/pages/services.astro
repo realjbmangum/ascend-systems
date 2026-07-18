@@ -10,7 +10,8 @@ import Layout from '../layouts/Layout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import PageIsland from '../components/PageIsland';
 
-const title = 'Services — Custom Software, AI, and Automation | Ascend Systems';
+// 59 chars — front-loads the service keywords instead of the word "Services".
+const title = 'Custom Software, AI & Automation Services | Ascend Systems';
 const description =
   'Custom SaaS, AI agents, internal tooling, and legacy modernization for Charlotte mid-market businesses. One senior engineer, end to end.';
 
@@ -84,9 +85,23 @@ const serviceSchema = {
     },
   ],
 };
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ascendsystems.ai/' },
+    { '@type': 'ListItem', position: 2, name: 'Services', item: 'https://ascendsystems.ai/services' },
+  ],
+};
 ---
 
 <Layout title={title} description={description} canonical="/services">
   <JsonLd slot="head" data={serviceSchema} />
+  <JsonLd slot="head" data={breadcrumbSchema} />
+  {/* The /services/[slug] hub links live inside the island (Services.tsx,
+      above its closing CTA) rather than being appended here — appending put
+      them below the page's conversion moment. They still render into the
+      static HTML because the island is SSR'd at build time. */}
   <PageIsland page="services" initialPath="/services" client:load />
 </Layout>

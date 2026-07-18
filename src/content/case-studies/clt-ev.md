@@ -14,6 +14,8 @@ metrics:
   - "Sub-100ms edge response times"
 seoTitle: "CLT EV Charging Analytics Dashboard — Case Study | Ascend Systems"
 seoDescription: "How Ascend Systems built a municipal EV charging analytics dashboard for the City of Charlotte — 208 ChargePoint stations, role-based views, and cost intelligence on Cloudflare's edge."
+publishDate: "2026-05-16T11:40:23-04:00"
+updatedDate: "2026-05-16T11:50:40-04:00"
 ---
 
 ## TL;DR

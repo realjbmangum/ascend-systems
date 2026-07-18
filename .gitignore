@@ -32,3 +32,15 @@ dist-admin/
 
 # Scraped third-party contact data — PII, never commit
 docs/outscraper/
+
+# Business/financial records. THIS REPO IS PUBLIC — invoices, POs, and
+# registration certificates must never be committed. Added Jul 18 2026 after
+# finding these untracked in the repo root, one `git add -A` from publication.
+*.pdf
+Invoice-*
+PO[0-9]*
+A-Assumed-Business-Name-Certificate*
+ascend-dba-filing-guide.html
+
+# Legacy design-comp dump, not part of the site build
+Ascend V2/

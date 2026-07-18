@@ -24,6 +24,13 @@ const caseStudies = defineCollection({
     hero: z.string().optional(),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
+    /**
+     * When the case study itself was published / last revised — NOT the
+     * engagement dates above. Feeds Article datePublished/dateModified.
+     * Backfilled from git history; keep updatedDate current on real edits.
+     */
+    publishDate: z.string().optional(),
+    updatedDate: z.string().optional(),
     screenshots: z
       .array(
         z.object({

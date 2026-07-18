@@ -23,6 +23,8 @@ screenshots:
   - { src: "/images/case-studies/recordstops-featured-listing.png", alt: "Featured listing upgrade with Stripe checkout" }
 seoTitle: "RecordStops Case Study — 683 Organic Visitors / Month From a Vinyl Directory"
 seoDescription: "How I built RecordStops, an independent record store directory across five states. 296 stores, 16 city guides, a custom outreach drip pipeline that replaced a $497/mo CRM, and 683 organic users a month with zero ad spend."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR

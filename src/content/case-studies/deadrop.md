@@ -21,6 +21,8 @@ screenshots:
   - { src: "/images/case-studies/deadrop-architecture.png", alt: "Architecture diagram — browser-side crypto, KV-backed storage, TTL expiry" }
 seoTitle: "Deadrop Case Study — Self-Hostable Burn-on-Read Secret Sharing | Ascend Systems"
 seoDescription: "How I built a zero-knowledge, self-destructing password sharing tool on Cloudflare Pages — client-side AES-GCM encryption, KV TTL expiry, white-labelable in minutes, ~$0/month to run."
+publishDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-05-13T21:52:36-04:00"
 ---
 
 ## TL;DR
