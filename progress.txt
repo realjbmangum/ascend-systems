@@ -417,3 +417,48 @@ all. They render now (behind the existsSync guard) because I wired the gallery.
 - [ ] Charlotte page set still deferred — now unblocked on phone, still blocked
       on a real local case study (Stancil is a prospect, not a client)
 - [ ] Visual design review of the 5 new service pages still OUTSTANDING
+
+## Session - July 18, 2026 (final) — screenshot cleanup, service images, PR #1
+
+**THE REAL SCREENSHOT PROBLEM (found late):** the case study markdown bodies
+contained 39 literal `{{screenshot: name}}` placeholder tokens that rendered as
+VISIBLE TEXT on the live pages — "{{screenshot: homepage}}" was showing
+mid-article on /portfolio/recordstops and five others. Removed all 39 (both
+standalone lines and inline at paragraph ends). This, not the missing image
+files, was the actual visible defect.
+
+**Removed the case-study image machinery entirely** per Brian's call ("we don't
+need that many screenshots, the text is fine"):
+- `screenshots` + `hero` dropped from content.config.ts and all 7 case studies
+- the gallery added earlier in this branch removed, with IMAGES_ARE_ILLUSTRATIVE
+- case studies now use the site OG image; write-ups stand on text alone
+- docs/image-generation-prompts.md trimmed from 39 prompts to the 5 service ones
+
+**Service images in place (5/5):**
+- Brian generated them and saved to "public/Services Screens/" — moved to
+  public/images/services/. The original folder name had a SPACE and capitals,
+  which requires URL-encoding and breaks on case-sensitive hosting.
+- Extensions corrected .png -> .jpg to match the actual files
+- Each renders with an "illustrative mockup, not a client system" caption
+- KNOWN ARTIFACT: internal-tools.jpg reads "Siter" instead of "Sites" in the
+  first stat tile. Regenerate that one when convenient — prompt is in the doc.
+
+**Shipped:** branch `feat/seo-service-pages`, 3 commits (d854411, ec1e29c,
+ca786b5), **PR #1 open**: https://github.com/realjbmangum/ascend-systems/pull/1
+
+**Final verification (all green):** 5 service pages at 1,463-1,523 words, titles
+<=60, descriptions 150-160, 6 FAQs each, 21 inbound links each, 1.8% cross-page
+overlap, 62 JSON-LD blocks 0 invalid, no {{screenshot}} tokens anywhere in dist/.
+
+**Still open:**
+- [ ] Visual design review of the 5 service pages — STILL OUTSTANDING, browser
+      extension would not render the local preview. Worth eyeballing before merge.
+- [ ] Regenerate internal-tools.jpg ("Siter" typo)
+- [ ] Merge PR #1
+- [ ] Grok Voice Agent — two agents, SEPARATE knowledge bases. Caller-facing must
+      never get charlotte-target-list.html, docs/outscraper/*, outreach-playbook,
+      warm-reactivation-emails, or the security review.
+- [ ] GSC + Bing Webmaster Tools
+- [ ] Audit other public repos for stray PDFs/invoices in the root
+- [ ] Charlotte set: unblocked on phone, still needs a real local case study
+- [ ] 62 hardcoded site origins in src/ — use Astro.site
