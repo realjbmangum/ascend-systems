@@ -6,260 +6,341 @@
 <title>Ascend Systems — Progress Dashboard</title>
 <style>
   :root{
-    --charcoal:#1E2A32; --charcoal-light:#263540; --charcoal-lighter:#2E4050;
-    --charcoal-900:#162028; --orange:#D4632C; --orange-light:#E07A4F;
-    --orange-dark:#B85328; --orange-glow:#FEF5F0;
-    --surface:#EDF2F7; --surface-100:#E2E8F0; --surface-200:#CBD5E0;
-    --gray-400:#9CA3AF; --gray-600:#6B7280;
-    --green:#22C55E; --amber:#D97706; --red:#DC2626;
-    --bg:#FAFAF8; --card:#fff; --text:#1E2A32; --muted:#6B7280; --line:#E2E8F0;
+    --charcoal:#1E2A32; --orange:#D4632C; --orange-light:#E07A4F; --orange-dark:#B85328;
+    --orange-glow:#FEF5F0; --surface-100:#E2E8F0; --gray-600:#6B7280;
+    --green:#22C55E; --amber:#D97706; --red:#DC2626; --slate:#94A3B8;
+    --bg:#FAFAF8; --card:#fff; --text:#1E2A32; --muted:#6B7280; --line:#E2E8F0; --hover:rgba(212,99,44,.05);
   }
   @media (prefers-color-scheme:dark){
-    :root{ --bg:#12191E; --card:#1A232A; --text:#E8EDF1; --muted:#93A1AC; --line:#2A3742; --surface:#1A232A; }
+    :root{ --bg:#12191E; --card:#1A232A; --text:#E8EDF1; --muted:#93A1AC; --line:#2A3742; --surface-100:#2A3742; --hover:rgba(212,99,44,.09); }
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font:15px/1.6 -apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 -apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px 80px}
 
-  header{background:var(--charcoal);color:#fff;padding:36px 0 30px;margin-bottom:32px;border-bottom:4px solid var(--orange)}
+  header{background:var(--charcoal);color:#fff;padding:34px 0 28px;border-bottom:4px solid var(--orange)}
   header .wrap{padding-bottom:0}
-  .eyebrow{font:600 11px/1 ui-monospace,'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin:0 0 10px}
-  h1{margin:0 0 6px;font-size:30px;letter-spacing:-.02em}
+  .eyebrow{font:600 11px/1 ui-monospace,'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin:0 0 9px}
+  h1{margin:0 0 5px;font-size:29px;letter-spacing:-.02em}
   .sub{color:#B6C2CC;margin:0;font-size:14px}
 
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:26px 0 34px}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
-  .stat b{display:block;font-size:26px;line-height:1.1;letter-spacing:-.02em}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:26px 0 20px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat b{display:block;font-size:25px;line-height:1.15;letter-spacing:-.02em}
   .stat span{font:600 10px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .stat.done b{color:var(--green)} .stat.blocked b{color:var(--red)} .stat.next b{color:var(--orange)}
+  .bar{height:7px;border-radius:99px;background:var(--surface-100);overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--orange);border-radius:99px;transition:width .35s}
 
-  .bar{height:8px;border-radius:99px;background:var(--surface-100);overflow:hidden;margin-top:10px}
-  .bar i{display:block;height:100%;background:var(--orange);border-radius:99px;transition:width .35s ease}
-  @media (prefers-color-scheme:dark){ .bar{background:#2A3742} }
+  .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:24px}
+  .chartbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px 12px;min-width:0}
+  .chartbox h3{margin:0 0 2px;font-size:13px;letter-spacing:.01em}
+  .chartbox p{margin:0 0 12px;font-size:12px;color:var(--muted)}
+  .cw{position:relative;height:210px}
+  #chartFail{display:none;padding:26px 18px;text-align:center;color:var(--muted);font-size:13px;background:var(--card);border:1px dashed var(--line);border-radius:14px;margin-bottom:24px}
 
-  section{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:20px;overflow:hidden}
-  .sh{display:flex;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .sh h2{margin:0;font-size:17px;letter-spacing:-.01em;flex:1;min-width:220px}
-  .sh .why{width:100%;margin:2px 0 0;font-size:13px;color:var(--muted)}
-  .pct{font:600 12px/1 ui-monospace,monospace;color:var(--muted);white-space:nowrap}
-  .sbar{width:120px}
+  .toolbar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;position:sticky;top:0;z-index:20}
+  .toolbar input[type=search],.toolbar select{font:inherit;font-size:13.5px;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+  .toolbar input[type=search]{flex:1;min-width:190px}
+  .toolbar select{cursor:pointer}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font:600 11px/1 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--orange)}
+  .chip.on{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+  .chip.on.live{background:var(--green);border-color:var(--green)}
+  .chip.on.next{background:var(--orange);border-color:var(--orange)}
+  .chip.on.blocked{background:var(--red);border-color:var(--red)}
+  .chip.on.later{background:var(--slate);border-color:var(--slate)}
+  .lbl{font:600 10px/1 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .count{margin-left:auto;font:600 12px/1 ui-monospace,monospace;color:var(--muted);white-space:nowrap}
 
-  ul{list-style:none;margin:0;padding:6px 0}
-  li{display:flex;gap:12px;padding:11px 22px;align-items:flex-start;border-bottom:1px solid transparent}
-  li:hover{background:rgba(212,99,44,.045)}
+  .group{margin-bottom:14px}
+  .gh{display:flex;align-items:center;gap:12px;padding:12px 4px 10px;flex-wrap:wrap}
+  .gh h2{margin:0;font-size:15px;letter-spacing:-.01em}
+  .gh .pct{font:600 11px/1 ui-monospace,monospace;color:var(--muted)}
+  .gh .bar{width:90px;margin:0}
+
+  ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  li{display:flex;gap:12px;padding:12px 16px;align-items:flex-start;border-top:1px solid var(--line)}
+  li:first-child{border-top:none}
+  li:hover{background:var(--hover)}
   input[type=checkbox]{margin:3px 0 0;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;flex-shrink:0}
   .txt{flex:1;min-width:0}
   .t{display:block}
   li.on .t{text-decoration:line-through;color:var(--muted)}
-  .note{display:block;font-size:13px;color:var(--muted);margin-top:3px}
-  .note code{background:var(--surface-100);padding:1px 5px;border-radius:4px;font:12px ui-monospace,monospace}
-  @media (prefers-color-scheme:dark){ .note code{background:#2A3742} }
-
-  .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;padding:4px 7px;border-radius:5px;flex-shrink:0;margin-top:1px}
-  .blocked{background:#FEE2E2;color:#991B1B}
-  .next{background:var(--orange-glow);color:var(--orange-dark)}
-  .live{background:#DCFCE7;color:#166534}
-  .later{background:var(--surface-100);color:var(--gray-600)}
+  .note{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+  .note code{background:var(--surface-100);padding:1px 5px;border-radius:4px;font:11.5px ui-monospace,monospace}
+  .meta{display:flex;gap:6px;flex-shrink:0;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:4px 7px;border-radius:5px;white-space:nowrap}
+  .sec{font:600 10px/1 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .live{background:#DCFCE7;color:#166534} .next{background:var(--orange-glow);color:var(--orange-dark)}
+  .blocked{background:#FEE2E2;color:#991B1B} .later{background:var(--surface-100);color:var(--gray-600)}
   @media (prefers-color-scheme:dark){
-    .blocked{background:#3A1B1B;color:#FCA5A5} .next{background:#3A2418;color:#F0A882}
-    .live{background:#14301F;color:#86EFAC} .later{background:#2A3742;color:#93A1AC}
+    .live{background:#14301F;color:#86EFAC} .next{background:#3A2418;color:#F0A882}
+    .blocked{background:#3A1B1B;color:#FCA5A5} .later{background:#2A3742;color:#93A1AC}
   }
+  .empty{padding:40px;text-align:center;color:var(--muted);font-size:14px}
 
-  .callout{margin:0 22px 16px;padding:14px 16px;border-left:3px solid var(--orange);background:var(--orange-glow);border-radius:0 8px 8px 0;font-size:13.5px}
+  .callout{padding:13px 15px;border-left:3px solid var(--orange);background:var(--orange-glow);border-radius:0 8px 8px 0;font-size:13.5px;margin-bottom:18px}
   @media (prefers-color-scheme:dark){ .callout{background:#2A1D16} }
   .callout b{color:var(--orange-dark)}
   @media (prefers-color-scheme:dark){ .callout b{color:var(--orange-light)} }
 
-  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
-  .reset{background:none;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12px;padding:5px 11px;border-radius:7px;cursor:pointer}
-  .reset:hover{border-color:var(--orange);color:var(--orange)}
+  footer{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+  .btn{background:none;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer}
+  .btn:hover{border-color:var(--orange);color:var(--orange)}
   a{color:var(--orange-dark)} @media (prefers-color-scheme:dark){a{color:var(--orange-light)}}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap">
-    <p class="eyebrow">Ascend Systems · ascendsystems.ai</p>
-    <h1>Progress Dashboard</h1>
-    <p class="sub">Live tracker for SEO, AI search visibility, content, and ops. Tick boxes to update — progress saves in this browser.</p>
-  </div>
-</header>
+<header><div class="wrap">
+  <p class="eyebrow">Ascend Systems · ascendsystems.ai</p>
+  <h1>Progress Dashboard</h1>
+  <p class="sub">SEO, AI search visibility, content, design, and ops. Filter, sort, and tick items off — state saves in this browser.</p>
+</div></header>
 
 <div class="wrap">
 
   <div class="stats">
-    <div class="stat done"><b id="s-done">0</b><span>Done</span></div>
-    <div class="stat next"><b id="s-open">0</b><span>Open</span></div>
-    <div class="stat blocked"><b id="s-blocked">0</b><span>Blocked</span></div>
-    <div class="stat"><b id="s-pct">0%</b><span>Complete</span><div class="bar"><i id="s-bar" style="width:0"></i></div></div>
+    <div class="stat done"><b id="sDone">0</b><span>Done</span></div>
+    <div class="stat next"><b id="sOpen">0</b><span>Open</span></div>
+    <div class="stat blocked"><b id="sBlocked">0</b><span>Blocked</span></div>
+    <div class="stat"><b id="sPct">0%</b><span>Complete</span><div class="bar"><i id="sBar"></i></div></div>
   </div>
 
-  <!-- ============ GOOGLE SEO ============ -->
-  <section data-sec="google">
-    <div class="sh">
-      <h2>1 · SEO for Google</h2>
-      <span class="pct"></span><div class="bar sbar"><i></i></div>
-      <p class="why">Technical foundation and on-page. Mostly done — the gap now is measurement and page volume.</p>
+  <div id="chartFail">Charts need the Chart.js CDN and it didn't load — you're probably offline. Everything else on this page works.</div>
+  <div class="charts" id="charts">
+    <div class="chartbox"><h3>Status mix</h3><p>Every item by state</p><div class="cw"><canvas id="c1"></canvas></div></div>
+    <div class="chartbox"><h3>Completion by area</h3><p>Done vs remaining</p><div class="cw"><canvas id="c2"></canvas></div></div>
+    <div class="chartbox"><h3>Where the work is</h3><p>Open items by area and state</p><div class="cw"><canvas id="c3"></canvas></div></div>
+  </div>
+
+  <div class="callout"><b>Two things gate everything else:</b> Search Console and Bing Webmaster Tools are both unset, so none of the SEO work is measurable and AI tools that lean on Bing can't see the site. Both are quick and free.</div>
+
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="Search items…" autocomplete="off">
+    <span class="lbl">Status</span>
+    <div class="chips" id="chips">
+      <button class="chip live on" data-s="live">Live</button>
+      <button class="chip next on" data-s="next">Next</button>
+      <button class="chip blocked on" data-s="blocked">Blocked</button>
+      <button class="chip later on" data-s="later">Later</button>
     </div>
-    <div class="callout"><b>Biggest gap:</b> Search Console still isn't set up, so none of this is measurable. Everything below is shipped blind — we don't know a single query the site ranks for.</div>
-    <ul>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Static pre-rendering (Astro) — real HTML per route</span><span class="note">Was the #1 blocker in the May audit. Googlebot sees full content in the first response.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">robots.txt + sitemap</span><span class="note"><code>/robots.txt</code> and <code>/sitemap-index.xml</code> both live and correct.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Canonical, Open Graph, Twitter card on every page</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">og-image.png + favicon.ico created</span><span class="note">Both were referenced sitewide but <b>did not exist</b> — every social share was a broken image.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Sitewide JSON-LD @graph</span><span class="note">Organization, ProfessionalService, Person, WebSite. 62 blocks sitewide, 0 invalid.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Per-page schema: Service, FAQPage, Article, BreadcrumbList, ProfilePage, ContactPage</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Case study meta wired up</span><span class="note">Hand-written <code>seoTitle</code>/<code>seoDescription</code> had sat unused for months; pages shipped 33–64 char descriptions instead.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Article dates from real git history</span><span class="note">Deliberately not engagement dates — those would have claimed a 2024 publish date.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Titles trimmed under 60 chars</span><span class="note">Home 76→53, Services 63→59.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">5 service pages live</span><span class="note">1,450–1,522 words each, 6 FAQs apiece, 1.8% cross-page overlap (target &lt;40%).</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Phone published → LocalBusiness schema complete</span><span class="note">(980) 577-1231. Must stay byte-identical everywhere it's listed.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">39 stray <code>{{screenshot}}</code> tokens removed</span><span class="note">Were rendering as visible text mid-article on six case studies.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Zero broken images sitewide</span></span></li>
+    <select id="area"><option value="">All areas</option></select>
+    <select id="sort">
+      <option value="area">Sort: by area</option>
+      <option value="priority">Sort: priority (blocked first)</option>
+      <option value="status">Sort: status</option>
+      <option value="az">Sort: A–Z</option>
+      <option value="undone">Sort: unfinished first</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
 
-      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Set up Google Search Console</span><span class="note">Nothing here is measurable until this exists. Submit the sitemap once verified. <b>Do this first.</b></span></span></li>
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Google Business Profile</span><span class="note">Local pack eligibility for "Charlotte" queries. Needs the NAP to match the site exactly.</span></span></li>
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Regenerate <code>internal-tools.jpg</code></span><span class="note">Reads "Siter" instead of "Sites". Prompt with spelling guard is in <code>docs/image-generation-prompts.md</code>.</span></span></li>
-      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Charlotte page set — 5 local pages</span><span class="note">Highest-value set in the plan. Blocked: needs a real named local case study. Stancil is a prospect, not a client — the masonry contract work may now qualify.</span></span></li>
-      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Remaining page sets: /tools, /vs, /industries</span><span class="note">~14 more pages from the May plan. Re-validate keywords first.</span></span></li>
-      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Replace 62 hardcoded site origins with <code>Astro.site</code></span><span class="note">Maintenance risk, not urgent. A miss silently breaks canonicals.</span></span></li>
-    </ul>
-  </section>
-
-  <!-- ============ AI SEARCH ============ -->
-  <section data-sec="ai">
-    <div class="sh">
-      <h2>2 · SEO for AI Tools</h2>
-      <span class="pct"></span><div class="bar sbar"><i></i></div>
-      <p class="why">Getting cited by Claude, ChatGPT, Grok, and Perplexity. Crawlability is done; visibility isn't.</p>
-    </div>
-    <div class="callout"><b>The honest picture:</b> this isn't a separate tech checklist. The crawlers are already allowed and the schema is better than most. What actually drives citation is <b>Bing indexing</b> and <b>third-party mentions</b> — neither is done.</div>
-    <ul>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">AI crawlers explicitly allowed in robots.txt</span><span class="note">GPTBot, ClaudeBot, anthropic-ai, PerplexityBot, Bingbot.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">llms.txt published</span><span class="note">Live at <code>/llms.txt</code>. Cheap to maintain — but unproven, no major provider has committed to reading it. Don't expect much.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Structured data for clean extraction</span><span class="note">FAQPage and Service schema give models labelled Q&amp;A pairs rather than prose to guess at.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Specific, citable facts in the content</span><span class="note">"2–3 hours → 15 minutes", "208 stations across 46 locations", "683 organic visitors/month". Models cite specifics, not adjectives.</span></span></li>
-
-      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Set up Bing Webmaster Tools</span><span class="note"><b>Highest-leverage item on this page.</b> ChatGPT and Perplexity lean heavily on Bing's index. If you're only in Google, you're invisible to a large share of AI search.</span></span></li>
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Third-party mentions and directory listings</span><span class="note">Models cite roundups, directories, and review sites more than vendor homepages. "Best Charlotte software developers" listicles matter more than our own copy.</span></span></li>
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Baseline citation test</span><span class="note">Ask Claude / ChatGPT / Grok "who builds custom software in Charlotte NC" and record the answer. Repeat monthly — that's the only real measurement available.</span></span></li>
-      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Question-shaped content for extraction</span><span class="note">H2 = literal user query, followed by a 40–60 word direct answer. Works for both featured snippets and AI citation.</span></span></li>
-    </ul>
-  </section>
-
-  <!-- ============ CONTENT ============ -->
-  <section data-sec="content">
-    <div class="sh">
-      <h2>3 · Content</h2>
-      <span class="pct"></span><div class="bar sbar"><i></i></div>
-      <p class="why">The plan called for 12 pieces plus a blog. None of that exists yet.</p>
-    </div>
-    <ul>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">7 long-form case studies</span><span class="note">2,477–3,115 words on the substantial ones. Genuinely strong — the best asset on the site.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">5 service pages written</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">AI proof rewritten with real numbers</span><span class="note">Replaced a section headed "The honest position on AI proof" — meta-commentary that should never have shipped on a sales page.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Decision: case studies stay text-only</span><span class="note">34 planned screenshots dropped. The write-ups carry themselves.</span></span></li>
-
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Contract-review case study</span><span class="note">Best untold story: 2–3 hours → 15 minutes, 300-page subcontracts. Client anonymous. Would unblock the Charlotte page set and give the AI service real proof depth.</span></span></li>
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Cost calculator methodology content</span><span class="note">800–1,200 words. The May audit called this "the highest organic ROI on the site" — the tool exists but has no supporting prose.</span></span></li>
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Fix the Heirloom thin page</span><span class="note"><code>/portfolio/heirloom</code> has schema and a skeleton but no body. Either write it or noindex it.</span></span></li>
-      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Blog — 0 of 12 planned pieces</span><span class="note">No <code>/blog</code> exists. Slowest-compounding and most time-hungry; do it after the pages above.</span></span></li>
-      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Hub / pillar pages</span><span class="note">/custom-crm, /ai-for-smbs, /how-i-work, /charlotte.</span></span></li>
-    </ul>
-  </section>
-
-  <!-- ============ DESIGN ============ -->
-  <section data-sec="design">
-    <div class="sh">
-      <h2>4 · Design &amp; UX</h2>
-      <span class="pct"></span><div class="bar sbar"><i></i></div>
-      <p class="why">Layout and imagery on the new pages.</p>
-    </div>
-    <ul>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Service pages de-slabbed</span><span class="note">Hero 5/7 with image right, problem 4/8 sticky heading, approach 2-col, proof 7/5. Was full-width blocks stacked endlessly.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">CTA paragraph ragging fixed</span><span class="note"><code>text-balance</code> on the five centered CTA blocks.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">5 concept renders live on /services</span><span class="note">Dark abstract 3D. Replaced grey skeleton placeholders — also removed Recharts from the bundle.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Alt text carries meaning, not shapes</span><span class="note">Renders are abstract, so a literal description would tell a screen-reader user nothing.</span></span></li>
-
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Your visual design review</span><span class="note">Never verified in a browser on this end. Specifically: the renders are near-black but sections alternate light/dark — three of five sit on the light surface.</span></span></li>
-      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Mobile pass on the new service pages</span><span class="note">Grid collapses to single column by design, but unverified on a real device.</span></span></li>
-    </ul>
-  </section>
-
-  <!-- ============ OPS ============ -->
-  <section data-sec="ops">
-    <div class="sh">
-      <h2>5 · Ops &amp; Infrastructure</h2>
-      <span class="pct"></span><div class="bar sbar"><i></i></div>
-      <p class="why">Voice agent, security, and repo hygiene.</p>
-    </div>
-    <div class="callout"><b>Security — do not skip:</b> this repo is <b>public</b>. An invoice, a PO, and four business registration certificates were sitting untracked in the root, one <code>git add -A</code> from publication. Now gitignored, and git history is clean — but the same pattern is likely in your other repos.</div>
-    <ul>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Business documents gitignored</span><span class="note">Verified via <code>git log --all</code> that none were ever committed. No history rewrite needed.</span></span></li>
-      <li data-tag="live"><input type="checkbox" checked><span class="txt"><span class="t">Phone number wired sitewide</span></span></li>
-
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Audit other public repos for stray financial docs</span><span class="note">Same failure mode. Worth an hour.</span></span></li>
-      <li data-tag="next"><input type="checkbox"><span class="txt"><span class="t">Grok Voice Agent on (980) 577-1231</span><span class="note">~$0.05/min + $0.01/min for the number. Two agents needed: caller-facing and internal.</span></span></li>
-      <li data-tag="blocked"><input type="checkbox"><span class="txt"><span class="t">Voice agent knowledge bases — keep them SEPARATE</span><span class="note">The caller-facing agent must <b>never</b> receive <code>docs/charlotte-target-list.html</code>, <code>docs/outscraper/*</code> (scraped contact PII), the outreach playbook, the reactivation emails, or the security review. Caller-facing gets only: services data, case studies, website-copy.md, the MSA.</span></span></li>
-      <li data-tag="later"><input type="checkbox"><span class="txt"><span class="t">Strip EXIF from service images</span><span class="note">Generator provenance data, a few KB each. Cosmetic.</span></span></li>
-    </ul>
-  </section>
+  <div id="list"></div>
 
   <footer>
-    <p><b>Live site verified:</b> <span id="ts"></span> — 11 pages, 6 assets, 5 concept images, all HTTP 200. 62 JSON-LD blocks, 0 invalid. 0 broken images. 0 stray tokens.</p>
-    <p>Source: <code>docs/progress-dashboard.html</code> · Session log: <code>progress.txt</code> · Prompts: <code>docs/image-generation-prompts.md</code> · <a href="https://ascendsystems.ai">ascendsystems.ai</a></p>
-    <p style="margin-top:14px"><button class="reset" onclick="if(confirm('Reset all checkboxes to their default state?')){localStorage.removeItem(KEY);location.reload()}">Reset checkboxes</button></p>
+    <p><b>Live site verified:</b> <span id="ts"></span> — 11 pages, 6 assets, 5 concept images, all HTTP 200. 62 JSON-LD blocks, 0 invalid. 0 broken images.</p>
+    <p><code>docs/progress-dashboard.html</code> · session log <code>progress.txt</code> · prompts <code>docs/image-generation-prompts.md</code> · <a href="https://ascendsystems.ai">ascendsystems.ai</a></p>
+    <p style="margin-top:13px">
+      <button class="btn" id="reset">Reset checkboxes</button>
+      <button class="btn" id="clearF">Clear filters</button>
+    </p>
   </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-const KEY='ascend-progress-v1';
-const boxes=[...document.querySelectorAll('li input[type=checkbox]')];
-boxes.forEach((b,i)=>b.dataset.i=i);
+const AREAS = {
+  google:'Google SEO', ai:'AI Search', content:'Content', design:'Design & UX', ops:'Ops & Security'
+};
 
-// tags
-document.querySelectorAll('li[data-tag]').forEach(li=>{
-  const t=li.dataset.tag, s=document.createElement('span');
-  s.className='tag '+t;
-  s.textContent={live:'Live',next:'Next',blocked:'Blocked',later:'Later'}[t]||t;
-  li.appendChild(s);
-});
+// status: live = shipped, next = do soon, blocked = needs an input, later = backlog
+const DATA = [
+  // ---- Google SEO
+  ['g1','google','live',1,'Static pre-rendering (Astro) — real HTML per route','Was the #1 blocker in the May audit. Googlebot sees full content in the first response.'],
+  ['g2','google','live',1,'robots.txt + sitemap','<code>/robots.txt</code> and <code>/sitemap-index.xml</code> both live and correct.'],
+  ['g3','google','live',1,'Canonical, Open Graph, Twitter card on every page',''],
+  ['g4','google','live',1,'og-image.png + favicon.ico created','Both were referenced sitewide but <b>did not exist</b> — every social share was a broken image.'],
+  ['g5','google','live',1,'Sitewide JSON-LD @graph','Organization, ProfessionalService, Person, WebSite. 62 blocks sitewide, 0 invalid.'],
+  ['g6','google','live',1,'Per-page schema','Service, FAQPage, Article, BreadcrumbList, ProfilePage, ContactPage.'],
+  ['g7','google','live',1,'Case study meta wired up','Hand-written <code>seoTitle</code>/<code>seoDescription</code> had sat unused for months; pages shipped 33–64 char descriptions instead.'],
+  ['g8','google','live',1,'Article dates from real git history','Deliberately not engagement dates — those would have claimed a 2024 publish date.'],
+  ['g9','google','live',1,'Titles trimmed under 60 chars','Home 76→53, Services 63→59.'],
+  ['g10','google','live',1,'5 service pages live','1,450–1,522 words each, 6 FAQs apiece, 1.8% cross-page overlap (target &lt;40%).'],
+  ['g11','google','live',1,'Phone published → LocalBusiness schema complete','(980) 577-1231. Must stay byte-identical everywhere it is listed.'],
+  ['g12','google','live',1,'39 stray {{screenshot}} tokens removed','Were rendering as visible text mid-article on six case studies.'],
+  ['g13','google','live',1,'Zero broken images sitewide',''],
+  ['g14','google','blocked',0,'Set up Google Search Console','Nothing here is measurable until this exists. Submit the sitemap once verified. <b>Do this first.</b>'],
+  ['g15','google','next',0,'Google Business Profile','Local pack eligibility for Charlotte queries. NAP must match the site exactly.'],
+  ['g16','google','next',0,'Regenerate internal-tools.jpg','Reads "Siter" instead of "Sites". Prompt with spelling guard is in <code>docs/image-generation-prompts.md</code>.'],
+  ['g17','google','blocked',0,'Charlotte page set — 5 local pages','Highest-value set in the plan. Needs a real named local case study. Stancil is a prospect, not a client — the masonry contract work may now qualify.'],
+  ['g18','google','later',0,'Remaining page sets: /tools, /vs, /industries','~14 more pages from the May plan. Re-validate keywords first.'],
+  ['g19','google','later',0,'Replace 62 hardcoded site origins with Astro.site','Maintenance risk, not urgent. A miss silently breaks canonicals.'],
 
-const saved=JSON.parse(localStorage.getItem(KEY)||'null');
-if(saved) boxes.forEach((b,i)=>{ if(typeof saved[i]==='boolean') b.checked=saved[i] });
+  // ---- AI search
+  ['a1','ai','live',1,'AI crawlers explicitly allowed in robots.txt','GPTBot, ClaudeBot, anthropic-ai, PerplexityBot, Bingbot.'],
+  ['a2','ai','live',1,'llms.txt published','Live at <code>/llms.txt</code>. Cheap to maintain — but unproven; no major provider has committed to reading it. Do not expect much.'],
+  ['a3','ai','live',1,'Structured data for clean extraction','FAQPage and Service schema give models labelled Q&amp;A pairs rather than prose to guess at.'],
+  ['a4','ai','live',1,'Specific, citable facts in the content','"2–3 hours → 15 minutes", "208 stations across 46 locations", "683 organic visitors/month". Models cite specifics, not adjectives.'],
+  ['a5','ai','blocked',0,'Set up Bing Webmaster Tools','<b>Highest-leverage item on this page.</b> ChatGPT and Perplexity lean heavily on Bing. Google-only means invisible to a large share of AI search.'],
+  ['a6','ai','next',0,'Third-party mentions and directory listings','Models cite roundups, directories, and review sites more than vendor homepages. A "best Charlotte software developers" listicle beats our own copy.'],
+  ['a7','ai','next',0,'Baseline citation test','Ask Claude / ChatGPT / Grok "who builds custom software in Charlotte NC" and record the answer. Repeat monthly — the only real measurement available.'],
+  ['a8','ai','later',0,'Question-shaped content for extraction','H2 = literal user query, then a 40–60 word direct answer. Works for featured snippets and AI citation alike.'],
 
-function render(){
-  let done=0, blocked=0;
-  boxes.forEach(b=>{
-    const li=b.closest('li');
-    li.classList.toggle('on', b.checked);
-    if(b.checked) done++;
-    else if(li.dataset.tag==='blocked') blocked++;
-  });
-  const total=boxes.length, pct=Math.round(done/total*100);
-  s_done.textContent=done;
-  s_open.textContent=total-done;
-  s_blocked.textContent=blocked;
-  s_pct.textContent=pct+'%';
-  s_bar.style.width=pct+'%';
+  // ---- Content
+  ['c1','content','live',1,'7 long-form case studies','2,477–3,115 words on the substantial ones. The strongest asset on the site.'],
+  ['c2','content','live',1,'5 service pages written',''],
+  ['c3','content','live',1,'AI proof rewritten with real numbers','Replaced a section headed "The honest position on AI proof" — meta-commentary that should never have shipped on a sales page.'],
+  ['c4','content','live',1,'Decision: case studies stay text-only','34 planned screenshots dropped. The write-ups carry themselves.'],
+  ['c5','content','next',0,'Contract-review case study','Best untold story: 2–3 hours → 15 minutes on 300-page subcontracts, client anonymous. Would unblock the Charlotte set and deepen the AI service proof.'],
+  ['c6','content','next',0,'Cost calculator methodology content','800–1,200 words. The May audit called this "the highest organic ROI on the site" — the tool exists but has no supporting prose.'],
+  ['c7','content','next',0,'Fix the Heirloom thin page','<code>/portfolio/heirloom</code> has schema and a skeleton but no body. Write it or noindex it.'],
+  ['c8','content','later',0,'Blog — 0 of 12 planned pieces','No <code>/blog</code> exists. Slowest-compounding and most time-hungry; do it after the pages above.'],
+  ['c9','content','later',0,'Hub / pillar pages','/custom-crm, /ai-for-smbs, /how-i-work, /charlotte.'],
 
-  document.querySelectorAll('section').forEach(sec=>{
-    const bs=[...sec.querySelectorAll('input[type=checkbox]')];
-    const d=bs.filter(b=>b.checked).length;
-    const p=Math.round(d/bs.length*100);
-    sec.querySelector('.pct').textContent=d+'/'+bs.length;
-    sec.querySelector('.sbar i').style.width=p+'%';
-  });
-  localStorage.setItem(KEY, JSON.stringify(boxes.map(b=>b.checked)));
+  // ---- Design
+  ['d1','design','live',1,'Service pages de-slabbed','Hero 5/7 with image right, problem 4/8 sticky heading, approach 2-col, proof 7/5. Was full-width blocks stacked endlessly.'],
+  ['d2','design','live',1,'CTA paragraph ragging fixed','<code>text-balance</code> on the five centered CTA blocks.'],
+  ['d3','design','live',1,'5 concept renders live on /services','Dark abstract 3D. Replaced grey skeleton placeholders — also dropped Recharts from the bundle.'],
+  ['d4','design','live',1,'Alt text carries meaning, not shapes','Renders are abstract, so a literal description would tell a screen-reader user nothing.'],
+  ['d5','design','next',0,'Your visual design review','Never verified in a browser on this end. Specifically: renders are near-black but sections alternate light/dark — three of five sit on the light surface.'],
+  ['d6','design','later',0,'Mobile pass on the new service pages','Grid collapses to single column by design, but unverified on a real device.'],
+
+  // ---- Ops
+  ['o1','ops','live',1,'Business documents gitignored','This repo is <b>public</b>. An invoice, a PO, and four registration certificates sat untracked in the root. Verified via <code>git log --all</code> that none were ever committed.'],
+  ['o2','ops','live',1,'Phone number wired sitewide',''],
+  ['o3','ops','next',0,'Audit other public repos for stray financial docs','Same failure mode as above. Worth an hour.'],
+  ['o4','ops','next',0,'Grok Voice Agent on (980) 577-1231','~$0.05/min plus $0.01/min for the number. Two agents needed: caller-facing and internal.'],
+  ['o5','ops','blocked',0,'Voice agent knowledge bases — keep them SEPARATE','The caller-facing agent must <b>never</b> receive <code>docs/charlotte-target-list.html</code>, <code>docs/outscraper/*</code> (scraped contact PII), the outreach playbook, the reactivation emails, or the security review. It gets only: services data, case studies, website-copy.md, the MSA.'],
+  ['o6','ops','later',0,'Strip EXIF from service images','Generator provenance data, a few KB each. Cosmetic.'],
+].map(([id,area,status,done,title,note])=>({id,area,status,done:!!done,title,note}));
+
+const KEY='ascend-progress-v2';
+const C={live:'#22C55E',next:'#D4632C',blocked:'#DC2626',later:'#94A3B8'};
+const LBL={live:'Live',next:'Next',blocked:'Blocked',later:'Later'};
+const PRIO={blocked:0,next:1,later:2,live:3};
+
+const saved=JSON.parse(localStorage.getItem(KEY)||'{}');
+DATA.forEach(d=>{ if(typeof saved[d.id]==='boolean') d.done=saved[d.id] });
+
+const $=s=>document.querySelector(s);
+const state={q:'',status:new Set(['live','next','blocked','later']),area:'',sort:'area'};
+
+Object.entries(AREAS).forEach(([k,v])=>$('#area').insertAdjacentHTML('beforeend',`<option value="${k}">${v}</option>`));
+
+function filtered(){
+  const q=state.q.toLowerCase();
+  return DATA.filter(d=>
+    state.status.has(d.status) &&
+    (!state.area || d.area===state.area) &&
+    (!q || (d.title+' '+d.note+' '+AREAS[d.area]).toLowerCase().includes(q))
+  );
 }
-boxes.forEach(b=>b.addEventListener('change',render));
-document.getElementById('ts').textContent=new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
-render();
+function sortItems(a){
+  const s=state.sort, c=[...a];
+  if(s==='area')     c.sort((x,y)=>Object.keys(AREAS).indexOf(x.area)-Object.keys(AREAS).indexOf(y.area) || PRIO[x.status]-PRIO[y.status]);
+  if(s==='priority') c.sort((x,y)=>PRIO[x.status]-PRIO[y.status] || x.title.localeCompare(y.title));
+  if(s==='status')   c.sort((x,y)=>x.status.localeCompare(y.status) || x.title.localeCompare(y.title));
+  if(s==='az')       c.sort((x,y)=>x.title.localeCompare(y.title));
+  if(s==='undone')   c.sort((x,y)=>(x.done-y.done) || PRIO[x.status]-PRIO[y.status]);
+  return c;
+}
+const row=d=>`<li class="${d.done?'on':''}">
+  <input type="checkbox" data-id="${d.id}" ${d.done?'checked':''}>
+  <span class="txt"><span class="t">${d.title}</span>${d.note?`<span class="note">${d.note}</span>`:''}</span>
+  <span class="meta"><span class="sec">${AREAS[d.area]}</span><span class="tag ${d.status}">${LBL[d.status]}</span></span></li>`;
+
+function renderList(){
+  const items=sortItems(filtered()), el=$('#list');
+  $('#count').textContent=`${items.length} of ${DATA.length}`;
+  if(!items.length){ el.innerHTML='<div class="empty">Nothing matches those filters.</div>'; return }
+
+  if(state.sort==='area'){
+    let html='';
+    Object.keys(AREAS).forEach(a=>{
+      const g=items.filter(i=>i.area===a); if(!g.length) return;
+      const dn=g.filter(i=>i.done).length, p=Math.round(dn/g.length*100);
+      html+=`<div class="group"><div class="gh"><h2>${AREAS[a]}</h2>
+        <span class="pct">${dn}/${g.length}</span><div class="bar"><i style="width:${p}%"></i></div></div>
+        <ul>${g.map(row).join('')}</ul></div>`;
+    });
+    el.innerHTML=html;
+  } else {
+    el.innerHTML=`<ul>${items.map(row).join('')}</ul>`;
+  }
+  el.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',e=>{
+    const d=DATA.find(x=>x.id===e.target.dataset.id); d.done=e.target.checked;
+    localStorage.setItem(KEY,JSON.stringify(Object.fromEntries(DATA.map(x=>[x.id,x.done]))));
+    renderAll();
+  }));
+}
+function renderStats(){
+  const done=DATA.filter(d=>d.done).length;
+  const blocked=DATA.filter(d=>!d.done&&d.status==='blocked').length;
+  const pct=Math.round(done/DATA.length*100);
+  sDone.textContent=done; sOpen.textContent=DATA.length-done;
+  sBlocked.textContent=blocked; sPct.textContent=pct+'%'; sBar.style.width=pct+'%';
+}
+
+let ch=[];
+function renderCharts(){
+  if(typeof Chart==='undefined'){ $('#charts').style.display='none'; $('#chartFail').style.display='block'; return }
+  ch.forEach(c=>c.destroy()); ch=[];
+  const view=filtered();
+  const dark=matchMedia('(prefers-color-scheme:dark)').matches;
+  const grid=dark?'#2A3742':'#E2E8F0', tick=dark?'#93A1AC':'#6B7280';
+  const base={responsive:true,maintainAspectRatio:false};
+  const keys=Object.keys(LBL);
+
+  ch.push(new Chart(c1,{type:'doughnut',
+    data:{labels:keys.map(k=>LBL[k]),datasets:[{data:keys.map(k=>view.filter(d=>d.status===k).length),
+      backgroundColor:keys.map(k=>C[k]),borderWidth:2,borderColor:dark?'#1A232A':'#fff'}]},
+    options:{...base,cutout:'58%',plugins:{legend:{position:'bottom',labels:{color:tick,boxWidth:11,font:{size:11},padding:12}}}}}));
+
+  const areas=Object.keys(AREAS);
+  ch.push(new Chart(c2,{type:'bar',
+    data:{labels:areas.map(a=>AREAS[a]),datasets:[
+      {label:'Done',data:areas.map(a=>view.filter(d=>d.area===a&&d.done).length),backgroundColor:C.live,borderRadius:4},
+      {label:'Remaining',data:areas.map(a=>view.filter(d=>d.area===a&&!d.done).length),backgroundColor:dark?'#2A3742':'#E2E8F0',borderRadius:4}]},
+    options:{...base,indexAxis:'y',scales:{x:{stacked:true,grid:{color:grid},ticks:{color:tick,precision:0,font:{size:11}}},
+      y:{stacked:true,grid:{display:false},ticks:{color:tick,font:{size:11}}}},
+      plugins:{legend:{position:'bottom',labels:{color:tick,boxWidth:11,font:{size:11},padding:12}}}}}));
+
+  const open=view.filter(d=>!d.done);
+  ch.push(new Chart(c3,{type:'bar',
+    data:{labels:areas.map(a=>AREAS[a]),datasets:['blocked','next','later'].map(s=>({
+      label:LBL[s],data:areas.map(a=>open.filter(d=>d.area===a&&d.status===s).length),
+      backgroundColor:C[s],borderRadius:4}))},
+    options:{...base,scales:{x:{stacked:true,grid:{display:false},ticks:{color:tick,font:{size:10}}},
+      y:{stacked:true,grid:{color:grid},ticks:{color:tick,precision:0,font:{size:11}}}},
+      plugins:{legend:{position:'bottom',labels:{color:tick,boxWidth:11,font:{size:11},padding:12}}}}}));
+}
+function renderAll(){ renderStats(); renderList(); renderCharts() }
+
+$('#q').addEventListener('input',e=>{state.q=e.target.value;renderAll()});
+$('#area').addEventListener('change',e=>{state.area=e.target.value;renderAll()});
+$('#sort').addEventListener('change',e=>{state.sort=e.target.value;renderAll()});
+$('#chips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b) return;
+  const s=b.dataset.s;
+  state.status.has(s)?state.status.delete(s):state.status.add(s);
+  b.classList.toggle('on'); renderAll();
+});
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Reset every checkbox to its default state?')) return;
+  localStorage.removeItem(KEY); location.reload();
+});
+$('#clearF').addEventListener('click',()=>{
+  state.q=''; state.area=''; state.sort='area'; state.status=new Set(Object.keys(LBL));
+  $('#q').value=''; $('#area').value=''; $('#sort').value='area';
+  document.querySelectorAll('.chip').forEach(c=>c.classList.add('on'));
+  renderAll();
+});
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',renderCharts);
+$('#ts').textContent=new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
+renderAll();
 </script>
 </body>
 </html>
