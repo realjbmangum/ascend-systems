@@ -11,7 +11,7 @@
 
 | Set | Where | Style | Status |
 |---|---|---|---|
-| **A** | `/services` overview page | Flat concept illustration | ⏳ to generate |
+| **A** | `/services` overview page | Dark abstract 3D render | ⏳ to generate |
 | **B** | `/services/[slug]` detail pages | Photorealistic UI mockup | ✅ in place |
 
 > [!tip] Why Set A forbids text
@@ -27,88 +27,111 @@
 
 ---
 
-# SET A — Concept illustrations
+# SET A — Dark abstract 3D renders
 
 **Save all five to:** `public/images/services/concepts/`
+
+Premium product-render language — glass, metal, orange rim light on deep
+charcoal. Abstract form only, no icons and no text.
 
 ---
 
 ## A1 → save as `custom-saas.png`
 
+*Custom SaaS Development*
+
 ```
-Flat vector-style conceptual illustration, square 1:1. Simple, iconic, editorial — the kind of single-idea illustration that sits beside a paragraph in a well-designed report. Not a screenshot, not a user interface, not isometric, not 3D, no gradients, no photographic texture.
+Abstract 3D product render, square 1:1. Photorealistic materials and studio lighting, in the visual language of a premium technology company's product page — think polished glass, brushed metal, and matte ceramic sculpted into pure geometric form. Not an icon, not an illustration, not a diagram, not a user interface, not a logo.
 
-Palette strictly limited to four values: deep charcoal #1E2A32 for primary shapes, burnt orange #D4632C as the single accent on one focal element only, light warm gray #E2E8F0 for secondary shapes, off-white #FAFAF8 background. Nothing else — no blues, no greens, no purples.
+Deep charcoal #1E2A32 environment fading to near-black at the edges. Forms are dark smoked glass and dark brushed metal. A single burnt-orange #D4632C light source rakes across the geometry as a rim light and catches one emissive edge — the only saturated color in the frame. Soft key light from upper left, subtle reflections, faint caustics through the glass.
 
-Clean geometric forms, consistent stroke weight, generous negative space, centered composition with even margins, calm and balanced. Must read clearly at small size, around 400 pixels.
+Shallow depth of field with the focal plane on the primary form, gentle bokeh falling off behind. Cinematic, high-contrast, expensive. Octane-quality render, 8k detail, physically based materials, no visible polygons.
 
-Subject: software that runs as a recurring service. Three flat rounded rectangles stacked in slight offset depth like layered cards, viewed straight-on and centered. A continuous circular arrow orbits the stack, suggesting an ongoing subscription cycle rather than a one-time delivery. The topmost card is burnt orange; the two beneath are charcoal and light gray. No interface detail inside the cards.
+Composition is centered with generous dark negative space around the subject. Must read clearly at small size, around 500 pixels.
 
-ABSOLUTELY NO TEXT of any kind — no letters, no numbers, no labels, no logos, no watermarks, no signatures. No UI chrome, no browser frames, no human figures or faces. The idea must be legible from the shapes alone.
+Subject: software that runs as a continuous service rather than a one-time delivery. Three broad slabs of dark smoked glass stacked in parallel with air between them, each rotated slightly off-axis from the one below, floating in the dark. A single unbroken ring of burnt-orange light encircles the whole stack on a tilted orbital plane, passing behind the top slab and in front of the bottom one so it reads as a continuous cycle. The topmost slab catches the strongest rim light along its leading edge. Interior of the glass shows faint depth and internal reflection.
+
+ABSOLUTELY NO TEXT of any kind — no letters, numbers, labels, logos, watermarks, or signatures. No screens, no user interface, no browser chrome, no human figures or hands, no desks or offices. Pure abstract form only.
 ```
 
 ---
 
 ## A2 → save as `ai-integrations.png`
 
+*AI Integrations & Agents*
+
 ```
-Flat vector-style conceptual illustration, square 1:1. Simple, iconic, editorial — the kind of single-idea illustration that sits beside a paragraph in a well-designed report. Not a screenshot, not a user interface, not isometric, not 3D, no gradients, no photographic texture.
+Abstract 3D product render, square 1:1. Photorealistic materials and studio lighting, in the visual language of a premium technology company's product page — think polished glass, brushed metal, and matte ceramic sculpted into pure geometric form. Not an icon, not an illustration, not a diagram, not a user interface, not a logo.
 
-Palette strictly limited to four values: deep charcoal #1E2A32 for primary shapes, burnt orange #D4632C as the single accent on one focal element only, light warm gray #E2E8F0 for secondary shapes, off-white #FAFAF8 background. Nothing else — no blues, no greens, no purples.
+Deep charcoal #1E2A32 environment fading to near-black at the edges. Forms are dark smoked glass and dark brushed metal. A single burnt-orange #D4632C light source rakes across the geometry as a rim light and catches one emissive edge — the only saturated color in the frame. Soft key light from upper left, subtle reflections, faint caustics through the glass.
 
-Clean geometric forms, consistent stroke weight, generous negative space, centered composition with even margins, calm and balanced. Must read clearly at small size, around 400 pixels.
+Shallow depth of field with the focal plane on the primary form, gentle bokeh falling off behind. Cinematic, high-contrast, expensive. Octane-quality render, 8k detail, physically based materials, no visible polygons.
 
-Subject: a huge document reduced to what matters. On the left, a tall stack of many thin horizontal lines representing a long dense document, in light gray. These converge through a simple funnel or lens form in charcoal. On the right, emerging from it, just three short bold bars in burnt orange — the distilled, important few. The visual argument is many-to-few: signal pulled out of volume. No brain iconography, no robot, no neural-network cliché, no circuit patterns.
+Composition is centered with generous dark negative space around the subject. Must read clearly at small size, around 500 pixels.
 
-ABSOLUTELY NO TEXT of any kind — no letters, no numbers, no labels, no logos, no watermarks, no signatures. No UI chrome, no browser frames, no human figures or faces. The idea must be legible from the shapes alone.
+Subject: enormous volume distilled down to what matters. A dense wall of many hundreds of thin vertical glass rods, tightly packed and receding into darkness on the left, all dark and unlit. They pass through a single solid prism of dark glass at the center. Emerging on the right: just three thick bars of concentrated burnt-orange light, sharply in focus, cleanly separated. The prism is the focal plane. Visible caustics where the light concentrates and exits. The visual argument is many-to-few — signal extracted from overwhelming volume.
+
+ABSOLUTELY NO TEXT of any kind — no letters, numbers, labels, logos, watermarks, or signatures. No screens, no user interface, no browser chrome, no human figures or hands, no desks or offices. Pure abstract form only.
 ```
 
 ---
 
 ## A3 → save as `internal-tools.png`
 
+*Internal Tools & Dashboards*
+
 ```
-Flat vector-style conceptual illustration, square 1:1. Simple, iconic, editorial — the kind of single-idea illustration that sits beside a paragraph in a well-designed report. Not a screenshot, not a user interface, not isometric, not 3D, no gradients, no photographic texture.
+Abstract 3D product render, square 1:1. Photorealistic materials and studio lighting, in the visual language of a premium technology company's product page — think polished glass, brushed metal, and matte ceramic sculpted into pure geometric form. Not an icon, not an illustration, not a diagram, not a user interface, not a logo.
 
-Palette strictly limited to four values: deep charcoal #1E2A32 for primary shapes, burnt orange #D4632C as the single accent on one focal element only, light warm gray #E2E8F0 for secondary shapes, off-white #FAFAF8 background. Nothing else — no blues, no greens, no purples.
+Deep charcoal #1E2A32 environment fading to near-black at the edges. Forms are dark smoked glass and dark brushed metal. A single burnt-orange #D4632C light source rakes across the geometry as a rim light and catches one emissive edge — the only saturated color in the frame. Soft key light from upper left, subtle reflections, faint caustics through the glass.
 
-Clean geometric forms, consistent stroke weight, generous negative space, centered composition with even margins, calm and balanced. Must read clearly at small size, around 400 pixels.
+Shallow depth of field with the focal plane on the primary form, gentle bokeh falling off behind. Cinematic, high-contrast, expensive. Octane-quality render, 8k detail, physically based materials, no visible polygons.
 
-Subject: scattered work consolidated into one place. Around the outside, several small disconnected shapes of different sizes in light gray — squares, circles, a triangle — drifting apart. Thin charcoal lines draw them inward to a single clean rounded panel at the center, divided into a simple grid of four equal cells. One cell is burnt orange. The idea is many scattered sources becoming one organized view.
+Composition is centered with generous dark negative space around the subject. Must read clearly at small size, around 500 pixels.
 
-ABSOLUTELY NO TEXT of any kind — no letters, no numbers, no labels, no logos, no watermarks, no signatures. No UI chrome, no browser frames, no human figures or faces. The idea must be legible from the shapes alone.
+Subject: scattered work consolidated into one place. Dozens of small irregular fragments of dark metal and glass — different sizes, tumbling, unaligned — drift inward from the dark edges of the frame. Toward the center they resolve into a single seamless monolithic slab of dark glass, perfectly flat and precise, its surface divided by fine inset grooves into a clean grid. One groove glows burnt orange. The fragments nearest the monolith are motion-blurred and out of focus; the monolith itself is razor sharp. Chaos resolving into order.
+
+ABSOLUTELY NO TEXT of any kind — no letters, numbers, labels, logos, watermarks, or signatures. No screens, no user interface, no browser chrome, no human figures or hands, no desks or offices. Pure abstract form only.
 ```
 
 ---
 
 ## A4 → save as `legacy-modernization.png`
 
+*Legacy System Modernization*
+
 ```
-Flat vector-style conceptual illustration, square 1:1. Simple, iconic, editorial — the kind of single-idea illustration that sits beside a paragraph in a well-designed report. Not a screenshot, not a user interface, not isometric, not 3D, no gradients, no photographic texture.
+Abstract 3D product render, square 1:1. Photorealistic materials and studio lighting, in the visual language of a premium technology company's product page — think polished glass, brushed metal, and matte ceramic sculpted into pure geometric form. Not an icon, not an illustration, not a diagram, not a user interface, not a logo.
 
-Palette strictly limited to four values: deep charcoal #1E2A32 for primary shapes, burnt orange #D4632C as the single accent on one focal element only, light warm gray #E2E8F0 for secondary shapes, off-white #FAFAF8 background. Nothing else — no blues, no greens, no purples.
+Deep charcoal #1E2A32 environment fading to near-black at the edges. Forms are dark smoked glass and dark brushed metal. A single burnt-orange #D4632C light source rakes across the geometry as a rim light and catches one emissive edge — the only saturated color in the frame. Soft key light from upper left, subtle reflections, faint caustics through the glass.
 
-Clean geometric forms, consistent stroke weight, generous negative space, centered composition with even margins, calm and balanced. Must read clearly at small size, around 400 pixels.
+Shallow depth of field with the focal plane on the primary form, gentle bokeh falling off behind. Cinematic, high-contrast, expensive. Octane-quality render, 8k detail, physically based materials, no visible polygons.
 
-Subject: replacing something one piece at a time without knocking it down. Two vertical towers built of stacked blocks, side by side, connected by a simple horizontal bridge. The left tower is older and heavier in light gray with slightly uneven, weathered blocks. The right tower is clean and precise in charcoal. Two or three blocks are shown mid-transfer across the bridge, and one of those is burnt orange. Both towers remain standing — nothing is collapsing, crumbling, or demolished.
+Composition is centered with generous dark negative space around the subject. Must read clearly at small size, around 500 pixels.
 
-ABSOLUTELY NO TEXT of any kind — no letters, no numbers, no labels, no logos, no watermarks, no signatures. No UI chrome, no browser frames, no human figures or faces. The idea must be legible from the shapes alone.
+Subject: replacing something one piece at a time without knocking it down. Two tall monolithic columns stand side by side in the dark, both fully intact and load-bearing. The left column is old dark concrete — pitted, weathered, matte, its blocks slightly misaligned. The right column is flawless dark polished glass with crisp machined edges. A narrow bridge of light spans between them at mid-height, and three cubic blocks are suspended mid-transit across it, each caught in burnt-orange rim light as it crosses. Nothing is falling, crumbling, or collapsing — both columns stand.
+
+ABSOLUTELY NO TEXT of any kind — no letters, numbers, labels, logos, watermarks, or signatures. No screens, no user interface, no browser chrome, no human figures or hands, no desks or offices. Pure abstract form only.
 ```
 
 ---
 
 ## A5 → save as `fractional-cto.png`
 
+*Fractional CTO*
+
 ```
-Flat vector-style conceptual illustration, square 1:1. Simple, iconic, editorial — the kind of single-idea illustration that sits beside a paragraph in a well-designed report. Not a screenshot, not a user interface, not isometric, not 3D, no gradients, no photographic texture.
+Abstract 3D product render, square 1:1. Photorealistic materials and studio lighting, in the visual language of a premium technology company's product page — think polished glass, brushed metal, and matte ceramic sculpted into pure geometric form. Not an icon, not an illustration, not a diagram, not a user interface, not a logo.
 
-Palette strictly limited to four values: deep charcoal #1E2A32 for primary shapes, burnt orange #D4632C as the single accent on one focal element only, light warm gray #E2E8F0 for secondary shapes, off-white #FAFAF8 background. Nothing else — no blues, no greens, no purples.
+Deep charcoal #1E2A32 environment fading to near-black at the edges. Forms are dark smoked glass and dark brushed metal. A single burnt-orange #D4632C light source rakes across the geometry as a rim light and catches one emissive edge — the only saturated color in the frame. Soft key light from upper left, subtle reflections, faint caustics through the glass.
 
-Clean geometric forms, consistent stroke weight, generous negative space, centered composition with even margins, calm and balanced. Must read clearly at small size, around 400 pixels.
+Shallow depth of field with the focal plane on the primary form, gentle bokeh falling off behind. Cinematic, high-contrast, expensive. Octane-quality render, 8k detail, physically based materials, no visible polygons.
 
-Subject: judgement at a decision point. A single path splits into three diverging routes, drawn as simple clean lines. At the fork sits one small compass form in burnt orange. Two of the three routes are light gray; the third — the chosen one — is charcoal and slightly bolder. Calm and deliberate: it should read as choosing well, not as being lost. No human figure, no chess pieces, no lightbulb, no question marks.
+Composition is centered with generous dark negative space around the subject. Must read clearly at small size, around 500 pixels.
 
-ABSOLUTELY NO TEXT of any kind — no letters, no numbers, no labels, no logos, no watermarks, no signatures. No UI chrome, no browser frames, no human figures or faces. The idea must be legible from the shapes alone.
+Subject: judgement at a decision point. Three broad ribbons of dark polished metal sweep out of the darkness and converge at a single point in the center of the frame. Resting exactly at that convergence is one perfect sphere of dark smoked glass, lit from within by a small burnt-orange core that glows through the material. Two of the three ribbons fall away into shadow, unlit and receding. The third catches a clean specular highlight along its full length, leading forward out of frame. Poised and deliberate — the composition should read as choosing well, not as being lost.
+
+ABSOLUTELY NO TEXT of any kind — no letters, numbers, labels, logos, watermarks, or signatures. No screens, no user interface, no browser chrome, no human figures or hands, no desks or offices. Pure abstract form only.
 ```
 
 ---
