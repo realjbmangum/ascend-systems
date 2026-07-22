@@ -18,6 +18,13 @@ export type Bindings = {
   MS_GRAPH_CLIENT_SECRET?: string;
   /** Mailbox UPN whose calendar activities sync into (e.g. brian@ascendsystems.ai). */
   MS_GRAPH_CALENDAR_USER?: string;
+  /**
+   * Google service-account JSON key (the whole downloaded file, as a string).
+   * Used by the weekly SEO cron to read Search Console performance totals.
+   * Set via: wrangler secret put GSC_SA_KEY. The SA email must be granted
+   * read access to each GSC property in Search Console → Users and permissions.
+   */
+  GSC_SA_KEY?: string;
 };
 
 export type SessionRow = {

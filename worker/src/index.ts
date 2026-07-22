@@ -17,6 +17,7 @@ import resourceRoutes from "./routes/resources";
 import toolsRoutes from "./routes/tools";
 import activityRoutes from "./routes/activities";
 import seoRoutes from "./routes/seo";
+import { ingestGscMetrics } from "./lib/seo-cron";
 import {
   sendFormConfirmation,
   sendAdminAlert,
@@ -994,6 +995,16 @@ export default {
       ctx.waitUntil(
         refreshAllProjectAnalytics(env).then(() => undefined)
       );
+    }
+    // Weekly SEO metrics ingestion — Monday 04:xx UTC. Reads GSC performance
+    // totals per site and appends a seo_metrics snapshot so trends compound.
+    if (
+      now.getUTCDay() === 1 &&
+      now.getUTCHours() === 4 &&
+      now.getUTCMinutes() < 15 &&
+      env.GSC_SA_KEY
+    ) {
+      ctx.waitUntil(ingestGscMetrics(env).then(() => undefined));
     }
   },
 };
