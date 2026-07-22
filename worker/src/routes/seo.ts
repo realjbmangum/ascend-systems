@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
 import { requireAuth } from "../middleware";
+import { ingestGscMetrics } from "../lib/seo-cron";
 
 // Self-contained sub-router for the /admin/seo section. Mounted at /api/seo.
 // Reads seo_sites / seo_metrics / seo_actions (see db/migrations/2026-07-22-seo.sql).
@@ -241,6 +242,14 @@ seo.delete("/actions/:id", async (c) => {
     .bind(c.req.param("id"))
     .run();
   return c.json({ success: true });
+});
+
+// Manual trigger for the GSC metrics ingestion (same work the Monday cron does).
+// Lets you seed/refresh performance data on demand instead of waiting for the
+// weekly slot. Returns a per-site summary. Admin-guarded like everything here.
+seo.post("/ingest-now", async (c) => {
+  const result = await ingestGscMetrics(c.env);
+  return c.json(result, result.ok ? 200 : 400);
 });
 
 export default seo;
