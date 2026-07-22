@@ -1,0 +1,59 @@
+---
+/**
+ * 404 page — `dist/404.html`.
+ *
+ * Cloudflare Pages automatically serves this file with a real 404 status for
+ * any unmatched route. Before this existed the site returned 200 for every
+ * nonexistent path (a "soft 404"), which wastes crawl budget and lets junk
+ * URLs get indexed. Flagged by both the May audit and the seo-skill crawl.
+ *
+ * Plain Astro markup (no React island) — a 404 needs no interactivity, and
+ * keeping it island-free means it renders instantly even if JS fails.
+ */
+import Layout from '../layouts/Layout.astro';
+
+const title = 'Page not found (404) | Ascend Systems';
+const description = 'That page does not exist. Head back to the Ascend Systems home page or browse services and work.';
+---
+
+<Layout title={title} description={description} canonical="/404" noindex={true}>
+  <section class="bg-charcoal text-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center">
+      <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-5">Error 404</p>
+      <h1 class="text-4xl sm:text-6xl font-bold tracking-tight mb-5">This page took a wrong turn.</h1>
+      <p class="text-lg text-surface-200 leading-relaxed mb-10 max-w-xl mx-auto text-balance">
+        The link is broken or the page moved. Nothing here — but plenty one click away.
+      </p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a
+          href="/"
+          class="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+        >
+          Back to home
+        </a>
+        <a
+          href="/services"
+          class="border border-surface-200/40 hover:border-orange text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+        >
+          Services
+        </a>
+        <a
+          href="/portfolio"
+          class="border border-surface-200/40 hover:border-orange text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+        >
+          See the work
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border-t border-gray-200">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+      <p class="text-charcoal-lighter">
+        Looking for something specific?
+        <a href="/contact" class="text-orange-dark font-semibold hover:underline underline-offset-4">Get in touch</a>
+        and we'll point you the right way.
+      </p>
+    </div>
+  </section>
+</Layout>

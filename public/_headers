@@ -1,0 +1,16 @@
+# Cloudflare Pages response headers.
+# https://developers.cloudflare.com/pages/configuration/headers/
+#
+# HSTS: tell browsers to only ever reach this site over HTTPS. The site was
+# serving no Strict-Transport-Security header (flagged by the seo-skill crawl).
+# 2 years + includeSubDomains. All subdomains are Cloudflare-proxied, so they
+# get HTTPS automatically — includeSubDomains is safe.
+#
+# `preload` is deliberately OMITTED. Adding it and submitting to
+# hstspreload.org is near-irreversible and would hard-fail any subdomain that
+# ever serves plain HTTP (e.g. a future admin.ascendsystems.ai before its cert
+# is live). Add `; preload` and submit only once every subdomain is HTTPS-solid.
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
