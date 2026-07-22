@@ -62,18 +62,38 @@ seo.get("/overview", async (c) => {
 
   const out = await Promise.all(
     sites.map(async (site) => {
-      // Most recent snapshot for this site. Tie-break on id so a captured_on
-      // shared across sources resolves to the latest-inserted row.
-      const latest = await c.env.DB.prepare(
+      // Latest snapshot, merged across sources: gsc-cron rows carry
+      // clicks/impressions/position, seo-cli rows carry page counts + AI score,
+      // so neither row alone is complete. Take the most-recent non-null value
+      // for each field across recent rows.
+      const { results: recent } = await c.env.DB.prepare(
         `SELECT captured_on, clicks, impressions, ctr, avg_position,
                 indexable_pages, ai_readiness_score
          FROM seo_metrics
          WHERE site_id = ?
          ORDER BY captured_on DESC, id DESC
-         LIMIT 1`
+         LIMIT 12`
       )
         .bind(site.id)
-        .first<LatestMetric>();
+        .all<LatestMetric>();
+      const pick = (f: keyof LatestMetric): number | null => {
+        for (const r of recent) {
+          const v = r[f];
+          if (typeof v === "number") return v;
+        }
+        return null;
+      };
+      const latest: LatestMetric | null = recent.length
+        ? {
+            captured_on: recent[0].captured_on,
+            clicks: pick("clicks"),
+            impressions: pick("impressions"),
+            ctr: pick("ctr"),
+            avg_position: pick("avg_position"),
+            indexable_pages: pick("indexable_pages"),
+            ai_readiness_score: pick("ai_readiness_score"),
+          }
+        : null;
       const counts = countsBySite.get(site.id);
       return {
         id: site.id,
@@ -109,12 +129,22 @@ seo.get("/metrics", async (c) => {
   if (!siteId) return c.json({ error: "site_id is required" }, 400);
   const daysRaw = parseInt(c.req.query("days") ?? "", 10);
   const days = Number.isFinite(daysRaw) && daysRaw > 0 ? daysRaw : 90;
+  // Optional source filter — the trend chart passes source=gsc-cron so the
+  // performance line reflects one consistent stream (the weekly cron) rather
+  // than mixing in occasional local-CLI audit rows.
+  const source = c.req.query("source");
+  const params: (string | number)[] = [siteId, `-${days} days`];
+  let sourceSql = "";
+  if (source) {
+    sourceSql = " AND source = ?";
+    params.push(source);
+  }
   const { results } = await c.env.DB.prepare(
     `SELECT * FROM seo_metrics
-     WHERE site_id = ? AND captured_on >= date('now', ?)
+     WHERE site_id = ? AND captured_on >= date('now', ?)${sourceSql}
      ORDER BY captured_on ASC`
   )
-    .bind(siteId, `-${days} days`)
+    .bind(...params)
     .all();
   return c.json(results);
 });

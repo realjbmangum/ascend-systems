@@ -418,8 +418,10 @@ export const api = {
   getSeoOverview: () =>
     request<{ sites: SeoOverviewSite[] }>('/seo/overview'),
   getSeoSites: () => request<any[]>('/seo/sites'),
-  getSeoMetrics: (siteId: number, days = 90) =>
-    request<SeoMetricPoint[]>(`/seo/metrics?site_id=${siteId}&days=${days}`),
+  getSeoMetrics: (siteId: number, days = 90, source?: string) =>
+    request<SeoMetricPoint[]>(
+      `/seo/metrics?site_id=${siteId}&days=${days}${source ? `&source=${encodeURIComponent(source)}` : ''}`
+    ),
   getSeoActions: (params?: { site_id?: number; goal?: string; status?: string }) => {
     const q = new URLSearchParams();
     if (params?.site_id != null) q.set('site_id', String(params.site_id));

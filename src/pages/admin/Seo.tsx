@@ -81,7 +81,9 @@ export default function Seo() {
     }
     setMetricsLoading(true);
     api
-      .getSeoMetrics(selectedSiteId)
+      // gsc-cron only: one consistent weekly performance stream for the trend
+      // line, not mixed with occasional local-CLI audit rows.
+      .getSeoMetrics(selectedSiteId, 90, 'gsc-cron')
       .then((rows) => setMetrics(Array.isArray(rows) ? rows : []))
       .catch(() => setMetrics([]))
       .finally(() => setMetricsLoading(false));
