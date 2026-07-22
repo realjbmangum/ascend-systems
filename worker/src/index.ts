@@ -16,6 +16,7 @@ import analyticsRoutes, { refreshAllProjectAnalytics } from "./routes/analytics"
 import resourceRoutes from "./routes/resources";
 import toolsRoutes from "./routes/tools";
 import activityRoutes from "./routes/activities";
+import seoRoutes from "./routes/seo";
 import {
   sendFormConfirmation,
   sendAdminAlert,
@@ -966,6 +967,7 @@ admin.post("/email-sequences/process", async (c) => {
 admin.route("/analytics", analyticsRoutes);
 admin.route("/resources", resourceRoutes);
 admin.route("/activities", activityRoutes);
+admin.route("/seo", seoRoutes);
 
 app.route("/api", admin);
 

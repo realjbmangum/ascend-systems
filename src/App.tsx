@@ -34,6 +34,7 @@ const Proposals = lazy(() => import('./pages/admin/Proposals'));
 const CreateProposal = lazy(() => import('./pages/admin/CreateProposal'));
 const ProposalDetail = lazy(() => import('./pages/admin/ProposalDetail'));
 const EmailSequences = lazy(() => import('./pages/admin/EmailSequences'));
+const Seo = lazy(() => import('./pages/admin/Seo'));
 const AdminLogin = lazy(() => import('./pages/admin/Login'));
 const AdminVerify = lazy(() => import('./pages/admin/Verify'));
 
@@ -95,6 +96,7 @@ export default function App() {
           <Route path="proposals/:id" element={<ProposalDetail />} />
           <Route path="subscriptions" element={<Subscriptions />} />
           <Route path="email" element={<EmailSequences />} />
+          <Route path="seo" element={<Seo />} />
         </Route>
 
         {/* Client portal — login is unguarded */}
