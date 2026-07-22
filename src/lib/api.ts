@@ -15,6 +15,58 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
+// SEO types
+export interface SeoLatestMetric {
+  captured_on: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  avg_position: number;
+  indexable_pages: number;
+  ai_readiness_score: number;
+}
+
+export interface SeoOverviewSite {
+  id: number;
+  key: string;
+  label: string;
+  domain: string;
+  gsc_property: string | null;
+  latest: SeoLatestMetric | null;
+  actions: {
+    open: number;
+    in_progress: number;
+    done: number;
+    dismissed: number;
+    high_open: number;
+  };
+}
+
+export interface SeoMetricPoint {
+  captured_on: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  avg_position: number;
+  indexable_pages: number;
+  total_pages: number;
+  ai_readiness_score: number;
+}
+
+export interface SeoAction {
+  id: number;
+  site_id: number;
+  goal: string;
+  title: string;
+  detail: string | null;
+  severity: string;
+  status: string;
+  source_report: string | null;
+  url: string | null;
+  search_value: string | null;
+  first_seen_at: string;
+}
+
 export const api = {
   // Public — Forms
   submitLead: (data: Record<string, string>) =>
@@ -361,6 +413,29 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  // Admin — SEO
+  getSeoOverview: () =>
+    request<{ sites: SeoOverviewSite[] }>('/seo/overview'),
+  getSeoSites: () => request<any[]>('/seo/sites'),
+  getSeoMetrics: (siteId: number, days = 90) =>
+    request<SeoMetricPoint[]>(`/seo/metrics?site_id=${siteId}&days=${days}`),
+  getSeoActions: (params?: { site_id?: number; goal?: string; status?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.site_id != null) q.set('site_id', String(params.site_id));
+    if (params?.goal) q.set('goal', params.goal);
+    if (params?.status) q.set('status', params.status);
+    const qs = q.toString();
+    return request<SeoAction[]>(`/seo/actions${qs ? `?${qs}` : ''}`);
+  },
+  createSeoAction: (data: Record<string, any>) =>
+    request('/seo/actions', { method: 'POST', body: JSON.stringify(data) }),
+  updateSeoAction: (
+    id: number,
+    data: { status?: string; goal?: string; severity?: string; title?: string; detail?: string }
+  ) => request(`/seo/actions/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteSeoAction: (id: number) =>
+    request(`/seo/actions/${id}`, { method: 'DELETE' }),
 
   // Portal (client)
   getPortalProjects: () => request<any[]>('/portal/projects'),

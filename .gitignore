@@ -44,3 +44,8 @@ ascend-dba-filing-guide.html
 
 # Legacy design-comp dump, not part of the site build
 Ascend V2/
+
+# Local wrangler/miniflare state
+worker/.wrangler/
+# Generated SEO seed SQL (data lives in D1)
+scripts/out/
