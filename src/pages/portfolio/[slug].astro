@@ -103,8 +103,12 @@ const breadcrumbSchema = {
   canonical={canonical}
   ogImage={ogImage}
   ogType="article"
+  noindex={!CaseStudyBody}
 >
-  <JsonLd slot="head" data={articleSchema} />
+  {/* Article schema only when there's a real body — a thin page shouldn't
+      claim to be an Article, and noindex above keeps it out of the index
+      until a case study is written (e.g. Heirloom, still in progress). */}
+  {CaseStudyBody && <JsonLd slot="head" data={articleSchema} />}
   <JsonLd slot="head" data={breadcrumbSchema} />
   <PageIsland
     page="case-study"

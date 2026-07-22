@@ -193,6 +193,14 @@ invoices.post("/:id/send", async (c) => {
     customer.id,
     invoice.description ?? undefined
   );
+  // Stripe returns { id?, error? } — if creation failed there's no id, so stop
+  // here rather than calling sendStripeInvoice(undefined) and writing a bad row.
+  if (!stripeInvoice.id) {
+    return c.json(
+      { error: stripeInvoice.error?.message || "Stripe invoice creation failed" },
+      502
+    );
+  }
   const sent = await sendStripeInvoice(
     c.env.STRIPE_SECRET_KEY,
     stripeInvoice.id
