@@ -24,14 +24,16 @@
 //   login redirects, challenge/content endpoints) is excluded, and no action
 //   ever stores a `/cdn-cgi/` URL. These are not real SEO issues.
 //
-// GSC PERFORMANCE TOTALS (clicks/impressions/ctr/avg_position):
-//   `seo report --json` exposes GSC *movement/change* data, not clean site-level
-//   period totals. We extract totals defensively (a set of candidate paths) and
-//   fall back to NULL when the payload does not carry them — which is the case
-//   for the current CLI (v0.2.24) on all three sites. period_start/period_end ARE
-//   captured (from the report's narrative period). If a future CLI version adds
-//   totals, or you point ingestion at `seo performance-audit`, they populate
-//   automatically. The full report JSON is preserved in seo_metrics.raw_json.
+// GSC PERFORMANCE TOTALS (clicks/impressions/ctr):
+//   `seo report --json` exposes only GSC *movement*, not site-level totals. The
+//   totals live in `search-performance-overview`'s anomaly block, where each
+//   metric row carries baselineTotal + comparisonTotal over
+//   baselineStart..comparisonEnd — we sum the two halves for the full-window
+//   total (see extractGscTotals). So ingestion now runs THREE CLI reports per
+//   site: report + ai-readiness + search-performance-overview. avg_position is
+//   left best-effort (the anomaly block tracks clicks + impressions only). A
+//   brand-new property with no baseline signal yields null totals gracefully.
+//   The full report JSON is preserved in seo_metrics.raw_json.
 //
 // HOW TO RUN
 //   node scripts/seo-ingest.mjs                       # run CLI, generate SQL, self-validate
@@ -178,25 +180,49 @@ function runSeo(args, label) {
   return parseJsonLoose(res.stdout, label);
 }
 
+// Like runSeo but returns null instead of throwing — for optional data whose
+// absence should not fail the whole run (e.g. a new property with no history).
+function runSeoSafe(args, label) {
+  try {
+    return runSeo(args, label);
+  } catch (e) {
+    console.warn(`  (optional) ${label} unavailable: ${String(e.message).split('\n')[0]}`);
+    return null;
+  }
+}
+
 function loadSiteReports(site, fixturesDir) {
   if (fixturesDir) {
     const rp = path.join(fixturesDir, `${site.key}-report.json`);
     const ap = path.join(fixturesDir, `${site.key}-ai.json`);
+    const pp = path.join(fixturesDir, `${site.key}-perf.json`);
+    const optional = (f, label) => {
+      try { return parseJsonLoose(readFileSync(f, 'utf8'), label); } catch { return null; }
+    };
     return {
       report: parseJsonLoose(readFileSync(rp, 'utf8'), `${site.key} report fixture`),
       aiReadiness: parseJsonLoose(readFileSync(ap, 'utf8'), `${site.key} ai fixture`),
+      perf: optional(pp, `${site.key} perf fixture`),
     };
   }
   return {
     report: runSeo(['report', '--site', site.gscProperty, '--json'], `${site.key} report`),
     aiReadiness: runSeo(['ai-readiness', '--site', site.gscProperty, '--json'], `${site.key} ai-readiness`),
+    // GSC period totals live only in search-performance-overview's anomaly block —
+    // the main report and ai-readiness don't carry site-level totals. Optional:
+    // a new property with no anomaly signal simply yields null totals.
+    perf: runSeoSafe(
+      ['reports', 'run', 'search-performance-overview',
+       '--params', JSON.stringify({ site: site.gscProperty, days: 90 }), '--json'],
+      `${site.key} performance-overview`
+    ),
   };
 }
 
 // ---------------------------------------------------------------------------
 // Extraction
 // ---------------------------------------------------------------------------
-function extractMetrics(site, { report, aiReadiness }, capturedOn) {
+function extractMetrics(site, { report, aiReadiness, perf }, capturedOn) {
   const tc = report?.technicalCrawl?.summary || {};
   const period = report?.output?.narrative?.period || {};
 
@@ -206,20 +232,22 @@ function extractMetrics(site, { report, aiReadiness }, capturedOn) {
   const failed = checks.filter((c) => c.status === 'fail').length;
   const score = passed + failed > 0 ? Math.round((100 * passed) / (passed + failed)) : null;
 
-  // GSC totals: defensive — the current CLI does not expose site-level period
-  // totals, so these resolve to null. Kept as a lookup so a future payload shape
-  // populates them without code changes.
+  // GSC period totals from search-performance-overview's anomaly block.
+  const gscTotals = extractGscTotals(perf);
+  // Fallback lookup kept in case a future report shape exposes totals directly.
   const gsc = report?.performance?.totals || report?.gsc?.totals || report?.output?.narrative?.totals || {};
-  const clicks = firstNum(gsc.clicks);
-  const impressions = firstNum(gsc.impressions);
-  let ctr = firstNum(gsc.ctr);
+
+  const clicks = gscTotals.clicks ?? firstNum(gsc.clicks);
+  const impressions = gscTotals.impressions ?? firstNum(gsc.impressions);
+  let ctr = gscTotals.ctr ?? firstNum(gsc.ctr);
   if (ctr === null && clicks !== null && impressions) ctr = clicks / impressions;
+  // The anomaly block tracks clicks + impressions only; position stays best-effort.
   const avgPosition = firstNum(gsc.avgPosition ?? gsc.position);
 
   return {
     capturedOn,
-    periodStart: period.startDate || null,
-    periodEnd: period.endDate || null,
+    periodStart: gscTotals.periodStart || period.startDate || null,
+    periodEnd: gscTotals.periodEnd || period.endDate || null,
     clicks,
     impressions,
     ctr,
@@ -229,7 +257,37 @@ function extractMetrics(site, { report, aiReadiness }, capturedOn) {
     aiScore: score,
     aiPassed: passed,
     aiFailed: failed,
+    // perf is intentionally excluded from raw_json — its ~90 KB movement payload
+    // would bloat the table on every run and its totals are already in columns.
     rawJson: JSON.stringify({ report, aiReadiness }),
+  };
+}
+
+// Site-level GSC period totals from search-performance-overview. Its anomaly
+// block has one row per metric (clicks, impressions), each carrying
+// baselineTotal + comparisonTotal over the window baselineStart..comparisonEnd.
+// The two halves summed give the full-window total. Returns nulls when the
+// block is absent (e.g. a brand-new property with no baseline signal).
+function extractGscTotals(perf) {
+  const empty = { clicks: null, impressions: null, ctr: null, periodStart: null, periodEnd: null };
+  const anomalies = perf?.output?.narrative?.diagnosis?.anomaly?.anomalies;
+  if (!Array.isArray(anomalies) || anomalies.length === 0) return empty;
+  const totalFor = (metric) => {
+    const row = anomalies.find((a) => a.metric === metric);
+    if (!row) return null;
+    return (firstNum(row.baselineTotal) ?? 0) + (firstNum(row.comparisonTotal) ?? 0);
+  };
+  const clicks = totalFor('clicks');
+  const impressions = totalFor('impressions');
+  const ctr = clicks !== null && impressions ? clicks / impressions : null;
+  const starts = anomalies.map((a) => a.baselineStart).filter(Boolean).sort();
+  const ends = anomalies.map((a) => a.comparisonEnd).filter(Boolean).sort();
+  return {
+    clicks,
+    impressions,
+    ctr,
+    periodStart: starts[0] || null,
+    periodEnd: ends[ends.length - 1] || null,
   };
 }
 
