@@ -425,7 +425,11 @@ function buildSql(perSite, date) {
   lines.push('-- Idempotent upserts. Safe to re-run. Preserves seo_actions.status.');
   lines.push('-- Apply (from worker/):');
   lines.push(`--   wrangler d1 execute ${D1_NAME} --remote --file=../scripts/out/seo-seed-${date}.sql`);
-  lines.push('BEGIN TRANSACTION;');
+  // No explicit BEGIN TRANSACTION / COMMIT: remote D1 (via `wrangler d1 execute`)
+  // rejects raw SQL transaction statements ("use state.storage.transaction()..."),
+  // even though local sqlite accepts them. Every statement below is an idempotent
+  // upsert, and wrangler restores the DB to its original state if the batch fails,
+  // so a plain statement list is both safe and remote-compatible.
   lines.push('');
   for (const s of perSite) {
     lines.push(`-- ===== ${s.site.key} (${s.site.gscProperty}) =====`);
@@ -436,7 +440,6 @@ function buildSql(perSite, date) {
     lines.push(metricsSql(s.site.key, s.metrics));
     for (const a of s.actions) lines.push(actionSql(s.site.key, a));
   }
-  lines.push('COMMIT;');
   lines.push('');
   return lines.join('\n');
 }
