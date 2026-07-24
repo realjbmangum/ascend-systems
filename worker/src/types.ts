@@ -25,6 +25,18 @@ export type Bindings = {
    * read access to each GSC property in Search Console → Users and permissions.
    */
   GSC_SA_KEY?: string;
+  /**
+   * xAI API key for the Grok Voice agents. Used to open the realtime control
+   * socket for an inbound SIP call and to issue refer/hangup call control.
+   * Set via: wrangler secret put XAI_API_KEY
+   */
+  XAI_API_KEY?: string;
+  /**
+   * Signing secret for xAI's inbound-call webhook. Returned exactly once when
+   * the phone number is registered — xAI will not show it again.
+   * Set via: wrangler secret put XAI_WEBHOOK_SECRET
+   */
+  XAI_WEBHOOK_SECRET?: string;
 };
 
 export type SessionRow = {

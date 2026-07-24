@@ -648,3 +648,106 @@ properties, then `wrangler secret put GSC_SA_KEY` (paste the JSON). Steps in
 docs/seo-cron-setup.md. Then I trigger /ingest-now to verify real data flows.
 
 **Open PRs:** #5 (local GSC totals), #6 (native cron).
+
+## Session - July 24, 2026 — Grok Voice: shared MCP tool layer + KB firewall
+
+**Why now:** xAI shipped a real developer platform for voice. `grok-voice-think-fast-1.0`
+is a single full-duplex speech-to-speech model at **$0.05/min flat + $0.01/min for a
+number**, sub-1s time-to-first-audio, native SIP/PSTN, and — the architectural unlock —
+**remote MCP tool support**. That means a voice agent can call tools hosted on
+ascend-api directly, server-to-server. The Feb 2026 master plan priced a chained
+STT→LLM→TTS stack at $0.09/min on Telnyx; that plan's stack (Telnyx + GHL) is dead and
+its buyer (sub-$1M trades) is explicitly disqualified by docs/marketing-strategy.html.
+Repositioned to the locked ICP: $5k discovery → $12–25k build → $1,000–2,500/mo retainer.
+
+**Completed (Workstream A — the shared tool layer, all three agents consume it):**
+- `worker/db/migrations/2026-07-24-voice.sql` — `voice_agents` (scoped bearer tokens,
+  daily spend ceiling), `voice_calls`, `voice_call_events`. Applied to local D1.
+- `worker/src/routes/mcp.ts` — remote MCP server at **`/api/mcp`**. Hand-rolled
+  streamable-HTTP JSON-RPC (initialize / tools/list / tools/call / ping /
+  notifications). No new dependencies — the worker still depends only on hono.
+- `worker/src/lib/voice-tools.ts` — 10 tools. Receptionist scope: create_lead,
+  log_call_activity, check_availability, book_meeting. Assistant scope adds:
+  lookup_lead, list_leads, list_projects, get_invoice_status, create_task,
+  get_seo_summary.
+- `worker/src/graph.ts` — added `listCalendarBusy()` (Graph calendarView) so
+  check_availability never offers a slot that is already taken.
+- `worker/src/types.ts` — XAI_API_KEY, XAI_WEBHOOK_SECRET bindings.
+
+**Verified end to end against `wrangler dev` + local D1 (not just typechecked):**
+- 401 on no token and on a wrong token.
+- Scope isolation: receptionist `tools/list` returns 4 tools, assistant returns 10.
+  A receptionist token calling `get_invoice_status` gets "Unknown tool" — deliberately
+  the same response as a nonexistent tool, so it can't enumerate the assistant's set.
+- create_lead writes the lead + a high-priority task with source_origin='voice',
+  source_channel='phone-980', source_channel_id={call_id}.
+- Timezone math correct across DST: 9:00 AM EDT → 13:00:00Z. Weekends refused.
+  Past slots never offered.
+- Graceful failure: unknown lead id, malformed date, blank name all return in-band
+  tool errors the model can recover from, not transport errors.
+
+**KB firewall (this was the real find of the session):**
+`scripts/build-voice-kb.mjs` + `scripts/test-voice-kb.mjs`, wired as
+`npm run voice:kb` / `voice:kb:check` / `voice:test`. Allowlist is code, denylist is
+code, both run every build. 14 docs, 148 KB, from services.ts (bundled with esbuild so
+the real data structure is read, not regexed), the case studies, and the MSA.
+19/19 tests pass — including seven that prove the denylist actually TRIPS on real
+hazard content, because a firewall only ever run against clean input has not been tested.
+
+**⚠️ HAZARD CORRECTED — read this before touching the voice KB:**
+The Jul 18 note (progress.txt:411, docs/progress-dashboard.html o5) listed
+**`website-copy.md` as an approved caller-facing knowledge-base source. It is not.**
+That file is Feb 13 2026 **"CallSteady"** copy — a dead brand — and it contains:
+  - "Built on Telnyx Voice AI" (lines 94, 123) — we have no Telnyx account, never did
+  - "we've had business owners listen to recordings of their own calls and not realize
+    it was AI" (line 165) — never happened
+  - "30-day money-back guarantee" (line 124) — does not exist
+  - `[Name], [Business], Mint Hill NC` placeholder testimonials (lines 113–116)
+Feeding it to the receptionist would have Ascend's phone line **speak aloud the exact
+false claims that were deleted from the site on Jul 18** ("No such project exists").
+It is now on the denylist along with charlotte-target-list, docs/outscraper/*,
+outreach-playbook, warm-reactivation, and "stancil" (a prospect, not a client).
+
+**Decisions:**
+- MCP over client-side `function` tools — declared once, consumed by all three agents,
+  testable over curl without placing a phone call, scoped by bearer token.
+- Static knowledge lives in the xAI collection (file_search), NOT in MCP tools. Tools
+  are actions and live data only. Clean split: the agent can be given depth without
+  being given tool access.
+- `leads.email` stays NOT NULL. SQLite can't drop that without a full table rebuild,
+  and `leads` is referenced by lead_activities/tasks/proposals/invoices — not worth it
+  on live data with no transaction available on remote D1. Callers who give no email
+  get `voice+{call_id}@no-email.invalid` (RFC 2606, guaranteed undeliverable) and are
+  **skipped by the drip enrollment**, so nothing is ever mailed to a fake address.
+- Conditional forwarding, not porting. (980) 577-1231 stays with its carrier; forward
+  on busy/no-answer/after-hours. Rollback is turning forwarding off.
+
+**Next steps:**
+- [ ] **BLOCKED on Brian (needs the xAI account):** create the API key, register a
+      phone number, capture the webhook signing secret (xAI returns it exactly once).
+      Then: `wrangler secret put XAI_API_KEY` and `wrangler secret put XAI_WEBHOOK_SECRET`.
+- [ ] **The spike, before any more code:** answer one real call with a hardcoded config
+      and determine whether the control WebSocket must be held open for the call's
+      duration. If it can configure-and-disconnect, the Durable Object is unnecessary
+      and the webhook handler collapses to a plain Worker route. Do not build the DO first.
+- [ ] `/api/voice/incoming` — raw-body webhook + signature verify (Stripe handler at
+      worker/src/index.ts:229 is the pattern), session.update, `force_message` opener.
+- [ ] `/admin/calls` — 8-touchpoint /admin/seo pattern.
+- [ ] Upload voice-kb/ to an xAI collection; wire file_search.
+- [ ] Adversarial pass before forwarding goes live: ask for competitors, other clients
+      by name, the target list; attempt prompt injection. Must refuse all.
+- [ ] Update tasks/ai-phone-service-master-plan.md — stack and buyer both changed.
+
+**Gotchas:**
+- **wrangler's SQL splitter scans for transaction keywords inside SQL COMMENTS.** The
+  migration failed with "contains several transactions" purely because a comment said
+  not to use them. Reworded. Don't name those keywords in a .sql file at all.
+- `typeof(col)` in SQLite returns the *string* `'null'` for a real NULL, and wrangler's
+  local d1 output renders NULL as `"null"`. Both look like a bug and are not — confirm
+  with `col IS NULL` before chasing it.
+- The worker has **no tsconfig.json**; wrangler builds with esbuild, which does not
+  typecheck. To check the worker:
+  `cd worker && npx tsc --noEmit --skipLibCheck --target es2022 --lib es2022 --module esnext --moduleResolution bundler --strict node_modules/@cloudflare/workers-types/index.d.ts src/index.ts`
+  (the `--types` flag does not work — workers-types is not under node_modules/@types).
+  Clean as of this session.
+- `voice-kb/` is gitignored. It is a build artifact; the allowlist is the source of truth.
