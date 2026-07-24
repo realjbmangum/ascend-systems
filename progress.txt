@@ -695,7 +695,9 @@ the real data structure is read, not regexed), the case studies, and the MSA.
 hazard content, because a firewall only ever run against clean input has not been tested.
 
 **⚠️ HAZARD CORRECTED — read this before touching the voice KB:**
-The Jul 18 note (progress.txt:411, docs/progress-dashboard.html o5) listed
+The Jul 18 note (progress.txt:411, and now D1 `seo_actions` row
+`program:grok-kb-separation` — it was migrated onto the /admin/seo board when
+docs/progress-dashboard.html was retired in PR #8) listed
 **`website-copy.md` as an approved caller-facing knowledge-base source. It is not.**
 That file is Feb 13 2026 **"CallSteady"** copy — a dead brand — and it contains:
   - "Built on Telnyx Voice AI" (lines 94, 123) — we have no Telnyx account, never did
@@ -751,3 +753,37 @@ outreach-playbook, warm-reactivation, and "stancil" (a prospect, not a client).
   (the `--types` flag does not work — workers-types is not under node_modules/@types).
   Clean as of this session.
 - `voice-kb/` is gitignored. It is a build artifact; the allowlist is the source of truth.
+
+## Session - July 24, 2026 (cont.) — merged main; the KB hazard is LIVE in D1
+
+Merging origin/main into feat/voice-agents surfaced one conflict:
+**docs/progress-dashboard.html was deleted on main by PR #8** ("retire static
+progress-dashboard.html — migrated to /admin/seo") while this branch had edited
+it. Accepted the deletion — the file is gone, nothing references it, and its
+items now live on the D1-backed /admin/seo "Program & Content" board.
+
+**But that migration carried the hazard forward verbatim.** Live row in remote
+`seo_actions`:
+
+  id 33 | program:grok-kb-separation | status: open
+  "SECURITY: the caller-facing agent must NEVER get charlotte-target-list.html,
+   docs/outscraper/* (scraped PII), the outreach playbook, or the security
+   review. It gets only services data, case studies, website-copy.md, the MSA."
+
+That last clause is wrong and it is now in the source of truth, not a retired
+HTML file. `website-copy.md` is dead CallSteady copy with a retracted Telnyx
+claim, placeholder testimonials, and a nonexistent money-back guarantee. Anyone
+following this row would poison the caller-facing agent.
+
+**Fix (needs running against remote D1 — not committed, this is data):**
+
+  cd worker && npx wrangler d1 execute ascend-db --remote --command \
+   "UPDATE seo_actions SET detail = 'SECURITY: the caller-facing agent must NEVER get charlotte-target-list.html, docs/outscraper/* (scraped PII), the outreach playbook, the reactivation emails, or the security review. It gets ONLY what scripts/build-voice-kb.mjs produces: services data, case studies, the MSA. NOT website-copy.md — that is dead CallSteady copy with a retracted Telnyx claim and a money-back guarantee that does not exist. Enforced in code: npm run voice:kb builds from an allowlist, npm run voice:test proves the denylist trips.', status = 'done', updated_at = datetime('now') WHERE dedupe_key = 'program:grok-kb-separation';"
+
+Row 40 (`program:grok-voice-agent`, "Build the Grok Voice Agent on (980)
+577-1231") stays open — correctly. The shared tool layer is done; the console
+work in docs/voice-agent-setup.md is not.
+
+**Also worth noting:** the seo-cron pseudo-site fix committed this session
+(skip seo_sites rows without a real gsc_property) is what stops the weekly cron
+erroring on this very "Program & Content" tab. The two changes fit together.
