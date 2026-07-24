@@ -9,7 +9,10 @@
     "build:public": "astro build",
     "build:admin": "vite build && printf '/    /admin/login    302\\n/*    /index.html    200\\n' > dist-admin/_redirects",
     "preview": "astro preview",
-    "preview:admin": "vite preview --outDir dist-admin"
+    "preview:admin": "vite preview --outDir dist-admin",
+    "voice:kb": "node scripts/build-voice-kb.mjs",
+    "voice:kb:check": "node scripts/build-voice-kb.mjs --check",
+    "voice:test": "node scripts/test-voice-kb.mjs"
   },
   "repository": {
     "type": "git",

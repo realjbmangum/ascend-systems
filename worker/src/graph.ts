@@ -138,6 +138,61 @@ export async function updateCalendarEvent(
   }
 }
 
+export type BusyWindow = { start: string; end: string };
+
+/**
+ * Busy windows on the synced calendar between two ISO instants.
+ * Used by the voice agents' check_availability tool so a caller is never
+ * offered a slot that is already taken. Returns [] when Graph is unconfigured
+ * or the call fails — the caller treats that as "no known conflicts", which is
+ * the same posture the rest of this module takes (best-effort, never blocking).
+ */
+export async function listCalendarBusy(
+  env: Bindings,
+  startIso: string,
+  endIso: string
+): Promise<BusyWindow[]> {
+  if (!graphConfigured(env)) return [];
+  try {
+    const token = await getToken(env);
+    if (!token) return [];
+    const url =
+      `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(
+        env.MS_GRAPH_CALENDAR_USER!
+      )}/calendarView` +
+      `?startDateTime=${encodeURIComponent(startIso)}` +
+      `&endDateTime=${encodeURIComponent(endIso)}` +
+      `&$select=start,end,showAs&$top=100&$orderby=start/dateTime`;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Prefer: 'outlook.timezone="UTC"',
+      },
+    });
+    if (!res.ok) {
+      console.error("Graph calendarView failed", res.status);
+      return [];
+    }
+    const data = await res.json<{
+      value?: Array<{
+        start?: { dateTime?: string };
+        end?: { dateTime?: string };
+        showAs?: string;
+      }>;
+    }>();
+    return (data.value ?? [])
+      .filter((e) => e.showAs !== "free" && e.start?.dateTime && e.end?.dateTime)
+      .map((e) => ({
+        // Graph returns naive datetimes in the Prefer timezone; mark them UTC.
+        start: `${e.start!.dateTime!.replace(/Z?$/, "")}Z`,
+        end: `${e.end!.dateTime!.replace(/Z?$/, "")}Z`,
+      }));
+  } catch (err) {
+    console.error("Graph calendarView error", err);
+    return [];
+  }
+}
+
 /** Delete a calendar event. Best-effort. */
 export async function deleteCalendarEvent(
   env: Bindings,

@@ -533,3 +533,257 @@ https://github.com/realjbmangum/ascend-systems/pull/1
 - [ ] Charlotte page set — unblocked on phone, still needs a real local case
       study. The contract-review work may now qualify.
 - [ ] 62 hardcoded site origins in src/ — use Astro.site
+
+## Session - July 22, 2026 (cont.) — SEO admin dashboard, D1-backed (a team build)
+
+**What:** Built an SEO section in the admin CRM at /admin/seo, backed by 3 new
+D1 tables in ascend-db, so per-site SEO actions + metrics persist and compound
+for trends. Requested as: "manage all this on a seo page at admin.ascendsystems.ai...
+ensure all data is seeded into a d1 for future study on trends and forecasts."
+
+**Built by a 3-agent team** (I pinned the D1 schema + API contract first, kept
+integration + production apply + deploy for myself):
+- seo-backend → worker/src/routes/seo.ts + mount in worker/src/index.ts
+- seo-frontend → src/pages/admin/Seo.tsx + api.ts + App.tsx + AdminLayout.tsx
+- seo-ingest → scripts/seo-ingest.mjs
+
+**Schema (worker/db/migrations/2026-07-22-seo.sql):** seo_sites, seo_metrics
+(time-series, one row/site/run — the trend basis), seo_actions (checklist with
+stable dedupe_key so re-ingestion updates a finding but PRESERVES UI-set status).
+Additive, seo_-namespaced. Applied to remote ascend-db (verified CRM leads
+table untouched: still 5 rows).
+
+**Verified end-to-end against LOCAL D1 through the real Worker before prod:**
+401 unauthenticated, real data authenticated (3 sites / 3 metrics / 15 actions),
+mark-done round-trips with done_at. Then deployed to prod and re-verified live.
+
+**PRODUCTION STATE:**
+- Migration applied to remote ascend-db ✓
+- Worker deployed (ascend-api, version f56284d3; /api/seo live, 401 confirmed) ✓
+- Seed applied to remote (3 metrics + 15 actions; 0 /cdn-cgi/ leak) ✓
+- Frontend: in PR #4. The ascend-systems-admin Pages project is GIT-CONNECTED
+  to this repo → **merging PR #4 auto-deploys /admin/seo**. Backend already live.
+
+**First data run (2026-07-22):** RecordStops 6 actions (1 high), PottyDirectory
+8, Ascend 1. Real findings incl. RecordStops "record stores near me"
+cannibalization + HSTS-missing on recordstops.
+
+**Bugs caught during integration (verification earned its keep):**
+1. Ingest script emitted BEGIN TRANSACTION/COMMIT — local sqlite accepts it,
+   remote D1 REJECTS raw transaction statements. Blocked the prod seed. Fixed
+   the script (dropped the wrapper; upserts are idempotent) so future runs
+   apply to both local + remote with no stripping. Committed.
+2. Pre-existing (NOT mine): worker/src/routes/invoices.ts:198 typecheck error
+   (string|undefined). Flagged, left alone. Doesn't block deploy (esbuild
+   doesn't typecheck). Worth a separate fix.
+
+**KNOWN GAP — GSC totals:** seo_metrics.clicks/impressions/ctr/avg_position are
+NULL. `seo report --json` exposes movement (e.g. "gained 29 clicks") not clean
+period totals. Page counts + AI-readiness score ARE captured. Planned follow-up:
+parse `seo performance-audit` / `seo export diagnose` for real GSC totals so the
+trend chart has data. The extractor already probes candidate paths so a future
+payload backfills via the idempotent upsert.
+
+**How to re-run ingestion (builds trend history):**
+  node scripts/seo-ingest.mjs                    # generate + self-validate
+  cd worker && wrangler d1 execute ascend-db --remote --file=../scripts/out/seo-seed-<date>.sql
+
+**Relationship to docs/progress-dashboard.html:** that static doc tracks the
+BROADER program (48 items: Google SEO, AI search, content, design, ops). The new
+/admin/seo tracks the per-site CLI-derived SEO actions (the 15). Different scopes;
+both useful. Could converge later.
+
+**Next steps:**
+- [ ] Merge PR #4 → /admin/seo goes live
+- [ ] GSC-totals extraction (the trend chart's main gap)
+- [ ] Fix pre-existing invoices.ts:198 typecheck error (separate)
+- [ ] Re-run ingestion periodically to build trend history
+
+## Session - July 22, 2026 (cont.) — GSC totals extraction (the trend metric)
+
+**Done + live.** The seo_metrics snapshots were shipping null clicks/impressions
+(the main `seo report --json` exposes movement, not totals). Found the totals in
+`search-performance-overview`'s anomaly block: each metric row has baselineTotal
++ comparisonTotal over baselineStart..comparisonEnd; summing the halves = the
+full-window total (extractGscTotals in scripts/seo-ingest.mjs).
+
+- Ingestion now runs a 3rd CLI report/site (search-performance-overview) via a
+  non-throwing runSeoSafe (new site w/ no baseline → null totals, graceful).
+- Verified LIVE on remote ascend-db: RecordStops 52 clicks/3,613 impr (1.44%),
+  PottyDirectory 1,050/162,010 (0.65% — bot-heavy), Ascend null (too new).
+- avg_position still null (anomaly block = clicks+impressions only). Minor; the
+  trend chart plots clicks+impressions.
+- perf report excluded from raw_json (~90KB/run bloat avoided; totals are in cols).
+- PR #5 open (script-only; data already applied via idempotent upsert).
+
+**Next:** periodic re-run of `node scripts/seo-ingest.mjs` + remote apply builds
+the trend history (right now each site has 1 snapshot). Could schedule it.
+
+## Session - July 22, 2026 (cont.) — Cloudflare-native weekly GSC cron
+
+**Brian rejected local/GitHub-Actions scheduling: "we build all things with
+cloudflare."** So the SEO metrics ingestion is now native Cloudflare — a Worker
+cron calling the GSC API directly, no machine, no CLI.
+
+- The `seo` CLI CAN'T run in a Worker (V8 isolate). So the Worker authenticates
+  to Google via a SERVICE ACCOUNT (RS256 JWT signed with Web Crypto → token
+  exchange → dimensionless searchAnalytics query → exact clicks/impressions/ctr/
+  position). This is cleaner than the CLI — the API gives position too.
+- worker/src/lib/gsc.ts (GSC client), worker/src/lib/seo-cron.ts
+  (ingestGscMetrics, source='gsc-cron'), scheduled() Monday 04:xx UTC branch
+  (gated on GSC_SA_KEY → dormant until set), POST /api/seo/ingest-now (admin
+  manual trigger). types.ts GSC_SA_KEY. docs/seo-cron-setup.md.
+- **JWT/RS256 signing path smoke-tested with a throwaway RSA key — verifies.**
+  Typechecks clean. Deployed (dormant). /ingest-now live + guarded (401 unauth).
+- PR #6 open. Also PR #5 (local-CLI GSC totals) still open.
+
+**COEXISTENCE:** cron owns GSC perf metrics (source='gsc-cron'); local CLI still
+does crawl fields + actions on-demand (source='seo-cli'). No collision.
+Follow-up: the trend chart should prefer source='gsc-cron' once the cron runs
+(small API/frontend refinement — currently plots all sources).
+
+**BLOCKED on Brian (only he can — Google account):** create a Google service
+account, enable Search Console API, grant the SA email read access on all 3 GSC
+properties, then `wrangler secret put GSC_SA_KEY` (paste the JSON). Steps in
+docs/seo-cron-setup.md. Then I trigger /ingest-now to verify real data flows.
+
+**Open PRs:** #5 (local GSC totals), #6 (native cron).
+
+## Session - July 24, 2026 — Grok Voice: shared MCP tool layer + KB firewall
+
+**Why now:** xAI shipped a real developer platform for voice. `grok-voice-think-fast-1.0`
+is a single full-duplex speech-to-speech model at **$0.05/min flat + $0.01/min for a
+number**, sub-1s time-to-first-audio, native SIP/PSTN, and — the architectural unlock —
+**remote MCP tool support**. That means a voice agent can call tools hosted on
+ascend-api directly, server-to-server. The Feb 2026 master plan priced a chained
+STT→LLM→TTS stack at $0.09/min on Telnyx; that plan's stack (Telnyx + GHL) is dead and
+its buyer (sub-$1M trades) is explicitly disqualified by docs/marketing-strategy.html.
+Repositioned to the locked ICP: $5k discovery → $12–25k build → $1,000–2,500/mo retainer.
+
+**Completed (Workstream A — the shared tool layer, all three agents consume it):**
+- `worker/db/migrations/2026-07-24-voice.sql` — `voice_agents` (scoped bearer tokens,
+  daily spend ceiling), `voice_calls`, `voice_call_events`. Applied to local D1.
+- `worker/src/routes/mcp.ts` — remote MCP server at **`/api/mcp`**. Hand-rolled
+  streamable-HTTP JSON-RPC (initialize / tools/list / tools/call / ping /
+  notifications). No new dependencies — the worker still depends only on hono.
+- `worker/src/lib/voice-tools.ts` — 10 tools. Receptionist scope: create_lead,
+  log_call_activity, check_availability, book_meeting. Assistant scope adds:
+  lookup_lead, list_leads, list_projects, get_invoice_status, create_task,
+  get_seo_summary.
+- `worker/src/graph.ts` — added `listCalendarBusy()` (Graph calendarView) so
+  check_availability never offers a slot that is already taken.
+- `worker/src/types.ts` — XAI_API_KEY, XAI_WEBHOOK_SECRET bindings.
+
+**Verified end to end against `wrangler dev` + local D1 (not just typechecked):**
+- 401 on no token and on a wrong token.
+- Scope isolation: receptionist `tools/list` returns 4 tools, assistant returns 10.
+  A receptionist token calling `get_invoice_status` gets "Unknown tool" — deliberately
+  the same response as a nonexistent tool, so it can't enumerate the assistant's set.
+- create_lead writes the lead + a high-priority task with source_origin='voice',
+  source_channel='phone-980', source_channel_id={call_id}.
+- Timezone math correct across DST: 9:00 AM EDT → 13:00:00Z. Weekends refused.
+  Past slots never offered.
+- Graceful failure: unknown lead id, malformed date, blank name all return in-band
+  tool errors the model can recover from, not transport errors.
+
+**KB firewall (this was the real find of the session):**
+`scripts/build-voice-kb.mjs` + `scripts/test-voice-kb.mjs`, wired as
+`npm run voice:kb` / `voice:kb:check` / `voice:test`. Allowlist is code, denylist is
+code, both run every build. 14 docs, 148 KB, from services.ts (bundled with esbuild so
+the real data structure is read, not regexed), the case studies, and the MSA.
+19/19 tests pass — including seven that prove the denylist actually TRIPS on real
+hazard content, because a firewall only ever run against clean input has not been tested.
+
+**⚠️ HAZARD CORRECTED — read this before touching the voice KB:**
+The Jul 18 note (progress.txt:411, and now D1 `seo_actions` row
+`program:grok-kb-separation` — it was migrated onto the /admin/seo board when
+docs/progress-dashboard.html was retired in PR #8) listed
+**`website-copy.md` as an approved caller-facing knowledge-base source. It is not.**
+That file is Feb 13 2026 **"CallSteady"** copy — a dead brand — and it contains:
+  - "Built on Telnyx Voice AI" (lines 94, 123) — we have no Telnyx account, never did
+  - "we've had business owners listen to recordings of their own calls and not realize
+    it was AI" (line 165) — never happened
+  - "30-day money-back guarantee" (line 124) — does not exist
+  - `[Name], [Business], Mint Hill NC` placeholder testimonials (lines 113–116)
+Feeding it to the receptionist would have Ascend's phone line **speak aloud the exact
+false claims that were deleted from the site on Jul 18** ("No such project exists").
+It is now on the denylist along with charlotte-target-list, docs/outscraper/*,
+outreach-playbook, warm-reactivation, and "stancil" (a prospect, not a client).
+
+**Decisions:**
+- MCP over client-side `function` tools — declared once, consumed by all three agents,
+  testable over curl without placing a phone call, scoped by bearer token.
+- Static knowledge lives in the xAI collection (file_search), NOT in MCP tools. Tools
+  are actions and live data only. Clean split: the agent can be given depth without
+  being given tool access.
+- `leads.email` stays NOT NULL. SQLite can't drop that without a full table rebuild,
+  and `leads` is referenced by lead_activities/tasks/proposals/invoices — not worth it
+  on live data with no transaction available on remote D1. Callers who give no email
+  get `voice+{call_id}@no-email.invalid` (RFC 2606, guaranteed undeliverable) and are
+  **skipped by the drip enrollment**, so nothing is ever mailed to a fake address.
+- Conditional forwarding, not porting. (980) 577-1231 stays with its carrier; forward
+  on busy/no-answer/after-hours. Rollback is turning forwarding off.
+
+**Next steps:**
+- [ ] **BLOCKED on Brian (needs the xAI account):** create the API key, register a
+      phone number, capture the webhook signing secret (xAI returns it exactly once).
+      Then: `wrangler secret put XAI_API_KEY` and `wrangler secret put XAI_WEBHOOK_SECRET`.
+- [ ] **The spike, before any more code:** answer one real call with a hardcoded config
+      and determine whether the control WebSocket must be held open for the call's
+      duration. If it can configure-and-disconnect, the Durable Object is unnecessary
+      and the webhook handler collapses to a plain Worker route. Do not build the DO first.
+- [ ] `/api/voice/incoming` — raw-body webhook + signature verify (Stripe handler at
+      worker/src/index.ts:229 is the pattern), session.update, `force_message` opener.
+- [ ] `/admin/calls` — 8-touchpoint /admin/seo pattern.
+- [ ] Upload voice-kb/ to an xAI collection; wire file_search.
+- [ ] Adversarial pass before forwarding goes live: ask for competitors, other clients
+      by name, the target list; attempt prompt injection. Must refuse all.
+- [ ] Update tasks/ai-phone-service-master-plan.md — stack and buyer both changed.
+
+**Gotchas:**
+- **wrangler's SQL splitter scans for transaction keywords inside SQL COMMENTS.** The
+  migration failed with "contains several transactions" purely because a comment said
+  not to use them. Reworded. Don't name those keywords in a .sql file at all.
+- `typeof(col)` in SQLite returns the *string* `'null'` for a real NULL, and wrangler's
+  local d1 output renders NULL as `"null"`. Both look like a bug and are not — confirm
+  with `col IS NULL` before chasing it.
+- The worker has **no tsconfig.json**; wrangler builds with esbuild, which does not
+  typecheck. To check the worker:
+  `cd worker && npx tsc --noEmit --skipLibCheck --target es2022 --lib es2022 --module esnext --moduleResolution bundler --strict node_modules/@cloudflare/workers-types/index.d.ts src/index.ts`
+  (the `--types` flag does not work — workers-types is not under node_modules/@types).
+  Clean as of this session.
+- `voice-kb/` is gitignored. It is a build artifact; the allowlist is the source of truth.
+
+## Session - July 24, 2026 (cont.) — merged main; the KB hazard is LIVE in D1
+
+Merging origin/main into feat/voice-agents surfaced one conflict:
+**docs/progress-dashboard.html was deleted on main by PR #8** ("retire static
+progress-dashboard.html — migrated to /admin/seo") while this branch had edited
+it. Accepted the deletion — the file is gone, nothing references it, and its
+items now live on the D1-backed /admin/seo "Program & Content" board.
+
+**But that migration carried the hazard forward verbatim.** Live row in remote
+`seo_actions`:
+
+  id 33 | program:grok-kb-separation | status: open
+  "SECURITY: the caller-facing agent must NEVER get charlotte-target-list.html,
+   docs/outscraper/* (scraped PII), the outreach playbook, or the security
+   review. It gets only services data, case studies, website-copy.md, the MSA."
+
+That last clause is wrong and it is now in the source of truth, not a retired
+HTML file. `website-copy.md` is dead CallSteady copy with a retracted Telnyx
+claim, placeholder testimonials, and a nonexistent money-back guarantee. Anyone
+following this row would poison the caller-facing agent.
+
+**Fix (needs running against remote D1 — not committed, this is data):**
+
+  cd worker && npx wrangler d1 execute ascend-db --remote --command \
+   "UPDATE seo_actions SET detail = 'SECURITY: the caller-facing agent must NEVER get charlotte-target-list.html, docs/outscraper/* (scraped PII), the outreach playbook, the reactivation emails, or the security review. It gets ONLY what scripts/build-voice-kb.mjs produces: services data, case studies, the MSA. NOT website-copy.md — that is dead CallSteady copy with a retracted Telnyx claim and a money-back guarantee that does not exist. Enforced in code: npm run voice:kb builds from an allowlist, npm run voice:test proves the denylist trips.', status = 'done', updated_at = datetime('now') WHERE dedupe_key = 'program:grok-kb-separation';"
+
+Row 40 (`program:grok-voice-agent`, "Build the Grok Voice Agent on (980)
+577-1231") stays open — correctly. The shared tool layer is done; the console
+work in docs/voice-agent-setup.md is not.
+
+**Also worth noting:** the seo-cron pseudo-site fix committed this session
+(skip seo_sites rows without a real gsc_property) is what stops the weekly cron
+erroring on this very "Program & Content" tab. The two changes fit together.

@@ -17,6 +17,7 @@ import resourceRoutes from "./routes/resources";
 import toolsRoutes from "./routes/tools";
 import activityRoutes from "./routes/activities";
 import seoRoutes from "./routes/seo";
+import mcpRoutes from "./routes/mcp";
 import { ingestGscMetrics } from "./lib/seo-cron";
 import {
   sendFormConfirmation,
@@ -344,6 +345,12 @@ app.route("/api/auth", authRoutes);
 // TOOLS ROUTES (public — cost calculator + future free tools)
 // ---------------------------------------------------------------------------
 app.route("/api/tools", toolsRoutes);
+
+// ---------------------------------------------------------------------------
+// MCP TOOL SERVER (bearer token required — called server-to-server by the
+// xAI voice agents, never by a browser)
+// ---------------------------------------------------------------------------
+app.route("/api/mcp", mcpRoutes);
 
 // ---------------------------------------------------------------------------
 // CLIENT PORTAL (client session required)
