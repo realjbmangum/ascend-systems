@@ -19,6 +19,28 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
+    slug: 'contract-review',
+    name: 'AI Contract Review',
+    tagline: 'Subcontract review from 2–3 hours to 15 minutes for a commercial masonry contractor.',
+    description:
+      'A regional commercial masonry contractor was losing 2–3 hours — or several hundred dollars in legal fees — reviewing every long-form subcontract before signing. We built an AI tool that reads the full agreement (up to ~300 pages), flags the risky clauses, and produces a lawyer-ready summary in about 15 minutes.',
+    status: 'live',
+    tags: ['Claude API', 'AI / LLM', 'Contract Analysis', 'Cloudflare Workers', 'React'],
+    metrics: [
+      { label: 'Review time', value: '2–3 hrs → ~15 min' },
+      { label: 'Contract length', value: 'up to ~300 pages' },
+      { label: 'Legal spend', value: 'scoped to flagged issues' },
+    ],
+    story: {
+      problem:
+        "In commercial construction the sub never writes the contract — the GC sends a take-it-or-leave-it agreement, often 100–300 pages with exhibits and flow-down clauses, on a tight deadline. Reviewing one properly meant 2–3 hours of a principal's time or several hundred dollars to an attorney, so contracts often got skimmed and signed unread.",
+      solution:
+        'An AI review tool that ingests the full PDF (exhibits included), analyzes the clauses that carry risk for a trade sub — payment timing, retainage, indemnification, insurance, termination, flow-down — and returns a plain-English summary plus a short, lawyer-ready list of the clauses worth a second look. It targets legal judgment instead of replacing it.',
+      result:
+        'Contract review dropped from 2–3 hours to about 15 minutes. Attorney time is now scoped to the flagged issues rather than the whole document, bids turn around faster, and every contract gets read in full the same way.',
+    },
+  },
+  {
     slug: 'clt-ev',
     name: 'CLT EV Analytics',
     tagline: 'EV charging analytics for the City of Charlotte.',

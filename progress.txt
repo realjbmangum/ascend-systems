@@ -533,3 +533,118 @@ https://github.com/realjbmangum/ascend-systems/pull/1
 - [ ] Charlotte page set — unblocked on phone, still needs a real local case
       study. The contract-review work may now qualify.
 - [ ] 62 hardcoded site origins in src/ — use Astro.site
+
+## Session - July 22, 2026 (cont.) — SEO admin dashboard, D1-backed (a team build)
+
+**What:** Built an SEO section in the admin CRM at /admin/seo, backed by 3 new
+D1 tables in ascend-db, so per-site SEO actions + metrics persist and compound
+for trends. Requested as: "manage all this on a seo page at admin.ascendsystems.ai...
+ensure all data is seeded into a d1 for future study on trends and forecasts."
+
+**Built by a 3-agent team** (I pinned the D1 schema + API contract first, kept
+integration + production apply + deploy for myself):
+- seo-backend → worker/src/routes/seo.ts + mount in worker/src/index.ts
+- seo-frontend → src/pages/admin/Seo.tsx + api.ts + App.tsx + AdminLayout.tsx
+- seo-ingest → scripts/seo-ingest.mjs
+
+**Schema (worker/db/migrations/2026-07-22-seo.sql):** seo_sites, seo_metrics
+(time-series, one row/site/run — the trend basis), seo_actions (checklist with
+stable dedupe_key so re-ingestion updates a finding but PRESERVES UI-set status).
+Additive, seo_-namespaced. Applied to remote ascend-db (verified CRM leads
+table untouched: still 5 rows).
+
+**Verified end-to-end against LOCAL D1 through the real Worker before prod:**
+401 unauthenticated, real data authenticated (3 sites / 3 metrics / 15 actions),
+mark-done round-trips with done_at. Then deployed to prod and re-verified live.
+
+**PRODUCTION STATE:**
+- Migration applied to remote ascend-db ✓
+- Worker deployed (ascend-api, version f56284d3; /api/seo live, 401 confirmed) ✓
+- Seed applied to remote (3 metrics + 15 actions; 0 /cdn-cgi/ leak) ✓
+- Frontend: in PR #4. The ascend-systems-admin Pages project is GIT-CONNECTED
+  to this repo → **merging PR #4 auto-deploys /admin/seo**. Backend already live.
+
+**First data run (2026-07-22):** RecordStops 6 actions (1 high), PottyDirectory
+8, Ascend 1. Real findings incl. RecordStops "record stores near me"
+cannibalization + HSTS-missing on recordstops.
+
+**Bugs caught during integration (verification earned its keep):**
+1. Ingest script emitted BEGIN TRANSACTION/COMMIT — local sqlite accepts it,
+   remote D1 REJECTS raw transaction statements. Blocked the prod seed. Fixed
+   the script (dropped the wrapper; upserts are idempotent) so future runs
+   apply to both local + remote with no stripping. Committed.
+2. Pre-existing (NOT mine): worker/src/routes/invoices.ts:198 typecheck error
+   (string|undefined). Flagged, left alone. Doesn't block deploy (esbuild
+   doesn't typecheck). Worth a separate fix.
+
+**KNOWN GAP — GSC totals:** seo_metrics.clicks/impressions/ctr/avg_position are
+NULL. `seo report --json` exposes movement (e.g. "gained 29 clicks") not clean
+period totals. Page counts + AI-readiness score ARE captured. Planned follow-up:
+parse `seo performance-audit` / `seo export diagnose` for real GSC totals so the
+trend chart has data. The extractor already probes candidate paths so a future
+payload backfills via the idempotent upsert.
+
+**How to re-run ingestion (builds trend history):**
+  node scripts/seo-ingest.mjs                    # generate + self-validate
+  cd worker && wrangler d1 execute ascend-db --remote --file=../scripts/out/seo-seed-<date>.sql
+
+**Relationship to docs/progress-dashboard.html:** that static doc tracks the
+BROADER program (48 items: Google SEO, AI search, content, design, ops). The new
+/admin/seo tracks the per-site CLI-derived SEO actions (the 15). Different scopes;
+both useful. Could converge later.
+
+**Next steps:**
+- [ ] Merge PR #4 → /admin/seo goes live
+- [ ] GSC-totals extraction (the trend chart's main gap)
+- [ ] Fix pre-existing invoices.ts:198 typecheck error (separate)
+- [ ] Re-run ingestion periodically to build trend history
+
+## Session - July 22, 2026 (cont.) — GSC totals extraction (the trend metric)
+
+**Done + live.** The seo_metrics snapshots were shipping null clicks/impressions
+(the main `seo report --json` exposes movement, not totals). Found the totals in
+`search-performance-overview`'s anomaly block: each metric row has baselineTotal
++ comparisonTotal over baselineStart..comparisonEnd; summing the halves = the
+full-window total (extractGscTotals in scripts/seo-ingest.mjs).
+
+- Ingestion now runs a 3rd CLI report/site (search-performance-overview) via a
+  non-throwing runSeoSafe (new site w/ no baseline → null totals, graceful).
+- Verified LIVE on remote ascend-db: RecordStops 52 clicks/3,613 impr (1.44%),
+  PottyDirectory 1,050/162,010 (0.65% — bot-heavy), Ascend null (too new).
+- avg_position still null (anomaly block = clicks+impressions only). Minor; the
+  trend chart plots clicks+impressions.
+- perf report excluded from raw_json (~90KB/run bloat avoided; totals are in cols).
+- PR #5 open (script-only; data already applied via idempotent upsert).
+
+**Next:** periodic re-run of `node scripts/seo-ingest.mjs` + remote apply builds
+the trend history (right now each site has 1 snapshot). Could schedule it.
+
+## Session - July 22, 2026 (cont.) — Cloudflare-native weekly GSC cron
+
+**Brian rejected local/GitHub-Actions scheduling: "we build all things with
+cloudflare."** So the SEO metrics ingestion is now native Cloudflare — a Worker
+cron calling the GSC API directly, no machine, no CLI.
+
+- The `seo` CLI CAN'T run in a Worker (V8 isolate). So the Worker authenticates
+  to Google via a SERVICE ACCOUNT (RS256 JWT signed with Web Crypto → token
+  exchange → dimensionless searchAnalytics query → exact clicks/impressions/ctr/
+  position). This is cleaner than the CLI — the API gives position too.
+- worker/src/lib/gsc.ts (GSC client), worker/src/lib/seo-cron.ts
+  (ingestGscMetrics, source='gsc-cron'), scheduled() Monday 04:xx UTC branch
+  (gated on GSC_SA_KEY → dormant until set), POST /api/seo/ingest-now (admin
+  manual trigger). types.ts GSC_SA_KEY. docs/seo-cron-setup.md.
+- **JWT/RS256 signing path smoke-tested with a throwaway RSA key — verifies.**
+  Typechecks clean. Deployed (dormant). /ingest-now live + guarded (401 unauth).
+- PR #6 open. Also PR #5 (local-CLI GSC totals) still open.
+
+**COEXISTENCE:** cron owns GSC perf metrics (source='gsc-cron'); local CLI still
+does crawl fields + actions on-demand (source='seo-cli'). No collision.
+Follow-up: the trend chart should prefer source='gsc-cron' once the cron runs
+(small API/frontend refinement — currently plots all sources).
+
+**BLOCKED on Brian (only he can — Google account):** create a Google service
+account, enable Search Console API, grant the SA email read access on all 3 GSC
+properties, then `wrangler secret put GSC_SA_KEY` (paste the JSON). Steps in
+docs/seo-cron-setup.md. Then I trigger /ingest-now to verify real data flows.
+
+**Open PRs:** #5 (local GSC totals), #6 (native cron).

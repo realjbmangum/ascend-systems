@@ -49,3 +49,7 @@ Ascend V2/
 worker/.wrangler/
 # Generated SEO seed SQL (data lives in D1)
 scripts/out/
+
+# --- keep sensitive docs out of git (real data lives in D1/R2) — added 2026-07-23 ---
+seo-export/
+

@@ -47,6 +47,10 @@ export async function ingestGscMetrics(env: Bindings, capturedOn?: string): Prom
 
   const out: SeoCronResult["sites"] = [];
   for (const site of sites) {
+    // Skip pseudo-sites with no real GSC property (e.g. the "program" tab that
+    // holds cross-cutting content/ops actions, not a crawlable domain).
+    const prop = site.gsc_property || "";
+    if (!prop.startsWith("sc-domain:") && !prop.startsWith("http")) continue;
     try {
       const totals = await client.totals(site.gsc_property, win.startDate, win.endDate);
       // Upsert this run's snapshot. Only the GSC fields are set here; crawl
