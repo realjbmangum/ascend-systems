@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
 import { requireAuth } from "../middleware";
 import { ingestGscMetrics } from "../lib/seo-cron";
+import { buildStateDemand } from "../lib/seo-demand";
 
 // Self-contained sub-router for the /admin/seo section. Mounted at /api/seo.
 // Reads seo_sites / seo_metrics / seo_actions (see db/migrations/2026-07-22-seo.sql).
@@ -280,6 +281,17 @@ seo.delete("/actions/:id", async (c) => {
 seo.post("/ingest-now", async (c) => {
   const result = await ingestGscMetrics(c.env);
   return c.json(result, result.ok ? 200 : 400);
+});
+
+// Per-state SEARCH-DEMAND snapshot for pottydirectory.com/demand.
+// Pulls GSC per-page data (impressions on each /{state}/ page) and rolls it up
+// per state. Admin-guarded. Refresh quarterly, save the `byState` block to
+// pottydirectory's src/data/demand-by-state.json, and rebuild that site.
+seo.get("/demand-snapshot", async (c) => {
+  const property = c.req.query("property") || "sc-domain:pottydirectory.com";
+  const days = Number(c.req.query("days")) || 90;
+  const snapshot = await buildStateDemand(c.env, property, days);
+  return c.json(snapshot, snapshot.ok ? 200 : 400);
 });
 
 export default seo;
