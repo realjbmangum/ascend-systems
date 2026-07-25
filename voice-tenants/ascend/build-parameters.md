@@ -158,8 +158,19 @@ The tools query `customers` and `work_orders` and neither knows the difference.
 fixed, the noun differs, and a view reconciles them. Ascend calls a job a
 *project*; Imperial calls it a *work order*; the tool does not care.
 
-**Still needs doing either way:** populate `clients.phone`. Recognition is
-worthless without it.
+✅ **Phones populated 25 Jul and recognition verified** across every caller-ID
+format — `+18433406755`, `8433406755`, `843-340-6755`, `(843) 340-6755` all
+resolve. A stranger correctly gets the retry guidance rather than "you have no
+account".
+
+```
+Suite Manager LLC   843-340-6755   ask for Chris Rutherford
+City of Charlotte   704-807-7489   ask for Pete Doane
+```
+
+The junk `MYSELF!` row was removed — its remaining project (Potty Directory)
+moved to Lighthouse 27 LLC (Internal) first, since a foreign key correctly
+refused to orphan it.
 
 ## 7 · Agents
 
@@ -233,8 +244,7 @@ file," which needs no separate persona.
 
 ## Open before build
 
-- [ ] Populate `clients.phone` — 4 rows, all currently empty. Recognition does
-      not work without it.
+- [x] ~~Populate `clients.phone`~~ — done for both real clients, verified
 - [x] ~~Confirm the emergency transfer window~~ — **24/7 confirmed.** Outages do
       not keep office hours.
 - [x] ~~Create the `customers` / `work_orders` views in `ascend-db`~~ — done, verified
