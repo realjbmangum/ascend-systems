@@ -158,7 +158,7 @@ function speakTime(instant: Date): string {
 const createLead: ToolDef = {
   name: "create_lead",
   description:
-    "Silently record the caller. Call this as soon as you know their name — do not announce it, do not ask permission, and do not ask for any field the caller has not already said. Fill in only what you heard; leave the rest out.",
+    "Create a lead. Record a new caller, new customer, new enquiry, or contact — capture and save their details: name, phone, email, company, and what they want. Use for any caller who is not already an existing account. Call it as soon as you know their name, without announcing it and without asking for fields they have not already said.",
   scopes: TENANT,
   inputSchema: {
     // Every field here is something a caller says out loud in ordinary
@@ -266,7 +266,7 @@ const createLead: ToolDef = {
 const logCallActivity: ToolDef = {
   name: "log_call_activity",
   description:
-    "Silently log what happened on this call. Use the lead_id that create_lead returned to you — never ask the caller for it. Do not announce that you are logging.",
+    "Log a call. Record call notes, a call summary, call history, or activity against a lead or customer. Use the lead_id that create_lead returned — never ask the caller for it, and do not announce that you are logging.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
@@ -297,7 +297,7 @@ const logCallActivity: ToolDef = {
 const checkAvailability: ToolDef = {
   name: "check_availability",
   description:
-    "Open appointment slots on a date. Work out the date yourself from what the caller said (\"Monday\", \"next week\") — never ask them for a formatted date. Offer two or three of the slots, never the whole list.",
+    "Check availability. Find open appointment slots, free times, schedule openings, or when a technician can come out on a given date. Work the date out yourself from what the caller said (\"Monday\", \"next week\") — never ask them for a formatted date. Offer two or three slots, never the whole list.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
@@ -399,7 +399,7 @@ const checkAvailability: ToolDef = {
 const bookMeeting: ToolDef = {
   name: "book_meeting",
   description:
-    "Book the visit. Creates the job on the schedule and logs it against the caller. Only use a start time that check_availability returned, and only after the caller has agreed to it out loud. Tell them the day and time back in plain words.",
+    "Book an appointment. Schedule a visit, site survey, service call, or job on the calendar and create the work order. Only use a start time that check_availability returned, and only after the caller has agreed out loud. Tell them the day and time back in plain words.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
@@ -498,7 +498,7 @@ const bookMeeting: ToolDef = {
 const lookupCustomer: ToolDef = {
   name: "lookup_customer",
   description:
-    "Find an existing customer account by phone number, name, or site. Call this EARLY — ideally on the caller's phone number before they say anything — so you know who you are speaking to, which site they are at, and what service plan they hold.",
+    "Look up a customer. Find an existing customer, account, client, site, or service plan by phone number, name, or location. Search the customer list to identify who is calling. Call this EARLY — ideally on the caller's phone number — so you know who you are speaking to, which site they are at, and what plan they hold.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
@@ -556,7 +556,7 @@ const lookupCustomer: ToolDef = {
 const getWorkOrders: ToolDef = {
   name: "get_work_orders",
   description:
-    "Look up jobs for a customer, or one job by its reference (e.g. WO-4471). Use this whenever a caller asks about an existing job, a visit, a technician, or when someone is coming.",
+    "Get work orders. Look up jobs, service calls, appointments, scheduled visits, technician assignments, or job status for a customer — or one job by its reference (e.g. WO-4471). Use whenever a caller asks about an existing job, a visit, a technician, or when someone is coming.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
