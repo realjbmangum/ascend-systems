@@ -4,9 +4,9 @@ Tenant **`ascend`**. First named tenant, and the model every later client is
 copied from.
 
 Produced by running `skills/development/ascend-voice-onboarding.md` against what
-the repo already knows. **Everything marked 🟡 is my assumption — correct it
-rather than compose from scratch.** Everything marked 🔴 is a genuine gap I
-cannot infer and need an answer on.
+the repo already knows, then answered by Brian on 25 Jul. **All seven open
+questions are now closed** — see the bottom. Remaining 🟡 are minor assumptions
+nobody has objected to.
 
 ---
 
@@ -36,8 +36,9 @@ LocalBusiness schema — so it rings and there is nothing behind it.
 - Nobody answers → caller hits voicemail or hangs up
 - Highest-value miss: **an inbound referral.** Someone sent by a past client, who
   will not fill in a form and will not call twice.
-- 🔴 **How many calls a week does the number actually get today?** If it is two,
-  this is about not losing referrals. If it is twenty, it is a different build.
+- ✅ **About 10 calls a week.** Enough that this is not only about referrals —
+  roughly 40 calls a month currently going unanswered or to voicemail.
+  At ~3 minutes each that is ~120 minutes, about **$7 a month** in xAI cost.
 
 **The one call to demo:** a referral rings, describes a manual process eating
 their week, and leaves enough for Brian to call back prepared.
@@ -67,17 +68,16 @@ retainers monthly and month-to-month.
 | Timezone | America/New_York |
 | Out of hours 🟡 | Capture and promise a callback next business morning |
 
-🔴 **What counts as an emergency for a consultancy?**
+✅ **There IS an escalation path.** An existing client reporting production down
+transfers live to **704-425-3582**.
 
-My read: **nothing does.** A software consultancy has no burst pipe. An existing
-client with production down is the closest thing, and even that is an email or a
-text, not a switchboard transfer.
+Everything else — new enquiries, pricing questions, "can someone call me back" —
+is captured and promised a callback. The agent must be strict about the
+difference: "our system is down" transfers; "I want to talk about a project"
+does not, at any hour.
 
-Proposal — no emergency path at all. The agent captures, promises a callback,
-and never transfers. Simpler, and honest.
-
-🔴 **Unless:** should an existing client saying "our system is down" reach you
-live? If yes, on what number, and at what hours?
+🟡 Assumed 24/7 for the transfer, since production being down does not observe
+office hours. Say if it should be business hours only.
 
 ## 5 · Hard limits
 
@@ -97,16 +97,9 @@ The agent must never:
   kind of claim; the KB firewall now blocks the file it came from.
 - **Compare Ascend to a competitor.**
 
-🔴 **Does the receptionist qualify, or just capture?** Two options:
-
-- **Capture only** — name, number, what they want, book a call. Warmer, shorter,
-  more calls captured.
-- **Qualify lightly** — also ask budget band and timeline, matching the contact
-  form's `$5k–15k / $15k–50k / $50k+`.
-
-My instinct is **capture only.** An owner who rang once will not enjoy being
-screened by a robot, and you can qualify on the callback. But the form already
-asks, so it is a real choice.
+✅ **Capture only.** Name, number, what they want, book a call. The agent does
+NOT ask for budget or timeline — that is qualification, and an owner who rang
+once will not enjoy being screened by a robot. Qualify on the callback.
 
 ## 6 · Systems
 
@@ -116,12 +109,48 @@ asks, so it is a real choice.
 | Calendar (business) | Microsoft 365 via Graph — `book_meeting` already writes to it |
 | Calendar (personal) | Google, on the existing assistant's connectors |
 | CRM | `/admin` — leads, clients, projects, invoices. Live. |
-| Existing client list | 🟡 in `clients`, but **not** in a `customers` table, so `lookup_customer` will not find anyone until that is decided |
+| Existing client list | `clients` table, 4 rows — see the schema gap below |
 | Number control | Brian. Conditional forwarding only — never ported. |
 
-🔴 **Which calendar should the assistant book into?** M365 is the business one
-and already wired. Google is where your actual day lives. Splitting them means
-the agent guesses.
+✅ **Microsoft 365 is primary** — the Ascend tenant's calendar and email both
+live there, and `book_meeting` already writes to it. Google stays connected to
+the assistant for personal context but is not where client meetings land.
+
+---
+
+### 🔴 SCHEMA GAP — found while confirming answer 5
+
+`ascend-db` has **`clients`** and **`projects`**. It has **no `customers` table
+and no `work_orders`** — those exist only in the tenant schema. So
+`lookup_customer` and `get_work_orders` would both fail against Ascend today.
+
+Worse: the four client rows have **empty phone numbers**, so phone recognition
+has nothing to match on even once the tables resolve.
+
+**Proposed fix — views, not new tables.** No code change, no duplicated data:
+
+```sql
+CREATE VIEW customers AS
+  SELECT id, company_name AS name, phone, contact_name,
+         'CL-' || id AS account_ref, NULL AS site_name, NULL AS address,
+         NULL AS service_plan, 0 AS balance_cents, notes
+    FROM clients;
+
+CREATE VIEW work_orders AS
+  SELECT id, client_id AS customer_id, 'PRJ-' || id AS reference,
+         name AS summary, status, 'normal' AS priority, NULL AS technician,
+         started_at AS scheduled_for, completed_at, notes
+    FROM projects;
+```
+
+The tools query `customers` and `work_orders` and neither knows the difference.
+
+**This validates the platform thesis rather than breaking it:** the shape is
+fixed, the noun differs, and a view reconciles them. Ascend calls a job a
+*project*; Imperial calls it a *work order*; the tool does not care.
+
+**Still needs doing either way:** populate `clients.phone`. Recognition is
+worthless without it.
 
 ## 7 · Agents
 
@@ -131,12 +160,15 @@ file," which needs no separate persona.
 ### `ascend` — receptionist
 - **Channel:** (980) 577-1231, forwarded on busy / no-answer / after-hours, **and**
   the homepage chat widget — same agent, typed instead of spoken
-- **Voice 🟡:** `eve`, speed 1.0. Warm and quick. Not Vader.
+- **Voice:** ✅ **Carina**, speed 1.0.
 - **Tools:** `create_lead` · `check_availability` · `book_meeting` · `log_call_activity`
 - **Knowledge base:** ✅ **already built** — `npm run voice:kb`, 14 documents from
   services, case studies and the MSA, with the firewall keeping the target list
   and the retracted CallSteady copy out
-- **Sees:** nothing about existing clients, the pipeline, or money
+- **Sees:** existing clients by name and phone (via the `customers` view) so a
+  returning client is greeted properly — but **nothing** about the pipeline,
+  other leads, invoices or money
+- **Transfers:** production-down only, to 704-425-3582
 
 ### `ascend-assistant` — Brian's own
 - **Channel:** you call in, or talk to it from the app
@@ -167,18 +199,31 @@ file," which needs no separate persona.
 2. `email_account_update` — the tool that emails the address **on file**, never
    one a caller supplies. The security property: an impersonator triggers a
    message to the real client.
-3. The homepage chat widget — same agent, text channel, plus rate limiting,
-   a per-conversation cap and a daily spend ceiling. It is a public endpoint
-   that costs money per message.
-4. Console setup for two agents
+3. ✅ **The homepage chat widget — in scope now.** Same agent, text channel.
+   Needs rate limiting per IP, a per-conversation message cap, a daily spend
+   ceiling that disables rather than silently draining credits, and probably
+   Turnstile before the first message. It is a public endpoint that costs money
+   per message.
+4. The `customers` / `work_orders` views over `clients` / `projects`
+5. Console setup for two agents
 
-## The seven answers I need
+---
 
-1. Calls a week on (980) 577-1231 today?
-2. Emergency path — none, or does a client with production down reach you live?
-3. Receptionist: capture only, or qualify lightly?
-4. Assistant: M365 or Google?
-5. Populate `customers` from `clients` so the agent recognises existing clients,
-   or leave the receptionist blind to them?
-6. Receptionist voice — `eve`, or something else?
-7. Chat widget now, or after the phone side is proven?
+## Answers — closed 25 Jul
+
+| # | Question | Answer |
+|---|---|---|
+| 1 | Calls a week today? | **~10** (~40/month, ~$7/mo in xAI cost) |
+| 2 | Emergency path? | **Yes** — production down transfers to **704-425-3582** |
+| 3 | Qualify or capture? | **Capture only** |
+| 4 | Which calendar? | **M365** primary; Google stays for personal context |
+| 5 | Recognise existing clients? | **Yes** — via views over `clients` |
+| 6 | Receptionist voice | **Carina** |
+| 7 | Chat widget | **Now** |
+
+## Open before build
+
+- [ ] Populate `clients.phone` — 4 rows, all currently empty. Recognition does
+      not work without it.
+- [ ] Confirm the emergency transfer is 24/7 rather than business hours
+- [ ] Create the `customers` / `work_orders` views in `ascend-db`
