@@ -17,10 +17,13 @@ export default defineConfig({
     react(),
     sitemap({
       // Don't include admin/portal/proposal pages — these are private apps.
+      // /demo/* is a sales prop with deliberately fictional content and carries
+      // noindex; listing it in the sitemap would contradict that.
       filter: (page) =>
         !page.includes('/admin') &&
         !page.includes('/portal') &&
-        !page.includes('/proposals'),
+        !page.includes('/proposals') &&
+        !page.includes('/demo'),
     }),
   ],
 

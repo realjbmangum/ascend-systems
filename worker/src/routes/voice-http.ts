@@ -129,4 +129,66 @@ voiceHttp.post("/t/:token/:tool", async (c) => {
   }
 });
 
+/**
+ * PUBLIC read-only demo feed — no token, no auth.
+ *
+ * Safe to expose because it is hardcoded to the DEMO tenant binding and can
+ * never reach a real client's database, whatever anyone puts in the URL. Every
+ * name in it is a fictional character; nothing here belongs to a person.
+ *
+ * Exists so a prospect can watch rows appear on a screen while Brian calls the
+ * number in front of them. That moment — hearing the call, then seeing what it
+ * wrote — is the entire pitch, and it cannot happen behind a login.
+ */
+voiceHttp.get("/demo", async (c) => {
+  const db = (c.env as unknown as Record<string, unknown>).DB_C00 as D1Database | undefined;
+  if (!db || typeof db.prepare !== "function") {
+    return c.json({ error: "demo tenant unavailable" }, 503);
+  }
+
+  const [leads, customers, workOrders, activities] = await Promise.all([
+    db
+      .prepare(
+        `SELECT id, name, phone, company, message, status, created_at
+           FROM leads ORDER BY id DESC LIMIT 12`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT id, name, phone, account_ref, site_name, service_plan
+           FROM customers ORDER BY id LIMIT 12`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT w.reference, w.summary, w.status, w.priority, w.technician,
+                w.scheduled_for, c.name AS customer
+           FROM work_orders w LEFT JOIN customers c ON c.id = w.customer_id
+          ORDER BY w.id DESC LIMIT 12`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT a.id, a.type, a.subject, a.duration_minutes, a.due_at, a.created_at,
+                l.name AS lead
+           FROM lead_activities a LEFT JOIN leads l ON l.id = a.lead_id
+          ORDER BY a.id DESC LIMIT 12`
+      )
+      .all(),
+  ]);
+
+  return c.json(
+    {
+      tenant: "Imperial Climate Control",
+      note: "Demonstration data. Every name is fictional and no service is dispatched.",
+      leads: leads.results,
+      customers: customers.results,
+      work_orders: workOrders.results,
+      activities: activities.results,
+    },
+    200,
+    { "Cache-Control": "no-store" }
+  );
+});
+
 export default voiceHttp;
