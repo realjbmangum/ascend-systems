@@ -19,6 +19,7 @@
 // =============================================================================
 
 import { randomBytes, createHash } from "node:crypto";
+import { createInterface } from "node:readline";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,12 +41,13 @@ const code = flagValue("--code");
 const department = flagValue("--department");
 const toolsCsv = flagValue("--tools");
 const FLAGS = ["--code", "--department", "--tools"];
+// --paste takes no value, so it must not consume the next argument.
 const skip = new Set();
 FLAGS.forEach((f) => {
   const i = argv.indexOf(f);
   if (i !== -1) { skip.add(i); skip.add(i + 1); }
 });
-const positional = argv.filter((_, i) => !skip.has(i));
+const positional = argv.filter((a, i) => !skip.has(i) && a !== "--paste");
 const scope = positional[0];
 const label = positional[1];
 
@@ -56,6 +58,7 @@ function usage(msg) {
       `  node scripts/voice-agent-token.mjs receptionist "Ascend Receptionist"\n` +
       `  node scripts/voice-agent-token.mjs assistant    "Ascend Personal Assistant"\n` +
       `  node scripts/voice-agent-token.mjs client       "Ascend Systems" --code ascend\n` +
+      `  node scripts/voice-agent-token.mjs client       "Ascend Systems" --code ascend --paste\n` +
       `  node scripts/voice-agent-token.mjs client       "Imperial Climate Control" --code c00 --department sales\n\n` +
       Object.entries(VALID_SCOPES)
         .map(([k, d]) => `  ${k.padEnd(14)} ${d}`)
@@ -92,9 +95,41 @@ const agentKey =
 const dbBinding =
   scope !== "client" || SELF_HOSTED.has(code) ? "DB" : `DB_${code.toUpperCase()}`;
 
-// 32 bytes of CSPRNG, base64url. Prefixed so it is recognisable in a console
-// field and greppable if it ever leaks.
-const token = `ascend_voice_${randomBytes(32).toString("base64url")}`;
+/**
+ * Where the token comes from.
+ *
+ * --paste  : you supply it, generated in your password manager. Read from stdin,
+ *            never from a command-line argument, so it stays out of shell
+ *            history and out of any process listing. This is the better habit —
+ *            the token lives in Bitwarden as the source of truth and this script
+ *            only ever learns its hash.
+ * default  : generated here, printed once, never stored. Fine, but if you lose
+ *            the terminal you lose the token and have to re-mint.
+ */
+const PASTE = argv.includes("--paste");
+
+async function readSecret(prompt) {
+  process.stdout.write(prompt);
+  const rl = createInterface({ input: process.stdin, terminal: false });
+  for await (const line of rl) {
+    rl.close();
+    return line.trim();
+  }
+  return "";
+}
+
+let token;
+if (PASTE) {
+  token = await readSecret("Paste the token (from your password manager): ");
+  if (token.length < 24) {
+    console.error("\nThat is too short to be a good token. Generate at least 24 characters.\n");
+    process.exit(1);
+  }
+} else {
+  // 32 bytes of CSPRNG, base64url. Prefixed so it is recognisable in a console
+  // field and greppable if it ever leaks.
+  token = `ascend_voice_${randomBytes(32).toString("base64url")}`;
+}
 const hash = createHash("sha256").update(token).digest("hex");
 
 // Caller-facing lines get a spend ceiling; the assistant is Brian talking to
@@ -139,11 +174,14 @@ function register(target) {
 }
 
 console.log(`
-┌─ TOKEN (shown once — copy it now) ────────────────────────────────────────────
+${PASTE
+  ? "┌─ TOKEN — the one you pasted. It is in your password manager already. ─────────┘"
+  : `┌─ TOKEN (shown once — SAVE IT TO YOUR PASSWORD MANAGER NOW) ───────────────────
 
   ${token}
 
 └───────────────────────────────────────────────────────────────────────────────
+  Next time use --paste to supply your own instead, so it is never only here.`}
 
   agent      ${agentKey}
   scope      ${scope}
