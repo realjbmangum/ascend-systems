@@ -158,29 +158,23 @@ function speakTime(instant: Date): string {
 const createLead: ToolDef = {
   name: "create_lead",
   description:
-    "Record a new inbound lead captured on a phone call. Call this once you have at least the caller's name. Everything else is optional — never hold the caller on the line to fill in fields. Returns the lead id.",
+    "Silently record the caller. Call this as soon as you know their name — do not announce it, do not ask permission, and do not ask for any field the caller has not already said. Fill in only what you heard; leave the rest out.",
   scopes: TENANT,
   inputSchema: {
+    // Every field here is something a caller says out loud in ordinary
+    // conversation. Nothing internal (call ids, slugs, budget bands) is exposed,
+    // because a voice model with an unfillable field in its schema will ask the
+    // caller to fill it — which is how "what is your call ID?" reaches a human.
     type: "object",
     properties: {
-      name: { type: "string", description: "Caller's full name." },
-      phone: { type: "string", description: "Caller's phone number in E.164 if known." },
-      email: { type: "string", description: "Caller's email, only if they offer it." },
-      company: { type: "string", description: "Company or organisation name." },
-      project_type: {
-        type: "string",
-        description:
-          "Short slug for what the caller wants, in this business's own vocabulary — e.g. emergency-service, install-quote, maintenance-contract.",
-      },
-      budget_range: {
-        type: "string",
-        description: "Budget band, only if the caller volunteers one. Never push for it.",
-      },
+      name: { type: "string", description: "Caller's name as they said it." },
+      phone: { type: "string", description: "Their number, only if they said it." },
+      email: { type: "string", description: "Their email, only if they said it." },
+      company: { type: "string", description: "Their company, only if they said it." },
       message: {
         type: "string",
-        description: "What the caller actually asked for, in their own words where possible.",
+        description: "What they want, in your own words. One or two sentences.",
       },
-      call_id: { type: "string", description: "The xAI call_id for this call." },
     },
     required: ["name"],
   },
@@ -188,8 +182,11 @@ const createLead: ToolDef = {
     const name = String(args.name).trim();
     if (!name) throw new Error("name is required");
 
+    // The model can no longer supply a call id — it never knew one. Generate a
+    // correlation id here so the row is still traceable.
+    const callRef = `${ctx.agent.key}-${Date.now().toString(36)}`;
     const realEmail = isRealEmail(args.email) ? String(args.email).toLowerCase() : null;
-    const email = realEmail ?? sentinelEmail(args.call_id);
+    const email = realEmail ?? sentinelEmail(callRef);
 
     const result = await ctx.db.prepare(
       `INSERT INTO leads (name, email, phone, company, project_type, budget_range, message,
@@ -201,11 +198,11 @@ const createLead: ToolDef = {
         email,
         args.phone ?? null,
         args.company ?? null,
-        args.project_type ?? null,
-        args.budget_range ?? null,
+        null,
+        null,
         args.message ?? null,
         ctx.agent.key === "receptionist" ? "phone-980" : `voice-${ctx.agent.key}`,
-        args.call_id ?? null
+        callRef
       )
       .run();
     const leadId = result.meta.last_row_id as number;
@@ -219,9 +216,7 @@ const createLead: ToolDef = {
       metadata: {
         email: realEmail ?? undefined,
         phone: args.phone,
-        project_type: args.project_type,
-        budget_range: args.budget_range,
-        call_id: args.call_id,
+        call_ref: callRef,
         captured_by: ctx.agent.key,
       },
     });
@@ -236,13 +231,11 @@ const createLead: ToolDef = {
 
     // voice_calls is a PLATFORM table and always lives in ascend-db, so Ascend
     // keeps one operational view across every tenant.
-    if (args.call_id) {
-      await ctx.env.DB.prepare(
-        `UPDATE voice_calls SET lead_id = ?, updated_at = datetime('now') WHERE call_id = ?`
-      )
-        .bind(leadId, args.call_id)
-        .run();
-    }
+    await ctx.env.DB.prepare(
+      `UPDATE voice_calls SET lead_id = ?, updated_at = datetime('now') WHERE call_id = ?`
+    )
+      .bind(leadId, callRef)
+      .run();
 
     if (ctx.env.SENDGRID_API_KEY) {
       ctx.waitUntil(
@@ -253,8 +246,6 @@ const createLead: ToolDef = {
             email: realEmail ?? "(not given on the call)",
             phone: args.phone,
             company: args.company,
-            project_type: args.project_type,
-            budget_range: args.budget_range,
             message: args.message,
             captured_by: `voice agent: ${ctx.agent.label}`,
           },
@@ -275,13 +266,13 @@ const createLead: ToolDef = {
 const logCallActivity: ToolDef = {
   name: "log_call_activity",
   description:
-    "Log a summary of the call against an existing lead. Use at the end of a call, after create_lead.",
+    "Silently log what happened on this call. Use the lead_id that create_lead returned to you — never ask the caller for it. Do not announce that you are logging.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
-      lead_id: { type: "number", description: "The lead id returned by create_lead." },
-      subject: { type: "string", description: "One-line summary of the call." },
+      lead_id: { type: "number", description: "From create_lead's response. Never ask the caller for this." },
+      subject: { type: "string", description: "One-line summary, in your own words." },
       notes: { type: "string", description: "What was discussed and what was promised." },
       duration_minutes: { type: "number", description: "Call length in minutes." },
     },
@@ -306,12 +297,12 @@ const logCallActivity: ToolDef = {
 const checkAvailability: ToolDef = {
   name: "check_availability",
   description:
-    "List open meeting slots on a given date, in Eastern time. Use before offering a caller a time. Returns at most 6 slots; offer two or three, never the whole list.",
+    "Open appointment slots on a date. Work out the date yourself from what the caller said (\"Monday\", \"next week\") — never ask them for a formatted date. Offer two or three of the slots, never the whole list.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
-      date: { type: "string", description: "Date to check, as YYYY-MM-DD." },
+      date: { type: "string", description: "The date you worked out, as YYYY-MM-DD." },
       duration_minutes: {
         type: "number",
         description: "Meeting length. Defaults to 30.",
@@ -377,8 +368,8 @@ const bookMeeting: ToolDef = {
   inputSchema: {
     type: "object",
     properties: {
-      lead_id: { type: "number", description: "The lead id returned by create_lead." },
-      start: { type: "string", description: "Slot start as a full ISO-8601 UTC instant." },
+      lead_id: { type: "number", description: "From create_lead's response. Never ask the caller for this." },
+      start: { type: "string", description: "A slot start returned by check_availability. Never ask the caller for an ISO timestamp." },
       duration_minutes: { type: "number", description: "Defaults to 30." },
       subject: { type: "string", description: "What the meeting is about." },
       notes: { type: "string", description: "Context for the meeting." },
