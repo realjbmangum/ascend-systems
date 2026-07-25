@@ -8,6 +8,7 @@
     "db:init": "wrangler d1 execute ascend-db --local --file=./db/schema.sql"
   },
   "dependencies": {
+    "@cloudflare/workers-oauth-provider": "^0.8.2",
     "hono": "^4.4.0"
   },
   "devDependencies": {

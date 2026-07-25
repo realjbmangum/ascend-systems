@@ -30,6 +30,14 @@ database_id = "84d40efa-0edc-4762-b8be-74a596f3812c"
 [triggers]
 crons = ["*/15 * * * *"]
 
+# OAuth 2.1 token/grant/client store for the MCP server at /mcp.
+# Required by @cloudflare/workers-oauth-provider — it keeps access tokens,
+# refresh tokens, authorization codes and dynamically-registered clients here,
+# all hashed rather than in plaintext.
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "beb7c1f3ca04425c8847fdaf06d52dff"
+
 [[r2_buckets]]
 binding = "FILES_BUCKET"
 bucket_name = "ascend-files"

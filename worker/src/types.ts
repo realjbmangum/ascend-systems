@@ -1,6 +1,13 @@
 export type Bindings = {
   DB: D1Database;
   FILES_BUCKET: R2Bucket;
+  /**
+   * OAuth 2.1 store for the MCP server at /mcp. Managed entirely by
+   * @cloudflare/workers-oauth-provider — we never read or write it directly.
+   */
+  OAUTH_KV: KVNamespace;
+  /** Injected by the OAuth provider so handlers can call its helper API. */
+  OAUTH_PROVIDER?: any;
   SENDGRID_API_KEY?: string;
   /** Public marketing site origin — used for footer links, contact-page CTAs, etc. */
   APP_ORIGIN?: string;
