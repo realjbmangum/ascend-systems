@@ -5,9 +5,17 @@
 // for. So the consent screen is an agent picker, and the choice rides along on
 // the grant as `props`. One MCP URL serves every tenant and every department.
 //
-// Access control: only ADMIN_EMAILS may approve, proven by the existing
-// ascend_session cookie. An unauthenticated visitor is sent to the admin login
-// rather than shown a list of client names.
+// ACCESS CONTROL — why a password and not the admin session.
+//   The Worker lives on workers.dev while the admin app lives on
+//   ascendsystems.ai, so the ascend_session cookie can never reach this origin;
+//   it is a different registrable domain. Redirecting to the admin app to log in
+//   also lands inside the Cloudflare Zero Trust policy on that hostname, which
+//   pops its own login and still leaves us without a usable cookie.
+//
+//   So the consent screen carries its own password, held as a Worker secret.
+//   This is a rare, deliberate, human action — approving a new MCP connection —
+//   and a single shared secret is the right weight for it. Compared in constant
+//   time so the endpoint cannot be used as an oracle.
 
 import type { Bindings } from "../types";
 
@@ -24,18 +32,12 @@ function esc(s: string): string {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 }
 
-/** Is the browser carrying a valid ADMIN session? */
-async function currentAdmin(request: Request, env: Bindings): Promise<string | null> {
-  const cookie = request.headers.get("Cookie") ?? "";
-  const match = /ascend_session=([^;]+)/.exec(cookie);
-  if (!match) return null;
-  const row = await env.DB.prepare(
-    `SELECT email, role FROM sessions WHERE session_token = ? AND expires_at > datetime('now')`
-  )
-    .bind(match[1])
-    .first<{ email: string; role: string }>();
-  if (!row || row.role !== "admin") return null;
-  return row.email;
+/** Constant-time string compare — no early exit on the first wrong byte. */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
 }
 
 const PAGE_CSS = `
@@ -86,13 +88,13 @@ function shell(title: string, inner: string): Response {
 
 /** GET /authorize — show the picker. */
 export async function renderConsent(request: Request, env: Bindings): Promise<Response> {
-  const admin = await currentAdmin(request, env);
-  if (!admin) {
-    // Don't leak client names to an anonymous visitor.
-    const back = encodeURIComponent(new URL(request.url).pathname + new URL(request.url).search);
-    return Response.redirect(
-      `${env.ADMIN_ORIGIN ?? "https://admin.ascendsystems.ai"}/admin/login?next=${back}`,
-      302
+  if (!env.MCP_CONSENT_PASSWORD) {
+    return shell(
+      "Not configured",
+      `<div class="head"><p class="kicker">Ascend Systems · MCP</p>
+        <h1>Consent password not set</h1>
+        <p class="sub">Run <code>wrangler secret put MCP_CONSENT_PASSWORD</code> in worker/,
+        then try connecting again.</p></div>`
     );
   }
 
@@ -127,8 +129,8 @@ export async function renderConsent(request: Request, env: Bindings): Promise<Re
     `<div class="head">
        <p class="kicker">Ascend Systems · MCP</p>
        <h1>${esc(clientName)} wants to connect</h1>
-       <p class="sub">Signed in as ${esc(admin)}. Choose which agent this connection is for —
-          it decides which client's data and which tools it can reach.</p>
+       <p class="sub">Choose which agent this connection is for — it decides which client's
+          data and which tools it can reach.</p>
      </div>
      <form method="POST">
        <input type="hidden" name="state" value="${esc(btoa(JSON.stringify(info)))}">
@@ -136,11 +138,18 @@ export async function renderConsent(request: Request, env: Bindings): Promise<Re
          <legend>Grant access as</legend>
          ${options || "<p>No active agents. Mint one first.</p>"}
        </fieldset>
+       <fieldset style="margin-top:16px">
+         <legend>Confirm it is you</legend>
+         <input type="password" name="password" required autocomplete="current-password"
+                placeholder="Consent password"
+                style="width:100%;padding:11px 13px;border:1px solid #B4ACA2;border-radius:6px;
+                       font:inherit;background:transparent;color:inherit">
+       </fieldset>
        <div class="warn">This grant lasts until you revoke it. Approve only a client you
          recognise — the connection will be able to read and write that agent's data.</div>
        <div class="btns">
          <button type="submit" name="decision" value="approve" class="go">Approve</button>
-         <button type="submit" name="decision" value="deny" class="no">Cancel</button>
+         <button type="submit" name="decision" value="deny" class="no" formnovalidate>Cancel</button>
        </div>
      </form>`
   );
@@ -148,10 +157,9 @@ export async function renderConsent(request: Request, env: Bindings): Promise<Re
 
 /** POST /authorize — record the decision and hand back a code. */
 export async function submitConsent(request: Request, env: Bindings): Promise<Response> {
-  const admin = await currentAdmin(request, env);
-  if (!admin) return new Response("Not authorized", { status: 403 });
-
   const form = await request.formData();
+
+  // Cancelling requires nothing. Only approving needs the password.
   if (form.get("decision") !== "approve") {
     return shell(
       "Cancelled",
@@ -159,6 +167,17 @@ export async function submitConsent(request: Request, env: Bindings): Promise<Re
        <h1>Connection cancelled</h1><p class="sub">Nothing was granted. You can close this tab.</p></div>`
     );
   }
+
+  const supplied = String(form.get("password") ?? "");
+  if (!env.MCP_CONSENT_PASSWORD || !safeEqual(supplied, env.MCP_CONSENT_PASSWORD)) {
+    console.error("[oauth] consent rejected — wrong password");
+    return shell(
+      "Rejected",
+      `<div class="head"><p class="kicker">Ascend Systems · MCP</p>
+       <h1>Wrong password</h1><p class="sub">Nothing was granted. Go back and try again.</p></div>`
+    );
+  }
+  const admin = "console";
 
   const agentKey = String(form.get("agent_key") ?? "");
   if (!agentKey) return new Response("Pick an agent", { status: 400 });
@@ -183,6 +202,17 @@ export async function submitConsent(request: Request, env: Bindings): Promise<Re
     props: { agent_key: agentKey },
   });
 
-  console.log(`[oauth] ${admin} granted MCP access as agent "${agentKey}"`);
+  // Log WHERE we send the browser next, with the code stripped. Without this we
+  // can see that consent succeeded but not whether the redirect we produced was
+  // one the client could actually act on.
+  let target = redirectTo;
+  try {
+    const u = new URL(redirectTo);
+    const hasCode = u.searchParams.has("code");
+    const hasState = u.searchParams.has("state");
+    target = `${u.origin}${u.pathname} (code=${hasCode ? "yes" : "NO"}, state=${hasState ? "yes" : "no"})`;
+  } catch { /* log it raw if it will not parse */ }
+  console.log(`[oauth] granted as "${agentKey}" -> redirecting to ${target}`);
+
   return Response.redirect(redirectTo, 302);
 }

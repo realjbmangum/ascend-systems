@@ -8,6 +8,13 @@ export type Bindings = {
   OAUTH_KV: KVNamespace;
   /** Injected by the OAuth provider so handlers can call its helper API. */
   OAUTH_PROVIDER?: any;
+  /**
+   * Password typed on the MCP consent screen. The Worker is on a different
+   * domain from the admin app, so the admin session cookie cannot reach it —
+   * this is the auth for that one rare, deliberate action.
+   * Set via: wrangler secret put MCP_CONSENT_PASSWORD
+   */
+  MCP_CONSENT_PASSWORD?: string;
   SENDGRID_API_KEY?: string;
   /** Public marketing site origin — used for footer links, contact-page CTAs, etc. */
   APP_ORIGIN?: string;

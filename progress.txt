@@ -927,3 +927,80 @@ is its own `work_orders` table. Ascend's agents still use Graph.
       failure is real and invisible.
 - [ ] Per-team credit-balance monitoring.
 - [ ] Merge feat/demo-tenant-imperial.
+
+## Session - July 25, 2026 — OAuth MCP, department agents, and the repo decision
+
+**Shipped:**
+- **OAuth 2.1 MCP server at `/mcp`** via @cloudflare/workers-oauth-provider —
+  discovery (RFC 8414), protected-resource metadata (RFC 9728) and dynamic
+  client registration (RFC 7591). The consent screen is an AGENT PICKER, and the
+  choice rides on the grant as `props`. One URL serves every tenant; the grant
+  decides what it reaches; nothing identifying is in the URL.
+- **Per-agent tool allow-lists** (`voice_agents.tools_allow`, `department`) so one
+  tenant runs several agents with different voices that transfer to each other.
+  It can only NARROW a scope, never widen it.
+- **`get_account_balance`** — the one tool that may discuss money, granted only to
+  the accounts agent. Enforced server-side: dispatch calling it gets "Unknown
+  tool". That separation is the clearest thing to show a prospect.
+- **`lookup_customer` now takes `account_ref`** — it previously took phone, name
+  and site only, so "my account is IMP-0003" was unanswerable.
+- **Zero-lead detection** on the hourly cron + `/api/voice/t/<token>/health`.
+- **Demo board** at `/demo/phone`: 5 stat tiles, a 7-day chart, jobs-by-status,
+  click-through detail. Chart colours validated (#DB7530/#3E93C7, CVD ΔE 20.4).
+- `departments.md` — prompts for Sales (eve), Accounts (ara), Operations (leo).
+
+**OAuth status: 90% working, one hop short.**
+Dynamic registration works — the console never showed its OAuth settings form,
+it registered itself and went straight to authorizing. Consent completes and the
+grant is logged. But KV holds 4 registered clients and ZERO grants or tokens:
+the console never returns to `/token` to exchange the authorization code, so the
+code expires unused. Client registration looks correct (public client, PKCE,
+redirect `https://console.x.ai/connectors-oauth-exchange-code/`).
+Next attempt will log the redirect target we produce, including whether it
+carries a code. **Not a blocker** — `/api/voice` API-request tools work and are
+what the demo runs on.
+
+**Gotcha:** the consent screen originally checked the `ascend_session` cookie.
+That can never work — the Worker is on workers.dev and the admin app is on
+ascendsystems.ai, a different registrable domain, and redirecting to the admin
+app to log in lands inside the Cloudflare Zero Trust policy on that hostname.
+Replaced with a password held as `MCP_CONSENT_PASSWORD`, compared in constant time.
+
+**Gotcha:** `wrangler secret put <NAME>` takes the name as an ARGUMENT. Running
+`wrangler secret put` bare prompts for the name, and a password typed there
+becomes a secret NAME — which is readable in `wrangler secret list`. Happened;
+deleted and reset with a different password.
+
+---
+
+## DECISION — one repo, N tenants. NOT one repo per client.
+
+Brian's mental model at 10 clients was: 10 D1s, 10 xAI teams, 10 agent setups,
+**10 git repos**, 10 websites, 10 back-office products.
+
+Everything on that list is right except the repos, and that one would undo the
+multi-tenant work. `db_binding` is what makes one Worker serve every tenant.
+The cross-customer leak in `get_work_orders` took ONE commit to fix; across ten
+repos it would have been ten PRs and one of them would have been missed.
+
+The line:
+- **Platform — one repo.** Worker, tools, health checks, admin. Client eleven
+  touches zero code.
+- **Per-client — data, not code.** A D1, an xAI team, rows in `voice_agents`,
+  five KB files. Onboarding is a checklist.
+- **Bespoke — its own repo, and only at Tier 3** ($7.5–15k build), when a client
+  genuinely needs their own system written into. Same rule that makes Sightline
+  and Crown and Compass separate today.
+
+At 10 voice clients: **1 repo, 10 databases, 10 teams, ~40 config rows.**
+
+Also: websites and back-office builds are SEPARATE service lines wearing the same
+client list, not part of the voice platform. Ten voice clients might yield two
+back-office builds — and those two are where the $15–50k lives.
+
+**Next steps:**
+- [ ] One clean OAuth attempt while tailing, to see whether `/token` is ever hit
+- [ ] Set `message` Required = Yes on create_lead in the console (still null on
+      live leads — the console's parameter config governs, not the server schema)
+- [ ] Accounts agent not yet minted: `--department accounts --tools lookup_customer,get_account_balance,log_call_activity`
+- [ ] Merge PR #14
