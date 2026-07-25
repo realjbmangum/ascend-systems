@@ -327,15 +327,50 @@ const checkAvailability: ToolDef = {
       return { date: args.date, slots: [], message: "That's a weekend — offer a weekday instead." };
     }
 
-    const busy = await listCalendarBusy(
-      ctx.env,
-      dayStart.toISOString(),
-      dayEnd.toISOString()
-    );
-    const busyRanges = busy.map((b) => ({
-      start: Date.parse(b.start),
-      end: Date.parse(b.end),
-    }));
+    // WHOSE calendar? Ascend's own agents book into Brian's Microsoft 365. A
+    // TENANT books into the tenant's own schedule — their dispatch board, which
+    // lives in work_orders. Reading Ascend's calendar for a client would offer
+    // their caller a slot based on entirely unrelated availability.
+    const isAscend = ctx.agent.db_binding === "DB";
+    let busyRanges: Array<{ start: number; end: number }> = [];
+    let source: string;
+
+    if (isAscend) {
+      const busy = await listCalendarBusy(
+        ctx.env,
+        dayStart.toISOString(),
+        dayEnd.toISOString()
+      );
+      busyRanges = busy.map((b) => ({ start: Date.parse(b.start), end: Date.parse(b.end) }));
+      source = "microsoft-365";
+    } else {
+      const { results } = await ctx.db
+        .prepare(
+          `SELECT scheduled_for, reference
+             FROM work_orders
+            WHERE status IN ('scheduled','dispatched')
+              AND scheduled_for LIKE ?
+            ORDER BY scheduled_for`
+        )
+        .bind(`${args.date}%`)
+        .all<{ scheduled_for: string; reference: string }>();
+
+      // scheduled_for is 'YYYY-MM-DD HH:MM' in the business's local time.
+      // Assume a two-hour job unless we learn otherwise — better to under-offer
+      // than to double-book a crew.
+      busyRanges = results
+        .map((w) => {
+          const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(w.scheduled_for ?? "");
+          if (!m) return null;
+          const startUtc = zonedToUtc(
+            Number(m[1]), Number(m[2]), Number(m[3]),
+            Number(m[4]), Number(m[5]), BUSINESS_TZ
+          ).getTime();
+          return { start: startUtc, end: startUtc + 120 * 60_000 };
+        })
+        .filter((r): r is { start: number; end: number } => r !== null);
+      source = "work-orders";
+    }
 
     const now = Date.now();
     const slots: Array<{ start: string; spoken: string }> = [];
@@ -355,7 +390,8 @@ const checkAvailability: ToolDef = {
       date: args.date,
       duration_minutes: duration,
       slots,
-      calendar_connected: busy.length > 0 || undefined,
+      schedule_source: source,
+      already_booked: busyRanges.length,
     };
   },
 };
@@ -363,7 +399,7 @@ const checkAvailability: ToolDef = {
 const bookMeeting: ToolDef = {
   name: "book_meeting",
   description:
-    "Book a meeting into the business calendar and log it against a lead. Only call this with a start time returned by check_availability, and only after the caller has agreed to it out loud.",
+    "Book the visit. Creates the job on the schedule and logs it against the caller. Only use a start time that check_availability returned, and only after the caller has agreed to it out loud. Tell them the day and time back in plain words.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
@@ -396,7 +432,11 @@ const bookMeeting: ToolDef = {
       duration_minutes: duration,
     };
 
-    const graphEventId = await createCalendarEvent(ctx.env, activity);
+    // Ascend's own agents sync to Microsoft 365. A TENANT's booking belongs on
+    // the tenant's dispatch board — creating a work order is what actually makes
+    // a crew turn up, and it is what the next check_availability call will see.
+    const isAscend = ctx.agent.db_binding === "DB";
+    const graphEventId = isAscend ? await createCalendarEvent(ctx.env, activity) : null;
 
     const result = await ctx.db.prepare(
       `INSERT INTO lead_activities (lead_id, type, subject, notes, due_at, duration_minutes, graph_event_id)
@@ -412,8 +452,34 @@ const bookMeeting: ToolDef = {
       )
       .run();
 
+    let workOrderRef: string | null = null;
+    if (!isAscend) {
+      // Local wall-clock, matching how the rest of the board stores times.
+      const local = new Intl.DateTimeFormat("en-CA", {
+        timeZone: BUSINESS_TZ,
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", hour12: false,
+      })
+        .format(start)
+        .replace(",", "");
+      workOrderRef = `WO-${Date.now().toString(36).toUpperCase().slice(-5)}`;
+      await ctx.db
+        .prepare(
+          `INSERT INTO work_orders (reference, summary, status, priority, scheduled_for, notes)
+           VALUES (?, ?, 'scheduled', 'normal', ?, ?)`
+        )
+        .bind(
+          workOrderRef,
+          `${args.subject} — ${lead.name}${lead.company ? ` (${lead.company})` : ""}`,
+          local,
+          args.notes ? String(args.notes) : "Booked by the phone agent."
+        )
+        .run();
+    }
+
     return {
       activity_id: result.meta.last_row_id,
+      work_order: workOrderRef,
       calendar_synced: Boolean(graphEventId),
       start: start.toISOString(),
       spoken: speakTime(start),

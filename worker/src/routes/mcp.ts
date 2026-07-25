@@ -125,7 +125,9 @@ function rpcResult(id: RpcRequest["id"], result: unknown) {
 async function dispatch(
   req: RpcRequest,
   agent: VoiceAgentRow,
-  ctx: ToolCtx
+  ctx: ToolCtx,
+  sessionSeen?: string,
+  protoSeen: string = "-"
 ): Promise<unknown | null> {
   const { method, id } = req;
 
@@ -134,7 +136,7 @@ async function dispatch(
 
   switch (method) {
     case "initialize":
-      console.log(`[mcp] ${agent.key} initialize`);
+      console.log(`[mcp] ${agent.key} initialize (client-session=${sessionSeen ?? "none"} proto=${protoSeen})`);
       return rpcResult(id, {
         protocolVersion: PROTOCOL_VERSION,
         capabilities: { tools: { listChanged: false } },
@@ -204,6 +206,10 @@ async function dispatch(
 }
 
 async function handleRpc(c: any, rawToken: string | undefined) {
+  // Temporary diagnostic: what does the client actually send us? Specifically,
+  // does it echo an Mcp-Session-Id back after initialize?
+  const seenSession = c.req.header("Mcp-Session-Id") ?? c.req.header("mcp-session-id");
+  const proto = c.req.header("MCP-Protocol-Version") ?? "-";
   const agent = await lookupAgent(c.env.DB, rawToken);
   if (!agent) {
     // Deliberately NO `WWW-Authenticate: Bearer` header. Under the MCP
@@ -248,7 +254,7 @@ async function handleRpc(c: any, rawToken: string | undefined) {
       continue;
     }
     try {
-      const res = await dispatch(req, agent, ctx);
+      const res = await dispatch(req, agent, ctx, seenSession, proto);
       if (res !== null) responses.push(res);
     } catch (err) {
       console.error("MCP dispatch error", err);
@@ -256,9 +262,16 @@ async function handleRpc(c: any, rawToken: string | undefined) {
     }
   }
 
+  // Streamable HTTP: the server MAY assign a session id at initialize, and a
+  // client that expects one will otherwise re-initialize forever rather than
+  // ever calling a tool. We are stateless, so the id is a correlation handle —
+  // any value the client returns is accepted.
+  const sessionId = seenSession ?? `s_${agent.key}_${crypto.randomUUID()}`;
+  const headers = { "Mcp-Session-Id": sessionId };
+
   // All-notification payload: acknowledge with no content.
-  if (responses.length === 0) return c.body(null, 202);
-  return c.json(Array.isArray(body) ? responses : responses[0]);
+  if (responses.length === 0) return c.body(null, 202, headers);
+  return c.json(Array.isArray(body) ? responses : responses[0], 200, headers);
 }
 
 // Header auth — correct, and what curl and any header-capable client should use.
