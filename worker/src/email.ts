@@ -65,6 +65,29 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 }
 
+/**
+ * Plain, unstyled operational alert. Deliberately not branded — this is a pager,
+ * read on a phone at an awkward moment, and every extra pixel is in the way.
+ */
+export async function sendPlainAlert(
+  apiKey: string,
+  to: string,
+  subject: string,
+  text: string
+): Promise<boolean> {
+  const html = `<pre style="font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.6;white-space:pre-wrap">${text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")}</pre>`;
+  // ADMIN_EMAILS may hold a comma-separated list; the first is the pager.
+  return sendEmail(apiKey, {
+    to: to.split(",")[0].trim(),
+    subject,
+    html,
+    text,
+    copyOwner: false,
+  });
+}
+
 export async function sendMagicLink(
   apiKey: string,
   email: string,

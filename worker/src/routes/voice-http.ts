@@ -25,6 +25,7 @@ import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
 import { findTool, toolsForScope, type ToolCtx, type VoiceAgentRow } from "../lib/voice-tools";
 import { hashToken } from "./mcp";
+import { checkVoiceHealth } from "../lib/voice-health";
 
 const voiceHttp = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -127,6 +128,31 @@ voiceHttp.post("/t/:token/:tool", async (c) => {
     // from a readable message than from an HTTP failure it cannot interpret.
     return c.json({ error: message, hint: "Fix the arguments and try again." });
   }
+});
+
+/**
+ * Health check on demand — same logic the hourly cron runs, but returns the
+ * issues instead of emailing them. Token-gated like the tools so it can be
+ * curled during an incident without a session cookie.
+ */
+voiceHttp.get("/t/:token/health", async (c) => {
+  // Authenticate the TOKEN only — deliberately not resolve(), which also
+  // requires the caller's own tenant database. A diagnostic that fails whenever
+  // the thing it diagnoses is broken is useless exactly when you need it.
+  const db0 = c.env.DB as D1Database;
+  const agent = await db0
+    .prepare(`SELECT key FROM voice_agents WHERE token_hash = ? AND active = 1`)
+    .bind(await hashToken(c.req.param("token")))
+    .first();
+  if (!agent) return c.json({ error: "unauthorized" }, 401);
+
+  const issues = await checkVoiceHealth(c.env);
+  return c.json({
+    checked_at: new Date().toISOString(),
+    healthy: issues.length === 0,
+    issue_count: issues.length,
+    issues,
+  });
 });
 
 /**

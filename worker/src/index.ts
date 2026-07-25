@@ -20,10 +20,12 @@ import seoRoutes from "./routes/seo";
 import mcpRoutes from "./routes/mcp";
 import voiceHttpRoutes from "./routes/voice-http";
 import { ingestGscMetrics } from "./lib/seo-cron";
+import { checkVoiceHealth, formatVoiceAlert } from "./lib/voice-health";
 import {
   sendFormConfirmation,
   sendAdminAlert,
   sendProposalSignedAlert,
+  sendPlainAlert,
 } from "./email";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -1019,6 +1021,26 @@ export default {
       env.GSC_SA_KEY
     ) {
       ctx.waitUntil(ingestGscMetrics(env).then(() => undefined));
+    }
+
+    // Voice health — hourly, on the :00 window. A voice agent that has lost its
+    // tool connection keeps answering the phone and silently captures nothing,
+    // so this is the only thing standing between that and a week of lost leads.
+    if (now.getUTCMinutes() < 15 && env.SENDGRID_API_KEY) {
+      ctx.waitUntil(
+        checkVoiceHealth(env)
+          .then(async (issues) => {
+            if (!issues.length) return;
+            console.error(`[voice-health] ${issues.length} issue(s)`, issues);
+            await sendPlainAlert(
+              env.SENDGRID_API_KEY!,
+              env.ADMIN_EMAILS ?? "bmangum1@gmail.com",
+              `Voice alert: ${issues[0].problem}${issues.length > 1 ? ` (+${issues.length - 1} more)` : ""}`,
+              formatVoiceAlert(issues)
+            );
+          })
+          .catch((err) => console.error("[voice-health] check failed", err))
+      );
     }
   },
 };
