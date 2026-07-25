@@ -111,13 +111,18 @@ voiceHttp.post("/t/:token/:tool", async (c) => {
 
   try {
     const output = await tool.handler(args, ctx);
+    // Log the ARGUMENTS as well as the result. Seeing only the result hid a
+    // cross-customer leak for a whole call: we could see WO-4471 come back but
+    // not that it had been asked for by status alone.
     console.log(
-      `[voice-http] ${agent.key} ${name} OK -> ${JSON.stringify(output).slice(0, 160)}`
+      `[voice-http] ${agent.key} ${name} args=${JSON.stringify(args).slice(0, 140)} -> ${JSON.stringify(output).slice(0, 140)}`
     );
     return c.json(output);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`[voice-http] ${agent.key} ${name} FAILED: ${message}`);
+    console.error(
+      `[voice-http] ${agent.key} ${name} args=${JSON.stringify(args).slice(0, 140)} FAILED: ${message}`
+    );
     // 200 with an error field, not a 4xx — a voice agent recovers far better
     // from a readable message than from an HTTP failure it cannot interpret.
     return c.json({ error: message, hint: "Fix the arguments and try again." });

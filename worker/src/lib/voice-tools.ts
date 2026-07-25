@@ -173,10 +173,14 @@ const createLead: ToolDef = {
       company: { type: "string", description: "Their company, only if they said it." },
       message: {
         type: "string",
-        description: "What they want, in your own words. One or two sentences.",
+        description:
+          "WHY THEY CALLED — the reason, problem, or request, in one or two sentences of your own words. This is the most useful thing on the record; never leave it out. You already heard it, so do not ask them to repeat it. Example: \"Kitchen extraction unit needs replacing at their main site.\"",
       },
     },
-    required: ["name"],
+    // message is required because the agent can ALWAYS fill it — it just heard
+    // the call. Leaving it optional produced rows with a name and number and no
+    // indication of what the person actually wanted.
+    required: ["name", "message"],
   },
   async handler(args, ctx) {
     const name = String(args.name).trim();
@@ -255,10 +259,23 @@ const createLead: ToolDef = {
       );
     }
 
+    // `required` in a JSON schema is guidance to the model, not enforcement, and
+    // a lead arriving without a reason still happens. Do NOT reject it — losing
+    // the capture is far worse than an incomplete row. Instead take the lead and
+    // push the model to supply the detail through the call log, which carries
+    // the same information and already has the lead_id it needs.
+    const missingReason = !args.message || !String(args.message).trim();
+
     return {
       lead_id: leadId,
       email_captured: Boolean(realEmail),
       message: "Lead recorded.",
+      ...(missingReason
+        ? {
+            warning:
+              "No reason for the call was recorded. Before this call ends, use log_call_activity with this lead_id and a one-line summary of what they wanted.",
+          }
+        : {}),
     };
   },
 };
@@ -498,7 +515,7 @@ const bookMeeting: ToolDef = {
 const lookupCustomer: ToolDef = {
   name: "lookup_customer",
   description:
-    "Look up a customer. Find an existing customer, account, client, site, or service plan by phone number, name, or location. Search the customer list to identify who is calling. Call this EARLY — ideally on the caller's phone number — so you know who you are speaking to, which site they are at, and what plan they hold.",
+    "Look up a customer. Find an existing customer, account, client, site, or service plan by phone number, name, or location. Call this EARLY to identify who is calling. If a search by phone finds nothing, ASK FOR THEIR NAME AND SEARCH AGAIN — people often ring from a mobile that is not on the account. Only treat someone as new after a name search has also missed.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
@@ -537,6 +554,24 @@ const lookupCustomer: ToolDef = {
       )
       .bind(...binds)
       .all();
+
+    // Guidance at the point of failure beats guidance in the system prompt: a
+    // phone miss is common (callers ring from a mobile that is not on the
+    // account) and the model needs to know the next move is to retry by name,
+    // not to tell the caller they have no account.
+    if (results.length === 0) {
+      const tried = [args.phone && "phone", args.name && "name", args.site && "site"]
+        .filter(Boolean)
+        .join(", ");
+      return {
+        found: 0,
+        customers: [],
+        searched_by: tried,
+        next_step: args.name
+          ? "No match. They may be a new customer — use create_lead."
+          : "No match on that number, which is common when someone calls from a mobile. Ask for their name or company and search again by name BEFORE telling them they have no account.",
+      };
+    }
 
     return {
       found: results.length,
@@ -580,11 +615,20 @@ const getWorkOrders: ToolDef = {
       clauses.push("w.reference LIKE ?");
       binds.push(`%${String(args.reference).trim()}%`);
     }
+    // A status filter alone is NOT a scope. Without this guard, asking for
+    // "dispatched jobs" returns whichever customer happens to have one — and the
+    // agent will read another customer's job out to the caller. Seen in a live
+    // test: a lookup miss for Captain Needa was followed by a status-only query
+    // that returned Admiral Ozzel's work order.
+    if (!args.customer_id && !args.reference) {
+      throw new Error(
+        "Identify the customer first. Call lookup_customer to get a customer_id, or give a specific job reference. Never list jobs by status alone — they may belong to someone else."
+      );
+    }
     if (args.status) {
       clauses.push("w.status = ?");
       binds.push(String(args.status));
     }
-    if (!clauses.length) throw new Error("give a customer_id or a reference");
 
     const { results } = await ctx.db
       .prepare(
