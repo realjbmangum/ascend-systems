@@ -19,6 +19,9 @@
 // =============================================================================
 
 import { randomBytes, createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const VALID_SCOPES = {
   receptionist: "Ascend's own caller-facing line. 4 tools, writes to ascend-db.",
@@ -76,6 +79,29 @@ const sql =
   `scope = excluded.scope, db_binding = excluded.db_binding, tenant_name = excluded.tenant_name, ` +
   `updated_at = datetime('now');`;
 
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const WORKER = path.join(ROOT, "worker");
+const BASE = "https://ascend-api.bmangum1.workers.dev/api/mcp";
+const url = `${BASE}/t/${token}`;
+
+// Register the HASH (never the token) against both databases. Doing this here
+// rather than printing SQL for a human to copy removes the step that silently
+// fails and then shows up as "the console is asking me for OAuth".
+function register(target) {
+  try {
+    execFileSync(
+      "npx",
+      ["wrangler", "d1", "execute", "ascend-db", `--${target}`, "--command", sql],
+      { cwd: WORKER, stdio: "pipe", maxBuffer: 10 * 1024 * 1024 }
+    );
+    return { ok: true };
+  } catch (err) {
+    const out = `${err.stdout ?? ""}${err.stderr ?? ""}`;
+    return { ok: false, msg: out.split("\n").filter((l) => /error/i.test(l))[0] ?? err.message };
+  }
+}
+
 console.log(`
 ┌─ TOKEN (shown once — copy it now) ────────────────────────────────────────────
 
@@ -83,36 +109,68 @@ console.log(`
 
 └───────────────────────────────────────────────────────────────────────────────
 
-Scope: ${agentKey} — ${VALID_SCOPES[scope]}
-Daily spend ceiling: ${ceiling === 0 ? "none" : `$${(ceiling / 100).toFixed(2)}`}
+  agent      ${agentKey}
+  scope      ${scope}
+  database   ${dbBinding}
+  ceiling    ${ceiling === 0 ? "none" : `$${(ceiling / 100).toFixed(2)}/day`}
+`);
 
-STEP 1 — register the hash in D1 (run from worker/):
+process.stdout.write("Registering in D1 (remote) ... ");
+const remote = register("remote");
+console.log(remote.ok ? "done" : `FAILED\n  ${remote.msg}`);
+
+process.stdout.write("Registering in D1 (local)  ... ");
+const local = register("local");
+console.log(local.ok ? "done" : `skipped (${local.msg})`);
+
+if (!remote.ok) {
+  console.log(`
+The remote write failed, so the token is NOT live. Run this yourself from worker/:
 
 npx wrangler d1 execute ascend-db --remote --command "${sql.replace(/"/g, '\\"')}"
+`);
+  process.exit(1);
+}
 
-STEP 2 — add the MCP server in the xAI console.
+// Verify against the live endpoint. D1 takes a few seconds to reach the Worker.
+process.stdout.write("Verifying against production ");
+let verified = null;
+for (let i = 0; i < 10; i++) {
+  process.stdout.write(".");
+  await new Promise((r) => setTimeout(r, 2000));
+  try {
+    const res = await fetch(`${url}/check`);
+    const body = await res.json();
+    if (body.ok) { verified = body; break; }
+  } catch { /* keep trying */ }
+}
+console.log("");
 
-  The console has NO field for a bearer token — it only offers OAuth client
-  credentials. So the token goes in the URL instead. Paste this as the Server
-  URL and leave every auth field blank:
+if (!verified) {
+  console.log(`
+Registered, but production did not confirm it within 20 seconds. Check by hand:
 
-  https://ascend-api.bmangum1.workers.dev/api/mcp/t/${token}
+  ${url}/check
+`);
+  process.exit(1);
+}
 
-    Server label:  ascend
-    Auth:          leave empty — do NOT fill in the OAuth form
+console.log(`
+✓ LIVE — ${verified.tenant} · ${verified.tools.length} tools · writes to ${verified.database}
+  ${verified.tools.join(", ")}
 
-  If the console still asks for OAuth, you used the plain /api/mcp URL. The
-  /t/<token> form is what stops it probing for OAuth.
+┌─ PASTE THIS INTO THE xAI CONSOLE ─────────────────────────────────────────────
 
-STEP 3 — verify it from your machine before trusting the console:
+  Tools → Add remote MCP server
 
-curl -s -X POST https://ascend-api.bmangum1.workers.dev/api/mcp \\
-  -H "Authorization: Bearer ${token}" \\
-  -H "Content-Type: application/json" \\
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  Server URL   ${url}
+  Label        ascend
+  Auth         LEAVE EVERY OAUTH FIELD BLANK
 
-Expected: ${scope === "assistant" ? "10" : "4"} tools. Anything else means the hash did not land.
+└───────────────────────────────────────────────────────────────────────────────
 
-Rotating: re-run this command. The ON CONFLICT clause replaces the old hash, so
-the previous token stops working the moment step 1 runs.
+The token is in the URL because the console has no bearer-token field. If it
+still shows an OAuth form, you pasted ${BASE} instead of the full URL above.
+
+Rotating: re-run this command. The old token stops working immediately.
 `);
