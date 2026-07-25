@@ -7,6 +7,31 @@ import { SERVICE_PAGES } from '../data/services';
 
 const services = [
   {
+    title: 'AI Voice Agents',
+    slug: 'ai-voice-agents',
+    description:
+      'A missed call is usually a booked competitor by morning. A voice agent answers on the first ring, books the routine jobs into your calendar, and hands the rest to a person — instead of sending the callers you paid to earn to voicemail.',
+    useCases: [
+      'After-hours and overflow calls answered, every time',
+      'Booking and rescheduling straight into your calendar',
+      'Lead qualification and service-area screening',
+      'Warm transfer or callback capture when a human is needed',
+    ],
+    tech: ['Twilio', 'Claude', 'OpenAI Realtime', 'Cloudflare Workers', 'Calendar + CRM APIs'],
+    example:
+      'A voice agent is only as good as its wiring into your calendar and CRM — the same real-time, cost-controlled integration behind the contract-review and CLT EV builds, now with a phone line on the front. Voice is a newer service line, so the honest proof is the capability, not a client logo.',
+    concept: {
+      src: '/images/services/concepts/ai-voice-agents.jpg',
+      alt:
+        'A single incoming call caught by a ring of light and resolved into a booked slot on a calendar — the call that would have gone to voicemail, answered and turned into work.',
+    },
+    // No concept render yet — falls back to the phone mock, which suits a voice
+    // agent anyway. Drop the image at the src above, then remove this flag.
+    conceptReady: false,
+    dark: true,
+    mockType: 'phone' as const,
+  },
+  {
     title: 'Custom SaaS Development',
     slug: 'custom-saas-development',
     description:
@@ -311,7 +336,7 @@ export default function Services() {
                   not just its shapes — these are abstract, so a screen reader
                   (and Google) needs the interpretation, not a description. */}
               <div className="lg:col-span-2 hidden lg:flex items-center justify-center">
-                {CONCEPT_IMAGES_READY ? (
+                {CONCEPT_IMAGES_READY && service.conceptReady !== false ? (
                   <img
                     src={service.concept.src}
                     alt={service.concept.alt}
