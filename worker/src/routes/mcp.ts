@@ -260,9 +260,97 @@ mcp.post("/t/:token", (c) =>
   handleRpc(c, tokenFromHeader(c.req.header("Authorization")) ?? c.req.param("token"))
 );
 
-// This server never initiates messages, so it has no SSE stream to offer.
-// Both shapes answer, so a client probing either one gets a clear signal.
-mcp.get("/", (c) => c.json({ error: "method not allowed" }, 405));
-mcp.get("/t/:token", (c) => c.json({ error: "method not allowed" }, 405));
+/**
+ * GET = the SSE leg of streamable HTTP.
+ *
+ * We never push server-initiated messages, and the spec allows answering 405.
+ * But xAI documents support for "Streaming HTTP and SSE transports" only, and a
+ * client that opens this stream first and gets 405 can reasonably conclude the
+ * endpoint is unusable — or that it must be an auth problem, which is how a
+ * console with only an OAuth form ends up showing you an OAuth form.
+ *
+ * So: authenticate, then open a real, valid, empty SSE stream. A keepalive
+ * comment every 25 seconds holds it open without ever sending an MCP message.
+ */
+async function handleSse(c: any, rawToken: string | undefined) {
+  const agent = await lookupAgent(c.env.DB, rawToken);
+  if (!agent) return c.json({ error: "unauthorized" }, 401);
+
+  const encoder = new TextEncoder();
+  let timer: number | undefined;
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode(": connected\n\n"));
+      timer = setInterval(() => {
+        try {
+          controller.enqueue(encoder.encode(": keepalive\n\n"));
+        } catch {
+          if (timer) clearInterval(timer);
+        }
+      }, 25_000) as unknown as number;
+    },
+    cancel() {
+      if (timer) clearInterval(timer);
+    },
+  });
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-store",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
+  });
+}
+
+mcp.get("/", (c) => handleSse(c, tokenFromHeader(c.req.header("Authorization"))));
+
+/**
+ * Diagnostic — paste `<your server URL>/check` into a browser.
+ *
+ * Answers the only question that matters when the console is misbehaving: is
+ * this exact URL a working, authenticated MCP endpoint? Returns the agent and
+ * its tool count, never the token, and never any caller data.
+ */
+mcp.get("/t/:token/check", async (c) => {
+  const agent = await lookupAgent(c.env.DB, c.req.param("token"));
+  if (!agent) {
+    return c.json(
+      {
+        ok: false,
+        problem: "That token is not registered, or the agent row is inactive.",
+        fix: "Re-run scripts/voice-agent-token.mjs and make sure you ran the STEP 1 SQL against ascend-db.",
+      },
+      401
+    );
+  }
+  const db = resolveTenantDb(c.env, agent);
+  if (!db) {
+    return c.json(
+      {
+        ok: false,
+        agent: agent.key,
+        problem: `Agent points at D1 binding "${agent.db_binding}", which this deploy does not have.`,
+        fix: "Add the binding to wrangler.toml and redeploy.",
+      },
+      503
+    );
+  }
+  return c.json({
+    ok: true,
+    agent: agent.key,
+    tenant: agent.tenant_name,
+    scope: agent.scope,
+    database: agent.db_binding,
+    tools: toolsForScope(agent.scope).map((t) => t.name),
+    next: "This URL works. In the xAI console paste the same URL WITHOUT /check, and leave every OAuth field blank.",
+  });
+});
+
+mcp.get("/t/:token", (c) =>
+  handleSse(c, tokenFromHeader(c.req.header("Authorization")) ?? c.req.param("token"))
+);
 
 export default mcp;
