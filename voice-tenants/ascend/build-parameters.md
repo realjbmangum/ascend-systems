@@ -76,8 +76,7 @@ is captured and promised a callback. The agent must be strict about the
 difference: "our system is down" transfers; "I want to talk about a project"
 does not, at any hour.
 
-🟡 Assumed 24/7 for the transfer, since production being down does not observe
-office hours. Say if it should be business hours only.
+✅ **24/7.** Outages do not keep office hours, so the transfer is always live.
 
 ## 5 · Hard limits
 
@@ -127,7 +126,17 @@ and no `work_orders`** — those exist only in the tenant schema. So
 Worse: the four client rows have **empty phone numbers**, so phone recognition
 has nothing to match on even once the tables resolve.
 
-**Proposed fix — views, not new tables.** No code change, no duplicated data:
+✅ **DONE — views, not new tables.** Applied 25 Jul, no code change, no
+duplicated data. Verified end to end against the live tools:
+
+```
+lookup_customer {"name":"Suite Manager"}  -> Suite Manager LLC · CL-0002 · ask for Chris Rutherford
+lookup_customer {"account_ref":"CL-0005"} -> City of Charlotte
+get_work_orders {"customer_id":2}         -> PRJ-0002 completed · PRJ-0038 completed
+                                             PRJ-0039 in_progress "CTO WORK"
+```
+
+The migration as applied:
 
 ```sql
 CREATE VIEW customers AS
@@ -160,7 +169,8 @@ file," which needs no separate persona.
 ### `ascend` — receptionist
 - **Channel:** (980) 577-1231, forwarded on busy / no-answer / after-hours, **and**
   the homepage chat widget — same agent, typed instead of spoken
-- **Voice:** ✅ **Carina**, speed 1.0.
+- **Voice:** ✅ **Carina**, speed 1.0. Set in the console by Brian — not one of
+  the five voices the API docs list, so it comes from the console's larger set.
 - **Tools:** `create_lead` · `check_availability` · `book_meeting` · `log_call_activity`
 - **Knowledge base:** ✅ **already built** — `npm run voice:kb`, 14 documents from
   services, case studies and the MSA, with the firewall keeping the target list
@@ -225,5 +235,6 @@ file," which needs no separate persona.
 
 - [ ] Populate `clients.phone` — 4 rows, all currently empty. Recognition does
       not work without it.
-- [ ] Confirm the emergency transfer is 24/7 rather than business hours
-- [ ] Create the `customers` / `work_orders` views in `ascend-db`
+- [x] ~~Confirm the emergency transfer window~~ — **24/7 confirmed.** Outages do
+      not keep office hours.
+- [x] ~~Create the `customers` / `work_orders` views in `ascend-db`~~ — done, verified
