@@ -101,8 +101,12 @@ const sql =
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WORKER = path.join(ROOT, "worker");
-const BASE = "https://ascend-api.bmangum1.workers.dev/api/mcp";
-const url = `${BASE}/t/${token}`;
+// The console cannot send a bearer token, so it goes in the path. And tools are
+// added individually as "API request" entries under /api/voice — NOT via the MCP
+// endpoint, because xAI hides MCP tools behind a search the agent mostly fails.
+const ORIGIN = "https://ascend-api.bmangum1.workers.dev";
+const BASE = `${ORIGIN}/api/voice/t/${token}`;
+const url = BASE;
 
 // Register the HASH (never the token) against both databases. Doing this here
 // rather than printing SQL for a human to copy removes the step that silently
@@ -158,7 +162,9 @@ for (let i = 0; i < 10; i++) {
   process.stdout.write(".");
   await new Promise((r) => setTimeout(r, 2000));
   try {
-    const res = await fetch(`${url}/check`);
+    // The /api/voice index is itself the check — it 401s on a bad token and
+    // otherwise reports the agent, its database and the tools it can reach.
+    const res = await fetch(BASE);
     const body = await res.json();
     if (body.ok) { verified = body; break; }
   } catch { /* keep trying */ }
@@ -169,27 +175,40 @@ if (!verified) {
   console.log(`
 Registered, but production did not confirm it within 20 seconds. Check by hand:
 
-  ${url}/check
+  ${BASE}
 `);
   process.exit(1);
 }
 
 console.log(`
-✓ LIVE — ${verified.tenant} · ${verified.tools.length} tools · writes to ${verified.database}
-  ${verified.tools.join(", ")}
+✓ LIVE — ${verified.tenant} · ${(verified.endpoints || []).length} tools · writes to ${dbBinding}
 
-┌─ PASTE THIS INTO THE xAI CONSOLE ─────────────────────────────────────────────
+┌─ ADD THESE IN THE xAI CONSOLE ────────────────────────────────────────────────
 
-  Tools → Add remote MCP server
+  Add tool → API request,  once per tool below.
+  Method POST · Authentication NONE · every parameter goes in the Body.
 
-  Server URL   ${url}
-  Label        ascend
-  Auth         LEAVE EVERY OAUTH FIELD BLANK
+${(verified.endpoints || [])
+  .map((e) => `  ${e.tool.padEnd(20)} ${e.url}`)
+  .join("\n")}
 
 └───────────────────────────────────────────────────────────────────────────────
 
-The token is in the URL because the console has no bearer-token field. If it
-still shows an OAuth form, you pasted ${BASE} instead of the full URL above.
+Parameters (Number where marked, everything else String):
+
+  create_lead          name*, message*            phone, email, company
+  lookup_customer      —                          phone, name, site, account_ref
+  get_work_orders      customer_id(N) or reference   status
+  get_account_balance  customer_id(N) or account_ref
+  check_availability   date*                      duration_minutes(N)
+  book_meeting         lead_id(N)*, start*, subject*   duration_minutes(N), notes
+  log_call_activity    lead_id(N)*, subject*      notes, duration_minutes(N)
+
+  * = mark Required = Yes
+
+Check your work — open this in a browser to see exactly what this token reaches:
+
+  ${BASE}
 
 Rotating: re-run this command. The old token stops working immediately.
 `);
