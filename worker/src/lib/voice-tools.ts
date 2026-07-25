@@ -25,11 +25,26 @@ export type VoiceAgentRow = {
   scope: ToolScope;
   client_id: number | null;
   daily_cost_ceiling_cents: number;
+  /**
+   * Which D1 binding this agent's caller data lands in — 'DB' for Ascend's own
+   * agents, 'DB_<CODE>' for a tenant. Resolved to a live D1Database in mcp.ts.
+   * Per-tenant databases, never a shared table with a tenant_id column: the same
+   * rule as the directory playbook, and what makes a clean client exit possible.
+   */
+  db_binding: string;
+  /** Tenant display name the agent speaks — "Imperial Climate Control". */
+  tenant_name: string | null;
 };
 
 export type ToolCtx = {
   env: Bindings;
   agent: VoiceAgentRow;
+  /**
+   * The TENANT database. For Ascend's own agents this is env.DB; for a client
+   * agent it is that client's own D1. Every tool that touches caller data must
+   * use this, never env.DB directly.
+   */
+  db: D1Database;
   waitUntil: (p: Promise<unknown>) => void;
 };
 
@@ -45,13 +60,12 @@ export type ToolDef = {
   handler: (args: Record<string, any>, ctx: ToolCtx) => Promise<unknown>;
 };
 
-// 'client' is deliberately absent from every tool's scope list. The scope
-// exists in the schema for the eventual per-tenant agents, but every tool below
-// reads and writes ASCEND'S OWN CRM — a client-scoped agent granted create_lead
-// would silently file its caller into Ascend's pipeline. Multi-tenant scoping is
-// out of scope for this build, so a 'client' token currently sees zero tools.
-// Give it tools only once they filter by voice_agents.client_id.
-const OURS: ToolScope[] = ["receptionist", "assistant"];
+// TENANT tools operate on ctx.db — whichever database the calling agent's row
+// points at. Safe for a client agent because a client's caller can only ever
+// reach that client's own database.
+const TENANT: ToolScope[] = ["receptionist", "assistant", "client"];
+// ASCEND-ONLY tools read Ascend's own business (our projects, our invoices, our
+// SEO). They stay on env.DB and are never granted to a client or a caller.
 const ASSISTANT_ONLY: ToolScope[] = ["assistant"];
 
 // Business hours the receptionist may offer, in BUSINESS_TZ.
@@ -144,40 +158,41 @@ function speakTime(instant: Date): string {
 const createLead: ToolDef = {
   name: "create_lead",
   description:
-    "Record a new inbound lead captured on a phone call. Call this once you have at least the caller's name. Everything else is optional — never hold the caller on the line to fill in fields. Returns the lead id.",
-  scopes: OURS,
+    "Create a lead. Record a new caller, new customer, new enquiry, or contact — capture and save their details: name, phone, email, company, and what they want. Use for any caller who is not already an existing account. Call it as soon as you know their name, without announcing it and without asking for fields they have not already said.",
+  scopes: TENANT,
   inputSchema: {
+    // Every field here is something a caller says out loud in ordinary
+    // conversation. Nothing internal (call ids, slugs, budget bands) is exposed,
+    // because a voice model with an unfillable field in its schema will ask the
+    // caller to fill it — which is how "what is your call ID?" reaches a human.
     type: "object",
     properties: {
-      name: { type: "string", description: "Caller's full name." },
-      phone: { type: "string", description: "Caller's phone number in E.164 if known." },
-      email: { type: "string", description: "Caller's email, only if they offer it." },
-      company: { type: "string", description: "Company or organisation name." },
-      project_type: {
-        type: "string",
-        description:
-          "Which service line this is about: custom-saas-development, internal-tools, legacy-modernization, ai-integrations, or fractional-cto.",
-      },
-      budget_range: {
-        type: "string",
-        description: "One of: Under $5k, $5k-$15k, $15k-$50k, $50k+, Not sure.",
-      },
+      name: { type: "string", description: "Caller's name as they said it." },
+      phone: { type: "string", description: "Their number, only if they said it." },
+      email: { type: "string", description: "Their email, only if they said it." },
+      company: { type: "string", description: "Their company, only if they said it." },
       message: {
         type: "string",
-        description: "What the caller actually asked for, in their own words where possible.",
+        description:
+          "WHY THEY CALLED — the reason, problem, or request, in one or two sentences of your own words. This is the most useful thing on the record; never leave it out. You already heard it, so do not ask them to repeat it. Example: \"Kitchen extraction unit needs replacing at their main site.\"",
       },
-      call_id: { type: "string", description: "The xAI call_id for this call." },
     },
-    required: ["name"],
+    // message is required because the agent can ALWAYS fill it — it just heard
+    // the call. Leaving it optional produced rows with a name and number and no
+    // indication of what the person actually wanted.
+    required: ["name", "message"],
   },
   async handler(args, ctx) {
     const name = String(args.name).trim();
     if (!name) throw new Error("name is required");
 
+    // The model can no longer supply a call id — it never knew one. Generate a
+    // correlation id here so the row is still traceable.
+    const callRef = `${ctx.agent.key}-${Date.now().toString(36)}`;
     const realEmail = isRealEmail(args.email) ? String(args.email).toLowerCase() : null;
-    const email = realEmail ?? sentinelEmail(args.call_id);
+    const email = realEmail ?? sentinelEmail(callRef);
 
-    const result = await ctx.env.DB.prepare(
+    const result = await ctx.db.prepare(
       `INSERT INTO leads (name, email, phone, company, project_type, budget_range, message,
                           source_origin, source_channel, source_channel_id)
        VALUES (?, ?, ?, ?, ?, ?, ?, 'voice', ?, ?)`
@@ -187,16 +202,16 @@ const createLead: ToolDef = {
         email,
         args.phone ?? null,
         args.company ?? null,
-        args.project_type ?? null,
-        args.budget_range ?? null,
+        null,
+        null,
         args.message ?? null,
         ctx.agent.key === "receptionist" ? "phone-980" : `voice-${ctx.agent.key}`,
-        args.call_id ?? null
+        callRef
       )
       .run();
     const leadId = result.meta.last_row_id as number;
 
-    await createTask(ctx.env.DB, {
+    await createTask(ctx.db, {
       type: "lead_inquiry",
       title: `Voice lead: ${name}${args.company ? ` (${args.company})` : ""}`,
       description: args.message ? String(args.message) : undefined,
@@ -205,26 +220,26 @@ const createLead: ToolDef = {
       metadata: {
         email: realEmail ?? undefined,
         phone: args.phone,
-        project_type: args.project_type,
-        budget_range: args.budget_range,
-        call_id: args.call_id,
+        call_ref: callRef,
         captured_by: ctx.agent.key,
       },
     });
 
-    // Only enrol a deliverable address. The sentinel would hard-bounce and
+    // Drip enrolment is an Ascend construct — email_sequences only exists in
+    // ascend-db, and a tenant's caller must never be enrolled in our marketing.
+    // Also: only enrol a deliverable address. The sentinel would hard-bounce and
     // damage the sending domain's reputation.
-    if (realEmail) {
+    if (realEmail && ctx.agent.db_binding === "DB") {
       await enrollByTrigger(ctx.env.DB, "lead_welcome", realEmail);
     }
 
-    if (args.call_id) {
-      await ctx.env.DB.prepare(
-        `UPDATE voice_calls SET lead_id = ?, updated_at = datetime('now') WHERE call_id = ?`
-      )
-        .bind(leadId, args.call_id)
-        .run();
-    }
+    // voice_calls is a PLATFORM table and always lives in ascend-db, so Ascend
+    // keeps one operational view across every tenant.
+    await ctx.env.DB.prepare(
+      `UPDATE voice_calls SET lead_id = ?, updated_at = datetime('now') WHERE call_id = ?`
+    )
+      .bind(leadId, callRef)
+      .run();
 
     if (ctx.env.SENDGRID_API_KEY) {
       ctx.waitUntil(
@@ -235,8 +250,6 @@ const createLead: ToolDef = {
             email: realEmail ?? "(not given on the call)",
             phone: args.phone,
             company: args.company,
-            project_type: args.project_type,
-            budget_range: args.budget_range,
             message: args.message,
             captured_by: `voice agent: ${ctx.agent.label}`,
           },
@@ -246,10 +259,23 @@ const createLead: ToolDef = {
       );
     }
 
+    // `required` in a JSON schema is guidance to the model, not enforcement, and
+    // a lead arriving without a reason still happens. Do NOT reject it — losing
+    // the capture is far worse than an incomplete row. Instead take the lead and
+    // push the model to supply the detail through the call log, which carries
+    // the same information and already has the lead_id it needs.
+    const missingReason = !args.message || !String(args.message).trim();
+
     return {
       lead_id: leadId,
       email_captured: Boolean(realEmail),
       message: "Lead recorded.",
+      ...(missingReason
+        ? {
+            warning:
+              "No reason for the call was recorded. Before this call ends, use log_call_activity with this lead_id and a one-line summary of what they wanted.",
+          }
+        : {}),
     };
   },
 };
@@ -257,20 +283,20 @@ const createLead: ToolDef = {
 const logCallActivity: ToolDef = {
   name: "log_call_activity",
   description:
-    "Log a summary of the call against an existing lead. Use at the end of a call, after create_lead.",
-  scopes: OURS,
+    "Log a call. Record call notes, a call summary, call history, or activity against a lead or customer. Use the lead_id that create_lead returned — never ask the caller for it, and do not announce that you are logging.",
+  scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
-      lead_id: { type: "number", description: "The lead id returned by create_lead." },
-      subject: { type: "string", description: "One-line summary of the call." },
+      lead_id: { type: "number", description: "From create_lead's response. Never ask the caller for this." },
+      subject: { type: "string", description: "One-line summary, in your own words." },
       notes: { type: "string", description: "What was discussed and what was promised." },
       duration_minutes: { type: "number", description: "Call length in minutes." },
     },
     required: ["lead_id", "subject"],
   },
   async handler(args, ctx) {
-    const result = await ctx.env.DB.prepare(
+    const result = await ctx.db.prepare(
       `INSERT INTO lead_activities (lead_id, type, subject, notes, duration_minutes, done, done_at)
        VALUES (?, 'call', ?, ?, ?, 1, datetime('now'))`
     )
@@ -288,12 +314,12 @@ const logCallActivity: ToolDef = {
 const checkAvailability: ToolDef = {
   name: "check_availability",
   description:
-    "List open meeting slots on a given date, in Eastern time. Use before offering a caller a time. Returns at most 6 slots; offer two or three, never the whole list.",
-  scopes: OURS,
+    "Check availability. Find open appointment slots, free times, schedule openings, or when a technician can come out on a given date. Work the date out yourself from what the caller said (\"Monday\", \"next week\") — never ask them for a formatted date. Offer two or three slots, never the whole list.",
+  scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
-      date: { type: "string", description: "Date to check, as YYYY-MM-DD." },
+      date: { type: "string", description: "The date you worked out, as YYYY-MM-DD." },
       duration_minutes: {
         type: "number",
         description: "Meeting length. Defaults to 30.",
@@ -318,15 +344,50 @@ const checkAvailability: ToolDef = {
       return { date: args.date, slots: [], message: "That's a weekend — offer a weekday instead." };
     }
 
-    const busy = await listCalendarBusy(
-      ctx.env,
-      dayStart.toISOString(),
-      dayEnd.toISOString()
-    );
-    const busyRanges = busy.map((b) => ({
-      start: Date.parse(b.start),
-      end: Date.parse(b.end),
-    }));
+    // WHOSE calendar? Ascend's own agents book into Brian's Microsoft 365. A
+    // TENANT books into the tenant's own schedule — their dispatch board, which
+    // lives in work_orders. Reading Ascend's calendar for a client would offer
+    // their caller a slot based on entirely unrelated availability.
+    const isAscend = ctx.agent.db_binding === "DB";
+    let busyRanges: Array<{ start: number; end: number }> = [];
+    let source: string;
+
+    if (isAscend) {
+      const busy = await listCalendarBusy(
+        ctx.env,
+        dayStart.toISOString(),
+        dayEnd.toISOString()
+      );
+      busyRanges = busy.map((b) => ({ start: Date.parse(b.start), end: Date.parse(b.end) }));
+      source = "microsoft-365";
+    } else {
+      const { results } = await ctx.db
+        .prepare(
+          `SELECT scheduled_for, reference
+             FROM work_orders
+            WHERE status IN ('scheduled','dispatched')
+              AND scheduled_for LIKE ?
+            ORDER BY scheduled_for`
+        )
+        .bind(`${args.date}%`)
+        .all<{ scheduled_for: string; reference: string }>();
+
+      // scheduled_for is 'YYYY-MM-DD HH:MM' in the business's local time.
+      // Assume a two-hour job unless we learn otherwise — better to under-offer
+      // than to double-book a crew.
+      busyRanges = results
+        .map((w) => {
+          const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(w.scheduled_for ?? "");
+          if (!m) return null;
+          const startUtc = zonedToUtc(
+            Number(m[1]), Number(m[2]), Number(m[3]),
+            Number(m[4]), Number(m[5]), BUSINESS_TZ
+          ).getTime();
+          return { start: startUtc, end: startUtc + 120 * 60_000 };
+        })
+        .filter((r): r is { start: number; end: number } => r !== null);
+      source = "work-orders";
+    }
 
     const now = Date.now();
     const slots: Array<{ start: string; spoken: string }> = [];
@@ -346,7 +407,8 @@ const checkAvailability: ToolDef = {
       date: args.date,
       duration_minutes: duration,
       slots,
-      calendar_connected: busy.length > 0 || undefined,
+      schedule_source: source,
+      already_booked: busyRanges.length,
     };
   },
 };
@@ -354,13 +416,13 @@ const checkAvailability: ToolDef = {
 const bookMeeting: ToolDef = {
   name: "book_meeting",
   description:
-    "Book a meeting into the business calendar and log it against a lead. Only call this with a start time returned by check_availability, and only after the caller has agreed to it out loud.",
-  scopes: OURS,
+    "Book an appointment. Schedule a visit, site survey, service call, or job on the calendar and create the work order. Only use a start time that check_availability returned, and only after the caller has agreed out loud. Tell them the day and time back in plain words.",
+  scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
-      lead_id: { type: "number", description: "The lead id returned by create_lead." },
-      start: { type: "string", description: "Slot start as a full ISO-8601 UTC instant." },
+      lead_id: { type: "number", description: "From create_lead's response. Never ask the caller for this." },
+      start: { type: "string", description: "A slot start returned by check_availability. Never ask the caller for an ISO timestamp." },
       duration_minutes: { type: "number", description: "Defaults to 30." },
       subject: { type: "string", description: "What the meeting is about." },
       notes: { type: "string", description: "Context for the meeting." },
@@ -372,7 +434,7 @@ const bookMeeting: ToolDef = {
     if (Number.isNaN(start.getTime())) throw new Error("start must be a valid ISO-8601 instant");
     const duration = Number(args.duration_minutes) > 0 ? Number(args.duration_minutes) : SLOT_MINUTES;
 
-    const lead = await ctx.env.DB.prepare(
+    const lead = await ctx.db.prepare(
       `SELECT id, name, company FROM leads WHERE id = ?`
     )
       .bind(args.lead_id)
@@ -387,9 +449,13 @@ const bookMeeting: ToolDef = {
       duration_minutes: duration,
     };
 
-    const graphEventId = await createCalendarEvent(ctx.env, activity);
+    // Ascend's own agents sync to Microsoft 365. A TENANT's booking belongs on
+    // the tenant's dispatch board — creating a work order is what actually makes
+    // a crew turn up, and it is what the next check_availability call will see.
+    const isAscend = ctx.agent.db_binding === "DB";
+    const graphEventId = isAscend ? await createCalendarEvent(ctx.env, activity) : null;
 
-    const result = await ctx.env.DB.prepare(
+    const result = await ctx.db.prepare(
       `INSERT INTO lead_activities (lead_id, type, subject, notes, due_at, duration_minutes, graph_event_id)
        VALUES (?, 'meeting', ?, ?, ?, ?, ?)`
     )
@@ -403,12 +469,185 @@ const bookMeeting: ToolDef = {
       )
       .run();
 
+    let workOrderRef: string | null = null;
+    if (!isAscend) {
+      // Local wall-clock, matching how the rest of the board stores times.
+      const local = new Intl.DateTimeFormat("en-CA", {
+        timeZone: BUSINESS_TZ,
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", hour12: false,
+      })
+        .format(start)
+        .replace(",", "");
+      workOrderRef = `WO-${Date.now().toString(36).toUpperCase().slice(-5)}`;
+      await ctx.db
+        .prepare(
+          `INSERT INTO work_orders (reference, summary, status, priority, scheduled_for, notes)
+           VALUES (?, ?, 'scheduled', 'normal', ?, ?)`
+        )
+        .bind(
+          workOrderRef,
+          `${args.subject} — ${lead.name}${lead.company ? ` (${lead.company})` : ""}`,
+          local,
+          args.notes ? String(args.notes) : "Booked by the phone agent."
+        )
+        .run();
+    }
+
     return {
       activity_id: result.meta.last_row_id,
+      work_order: workOrderRef,
       calendar_synced: Boolean(graphEventId),
       start: start.toISOString(),
       spoken: speakTime(start),
       message: `Booked for ${speakTime(start)}.`,
+    };
+  },
+};
+
+/**
+ * Recognise a returning caller.
+ *
+ * A trades business does not treat a ten-year customer as a stranger, and this
+ * is the tool that makes the agent sound like it works there. Tenant-scoped:
+ * a client's agent can only ever read that client's own customer list.
+ */
+const lookupCustomer: ToolDef = {
+  name: "lookup_customer",
+  description:
+    "Look up a customer. Find an existing customer, account, client, site, or service plan by phone number, name, or location. Call this EARLY to identify who is calling. If a search by phone finds nothing, ASK FOR THEIR NAME AND SEARCH AGAIN — people often ring from a mobile that is not on the account. Only treat someone as new after a name search has also missed.",
+  scopes: TENANT,
+  inputSchema: {
+    type: "object",
+    properties: {
+      phone: { type: "string", description: "Caller's number. The best identifier if you have it." },
+      name: { type: "string", description: "Person or company name." },
+      site: { type: "string", description: "Site or location name." },
+    },
+  },
+  async handler(args, ctx) {
+    const clauses: string[] = [];
+    const binds: unknown[] = [];
+    if (args.phone) {
+      // Match on the last 10 digits so formatting differences don't miss.
+      const digits = String(args.phone).replace(/\D/g, "").slice(-10);
+      clauses.push("replace(replace(replace(replace(phone,'+',''),'-',''),' ',''),'()','') LIKE ?");
+      binds.push(`%${digits}`);
+    }
+    if (args.name) {
+      clauses.push("name LIKE ?");
+      binds.push(`%${String(args.name).trim()}%`);
+    }
+    if (args.site) {
+      clauses.push("(site_name LIKE ? OR address LIKE ?)");
+      binds.push(`%${String(args.site).trim()}%`, `%${String(args.site).trim()}%`);
+    }
+    if (!clauses.length) throw new Error("give at least a phone, name, or site");
+
+    const { results } = await ctx.db
+      .prepare(
+        `SELECT id, name, phone, account_ref, site_name, address, service_plan,
+                balance_cents, notes
+           FROM customers
+          WHERE ${clauses.join(" OR ")}
+          LIMIT 5`
+      )
+      .bind(...binds)
+      .all();
+
+    // Guidance at the point of failure beats guidance in the system prompt: a
+    // phone miss is common (callers ring from a mobile that is not on the
+    // account) and the model needs to know the next move is to retry by name,
+    // not to tell the caller they have no account.
+    if (results.length === 0) {
+      const tried = [args.phone && "phone", args.name && "name", args.site && "site"]
+        .filter(Boolean)
+        .join(", ");
+      return {
+        found: 0,
+        customers: [],
+        searched_by: tried,
+        next_step: args.name
+          ? "No match. They may be a new customer — use create_lead."
+          : "No match on that number, which is common when someone calls from a mobile. Ask for their name or company and search again by name BEFORE telling them they have no account.",
+      };
+    }
+
+    return {
+      found: results.length,
+      customers: results,
+      // The agent must not read a balance aloud, so say so at the point of use
+      // rather than relying on the system prompt alone to remember.
+      reminder:
+        "Do not read balance_cents aloud. If they ask about a balance, take a message for accounts receivable.",
+    };
+  },
+};
+
+/**
+ * "Where is my technician?" — the single most common call a trades business
+ * gets, and the one an answering service can never handle.
+ */
+const getWorkOrders: ToolDef = {
+  name: "get_work_orders",
+  description:
+    "Get work orders. Look up jobs, service calls, appointments, scheduled visits, technician assignments, or job status for a customer — or one job by its reference (e.g. WO-4471). Use whenever a caller asks about an existing job, a visit, a technician, or when someone is coming.",
+  scopes: TENANT,
+  inputSchema: {
+    type: "object",
+    properties: {
+      customer_id: { type: "number", description: "From lookup_customer." },
+      reference: { type: "string", description: "Job reference such as WO-4471." },
+      status: {
+        type: "string",
+        description: "Filter: scheduled, dispatched, complete, cancelled. Omit for all.",
+      },
+    },
+  },
+  async handler(args, ctx) {
+    const clauses: string[] = [];
+    const binds: unknown[] = [];
+    if (args.customer_id) {
+      clauses.push("w.customer_id = ?");
+      binds.push(args.customer_id);
+    }
+    if (args.reference) {
+      clauses.push("w.reference LIKE ?");
+      binds.push(`%${String(args.reference).trim()}%`);
+    }
+    // A status filter alone is NOT a scope. Without this guard, asking for
+    // "dispatched jobs" returns whichever customer happens to have one — and the
+    // agent will read another customer's job out to the caller. Seen in a live
+    // test: a lookup miss for Captain Needa was followed by a status-only query
+    // that returned Admiral Ozzel's work order.
+    if (!args.customer_id && !args.reference) {
+      throw new Error(
+        "Identify the customer first. Call lookup_customer to get a customer_id, or give a specific job reference. Never list jobs by status alone — they may belong to someone else."
+      );
+    }
+    if (args.status) {
+      clauses.push("w.status = ?");
+      binds.push(String(args.status));
+    }
+
+    const { results } = await ctx.db
+      .prepare(
+        `SELECT w.reference, w.summary, w.status, w.priority, w.technician,
+                w.scheduled_for, w.completed_at, w.notes, c.name AS customer
+           FROM work_orders w
+           LEFT JOIN customers c ON c.id = w.customer_id
+          WHERE ${clauses.join(" AND ")}
+          ORDER BY w.scheduled_for DESC
+          LIMIT 10`
+      )
+      .bind(...binds)
+      .all();
+
+    return {
+      found: results.length,
+      work_orders: results,
+      reminder:
+        "Internal notes are for your understanding, not for reading aloud. Never blame a named technician to a caller.",
     };
   },
 };
@@ -431,7 +670,7 @@ const lookupLead: ToolDef = {
   async handler(args, ctx) {
     const q = `%${String(args.query).trim()}%`;
     const limit = Math.min(Number(args.limit) || 5, 20);
-    const { results } = await ctx.env.DB.prepare(
+    const { results } = await ctx.db.prepare(
       `SELECT id, name, company, email, phone, status, project_type, budget_range,
               deal_value_cents, source_origin, created_at
          FROM leads
@@ -472,7 +711,7 @@ const listLeads: ToolDef = {
     }
     const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
     binds.push(limit);
-    const { results } = await ctx.env.DB.prepare(
+    const { results } = await ctx.db.prepare(
       `SELECT id, name, company, status, project_type, budget_range, deal_value_cents,
               source_origin, created_at
          FROM leads ${where}
@@ -626,6 +865,8 @@ export const TOOLS: ToolDef[] = [
   logCallActivity,
   checkAvailability,
   bookMeeting,
+  lookupCustomer,
+  getWorkOrders,
   lookupLead,
   listLeads,
   listProjects,

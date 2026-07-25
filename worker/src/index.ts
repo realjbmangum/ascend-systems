@@ -18,6 +18,7 @@ import toolsRoutes from "./routes/tools";
 import activityRoutes from "./routes/activities";
 import seoRoutes from "./routes/seo";
 import mcpRoutes from "./routes/mcp";
+import voiceHttpRoutes from "./routes/voice-http";
 import { ingestGscMetrics } from "./lib/seo-cron";
 import {
   sendFormConfirmation,
@@ -351,6 +352,12 @@ app.route("/api/tools", toolsRoutes);
 // xAI voice agents, never by a browser)
 // ---------------------------------------------------------------------------
 app.route("/api/mcp", mcpRoutes);
+
+// ---------------------------------------------------------------------------
+// VOICE TOOLS OVER PLAIN HTTP (token in path — for xAI's native "API request"
+// tool type, which attaches directly to an agent with no tool-search layer)
+// ---------------------------------------------------------------------------
+app.route("/api/voice", voiceHttpRoutes);
 
 // ---------------------------------------------------------------------------
 // CLIENT PORTAL (client session required)
