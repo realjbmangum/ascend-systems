@@ -19,6 +19,9 @@ import activityRoutes from "./routes/activities";
 import seoRoutes from "./routes/seo";
 import mcpRoutes from "./routes/mcp";
 import voiceHttpRoutes from "./routes/voice-http";
+import OAuthProvider from "@cloudflare/workers-oauth-provider";
+import { createMcpApiHandler } from "./routes/mcp-oauth";
+import { renderConsent, submitConsent } from "./routes/oauth-consent";
 import { ingestGscMetrics } from "./lib/seo-cron";
 import { checkVoiceHealth, formatVoiceAlert } from "./lib/voice-health";
 import {
@@ -360,6 +363,14 @@ app.route("/api/mcp", mcpRoutes);
 // tool type, which attaches directly to an agent with no tool-search layer)
 // ---------------------------------------------------------------------------
 app.route("/api/voice", voiceHttpRoutes);
+
+// ---------------------------------------------------------------------------
+// OAUTH CONSENT UI for the MCP server at /mcp. The provider owns /token and
+// /register; the authorize screen is ours because only we know which agents
+// exist and which one this connection should be granted as.
+// ---------------------------------------------------------------------------
+app.get("/authorize", (c) => renderConsent(c.req.raw, c.env));
+app.post("/authorize", (c) => submitConsent(c.req.raw, c.env));
 
 // ---------------------------------------------------------------------------
 // CLIENT PORTAL (client session required)
@@ -992,8 +1003,28 @@ app.route("/api", admin);
 // SCHEDULED HANDLER — drip processor
 // ---------------------------------------------------------------------------
 
+/**
+ * The OAuth provider fronts ONLY /mcp. Every other request — the contact form,
+ * the admin app, the portal, /api/voice, /api/mcp — falls through untouched to
+ * the Hono app as defaultHandler.
+ *
+ * `scheduled` is re-exported by hand because wrapping the default export would
+ * otherwise drop the cron, and the cron is what runs the drip processor, the
+ * SEO ingest and the voice health check.
+ */
+const oauth = new OAuthProvider({
+  apiRoute: "/mcp",
+  apiHandler: createMcpApiHandler() as any,
+  defaultHandler: { fetch: app.fetch.bind(app) } as any,
+  authorizeEndpoint: "/authorize",
+  tokenEndpoint: "/token",
+  clientRegistrationEndpoint: "/register",
+  // 30 days of access token, so a console connection is not re-approved weekly.
+  accessTokenTTL: 60 * 60 * 24 * 30,
+});
+
 export default {
-  fetch: app.fetch.bind(app),
+  fetch: oauth.fetch.bind(oauth),
   async scheduled(
     event: ScheduledEvent,
     env: Bindings,

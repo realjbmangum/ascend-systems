@@ -23,7 +23,7 @@
 
 import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
-import { findTool, toolsForScope, type ToolCtx, type VoiceAgentRow } from "../lib/voice-tools";
+import { toolsForAgent, findToolForAgent, type ToolCtx, type VoiceAgentRow } from "../lib/voice-tools";
 import { hashToken } from "./mcp";
 import { checkVoiceHealth } from "../lib/voice-health";
 
@@ -37,7 +37,7 @@ async function resolve(
   const agent = (await db0
     .prepare(
       `SELECT id, key, label, scope, client_id, daily_cost_ceiling_cents,
-              db_binding, tenant_name
+              db_binding, tenant_name, tools_allow, department
          FROM voice_agents
         WHERE token_hash = ? AND active = 1`
     )
@@ -65,7 +65,7 @@ voiceHttp.get("/t/:token", async (c) => {
     tenant: got.agent.tenant_name,
     how_to_use:
       "In the xAI console add an 'API request' tool for each endpoint below. Method POST, JSON body of the listed arguments.",
-    endpoints: toolsForScope(got.agent.scope).map((t) => ({
+    endpoints: toolsForAgent(got.agent).map((t) => ({
       tool: t.name,
       method: "POST",
       url: `${base}/${t.name}`,
@@ -87,10 +87,10 @@ voiceHttp.post("/t/:token/:tool", async (c) => {
   const { agent, db } = got;
 
   const name = c.req.param("tool");
-  const tool = findTool(name, agent.scope);
+  const tool = findToolForAgent(name, agent);
   if (!tool) {
     return c.json(
-      { error: `Unknown tool: ${name}`, available: toolsForScope(agent.scope).map((t) => t.name) },
+      { error: `Unknown tool: ${name}`, available: toolsForAgent(agent).map((t) => t.name) },
       404
     );
   }

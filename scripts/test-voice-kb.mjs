@@ -51,7 +51,7 @@ try {
 }
 
 if (buildOk) {
-  const files = await readdir(path.join(ROOT, "voice-kb"));
+  const files = await readdir(path.join(ROOT, "voice-tenants/ascend/kb"));
   check("all five service docs are present", files.filter((f) => f.startsWith("service-")).length === 5);
   check("case studies are present", files.some((f) => f.startsWith("case-study-")));
   check("MSA is present", files.includes("master-services-agreement.md"));
@@ -61,7 +61,7 @@ if (buildOk) {
   const docs = await Promise.all(
     files
       .filter((f) => f.endsWith(".md"))
-      .map(async (name) => ({ name, body: await readFile(path.join(ROOT, "voice-kb", name), "utf8") }))
+      .map(async (name) => ({ name, body: await readFile(path.join(ROOT, "voice-tenants/ascend/kb", name), "utf8") }))
   );
   check("re-scanning the written files finds no violations", scanForViolations(docs).length === 0);
 }
@@ -136,7 +136,7 @@ try {
   // website-copy.md exists and is readable, but is not in SOURCES. Prove the
   // build would refuse it rather than silently including it.
   const { FORBIDDEN: _f } = await import("./build-voice-kb.mjs");
-  const manifestRaw = await readFile(path.join(ROOT, "voice-kb/MANIFEST.json"), "utf8");
+  const manifestRaw = await readFile(path.join(ROOT, "voice-tenants/ascend/kb/MANIFEST.json"), "utf8");
   const manifest = JSON.parse(manifestRaw);
   check(
     "website-copy.md is not among the build sources",

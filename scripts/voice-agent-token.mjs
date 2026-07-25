@@ -19,6 +19,7 @@
 // =============================================================================
 
 import { randomBytes, createHash } from "node:crypto";
+import { createInterface } from "node:readline";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,13 +27,27 @@ import { fileURLToPath } from "node:url";
 const VALID_SCOPES = {
   receptionist: "Ascend's own caller-facing line. 4 tools, writes to ascend-db.",
   assistant: "Brian's own voice. All 10 tools, including pipeline and invoices.",
-  client: "A tenant's line. 4 tools, writes to that tenant's own database. Requires --code.",
+  client:
+    "A tenant's line. Writes to that tenant's own database. Requires --code <tenant>; " +
+    "add --department and --tools for a per-department agent.",
 };
 
 const argv = process.argv.slice(2);
-const codeFlag = argv.indexOf("--code");
-const code = codeFlag !== -1 ? argv[codeFlag + 1] : null;
-const positional = argv.filter((a, i) => a !== "--code" && i !== codeFlag + 1);
+const flagValue = (name) => {
+  const i = argv.indexOf(name);
+  return i !== -1 ? argv[i + 1] : null;
+};
+const code = flagValue("--code");
+const department = flagValue("--department");
+const toolsCsv = flagValue("--tools");
+const FLAGS = ["--code", "--department", "--tools"];
+// --paste takes no value, so it must not consume the next argument.
+const skip = new Set();
+FLAGS.forEach((f) => {
+  const i = argv.indexOf(f);
+  if (i !== -1) { skip.add(i); skip.add(i + 1); }
+});
+const positional = argv.filter((a, i) => !skip.has(i) && a !== "--paste");
 const scope = positional[0];
 const label = positional[1];
 
@@ -42,7 +57,9 @@ function usage(msg) {
       `Usage:\n` +
       `  node scripts/voice-agent-token.mjs receptionist "Ascend Receptionist"\n` +
       `  node scripts/voice-agent-token.mjs assistant    "Ascend Personal Assistant"\n` +
-      `  node scripts/voice-agent-token.mjs client       "Imperial Climate Control" --code c00\n\n` +
+      `  node scripts/voice-agent-token.mjs client       "Ascend Systems" --code ascend\n` +
+      `  node scripts/voice-agent-token.mjs client       "Ascend Systems" --code ascend --paste\n` +
+      `  node scripts/voice-agent-token.mjs client       "Imperial Climate Control" --code c00 --department sales\n\n` +
       Object.entries(VALID_SCOPES)
         .map(([k, d]) => `  ${k.padEnd(14)} ${d}`)
         .join("\n") +
@@ -53,18 +70,66 @@ function usage(msg) {
 
 if (!scope || !VALID_SCOPES[scope]) usage("Unknown or missing scope.");
 if (!label) usage("A label is required — it shows up in the asset register.");
-if (scope === "client" && !/^c\d{2}$/.test(code ?? "")) {
-  usage("A client agent needs --code cNN (e.g. --code c00) so it routes to the right database.");
+// Tenant names, not codes — voice-<name>, DB_<NAME>, <name>-<dept>. Imperial is
+// grandfathered on c00, which still matches this pattern.
+if (scope === "client" && !/^[a-z0-9-]+$/.test(code ?? "")) {
+  usage(
+    "A client agent needs --code <tenant> so it routes to the right database.\n" +
+      "Lowercase letters, digits and hyphens — e.g. --code ascend, --code suitemanager."
+  );
 }
 if (scope !== "client" && code) usage("--code only applies to a client agent.");
 
-// Ascend's own agents use the main database; a tenant uses its own binding.
-const agentKey = scope === "client" ? code : scope;
-const dbBinding = scope === "client" ? `DB_${code.toUpperCase()}` : "DB";
+// An allow-list can only ever NARROW what the scope already grants.
+const toolsAllow = toolsCsv
+  ? JSON.stringify(toolsCsv.split(",").map((t) => t.trim()).filter(Boolean))
+  : null;
 
-// 32 bytes of CSPRNG, base64url. Prefixed so it is recognisable in a console
-// field and greppable if it ever leaks.
-const token = `ascend_voice_${randomBytes(32).toString("base64url")}`;
+// Ascend is the one tenant whose business already lives in the platform
+// database, so it never got a voice-<name> D1 — its binding is DB, reached
+// through the customers/work_orders views over clients/projects. Every other
+// tenant gets its own.
+const SELF_HOSTED = new Set(["ascend"]);
+const agentKey =
+  scope === "client" ? (department ? `${code}-${department}` : code) : scope;
+const dbBinding =
+  scope !== "client" || SELF_HOSTED.has(code) ? "DB" : `DB_${code.toUpperCase()}`;
+
+/**
+ * Where the token comes from.
+ *
+ * --paste  : you supply it, generated in your password manager. Read from stdin,
+ *            never from a command-line argument, so it stays out of shell
+ *            history and out of any process listing. This is the better habit —
+ *            the token lives in Bitwarden as the source of truth and this script
+ *            only ever learns its hash.
+ * default  : generated here, printed once, never stored. Fine, but if you lose
+ *            the terminal you lose the token and have to re-mint.
+ */
+const PASTE = argv.includes("--paste");
+
+async function readSecret(prompt) {
+  process.stdout.write(prompt);
+  const rl = createInterface({ input: process.stdin, terminal: false });
+  for await (const line of rl) {
+    rl.close();
+    return line.trim();
+  }
+  return "";
+}
+
+let token;
+if (PASTE) {
+  token = await readSecret("Paste the token (from your password manager): ");
+  if (token.length < 24) {
+    console.error("\nThat is too short to be a good token. Generate at least 24 characters.\n");
+    process.exit(1);
+  }
+} else {
+  // 32 bytes of CSPRNG, base64url. Prefixed so it is recognisable in a console
+  // field and greppable if it ever leaks.
+  token = `ascend_voice_${randomBytes(32).toString("base64url")}`;
+}
 const hash = createHash("sha256").update(token).digest("hex");
 
 // Caller-facing lines get a spend ceiling; the assistant is Brian talking to
@@ -73,17 +138,23 @@ const ceiling = scope === "assistant" ? 0 : 500;
 const esc = (s) => String(s).replace(/'/g, "''");
 
 const sql =
-  `INSERT INTO voice_agents (key, label, scope, token_hash, daily_cost_ceiling_cents, active, db_binding, tenant_name) ` +
-  `VALUES ('${agentKey}', '${esc(label)}', '${scope}', '${hash}', ${ceiling}, 1, '${dbBinding}', '${esc(label)}') ` +
+  `INSERT INTO voice_agents (key, label, scope, token_hash, daily_cost_ceiling_cents, active, db_binding, tenant_name, department, tools_allow) ` +
+  `VALUES ('${agentKey}', '${esc(label)}', '${scope}', '${hash}', ${ceiling}, 1, '${dbBinding}', '${esc(label)}', ` +
+  `${department ? `'${esc(department)}'` : "NULL"}, ${toolsAllow ? `'${esc(toolsAllow)}'` : "NULL"}) ` +
   `ON CONFLICT(key) DO UPDATE SET token_hash = excluded.token_hash, label = excluded.label, ` +
   `scope = excluded.scope, db_binding = excluded.db_binding, tenant_name = excluded.tenant_name, ` +
+  `department = excluded.department, tools_allow = excluded.tools_allow, ` +
   `updated_at = datetime('now');`;
 
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WORKER = path.join(ROOT, "worker");
-const BASE = "https://ascend-api.bmangum1.workers.dev/api/mcp";
-const url = `${BASE}/t/${token}`;
+// The console cannot send a bearer token, so it goes in the path. And tools are
+// added individually as "API request" entries under /api/voice — NOT via the MCP
+// endpoint, because xAI hides MCP tools behind a search the agent mostly fails.
+const ORIGIN = "https://ascend-api.bmangum1.workers.dev";
+const BASE = `${ORIGIN}/api/voice/t/${token}`;
+const url = BASE;
 
 // Register the HASH (never the token) against both databases. Doing this here
 // rather than printing SQL for a human to copy removes the step that silently
@@ -103,11 +174,14 @@ function register(target) {
 }
 
 console.log(`
-┌─ TOKEN (shown once — copy it now) ────────────────────────────────────────────
+${PASTE
+  ? "┌─ TOKEN — the one you pasted. It is in your password manager already. ─────────┘"
+  : `┌─ TOKEN (shown once — SAVE IT TO YOUR PASSWORD MANAGER NOW) ───────────────────
 
   ${token}
 
 └───────────────────────────────────────────────────────────────────────────────
+  Next time use --paste to supply your own instead, so it is never only here.`}
 
   agent      ${agentKey}
   scope      ${scope}
@@ -139,7 +213,9 @@ for (let i = 0; i < 10; i++) {
   process.stdout.write(".");
   await new Promise((r) => setTimeout(r, 2000));
   try {
-    const res = await fetch(`${url}/check`);
+    // The /api/voice index is itself the check — it 401s on a bad token and
+    // otherwise reports the agent, its database and the tools it can reach.
+    const res = await fetch(BASE);
     const body = await res.json();
     if (body.ok) { verified = body; break; }
   } catch { /* keep trying */ }
@@ -150,27 +226,40 @@ if (!verified) {
   console.log(`
 Registered, but production did not confirm it within 20 seconds. Check by hand:
 
-  ${url}/check
+  ${BASE}
 `);
   process.exit(1);
 }
 
 console.log(`
-✓ LIVE — ${verified.tenant} · ${verified.tools.length} tools · writes to ${verified.database}
-  ${verified.tools.join(", ")}
+✓ LIVE — ${verified.tenant} · ${(verified.endpoints || []).length} tools · writes to ${dbBinding}
 
-┌─ PASTE THIS INTO THE xAI CONSOLE ─────────────────────────────────────────────
+┌─ ADD THESE IN THE xAI CONSOLE ────────────────────────────────────────────────
 
-  Tools → Add remote MCP server
+  Add tool → API request,  once per tool below.
+  Method POST · Authentication NONE · every parameter goes in the Body.
 
-  Server URL   ${url}
-  Label        ascend
-  Auth         LEAVE EVERY OAUTH FIELD BLANK
+${(verified.endpoints || [])
+  .map((e) => `  ${e.tool.padEnd(20)} ${e.url}`)
+  .join("\n")}
 
 └───────────────────────────────────────────────────────────────────────────────
 
-The token is in the URL because the console has no bearer-token field. If it
-still shows an OAuth form, you pasted ${BASE} instead of the full URL above.
+Parameters (Number where marked, everything else String):
+
+  create_lead          name*, message*            phone, email, company
+  lookup_customer      —                          phone, name, site, account_ref
+  get_work_orders      customer_id(N) or reference   status
+  get_account_balance  customer_id(N) or account_ref
+  check_availability   date*                      duration_minutes(N)
+  book_meeting         lead_id(N)*, start*, subject*   duration_minutes(N), notes
+  log_call_activity    lead_id(N)*, subject*      notes, duration_minutes(N)
+
+  * = mark Required = Yes
+
+Check your work — open this in a browser to see exactly what this token reaches:
+
+  ${BASE}
 
 Rotating: re-run this command. The old token stops working immediately.
 `);
