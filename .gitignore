@@ -53,8 +53,10 @@ scripts/out/
 # --- keep sensitive docs out of git (real data lives in D1/R2) — added 2026-07-23 ---
 seo-export/
 
-# Generated caller-facing voice knowledge base. Build artifact — rebuild with
-# `npm run voice:kb`. Ignored so nobody hand-edits a file the next build will
-# overwrite, and so the allowlist in scripts/build-voice-kb.mjs stays the only
-# thing that decides what a caller can be told.
-voice-kb/
+# Ascend's caller-facing collection is EXTRACTED from its own website, so it is
+# derived — rebuild with `npm run voice:kb`. Ignored so nobody hand-edits a file
+# the next build overwrites, and so the allowlist in scripts/build-voice-kb.mjs
+# stays the only thing deciding what a caller can be told.
+# Other tenants' collections ARE committed: their source documents are the
+# deliverable, not a by-product of this repo.
+voice-tenants/ascend/kb/

@@ -85,7 +85,10 @@ node scripts/voice-agent-token.mjs client "<Client Name>" --code <name>
 
 ## 5 · Knowledge base
 
-Five documents, modelled on `voice-tenants/imperial/kb/`:
+Five documents in `voice-tenants/<name>/source/`, modelled on
+`voice-tenants/imperial/kb/`. Build them into a collection with
+`node scripts/build-voice-kb.mjs --tenant <name>` — the firewall runs on every
+tenant, not just Ascend:
 
 - [ ] `01-company-overview` — what they do, who they serve, what they are not
 - [ ] `02-services-and-pricing` — what may be quoted, and what needs a survey
