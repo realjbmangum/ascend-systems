@@ -90,12 +90,19 @@ STEP 1 — register the hash in D1 (run from worker/):
 
 npx wrangler d1 execute ascend-db --remote --command "${sql.replace(/"/g, '\\"')}"
 
-STEP 2 — paste the token into the xAI Voice Agent Builder console:
+STEP 2 — add the MCP server in the xAI console.
 
-  Tools → Add remote MCP server
-    Server URL:     https://ascend-api.bmangum1.workers.dev/api/mcp
-    Server label:   ascend
-    Authorization:  Bearer ${token}
+  The console has NO field for a bearer token — it only offers OAuth client
+  credentials. So the token goes in the URL instead. Paste this as the Server
+  URL and leave every auth field blank:
+
+  https://ascend-api.bmangum1.workers.dev/api/mcp/t/${token}
+
+    Server label:  ascend
+    Auth:          leave empty — do NOT fill in the OAuth form
+
+  If the console still asks for OAuth, you used the plain /api/mcp URL. The
+  /t/<token> form is what stops it probing for OAuth.
 
 STEP 3 — verify it from your machine before trusting the console:
 

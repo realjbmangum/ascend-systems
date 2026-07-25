@@ -53,13 +53,32 @@ export async function hashToken(token: string): Promise<string> {
     .join("");
 }
 
-async function authenticate(
+/**
+ * Look up an agent by raw token.
+ *
+ * The token arrives one of two ways:
+ *
+ *   1. `Authorization: Bearer <token>` — correct, and what curl and any client
+ *      that lets you set a header should use.
+ *   2. In the URL path, `/api/mcp/t/<token>` — because the xAI console has no
+ *      field for a bearer token when adding a remote MCP server. It offers only
+ *      OAuth client credentials, so a header-authenticated server simply cannot
+ *      be configured there.
+ *
+ * Path tokens are a real trade-off: the secret ends up in xAI's stored config
+ * and in any request log that records full paths. It is mitigated by HTTPS (the
+ * path is inside the encrypted body, not the TLS handshake), by per-tenant
+ * scoping — a leaked c00 token reaches c00's four tools and nothing else — and
+ * by one-command rotation. Never log the path of this route.
+ *
+ * The proper fix is an OAuth 2.1 + PKCE shim so the console's own form works.
+ * See docs/voice-tenant-onboarding.md.
+ */
+async function lookupAgent(
   db: D1Database,
-  header: string | undefined
+  rawToken: string | undefined
 ): Promise<VoiceAgentRow | null> {
-  if (!header) return null;
-  const match = /^Bearer\s+(.+)$/i.exec(header.trim());
-  if (!match) return null;
+  if (!rawToken) return null;
   const row = await db
     .prepare(
       `SELECT id, key, label, scope, client_id, daily_cost_ceiling_cents,
@@ -67,9 +86,15 @@ async function authenticate(
          FROM voice_agents
         WHERE token_hash = ? AND active = 1`
     )
-    .bind(await hashToken(match[1]))
+    .bind(await hashToken(rawToken))
     .first<VoiceAgentRow>();
   return row ?? null;
+}
+
+function tokenFromHeader(header: string | undefined): string | undefined {
+  if (!header) return undefined;
+  const match = /^Bearer\s+(.+)$/i.exec(header.trim());
+  return match ? match[1] : undefined;
 }
 
 /**
@@ -168,12 +193,14 @@ async function dispatch(
   }
 }
 
-mcp.post("/", async (c) => {
-  const agent = await authenticate(c.env.DB, c.req.header("Authorization"));
+async function handleRpc(c: any, rawToken: string | undefined) {
+  const agent = await lookupAgent(c.env.DB, rawToken);
   if (!agent) {
-    return c.json({ error: "unauthorized" }, 401, {
-      "WWW-Authenticate": "Bearer",
-    });
+    // Deliberately NO `WWW-Authenticate: Bearer` header. Under the MCP
+    // authorization spec that is an OAuth challenge — xAI's console probes the
+    // endpoint, sees it, and switches to demanding OAuth client credentials we
+    // do not have. A bare 401 keeps the console on the simple path.
+    return c.json({ error: "unauthorized" }, 401);
   }
 
   let body: RpcRequest | RpcRequest[];
@@ -222,9 +249,20 @@ mcp.post("/", async (c) => {
   // All-notification payload: acknowledge with no content.
   if (responses.length === 0) return c.body(null, 202);
   return c.json(Array.isArray(body) ? responses : responses[0]);
-});
+}
+
+// Header auth — correct, and what curl and any header-capable client should use.
+mcp.post("/", (c) => handleRpc(c, tokenFromHeader(c.req.header("Authorization"))));
+
+// Path auth — for the xAI console, which offers no bearer-token field.
+// The header still wins if both are somehow present.
+mcp.post("/t/:token", (c) =>
+  handleRpc(c, tokenFromHeader(c.req.header("Authorization")) ?? c.req.param("token"))
+);
 
 // This server never initiates messages, so it has no SSE stream to offer.
+// Both shapes answer, so a client probing either one gets a clear signal.
 mcp.get("/", (c) => c.json({ error: "method not allowed" }, 405));
+mcp.get("/t/:token", (c) => c.json({ error: "method not allowed" }, 405));
 
 export default mcp;
