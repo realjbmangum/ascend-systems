@@ -26,7 +26,9 @@ import { fileURLToPath } from "node:url";
 const VALID_SCOPES = {
   receptionist: "Ascend's own caller-facing line. 4 tools, writes to ascend-db.",
   assistant: "Brian's own voice. All 10 tools, including pipeline and invoices.",
-  client: "A tenant's line. 4 tools, writes to that tenant's own database. Requires --code.",
+  client:
+    "A tenant's line. Writes to that tenant's own database. Requires --code <tenant>; " +
+    "add --department and --tools for a per-department agent.",
 };
 
 const argv = process.argv.slice(2);
@@ -53,7 +55,8 @@ function usage(msg) {
       `Usage:\n` +
       `  node scripts/voice-agent-token.mjs receptionist "Ascend Receptionist"\n` +
       `  node scripts/voice-agent-token.mjs assistant    "Ascend Personal Assistant"\n` +
-      `  node scripts/voice-agent-token.mjs client       "Imperial Climate Control" --code c00\n\n` +
+      `  node scripts/voice-agent-token.mjs client       "Ascend Systems" --code ascend\n` +
+      `  node scripts/voice-agent-token.mjs client       "Imperial Climate Control" --code c00 --department sales\n\n` +
       Object.entries(VALID_SCOPES)
         .map(([k, d]) => `  ${k.padEnd(14)} ${d}`)
         .join("\n") +
@@ -64,8 +67,13 @@ function usage(msg) {
 
 if (!scope || !VALID_SCOPES[scope]) usage("Unknown or missing scope.");
 if (!label) usage("A label is required — it shows up in the asset register.");
-if (scope === "client" && !/^c\d{2}$/.test(code ?? "")) {
-  usage("A client agent needs --code cNN (e.g. --code c00) so it routes to the right database.");
+// Tenant names, not codes — voice-<name>, DB_<NAME>, <name>-<dept>. Imperial is
+// grandfathered on c00, which still matches this pattern.
+if (scope === "client" && !/^[a-z0-9-]+$/.test(code ?? "")) {
+  usage(
+    "A client agent needs --code <tenant> so it routes to the right database.\n" +
+      "Lowercase letters, digits and hyphens — e.g. --code ascend, --code suitemanager."
+  );
 }
 if (scope !== "client" && code) usage("--code only applies to a client agent.");
 
@@ -74,10 +82,15 @@ const toolsAllow = toolsCsv
   ? JSON.stringify(toolsCsv.split(",").map((t) => t.trim()).filter(Boolean))
   : null;
 
-// Ascend's own agents use the main database; a tenant uses its own binding.
+// Ascend is the one tenant whose business already lives in the platform
+// database, so it never got a voice-<name> D1 — its binding is DB, reached
+// through the customers/work_orders views over clients/projects. Every other
+// tenant gets its own.
+const SELF_HOSTED = new Set(["ascend"]);
 const agentKey =
   scope === "client" ? (department ? `${code}-${department}` : code) : scope;
-const dbBinding = scope === "client" ? `DB_${code.toUpperCase()}` : "DB";
+const dbBinding =
+  scope !== "client" || SELF_HOSTED.has(code) ? "DB" : `DB_${code.toUpperCase()}`;
 
 // 32 bytes of CSPRNG, base64url. Prefixed so it is recognisable in a console
 // field and greppable if it ever leaks.
