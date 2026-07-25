@@ -170,11 +170,11 @@ const createLead: ToolDef = {
       project_type: {
         type: "string",
         description:
-          "Which service line this is about: custom-saas-development, internal-tools, legacy-modernization, ai-integrations, or fractional-cto.",
+          "Short slug for what the caller wants, in this business's own vocabulary — e.g. emergency-service, install-quote, maintenance-contract.",
       },
       budget_range: {
         type: "string",
-        description: "One of: Under $5k, $5k-$15k, $15k-$50k, $50k+, Not sure.",
+        description: "Budget band, only if the caller volunteers one. Never push for it.",
       },
       message: {
         type: "string",
@@ -431,6 +431,126 @@ const bookMeeting: ToolDef = {
   },
 };
 
+/**
+ * Recognise a returning caller.
+ *
+ * A trades business does not treat a ten-year customer as a stranger, and this
+ * is the tool that makes the agent sound like it works there. Tenant-scoped:
+ * a client's agent can only ever read that client's own customer list.
+ */
+const lookupCustomer: ToolDef = {
+  name: "lookup_customer",
+  description:
+    "Find an existing customer account by phone number, name, or site. Call this EARLY — ideally on the caller's phone number before they say anything — so you know who you are speaking to, which site they are at, and what service plan they hold.",
+  scopes: TENANT,
+  inputSchema: {
+    type: "object",
+    properties: {
+      phone: { type: "string", description: "Caller's number. The best identifier if you have it." },
+      name: { type: "string", description: "Person or company name." },
+      site: { type: "string", description: "Site or location name." },
+    },
+  },
+  async handler(args, ctx) {
+    const clauses: string[] = [];
+    const binds: unknown[] = [];
+    if (args.phone) {
+      // Match on the last 10 digits so formatting differences don't miss.
+      const digits = String(args.phone).replace(/\D/g, "").slice(-10);
+      clauses.push("replace(replace(replace(replace(phone,'+',''),'-',''),' ',''),'()','') LIKE ?");
+      binds.push(`%${digits}`);
+    }
+    if (args.name) {
+      clauses.push("name LIKE ?");
+      binds.push(`%${String(args.name).trim()}%`);
+    }
+    if (args.site) {
+      clauses.push("(site_name LIKE ? OR address LIKE ?)");
+      binds.push(`%${String(args.site).trim()}%`, `%${String(args.site).trim()}%`);
+    }
+    if (!clauses.length) throw new Error("give at least a phone, name, or site");
+
+    const { results } = await ctx.db
+      .prepare(
+        `SELECT id, name, phone, account_ref, site_name, address, service_plan,
+                balance_cents, notes
+           FROM customers
+          WHERE ${clauses.join(" OR ")}
+          LIMIT 5`
+      )
+      .bind(...binds)
+      .all();
+
+    return {
+      found: results.length,
+      customers: results,
+      // The agent must not read a balance aloud, so say so at the point of use
+      // rather than relying on the system prompt alone to remember.
+      reminder:
+        "Do not read balance_cents aloud. If they ask about a balance, take a message for accounts receivable.",
+    };
+  },
+};
+
+/**
+ * "Where is my technician?" — the single most common call a trades business
+ * gets, and the one an answering service can never handle.
+ */
+const getWorkOrders: ToolDef = {
+  name: "get_work_orders",
+  description:
+    "Look up jobs for a customer, or one job by its reference (e.g. WO-4471). Use this whenever a caller asks about an existing job, a visit, a technician, or when someone is coming.",
+  scopes: TENANT,
+  inputSchema: {
+    type: "object",
+    properties: {
+      customer_id: { type: "number", description: "From lookup_customer." },
+      reference: { type: "string", description: "Job reference such as WO-4471." },
+      status: {
+        type: "string",
+        description: "Filter: scheduled, dispatched, complete, cancelled. Omit for all.",
+      },
+    },
+  },
+  async handler(args, ctx) {
+    const clauses: string[] = [];
+    const binds: unknown[] = [];
+    if (args.customer_id) {
+      clauses.push("w.customer_id = ?");
+      binds.push(args.customer_id);
+    }
+    if (args.reference) {
+      clauses.push("w.reference LIKE ?");
+      binds.push(`%${String(args.reference).trim()}%`);
+    }
+    if (args.status) {
+      clauses.push("w.status = ?");
+      binds.push(String(args.status));
+    }
+    if (!clauses.length) throw new Error("give a customer_id or a reference");
+
+    const { results } = await ctx.db
+      .prepare(
+        `SELECT w.reference, w.summary, w.status, w.priority, w.technician,
+                w.scheduled_for, w.completed_at, w.notes, c.name AS customer
+           FROM work_orders w
+           LEFT JOIN customers c ON c.id = w.customer_id
+          WHERE ${clauses.join(" AND ")}
+          ORDER BY w.scheduled_for DESC
+          LIMIT 10`
+      )
+      .bind(...binds)
+      .all();
+
+    return {
+      found: results.length,
+      work_orders: results,
+      reminder:
+        "Internal notes are for your understanding, not for reading aloud. Never blame a named technician to a caller.",
+    };
+  },
+};
+
 // --- assistant-only ---------------------------------------------------------
 
 const lookupLead: ToolDef = {
@@ -644,6 +764,8 @@ export const TOOLS: ToolDef[] = [
   logCallActivity,
   checkAvailability,
   bookMeeting,
+  lookupCustomer,
+  getWorkOrders,
   lookupLead,
   listLeads,
   listProjects,

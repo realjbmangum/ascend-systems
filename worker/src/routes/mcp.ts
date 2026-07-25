@@ -134,6 +134,7 @@ async function dispatch(
 
   switch (method) {
     case "initialize":
+      console.log(`[mcp] ${agent.key} initialize`);
       return rpcResult(id, {
         protocolVersion: PROTOCOL_VERSION,
         capabilities: { tools: { listChanged: false } },
@@ -147,14 +148,17 @@ async function dispatch(
     case "ping":
       return rpcResult(id, {});
 
-    case "tools/list":
+    case "tools/list": {
+      const listed = toolsForScope(agent.scope);
+      console.log(`[mcp] ${agent.key} tools/list -> ${listed.length} tools`);
       return rpcResult(id, {
-        tools: toolsForScope(agent.scope).map((t) => ({
+        tools: listed.map((t) => ({
           name: t.name,
           description: t.description,
           inputSchema: t.inputSchema,
         })),
       });
+    }
 
     case "tools/call": {
       const name = String(req.params?.name ?? "");
@@ -171,6 +175,12 @@ async function dispatch(
       }
       try {
         const output = await tool.handler(args, ctx);
+        // Log successes too. Without this there is no way to tell a working
+        // agent from one that connects, handshakes, and never calls anything —
+        // which is the silent failure that loses leads without anyone noticing.
+        console.log(
+          `[mcp] ${agent.key} tools/call ${name} OK -> ${JSON.stringify(output).slice(0, 160)}`
+        );
         return rpcResult(id, {
           content: [{ type: "text", text: JSON.stringify(output) }],
           isError: false,
