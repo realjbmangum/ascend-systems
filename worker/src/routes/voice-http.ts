@@ -172,7 +172,7 @@ voiceHttp.get("/demo", async (c) => {
     return c.json({ error: "demo tenant unavailable" }, 503);
   }
 
-  const [leads, customers, workOrders, activities] = await Promise.all([
+  const [leads, customers, workOrders, activities, daily, statuses, totals] = await Promise.all([
     db
       .prepare(
         `SELECT id, name, phone, company, message, status, created_at
@@ -201,11 +201,63 @@ voiceHttp.get("/demo", async (c) => {
           ORDER BY a.id DESC LIMIT 12`
       )
       .all(),
+    // Seven-day activity, zero-filled below so quiet days render as gaps rather
+    // than vanishing and compressing the axis.
+    db
+      .prepare(
+        `SELECT date(created_at) AS day, COUNT(*) AS n
+           FROM leads WHERE created_at >= date('now','-6 day')
+          GROUP BY day`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT status, COUNT(*) AS n FROM work_orders GROUP BY status`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT
+           (SELECT COUNT(*) FROM leads WHERE created_at >= date('now','-6 day')) AS leads_7d,
+           (SELECT COUNT(*) FROM lead_activities WHERE type='meeting') AS bookings,
+           (SELECT COUNT(*) FROM work_orders WHERE status IN ('scheduled','dispatched')) AS open_jobs,
+           (SELECT COUNT(*) FROM customers) AS customers,
+           (SELECT COALESCE(SUM(duration_minutes),0) FROM lead_activities WHERE type='call') AS call_minutes`
+      )
+      .first(),
   ]);
+
+  // Zero-fill the last 7 days in business-local terms.
+  const byDay = new Map(
+    (daily.results as Array<{ day: string; n: number }>).map((r) => [r.day, r.n])
+  );
+  const bookingsByDay = new Map(
+    (activities.results as Array<{ type: string; created_at: string }>)
+      .filter((a) => a.type === "meeting")
+      .reduce((m, a) => {
+        const d = String(a.created_at).slice(0, 10);
+        m.set(d, (m.get(d) ?? 0) + 1);
+        return m;
+      }, new Map<string, number>())
+  );
+  const series: Array<{ day: string; label: string; leads: number; bookings: number }> = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86_400_000);
+    const key = d.toISOString().slice(0, 10);
+    series.push({
+      day: key,
+      label: new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "UTC" }).format(d),
+      leads: byDay.get(key) ?? 0,
+      bookings: bookingsByDay.get(key) ?? 0,
+    });
+  }
 
   return c.json(
     {
       tenant: "Imperial Climate Control",
+      metrics: totals,
+      series,
+      statuses: statuses.results,
       note: "Demonstration data. Every name is fictional and no service is dispatched.",
       leads: leads.results,
       customers: customers.results,
