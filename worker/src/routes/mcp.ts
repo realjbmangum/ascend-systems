@@ -331,6 +331,29 @@ async function handleSse(c: any, rawToken: string | undefined) {
 mcp.get("/", (c) => handleSse(c, tokenFromHeader(c.req.header("Authorization"))));
 
 /**
+ * Wrong-base-URL guard.
+ *
+ * The plain-HTTP tools live at /api/voice/t/<token>/<tool>, not under /api/mcp.
+ * Configuring an API-request tool with the MCP base URL previously fell through
+ * to the admin auth gate and returned a bare 401, which a voice agent swallows
+ * silently — the call sounds fine and nothing is ever written. Say what is wrong
+ * and where to go instead.
+ */
+mcp.all("/t/:token/:tool", (c) => {
+  const correct = `${new URL(c.req.url).origin}/api/voice/t/${c.req.param("token")}/${c.req.param("tool")}`;
+  console.error(`[mcp] wrong base URL for tool "${c.req.param("tool")}" — should be /api/voice`);
+  return c.json(
+    {
+      error: "Wrong base URL for a tool call.",
+      you_used: "/api/mcp/t/<token>/<tool>",
+      use_instead: correct,
+      note: "/api/mcp is the MCP JSON-RPC endpoint. Individual tools are under /api/voice.",
+    },
+    404
+  );
+});
+
+/**
  * Diagnostic — paste `<your server URL>/check` into a browser.
  *
  * Answers the only question that matters when the console is misbehaving: is
