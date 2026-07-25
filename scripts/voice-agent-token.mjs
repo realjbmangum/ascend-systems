@@ -21,16 +21,25 @@
 import { randomBytes, createHash } from "node:crypto";
 
 const VALID_SCOPES = {
-  receptionist: "Caller-facing. 4 tools: create_lead, log_call_activity, check_availability, book_meeting.",
+  receptionist: "Ascend's own caller-facing line. 4 tools, writes to ascend-db.",
   assistant: "Brian's own voice. All 10 tools, including pipeline and invoices.",
+  client: "A tenant's line. 4 tools, writes to that tenant's own database. Requires --code.",
 };
 
-const key = process.argv[2];
-const label = process.argv[3];
+const argv = process.argv.slice(2);
+const codeFlag = argv.indexOf("--code");
+const code = codeFlag !== -1 ? argv[codeFlag + 1] : null;
+const positional = argv.filter((a, i) => a !== "--code" && i !== codeFlag + 1);
+const scope = positional[0];
+const label = positional[1];
 
-if (!key || !VALID_SCOPES[key]) {
+function usage(msg) {
   console.error(
-    `\nUsage: node scripts/voice-agent-token.mjs <${Object.keys(VALID_SCOPES).join("|")}> "<label>"\n\n` +
+    `\n${msg}\n\n` +
+      `Usage:\n` +
+      `  node scripts/voice-agent-token.mjs receptionist "Ascend Receptionist"\n` +
+      `  node scripts/voice-agent-token.mjs assistant    "Ascend Personal Assistant"\n` +
+      `  node scripts/voice-agent-token.mjs client       "Imperial Climate Control" --code c00\n\n` +
       Object.entries(VALID_SCOPES)
         .map(([k, d]) => `  ${k.padEnd(14)} ${d}`)
         .join("\n") +
@@ -38,23 +47,33 @@ if (!key || !VALID_SCOPES[key]) {
   );
   process.exit(1);
 }
-if (!label) {
-  console.error("\nA label is required — it shows up in /admin/calls.\n");
-  process.exit(1);
+
+if (!scope || !VALID_SCOPES[scope]) usage("Unknown or missing scope.");
+if (!label) usage("A label is required — it shows up in the asset register.");
+if (scope === "client" && !/^c\d{2}$/.test(code ?? "")) {
+  usage("A client agent needs --code cNN (e.g. --code c00) so it routes to the right database.");
 }
+if (scope !== "client" && code) usage("--code only applies to a client agent.");
+
+// Ascend's own agents use the main database; a tenant uses its own binding.
+const agentKey = scope === "client" ? code : scope;
+const dbBinding = scope === "client" ? `DB_${code.toUpperCase()}` : "DB";
 
 // 32 bytes of CSPRNG, base64url. Prefixed so it is recognisable in a console
 // field and greppable if it ever leaks.
 const token = `ascend_voice_${randomBytes(32).toString("base64url")}`;
 const hash = createHash("sha256").update(token).digest("hex");
 
-// Receptionist gets a spend ceiling; the assistant is Brian talking to himself.
-const ceiling = key === "receptionist" ? 500 : 0;
+// Caller-facing lines get a spend ceiling; the assistant is Brian talking to
+// himself and needs no cap.
+const ceiling = scope === "assistant" ? 0 : 500;
+const esc = (s) => String(s).replace(/'/g, "''");
 
 const sql =
-  `INSERT INTO voice_agents (key, label, scope, token_hash, daily_cost_ceiling_cents, active) ` +
-  `VALUES ('${key}', '${label.replace(/'/g, "''")}', '${key}', '${hash}', ${ceiling}, 1) ` +
+  `INSERT INTO voice_agents (key, label, scope, token_hash, daily_cost_ceiling_cents, active, db_binding, tenant_name) ` +
+  `VALUES ('${agentKey}', '${esc(label)}', '${scope}', '${hash}', ${ceiling}, 1, '${dbBinding}', '${esc(label)}') ` +
   `ON CONFLICT(key) DO UPDATE SET token_hash = excluded.token_hash, label = excluded.label, ` +
+  `scope = excluded.scope, db_binding = excluded.db_binding, tenant_name = excluded.tenant_name, ` +
   `updated_at = datetime('now');`;
 
 console.log(`
@@ -64,7 +83,7 @@ console.log(`
 
 └───────────────────────────────────────────────────────────────────────────────
 
-Scope: ${key} — ${VALID_SCOPES[key]}
+Scope: ${agentKey} — ${VALID_SCOPES[scope]}
 Daily spend ceiling: ${ceiling === 0 ? "none" : `$${(ceiling / 100).toFixed(2)}`}
 
 STEP 1 — register the hash in D1 (run from worker/):
@@ -85,7 +104,7 @@ curl -s -X POST https://ascend-api.bmangum1.workers.dev/api/mcp \\
   -H "Content-Type: application/json" \\
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 
-Expected: ${key === "receptionist" ? "4" : "10"} tools. Anything else means the hash did not land.
+Expected: ${scope === "assistant" ? "10" : "4"} tools. Anything else means the hash did not land.
 
 Rotating: re-run this command. The ON CONFLICT clause replaces the old hash, so
 the previous token stops working the moment step 1 runs.

@@ -787,3 +787,47 @@ work in docs/voice-agent-setup.md is not.
 **Also worth noting:** the seo-cron pseudo-site fix committed this session
 (skip seo_sites rows without a real gsc_property) is what stops the weekly cron
 erroring on this very "Program & Content" tab. The two changes fit together.
+
+## Session - July 24, 2026 (cont.) — voice stack LIVE in production
+
+PR #10 merged to main. Worker deployed. Remote D1 migrated. Verified against
+production, not localhost.
+
+**Corrected a wrong call I made earlier in the session:** I read a 401 on
+https://ascend-api.bmangum1.workers.dev/api/mcp as "the route is deployed." It
+was not — `app.route("/api", admin)` (index.ts:980) was catching /api/mcp with
+its requireAuth("admin") gate, which returns the same {"error":"unauthorized"}
+shape. The discriminators that actually settle it:
+  - GET /api/mcp  -> 405 if our route is live, 401 if the admin gate is catching it
+  - our 401 carries WWW-Authenticate: Bearer; the admin gate's does not
+Use those, not the status code alone, when checking whether a route shipped.
+
+**Verified in production (probe agent row, created and deleted):**
+- no token -> 401 · wrong token -> 401 · valid token -> tools/list
+- initialize returns serverInfo ascend-voice-tools 1.0.0
+- receptionist sees exactly 4 tools; get_invoice_status -> "Unknown tool"
+- check_availability hit the LIVE Microsoft 365 calendar: 6 open slots on
+  Mon Jul 27, first "Monday, July 27 at 9:00 AM EDT" — Graph works from the
+  deployed worker, not just locally
+- deleting the agent row revokes the token immediately (401)
+
+**D1 write propagation gotcha:** a probe that INSERTs a voice_agents row via
+`wrangler d1 execute --remote` and immediately curls the Worker gets a 401 —
+the Worker's binding does not see the row for a few seconds. The row was
+correct the whole time. Put a gap between seeding and asserting, and never use
+"COUNT = 0 after delete" as proof of cleanup: it cannot distinguish "deleted"
+from "never inserted."
+
+**seo_actions row `program:grok-kb-separation` corrected and closed.** It had
+carried the website-copy.md guidance verbatim from the retired HTML dashboard
+into the live /admin/seo board. Now states the allowlist rule and points at
+`npm run voice:kb` / `voice:test`. Status: done.
+
+**voice_agents is intentionally EMPTY.** No real token has been minted yet —
+that is the next step and it must be run by Brian so the token is never in a
+transcript:
+    node scripts/voice-agent-token.mjs receptionist "Ascend Receptionist"
+
+**Next:** steps 3-7 of docs/voice-agent-setup.md — upload voice-kb/ as a
+collection, attach the MCP server, paste the system prompt, test the xAI number
+hard (including the adversarial pass), and only then forward (980) 577-1231.

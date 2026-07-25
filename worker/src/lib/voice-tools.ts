@@ -25,11 +25,26 @@ export type VoiceAgentRow = {
   scope: ToolScope;
   client_id: number | null;
   daily_cost_ceiling_cents: number;
+  /**
+   * Which D1 binding this agent's caller data lands in — 'DB' for Ascend's own
+   * agents, 'DB_<CODE>' for a tenant. Resolved to a live D1Database in mcp.ts.
+   * Per-tenant databases, never a shared table with a tenant_id column: the same
+   * rule as the directory playbook, and what makes a clean client exit possible.
+   */
+  db_binding: string;
+  /** Tenant display name the agent speaks — "Imperial Climate Control". */
+  tenant_name: string | null;
 };
 
 export type ToolCtx = {
   env: Bindings;
   agent: VoiceAgentRow;
+  /**
+   * The TENANT database. For Ascend's own agents this is env.DB; for a client
+   * agent it is that client's own D1. Every tool that touches caller data must
+   * use this, never env.DB directly.
+   */
+  db: D1Database;
   waitUntil: (p: Promise<unknown>) => void;
 };
 
@@ -45,13 +60,12 @@ export type ToolDef = {
   handler: (args: Record<string, any>, ctx: ToolCtx) => Promise<unknown>;
 };
 
-// 'client' is deliberately absent from every tool's scope list. The scope
-// exists in the schema for the eventual per-tenant agents, but every tool below
-// reads and writes ASCEND'S OWN CRM — a client-scoped agent granted create_lead
-// would silently file its caller into Ascend's pipeline. Multi-tenant scoping is
-// out of scope for this build, so a 'client' token currently sees zero tools.
-// Give it tools only once they filter by voice_agents.client_id.
-const OURS: ToolScope[] = ["receptionist", "assistant"];
+// TENANT tools operate on ctx.db — whichever database the calling agent's row
+// points at. Safe for a client agent because a client's caller can only ever
+// reach that client's own database.
+const TENANT: ToolScope[] = ["receptionist", "assistant", "client"];
+// ASCEND-ONLY tools read Ascend's own business (our projects, our invoices, our
+// SEO). They stay on env.DB and are never granted to a client or a caller.
 const ASSISTANT_ONLY: ToolScope[] = ["assistant"];
 
 // Business hours the receptionist may offer, in BUSINESS_TZ.
@@ -145,7 +159,7 @@ const createLead: ToolDef = {
   name: "create_lead",
   description:
     "Record a new inbound lead captured on a phone call. Call this once you have at least the caller's name. Everything else is optional — never hold the caller on the line to fill in fields. Returns the lead id.",
-  scopes: OURS,
+  scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
@@ -177,7 +191,7 @@ const createLead: ToolDef = {
     const realEmail = isRealEmail(args.email) ? String(args.email).toLowerCase() : null;
     const email = realEmail ?? sentinelEmail(args.call_id);
 
-    const result = await ctx.env.DB.prepare(
+    const result = await ctx.db.prepare(
       `INSERT INTO leads (name, email, phone, company, project_type, budget_range, message,
                           source_origin, source_channel, source_channel_id)
        VALUES (?, ?, ?, ?, ?, ?, ?, 'voice', ?, ?)`
@@ -196,7 +210,7 @@ const createLead: ToolDef = {
       .run();
     const leadId = result.meta.last_row_id as number;
 
-    await createTask(ctx.env.DB, {
+    await createTask(ctx.db, {
       type: "lead_inquiry",
       title: `Voice lead: ${name}${args.company ? ` (${args.company})` : ""}`,
       description: args.message ? String(args.message) : undefined,
@@ -212,12 +226,16 @@ const createLead: ToolDef = {
       },
     });
 
-    // Only enrol a deliverable address. The sentinel would hard-bounce and
+    // Drip enrolment is an Ascend construct — email_sequences only exists in
+    // ascend-db, and a tenant's caller must never be enrolled in our marketing.
+    // Also: only enrol a deliverable address. The sentinel would hard-bounce and
     // damage the sending domain's reputation.
-    if (realEmail) {
+    if (realEmail && ctx.agent.db_binding === "DB") {
       await enrollByTrigger(ctx.env.DB, "lead_welcome", realEmail);
     }
 
+    // voice_calls is a PLATFORM table and always lives in ascend-db, so Ascend
+    // keeps one operational view across every tenant.
     if (args.call_id) {
       await ctx.env.DB.prepare(
         `UPDATE voice_calls SET lead_id = ?, updated_at = datetime('now') WHERE call_id = ?`
@@ -258,7 +276,7 @@ const logCallActivity: ToolDef = {
   name: "log_call_activity",
   description:
     "Log a summary of the call against an existing lead. Use at the end of a call, after create_lead.",
-  scopes: OURS,
+  scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
@@ -270,7 +288,7 @@ const logCallActivity: ToolDef = {
     required: ["lead_id", "subject"],
   },
   async handler(args, ctx) {
-    const result = await ctx.env.DB.prepare(
+    const result = await ctx.db.prepare(
       `INSERT INTO lead_activities (lead_id, type, subject, notes, duration_minutes, done, done_at)
        VALUES (?, 'call', ?, ?, ?, 1, datetime('now'))`
     )
@@ -289,7 +307,7 @@ const checkAvailability: ToolDef = {
   name: "check_availability",
   description:
     "List open meeting slots on a given date, in Eastern time. Use before offering a caller a time. Returns at most 6 slots; offer two or three, never the whole list.",
-  scopes: OURS,
+  scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
@@ -355,7 +373,7 @@ const bookMeeting: ToolDef = {
   name: "book_meeting",
   description:
     "Book a meeting into the business calendar and log it against a lead. Only call this with a start time returned by check_availability, and only after the caller has agreed to it out loud.",
-  scopes: OURS,
+  scopes: TENANT,
   inputSchema: {
     type: "object",
     properties: {
@@ -372,7 +390,7 @@ const bookMeeting: ToolDef = {
     if (Number.isNaN(start.getTime())) throw new Error("start must be a valid ISO-8601 instant");
     const duration = Number(args.duration_minutes) > 0 ? Number(args.duration_minutes) : SLOT_MINUTES;
 
-    const lead = await ctx.env.DB.prepare(
+    const lead = await ctx.db.prepare(
       `SELECT id, name, company FROM leads WHERE id = ?`
     )
       .bind(args.lead_id)
@@ -389,7 +407,7 @@ const bookMeeting: ToolDef = {
 
     const graphEventId = await createCalendarEvent(ctx.env, activity);
 
-    const result = await ctx.env.DB.prepare(
+    const result = await ctx.db.prepare(
       `INSERT INTO lead_activities (lead_id, type, subject, notes, due_at, duration_minutes, graph_event_id)
        VALUES (?, 'meeting', ?, ?, ?, ?, ?)`
     )
@@ -431,7 +449,7 @@ const lookupLead: ToolDef = {
   async handler(args, ctx) {
     const q = `%${String(args.query).trim()}%`;
     const limit = Math.min(Number(args.limit) || 5, 20);
-    const { results } = await ctx.env.DB.prepare(
+    const { results } = await ctx.db.prepare(
       `SELECT id, name, company, email, phone, status, project_type, budget_range,
               deal_value_cents, source_origin, created_at
          FROM leads
@@ -472,7 +490,7 @@ const listLeads: ToolDef = {
     }
     const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
     binds.push(limit);
-    const { results } = await ctx.env.DB.prepare(
+    const { results } = await ctx.db.prepare(
       `SELECT id, name, company, status, project_type, budget_range, deal_value_cents,
               source_origin, created_at
          FROM leads ${where}

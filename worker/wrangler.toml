@@ -14,6 +14,18 @@ binding = "DB"
 database_name = "ascend-db"
 database_id = "c05da0d4-e2f2-45fc-8994-30bea47fa1e8"
 
+# --- Voice tenants ----------------------------------------------------------
+# One database per voice client, never a shared table with a tenant_id column.
+# The binding NAME is what voice_agents.db_binding points at, so onboarding a
+# client is: create the D1, add the binding here, redeploy, insert the agent row.
+# A database this Worker was never granted cannot be reached by guessing a token.
+#
+# C00 — Imperial Climate Control (Ascend's demo tenant, safe to show prospects)
+[[d1_databases]]
+binding = "DB_C00"
+database_name = "voice-c00"
+database_id = "84d40efa-0edc-4762-b8be-74a596f3812c"
+
 # Drip processor — runs every 15 minutes.
 [triggers]
 crons = ["*/15 * * * *"]

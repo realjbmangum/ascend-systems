@@ -62,13 +62,31 @@ async function authenticate(
   if (!match) return null;
   const row = await db
     .prepare(
-      `SELECT id, key, label, scope, client_id, daily_cost_ceiling_cents
+      `SELECT id, key, label, scope, client_id, daily_cost_ceiling_cents,
+              db_binding, tenant_name
          FROM voice_agents
         WHERE token_hash = ? AND active = 1`
     )
     .bind(await hashToken(match[1]))
     .first<VoiceAgentRow>();
   return row ?? null;
+}
+
+/**
+ * Resolve the agent's tenant database from its binding name.
+ *
+ * D1 bindings are static in wrangler.toml, so a tenant's database is reached by
+ * looking its binding up on env by name — `DB_C00` for the Imperial demo, `DB`
+ * for Ascend's own agents. Onboarding a tenant therefore means adding a binding
+ * and redeploying, which is deliberate: a database this Worker was never granted
+ * cannot be reached by guessing a token.
+ */
+function resolveTenantDb(env: Bindings, agent: VoiceAgentRow): D1Database | null {
+  const binding = agent.db_binding || "DB";
+  const db = (env as unknown as Record<string, unknown>)[binding];
+  // Duck-type rather than instanceof — D1Database is an interface at runtime.
+  if (!db || typeof (db as D1Database).prepare !== "function") return null;
+  return db as D1Database;
 }
 
 function rpcError(id: RpcRequest["id"], code: number, message: string) {
@@ -165,9 +183,21 @@ mcp.post("/", async (c) => {
     return c.json(rpcError(null, PARSE_ERROR, "Invalid JSON"), 400);
   }
 
+  const tenantDb = resolveTenantDb(c.env, agent);
+  if (!tenantDb) {
+    // The agent row points at a binding this deploy does not have. Fail loudly
+    // rather than silently falling back to ascend-db — writing a tenant's caller
+    // into Ascend's CRM is worse than returning an error.
+    console.error(
+      `voice agent ${agent.key} references missing D1 binding "${agent.db_binding}"`
+    );
+    return c.json({ error: "tenant database unavailable" }, 503);
+  }
+
   const ctx: ToolCtx = {
     env: c.env,
     agent,
+    db: tenantDb,
     waitUntil: (p) => c.executionCtx.waitUntil(p.then(() => undefined)),
   };
 
