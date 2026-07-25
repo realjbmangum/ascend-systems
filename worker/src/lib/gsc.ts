@@ -25,6 +25,14 @@ export type GscTotals = {
   position: number;
 };
 
+export type GscPageRow = {
+  page: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+};
+
 // base64url without padding, from a Uint8Array or string.
 function b64url(input: ArrayBuffer | Uint8Array | string): string {
   let bytes: Uint8Array;
@@ -134,6 +142,63 @@ async function queryTotals(
   };
 }
 
+/**
+ * Search Console rows grouped by page (URL) over [startDate, endDate].
+ * Paginated (GSC caps at 25k rows/request). Used to measure per-page demand —
+ * e.g. impressions on each /{state}/ directory page as a renter-demand proxy.
+ */
+async function queryByPage(
+  accessToken: string,
+  property: string,
+  startDate: string,
+  endDate: string,
+  rowLimit = 5000
+): Promise<GscPageRow[]> {
+  const url =
+    "https://searchconsole.googleapis.com/webmasters/v3/sites/" +
+    encodeURIComponent(property) +
+    "/searchAnalytics/query";
+  const out: GscPageRow[] = [];
+  let startRow = 0;
+  // Safety cap: 6 pages * 5k = 30k rows, far more than a directory needs.
+  for (let i = 0; i < 6; i++) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        startDate,
+        endDate,
+        dimensions: ["page"],
+        rowLimit,
+        startRow,
+        dataState: "final",
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`GSC page query failed for ${property}: ${res.status} ${await res.text()}`);
+    }
+    const data = (await res.json()) as {
+      rows?: { keys: string[]; clicks: number; impressions: number; ctr: number; position: number }[];
+    };
+    const rows = data.rows ?? [];
+    for (const r of rows) {
+      out.push({
+        page: r.keys?.[0] ?? "",
+        clicks: r.clicks ?? 0,
+        impressions: r.impressions ?? 0,
+        ctr: r.ctr ?? 0,
+        position: r.position ?? 0,
+      });
+    }
+    if (rows.length < rowLimit) break;
+    startRow += rowLimit;
+  }
+  return out;
+}
+
 /** GSC finalises data on a ~3-day lag; end the window there. */
 export function defaultWindow(days = 90): { startDate: string; endDate: string } {
   const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -161,5 +226,7 @@ export async function createGscClient(saKeyJson: string) {
     serviceAccountEmail: sa.client_email,
     totals: (property: string, startDate: string, endDate: string) =>
       queryTotals(token, property, startDate, endDate),
+    byPage: (property: string, startDate: string, endDate: string, rowLimit?: number) =>
+      queryByPage(token, property, startDate, endDate, rowLimit),
   };
 }
