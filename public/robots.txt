@@ -23,3 +23,18 @@ Allow: /
 
 User-agent: Googlebot
 Allow: /
+
+# AI answer/search crawlers — these fetch pages to CITE in live answers, and
+# are distinct from the training crawlers above. Explicitly allowed so Ascend
+# is eligible to be cited by ChatGPT search, Google AI, and Apple Intelligence.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
