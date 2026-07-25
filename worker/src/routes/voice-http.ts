@@ -25,6 +25,7 @@ import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
 import { findTool, toolsForScope, type ToolCtx, type VoiceAgentRow } from "../lib/voice-tools";
 import { hashToken } from "./mcp";
+import { checkVoiceHealth } from "../lib/voice-health";
 
 const voiceHttp = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -130,6 +131,31 @@ voiceHttp.post("/t/:token/:tool", async (c) => {
 });
 
 /**
+ * Health check on demand — same logic the hourly cron runs, but returns the
+ * issues instead of emailing them. Token-gated like the tools so it can be
+ * curled during an incident without a session cookie.
+ */
+voiceHttp.get("/t/:token/health", async (c) => {
+  // Authenticate the TOKEN only — deliberately not resolve(), which also
+  // requires the caller's own tenant database. A diagnostic that fails whenever
+  // the thing it diagnoses is broken is useless exactly when you need it.
+  const db0 = c.env.DB as D1Database;
+  const agent = await db0
+    .prepare(`SELECT key FROM voice_agents WHERE token_hash = ? AND active = 1`)
+    .bind(await hashToken(c.req.param("token")))
+    .first();
+  if (!agent) return c.json({ error: "unauthorized" }, 401);
+
+  const issues = await checkVoiceHealth(c.env);
+  return c.json({
+    checked_at: new Date().toISOString(),
+    healthy: issues.length === 0,
+    issue_count: issues.length,
+    issues,
+  });
+});
+
+/**
  * PUBLIC read-only demo feed — no token, no auth.
  *
  * Safe to expose because it is hardcoded to the DEMO tenant binding and can
@@ -146,7 +172,7 @@ voiceHttp.get("/demo", async (c) => {
     return c.json({ error: "demo tenant unavailable" }, 503);
   }
 
-  const [leads, customers, workOrders, activities] = await Promise.all([
+  const [leads, customers, workOrders, activities, daily, statuses, totals] = await Promise.all([
     db
       .prepare(
         `SELECT id, name, phone, company, message, status, created_at
@@ -175,11 +201,63 @@ voiceHttp.get("/demo", async (c) => {
           ORDER BY a.id DESC LIMIT 12`
       )
       .all(),
+    // Seven-day activity, zero-filled below so quiet days render as gaps rather
+    // than vanishing and compressing the axis.
+    db
+      .prepare(
+        `SELECT date(created_at) AS day, COUNT(*) AS n
+           FROM leads WHERE created_at >= date('now','-6 day')
+          GROUP BY day`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT status, COUNT(*) AS n FROM work_orders GROUP BY status`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT
+           (SELECT COUNT(*) FROM leads WHERE created_at >= date('now','-6 day')) AS leads_7d,
+           (SELECT COUNT(*) FROM lead_activities WHERE type='meeting') AS bookings,
+           (SELECT COUNT(*) FROM work_orders WHERE status IN ('scheduled','dispatched')) AS open_jobs,
+           (SELECT COUNT(*) FROM customers) AS customers,
+           (SELECT COALESCE(SUM(duration_minutes),0) FROM lead_activities WHERE type='call') AS call_minutes`
+      )
+      .first(),
   ]);
+
+  // Zero-fill the last 7 days in business-local terms.
+  const byDay = new Map(
+    (daily.results as Array<{ day: string; n: number }>).map((r) => [r.day, r.n])
+  );
+  const bookingsByDay = new Map(
+    (activities.results as Array<{ type: string; created_at: string }>)
+      .filter((a) => a.type === "meeting")
+      .reduce((m, a) => {
+        const d = String(a.created_at).slice(0, 10);
+        m.set(d, (m.get(d) ?? 0) + 1);
+        return m;
+      }, new Map<string, number>())
+  );
+  const series: Array<{ day: string; label: string; leads: number; bookings: number }> = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86_400_000);
+    const key = d.toISOString().slice(0, 10);
+    series.push({
+      day: key,
+      label: new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "UTC" }).format(d),
+      leads: byDay.get(key) ?? 0,
+      bookings: bookingsByDay.get(key) ?? 0,
+    });
+  }
 
   return c.json(
     {
       tenant: "Imperial Climate Control",
+      metrics: totals,
+      series,
+      statuses: statuses.results,
       note: "Demonstration data. Every name is fictional and no service is dispatched.",
       leads: leads.results,
       customers: customers.results,
