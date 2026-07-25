@@ -34,6 +34,14 @@ export type VoiceAgentRow = {
   db_binding: string;
   /** Tenant display name the agent speaks — "Imperial Climate Control". */
   tenant_name: string | null;
+  /**
+   * JSON array of tool names this agent may use, or null for "everything the
+   * scope allows". It can only ever NARROW a scope, never widen it — so a
+   * dispatch agent cannot name its way into the accounts tools.
+   */
+  tools_allow?: string | null;
+  /** 'dispatch' | 'sales' | 'accounts' | 'operations' — for prompts and routing. */
+  department?: string | null;
 };
 
 export type ToolCtx = {
@@ -515,7 +523,7 @@ const bookMeeting: ToolDef = {
 const lookupCustomer: ToolDef = {
   name: "lookup_customer",
   description:
-    "Look up a customer. Find an existing customer, account, client, site, or service plan by phone number, name, or location. Call this EARLY to identify who is calling. If a search by phone finds nothing, ASK FOR THEIR NAME AND SEARCH AGAIN — people often ring from a mobile that is not on the account. Only treat someone as new after a name search has also missed.",
+    "Look up a customer. Find an existing customer, account, client, site, or service plan by phone number, ACCOUNT NUMBER, name, or location. Call this EARLY to identify who is calling. If a search by phone finds nothing, ASK FOR THEIR NAME AND SEARCH AGAIN — people often ring from a mobile that is not on the account. Only treat someone as new after a name search has also missed.",
   scopes: TENANT,
   inputSchema: {
     type: "object",
@@ -523,6 +531,11 @@ const lookupCustomer: ToolDef = {
       phone: { type: "string", description: "Caller's number. The best identifier if you have it." },
       name: { type: "string", description: "Person or company name." },
       site: { type: "string", description: "Site or location name." },
+      account_ref: {
+        type: "string",
+        description:
+          "Account number if they read one out, e.g. IMP-0003. Callers who know their account number will lead with it.",
+      },
     },
   },
   async handler(args, ctx) {
@@ -542,7 +555,16 @@ const lookupCustomer: ToolDef = {
       clauses.push("(site_name LIKE ? OR address LIKE ?)");
       binds.push(`%${String(args.site).trim()}%`, `%${String(args.site).trim()}%`);
     }
-    if (!clauses.length) throw new Error("give at least a phone, name, or site");
+    if (args.account_ref) {
+      // Spoken account numbers lose their punctuation and case — "imp 3" for
+      // IMP-0003 — so match loosely on the digits and the prefix.
+      const raw = String(args.account_ref).trim();
+      clauses.push("(account_ref LIKE ? OR REPLACE(account_ref,'-','') LIKE ?)");
+      binds.push(`%${raw}%`, `%${raw.replace(/[^A-Za-z0-9]/g, "")}%`);
+    }
+    if (!clauses.length) {
+      throw new Error("give at least a phone, name, site, or account number");
+    }
 
     const { results } = await ctx.db
       .prepare(
@@ -560,7 +582,7 @@ const lookupCustomer: ToolDef = {
     // account) and the model needs to know the next move is to retry by name,
     // not to tell the caller they have no account.
     if (results.length === 0) {
-      const tried = [args.phone && "phone", args.name && "name", args.site && "site"]
+      const tried = [args.phone && "phone", args.name && "name", args.site && "site", args.account_ref && "account number"]
         .filter(Boolean)
         .join(", ");
       return {
@@ -648,6 +670,62 @@ const getWorkOrders: ToolDef = {
       work_orders: results,
       reminder:
         "Internal notes are for your understanding, not for reading aloud. Never blame a named technician to a caller.",
+    };
+  },
+};
+
+/**
+ * The ONE tool that may discuss money.
+ *
+ * Every other tool carries a reminder never to read balance_cents aloud, because
+ * a dispatcher quoting a figure they cannot verify is how a billing dispute
+ * starts. The accounts agent is the exception, and it is a separate agent with a
+ * separate allow-list — so "can you tell me what I owe" genuinely has to be
+ * transferred rather than answered by whoever picked up.
+ *
+ * That separation is also the clearest thing to show a prospect: their dispatch
+ * line cannot see financials even if a caller talks it into trying.
+ */
+const getAccountBalance: ToolDef = {
+  name: "get_account_balance",
+  description:
+    "Get an account balance. Look up what a customer owes, their outstanding balance, unpaid amount, or billing status. ACCOUNTS DEPARTMENT ONLY — other departments must transfer the caller here rather than quote a figure.",
+  scopes: TENANT,
+  inputSchema: {
+    type: "object",
+    properties: {
+      customer_id: { type: "number", description: "From lookup_customer." },
+      account_ref: { type: "string", description: "Account number, e.g. IMP-0003." },
+    },
+  },
+  async handler(args, ctx) {
+    if (!args.customer_id && !args.account_ref) {
+      throw new Error("Identify the account first — customer_id or account number.");
+    }
+    const clause = args.customer_id ? "id = ?" : "account_ref LIKE ?";
+    const bind = args.customer_id ? args.customer_id : `%${String(args.account_ref).trim()}%`;
+    const row = await ctx.db
+      .prepare(
+        `SELECT name, account_ref, balance_cents, service_plan FROM customers WHERE ${clause} LIMIT 1`
+      )
+      .bind(bind)
+      .first<{ name: string; account_ref: string; balance_cents: number; service_plan: string }>();
+    if (!row) return { found: false, next_step: "No such account. Check the number with them." };
+
+    const owed = (row.balance_cents ?? 0) / 100;
+    return {
+      found: true,
+      customer: row.name,
+      account: row.account_ref,
+      plan: row.service_plan,
+      balance_credits: owed,
+      // Give the agent the sentence rather than the arithmetic. A voice model
+      // reading "48500" as "forty-eight thousand five hundred" is a bad call.
+      spoken: owed === 0
+        ? "The account is clear — nothing outstanding."
+        : `There is ${owed.toLocaleString("en-US")} credits outstanding on the account.`,
+      reminder:
+        "State the figure once, plainly. Do not speculate about why it is owed, do not offer a discount, and do not take payment details over the phone.",
     };
   },
 };
@@ -867,6 +945,7 @@ export const TOOLS: ToolDef[] = [
   bookMeeting,
   lookupCustomer,
   getWorkOrders,
+  getAccountBalance,
   lookupLead,
   listLeads,
   listProjects,
@@ -877,6 +956,36 @@ export const TOOLS: ToolDef[] = [
 
 export function toolsForScope(scope: ToolScope): ToolDef[] {
   return TOOLS.filter((t) => t.scopes.includes(scope));
+}
+
+/** Parse voice_agents.tools_allow. Bad JSON is treated as "no restriction". */
+function allowList(agent: VoiceAgentRow): Set<string> | null {
+  if (!agent.tools_allow) return null;
+  try {
+    const parsed = JSON.parse(agent.tools_allow);
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    return new Set(parsed.map(String));
+  } catch {
+    console.error(`voice agent ${agent.key} has unparseable tools_allow; ignoring it`);
+    return null;
+  }
+}
+
+/**
+ * Tools this specific agent may use: its scope, then its own allow-list.
+ *
+ * The allow-list can only NARROW. An agent naming a tool its scope does not
+ * grant gets nothing — so a sales agent cannot list its way into the accounts
+ * tools, whatever is written in its row.
+ */
+export function toolsForAgent(agent: VoiceAgentRow): ToolDef[] {
+  const scoped = toolsForScope(agent.scope);
+  const allow = allowList(agent);
+  return allow ? scoped.filter((t) => allow.has(t.name)) : scoped;
+}
+
+export function findToolForAgent(name: string, agent: VoiceAgentRow): ToolDef | undefined {
+  return toolsForAgent(agent).find((t) => t.name === name);
 }
 
 export function findTool(name: string, scope: ToolScope): ToolDef | undefined {

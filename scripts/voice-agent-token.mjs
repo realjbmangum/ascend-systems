@@ -30,9 +30,20 @@ const VALID_SCOPES = {
 };
 
 const argv = process.argv.slice(2);
-const codeFlag = argv.indexOf("--code");
-const code = codeFlag !== -1 ? argv[codeFlag + 1] : null;
-const positional = argv.filter((a, i) => a !== "--code" && i !== codeFlag + 1);
+const flagValue = (name) => {
+  const i = argv.indexOf(name);
+  return i !== -1 ? argv[i + 1] : null;
+};
+const code = flagValue("--code");
+const department = flagValue("--department");
+const toolsCsv = flagValue("--tools");
+const FLAGS = ["--code", "--department", "--tools"];
+const skip = new Set();
+FLAGS.forEach((f) => {
+  const i = argv.indexOf(f);
+  if (i !== -1) { skip.add(i); skip.add(i + 1); }
+});
+const positional = argv.filter((_, i) => !skip.has(i));
 const scope = positional[0];
 const label = positional[1];
 
@@ -58,8 +69,14 @@ if (scope === "client" && !/^c\d{2}$/.test(code ?? "")) {
 }
 if (scope !== "client" && code) usage("--code only applies to a client agent.");
 
+// An allow-list can only ever NARROW what the scope already grants.
+const toolsAllow = toolsCsv
+  ? JSON.stringify(toolsCsv.split(",").map((t) => t.trim()).filter(Boolean))
+  : null;
+
 // Ascend's own agents use the main database; a tenant uses its own binding.
-const agentKey = scope === "client" ? code : scope;
+const agentKey =
+  scope === "client" ? (department ? `${code}-${department}` : code) : scope;
 const dbBinding = scope === "client" ? `DB_${code.toUpperCase()}` : "DB";
 
 // 32 bytes of CSPRNG, base64url. Prefixed so it is recognisable in a console
@@ -73,10 +90,12 @@ const ceiling = scope === "assistant" ? 0 : 500;
 const esc = (s) => String(s).replace(/'/g, "''");
 
 const sql =
-  `INSERT INTO voice_agents (key, label, scope, token_hash, daily_cost_ceiling_cents, active, db_binding, tenant_name) ` +
-  `VALUES ('${agentKey}', '${esc(label)}', '${scope}', '${hash}', ${ceiling}, 1, '${dbBinding}', '${esc(label)}') ` +
+  `INSERT INTO voice_agents (key, label, scope, token_hash, daily_cost_ceiling_cents, active, db_binding, tenant_name, department, tools_allow) ` +
+  `VALUES ('${agentKey}', '${esc(label)}', '${scope}', '${hash}', ${ceiling}, 1, '${dbBinding}', '${esc(label)}', ` +
+  `${department ? `'${esc(department)}'` : "NULL"}, ${toolsAllow ? `'${esc(toolsAllow)}'` : "NULL"}) ` +
   `ON CONFLICT(key) DO UPDATE SET token_hash = excluded.token_hash, label = excluded.label, ` +
   `scope = excluded.scope, db_binding = excluded.db_binding, tenant_name = excluded.tenant_name, ` +
+  `department = excluded.department, tools_allow = excluded.tools_allow, ` +
   `updated_at = datetime('now');`;
 
 

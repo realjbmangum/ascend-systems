@@ -18,8 +18,8 @@
 import { Hono } from "hono";
 import type { Bindings, Variables } from "../types";
 import {
-  findTool,
-  toolsForScope,
+  toolsForAgent,
+  findToolForAgent,
   type ToolCtx,
   type ToolScope,
   type VoiceAgentRow,
@@ -82,7 +82,7 @@ async function lookupAgent(
   const row = await db
     .prepare(
       `SELECT id, key, label, scope, client_id, daily_cost_ceiling_cents,
-              db_binding, tenant_name
+              db_binding, tenant_name, tools_allow, department
          FROM voice_agents
         WHERE token_hash = ? AND active = 1`
     )
@@ -151,7 +151,7 @@ async function dispatch(
       return rpcResult(id, {});
 
     case "tools/list": {
-      const listed = toolsForScope(agent.scope);
+      const listed = toolsForAgent(agent);
       console.log(`[mcp] ${agent.key} tools/list -> ${listed.length} tools`);
       return rpcResult(id, {
         tools: listed.map((t) => ({
@@ -165,7 +165,7 @@ async function dispatch(
     case "tools/call": {
       const name = String(req.params?.name ?? "");
       const args = (req.params?.arguments ?? {}) as Record<string, any>;
-      const tool = findTool(name, agent.scope);
+      const tool = findToolForAgent(name, agent);
       if (!tool) {
         // Deliberately identical whether the tool doesn't exist or is out of
         // scope — a receptionist token learns nothing about the assistant's
@@ -390,7 +390,7 @@ mcp.get("/t/:token/check", async (c) => {
     tenant: agent.tenant_name,
     scope: agent.scope,
     database: agent.db_binding,
-    tools: toolsForScope(agent.scope).map((t) => t.name),
+    tools: toolsForAgent(agent).map((t) => t.name),
     next: "This URL works. In the xAI console paste the same URL WITHOUT /check, and leave every OAuth field blank.",
   });
 });
