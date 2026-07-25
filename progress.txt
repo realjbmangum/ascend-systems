@@ -831,3 +831,99 @@ transcript:
 **Next:** steps 3-7 of docs/voice-agent-setup.md — upload voice-kb/ as a
 collection, attach the MCP server, paste the system prompt, test the xAI number
 hard (including the adversarial pass), and only then forward (980) 577-1231.
+
+## Session - July 24-25, 2026 — Imperial Climate Control demo tenant LIVE
+
+**Result: a real phone call captured a real lead into a real per-tenant database.**
+`lead 7 · Jeff Lebowski · voice-c00`, plus a high-priority task for staff, and
+`ascend-db` leaked 0 rows. The full loop works: caller → agent → tenant database
+→ work raised for a human.
+
+**Built:**
+- Multi-tenant routing. `voice_agents.db_binding` names a D1 binding; mcp.ts
+  resolves it off `env` and passes a live D1 as `ToolCtx.db`. A missing binding
+  returns 503 and does NOT fall back to ascend-db.
+- Tenant schema (`worker/db/tenant-schema.sql`) + demo seed. One database per
+  client: `voice-c00` = Imperial Climate Control, 6 customers, 6 work orders.
+- Six tenant tools: create_lead, log_call_activity, check_availability,
+  book_meeting, lookup_customer, get_work_orders.
+- `demo-tenants/c00-imperial/` — 5 KB docs, agent prompt, demo script.
+- `docs/voice-tenant-onboarding.md` — the repeatable checklist.
+
+---
+
+## ⚠️ xAI VOICE AGENT — everything that cost us hours tonight
+
+Read this before wiring another agent. Almost none of it is documented.
+
+**1. The console has NO field for a bearer token.** It offers only OAuth client
+credentials. A header-authenticated MCP server cannot be configured there at
+all. Workaround: token in the path — `/api/mcp/t/<token>`.
+
+**2. `WWW-Authenticate: Bearer` on a 401 triggers OAuth discovery.** Under the
+MCP spec that header IS an OAuth challenge. The console probes, sees it, and
+demands an OAuth app that does not exist. Remove the header.
+
+**3. Answering 405 on GET breaks it.** xAI supports "Streaming HTTP and SSE"
+only. The MCP spec permits 405 for a server that never pushes, but a client that
+opens the SSE leg first and gets 405 concludes the endpoint is unusable — and in
+a console whose only auth UI is OAuth, "unusable" renders as "requires OAuth".
+GET must return a real `text/event-stream`.
+
+**4. 🔴 THE BIG ONE — xAI does not give an agent its MCP tools directly.**
+They sit behind a `search_connected_tools` meta-tool. The agent must FIND a tool
+before it can call it. **The description is the search index, not documentation.**
+`create_lead`'s description read "Silently record the caller..." and never
+contained the word "lead" — it was invisible. `check_availability` said "open
+appointment slots" and was the ONLY tool that ever fired, across three prompt
+rewrites. Even after rewriting all six descriptions as search bait, the agent
+still failed to find most of them.
+**Fix: stop using MCP for tools. Use the console's native "API request" tool
+type**, which attaches directly to the agent alongside end_call/web_search with
+no search layer. `POST /api/voice/t/<token>/<tool_name>`. Same handlers, same
+auth, same tenant routing — a second door, not a fork. This is what finally worked.
+
+**5. A tool schema is a script for what the agent will ask a HUMAN.** `create_lead`
+exposed `call_id` — something a voice model cannot possibly know — so it asked
+the caller for it, out loud, mid-call. Any field the model cannot fill from
+ordinary speech becomes an interrogation. Expose only what a person says out loud.
+
+**6. "Never let the caller learn a tool exists" made it deny having tools.**
+Asked directly, the agent said it had no create_lead — obeying literally, and
+rationalising a refusal to act as a missing capability. The rule must cover
+NARRATION only: use tools constantly, describe the RESULT, never the call.
+
+**7. Wrong base URL fails SILENTLY.** An API-request tool pointed at
+`/api/mcp/t/<token>/create_lead` matched no route, fell through to the admin auth
+gate, returned a bare 401 — and the agent swallowed it. The call sounded perfect,
+the caller was told their details were taken, nothing was written. This is the
+silent-capture failure arriving through a config typo. `/api/mcp/t/:token/:tool`
+now returns a 404 that names the mistake and gives the correct URL.
+
+**8. Log SUCCESSES, not just failures.** We could not tell a working agent from
+one that handshakes and never acts until `[mcp] ... tools/call X OK` existed.
+Without it, "connected" and "broken" look identical from the server side.
+
+**9. Teams are funded separately.** Each xAI team carries its own prepaid credit
+balance. A balance at zero is a dead phone line for that client. No alerting
+exists. This is failure domain F3 in the SOP.
+
+---
+
+**A design bug worth remembering:** `check_availability` read Brian's Microsoft
+365 calendar for EVERY agent, tenants included. For a client that is meaningless —
+their crews' availability has nothing to do with Ascend's diary, and the agent
+confidently offered a caller a slot that was already booked. A tenant's schedule
+is its own `work_orders` table. Ascend's agents still use Graph.
+
+**Next steps:**
+- [ ] Add the other 5 tools as API-request entries (same pattern, swap the last
+      path segment). `lookup_customer` first — "This is Captain Needa, what's
+      happening with my hangar door?" is the demo moment that lands hardest.
+- [ ] `company` and `message` came back null on the live call — the agent got the
+      name and number but dropped the rest. Sharpen those parameter descriptions.
+- [ ] **Zero-lead detection.** The single highest-value gap. A tenant with normal
+      weekday traffic recording 0 leads in 24h should alert. Tonight proved the
+      failure is real and invisible.
+- [ ] Per-team credit-balance monitoring.
+- [ ] Merge feat/demo-tenant-imperial.
