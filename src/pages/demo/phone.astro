@@ -1,0 +1,23 @@
+---
+/**
+ * /demo/phone — the live board shown to a prospect during a phone demo.
+ *
+ * Deliberately NOT on admin.ascendsystems.ai: a prospect must never see a login
+ * prompt, and must never be one tab away from Ascend's real pipeline. This reads
+ * a public, read-only feed hardcoded to the demo tenant, so there is nothing
+ * here that belongs to a real client or a real person.
+ *
+ * noindex — it is a sales prop, not a page we want ranking, and its content is
+ * deliberately fictional.
+ */
+import Layout from '../../layouts/Layout.astro';
+import DemoPhone from '../DemoPhone';
+
+const title = 'AI Phone Agent — Live Demo | Ascend Systems';
+const description =
+  'Watch an AI phone agent capture a caller into a live database, in real time, while the call is still happening.';
+---
+
+<Layout title={title} description={description} noindex={true}>
+  <DemoPhone client:load />
+</Layout>
