@@ -471,6 +471,107 @@ export const SERVICE_PAGES: ServicePage[] = [
 
   // ---------------------------------------------------------------------
   {
+    slug: 'ai-voice-agents',
+    shortName: 'AI Voice Agents',
+    metaTitle: 'AI Voice Agents for Services Businesses | Ascend Systems',
+    metaDescription:
+      'Custom AI voice agents that answer the phone, book jobs, and qualify leads for services businesses — wired into your calendar and built to hand off to a human.',
+    serviceAnchor: 'ai-voice-agents',
+    serviceType: 'Conversational AI Development',
+    hero: {
+      eyebrow: 'AI Voice Agents',
+      headline: 'An AI voice agent that answers every call',
+      subhead:
+        'A custom phone agent that picks up on the first ring, books the job or qualifies the lead, and hands off to a person the moment it should — built for services businesses that lose real money to missed calls.',
+    },
+    problem: {
+      headline: 'The missed call is the most expensive one you make',
+      body: [
+        'For a services business the phone is the funnel. A call that goes to voicemail at 7pm, or rings out while the crew is on a job, is usually a booked competitor by morning — most callers do not leave a message, they hang up and dial the next result. You are already paying to generate those calls through ads, referrals, and rankings, which makes the unanswered ones the most expensive marketing you buy: you pay to create them and get nothing back.',
+        'The usual fixes each cover one corner of the problem. An answering service reads a script and takes a message, but it cannot see your calendar, cannot tell a caller whether you service their zip code, and cannot book the job — so the lead still waits for a callback that may come too late. A receptionist handles all of that well, but only during business hours and only one call at a time, at the cost of a full salary. Both leave nights, weekends, and call surges — exactly when demand spikes after a storm or a busy Monday morning — uncovered.',
+        'The off-the-shelf "AI receptionist" products promise to fill that gap and disappoint in practice, because a voice agent is only worth anything to the degree it is wired into your specific business. It has to know your services, your service area, your pricing rules, and your intake questions, and it has to be able to actually write to your scheduling system. A generic bot that cannot check real availability or log a real lead is a more expensive voicemail with a friendlier voice.',
+        'The version that works is narrow and honest about its limits. It answers on the first ring, handles the routine calls it can genuinely handle — hours, services, service area, booking, common questions — and hands off cleanly to a human, by warm transfer or a captured callback, the instant it hits something it should not handle alone. The goal is not to replace the people who close the work. It is to stop losing the calls you already paid to earn.',
+      ],
+    },
+    approach: [
+      {
+        step: 'Start from your real calls',
+        detail:
+          'Discovery begins with a sample of the calls you actually get, sorted into what is routine — bookable or answerable — and what genuinely needs a person. The routine bucket is the only part worth automating, and it is usually larger than owners expect.',
+      },
+      {
+        step: 'Wire it to your systems first',
+        detail:
+          'The agent gets connected to your calendar, CRM, and service-area logic before a word of the script is tuned. An agent that cannot check availability or log a lead is a demo, and this integration is the bulk of the real work.',
+      },
+      {
+        step: 'Design the handoff, not just the answer',
+        detail:
+          'The most important design decision is exactly when the agent stops and hands to a person — warm transfer where someone is available, captured callback where they are not. A caller must never get stuck in a loop with a bot that cannot help.',
+      },
+      {
+        step: 'Make it feel real-time, and keep it honest',
+        detail:
+          'Voice lives or dies on latency — a two-second pause ends the call — so the pipeline is built for speed. Guardrails keep it from inventing a price, a promise, or an appointment it cannot actually make.',
+      },
+      {
+        step: 'Measure on transcripts',
+        detail:
+          'Answer rate, booking rate, and handoff rate get tracked from day one, and the agent is tuned against real call transcripts rather than a demo script. You see exactly what it handled and what it passed to your team.',
+      },
+    ],
+    proof: {
+      headline: 'The hard part is the integration — which is the actual track record',
+      body: 'A voice agent is only as good as its wiring into the systems that run your business, and that wiring — a language model connected to real data, with cost controls and a human fallback — is exactly what the existing portfolio demonstrates. The contract-review build put an LLM into a real document workflow and took a two-to-three-hour task down to fifteen minutes, with a human confirming every result. The CLT EV dashboard runs a live integration against an external API every thirty minutes on Cloudflare Workers. A voice agent is that same engineering — real-time integration, cost-controlled model calls, honest handling of the cases it should not decide on its own — with a phone line on the front. Voice is a newer service line here, so rather than point to a client engagement that has not happened, the honest proof is the underlying capability: the same integration work, now answering the phone.',
+    },
+    image: {
+      src: '/images/services/ai-voice-agents.jpg',
+      alt: 'Call console showing a live AI-handled call, booking status, and a warm-transfer control',
+    },
+    pricing: {
+      headline: 'What an AI voice agent costs',
+      body: 'Voice agents are priced as a build plus predictable usage, not as a per-seat SaaS subscription — because the value is in the custom integration, not a generic bot you configure yourself. The two-week discovery sprint scopes the integration and produces a fixed-price build number. On top of the build there is ongoing usage: telephony minutes and model calls, both estimated during discovery from your real call volume and designed to stay predictable rather than surprising you on the first busy month.',
+      anchors: [
+        { label: 'Discovery sprint', value: 'from $5k — two weeks, refundable' },
+        { label: 'Typical build engagement', value: '$15k – $50k+' },
+        { label: 'Ongoing usage', value: 'Telephony + model minutes, estimated in discovery' },
+      ],
+    },
+    faqs: [
+      {
+        q: 'How much does an AI voice agent cost?',
+        a: 'There are two parts. The build is a fixed-price engagement, typically between the two-week discovery sprint and the upper end of a normal custom build, depending on how many systems it has to talk to — a calendar, a CRM, a service-area lookup, a payment step. On top of that is ongoing usage: telephony minutes and model calls, which scale with how many calls the agent takes. Both usage numbers are estimated during discovery from your actual call volume, so the monthly figure is a real projection rather than a guess. This is deliberately not a per-seat SaaS price, because the whole point is a custom agent wired into your business rather than a generic bot you configure yourself.',
+      },
+      {
+        q: 'Will callers know they are talking to an AI?',
+        a: 'They should, and the agent says so — pretending otherwise backfires the moment a caller asks something it cannot handle. In practice, callers care far less about whether it is AI than about whether it answered on the first ring and actually booked their job. A clear, fast, capable agent that opens with "I am the scheduling assistant for this business, I can book that for you right now" outperforms both a voicemail and a slow phone tree. The design goal is competence and speed, not tricking anyone into thinking it is a person.',
+      },
+      {
+        q: 'What happens when it cannot answer something?',
+        a: 'That case is designed first, not last, because it is where generic bots fail. The agent is built with an explicit boundary between the routine calls it can genuinely handle and everything else. When it hits the everything-else — an upset customer, a complex quote, anything outside its defined scope — it hands off, either by warm-transferring to a person who is available or by capturing the caller’s details and reason for calling so someone can call back promptly. A caller never gets trapped in a loop with an agent that cannot help them, which is the single worst experience and the thing that has turned people off "AI receptionists" entirely.',
+      },
+      {
+        q: 'Can it book jobs into our actual calendar and CRM?',
+        a: 'Yes, and that is the entire point — an agent that cannot write to your real systems is a fancier voicemail. It connects to your scheduling system to check genuine availability and create the appointment, and to your CRM to log the lead with the details it captured. Where a system has an API this is straightforward integration work; where it does not, the discovery sprint checks feasibility early, because it is the thing most likely to affect the estimate. The routing rules — which job types, which time slots, which service areas it is allowed to book — are defined with you rather than assumed.',
+      },
+      {
+        q: 'How is this different from an answering service or a call center?',
+        a: 'An answering service takes a message; a voice agent takes an action. The human service reads a script, notes who called, and leaves you to call back and actually book — which means the lead still waits, often past the point where they have hired someone else. A well-built agent answers instantly, at any hour, across any number of simultaneous calls, and completes the routine ones end to end: checking availability, booking the slot, logging the lead. It costs a build plus usage rather than a per-message or per-minute human rate, and it has no night shift that costs more and no queue when three people call at once.',
+      },
+      {
+        q: 'Is a voice agent right for every business?',
+        a: 'No, and it is worth being honest about that before you spend anything. It pays off when you take a meaningful volume of fairly routine inbound calls — booking, qualifying, answering the same handful of questions — and when missing those calls has a real cost, which is the shape of most home-services, trades, clinic, and appointment-driven businesses. It is a poor fit when your calls are low-volume and highly bespoke, when every conversation genuinely needs human judgement, or when your real problem is outbound rather than inbound. The discovery sprint exists partly to reach that verdict honestly — including the answer that you do not need one.',
+      },
+    ],
+    relatedServices: ['ai-integrations', 'custom-saas-development', 'internal-tools'],
+    cta: {
+      headline: 'Start with the math',
+      body: 'Bring your rough call volume and what a booked job is worth to a 30-minute call, and we will work through whether an AI voice agent pays for itself — or whether it does not.',
+    },
+  },
+
+  // ---------------------------------------------------------------------
+  {
     slug: 'fractional-cto',
     shortName: 'Fractional CTO',
     metaTitle: 'Fractional CTO Services — Charlotte, NC | Ascend Systems',

@@ -46,6 +46,19 @@ const serviceSchema = {
     },
     {
       '@type': 'Service',
+      '@id': 'https://ascendsystems.ai/services#ai-voice-agents',
+      name: 'AI Voice Agents',
+      serviceType: 'Conversational AI Development',
+      description:
+        'Custom AI voice agents that answer the phone, book jobs, and qualify leads for services businesses — wired into your calendar and built to hand off to a human.',
+      provider: { '@id': 'https://ascendsystems.ai/#organization' },
+      areaServed: [
+        { '@type': 'City', name: 'Charlotte' },
+        { '@type': 'AdministrativeArea', name: 'North Carolina' },
+      ],
+    },
+    {
+      '@type': 'Service',
       '@id': 'https://ascendsystems.ai/services#internal-tools',
       name: 'Internal Tools & Dashboards',
       serviceType: 'Custom Software Development',
