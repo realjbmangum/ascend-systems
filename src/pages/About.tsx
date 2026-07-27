@@ -267,9 +267,8 @@ export default function About() {
           <motion.h2
             className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight text-center mx-auto max-w-3xl"
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
           >
             Skip the sales process. Talk to the person who does the work.
           </motion.h2>
