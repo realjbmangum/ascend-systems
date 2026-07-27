@@ -125,14 +125,20 @@ body {
   background: var(--color-bg);
 }
 
-h1, h2, h3, h4, h5 {
-  font-family: var(--font-heading);
-  /* color: inherit so headings adopt the surrounding section's color.
-     Light sections set color via .section-light / body default.
-     Dark sections (.section-dark / .section-darker / bg-charcoal) set white. */
-  color: inherit;
-  text-wrap: balance;
-  margin: 0;
+/* In @layer base so Tailwind color / margin / text-wrap utilities override
+   these element defaults. Unlayered, this reset silently beat every heading's
+   text-*, mx-auto, mb-*, and text-balance utility site-wide. Font sizes stay in
+   the (unlayered) per-element rules below, so heading sizes are unaffected. */
+@layer base {
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-heading);
+    /* color: inherit so headings adopt the surrounding section's color.
+       Light sections set color via .section-light / body default.
+       Dark sections (.section-dark / .section-darker / bg-charcoal) set white. */
+    color: inherit;
+    text-wrap: balance;
+    margin: 0;
+  }
 }
 
 h1 {
@@ -156,9 +162,11 @@ h3 {
   letter-spacing: var(--type-h3-track);
 }
 
-p {
-  margin: 0;
-  text-wrap: pretty;
+@layer base {
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
 }
 
 code, pre, .mono {
