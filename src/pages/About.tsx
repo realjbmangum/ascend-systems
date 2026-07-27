@@ -265,14 +265,14 @@ export default function About() {
       <section className="bg-charcoal py-24 sm:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h2
-            className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight text-center mx-auto max-w-3xl"
+            className="text-4xl sm:text-5xl font-bold text-orange! mb-6! tracking-tight text-center mx-auto! max-w-3xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             Skip the sales process. Talk to the person who does the work.
           </motion.h2>
-          <p className="text-gray-300 text-lg sm:text-xl max-w-xl mx-auto! mb-10 leading-relaxed text-balance! text-center">
+          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto! mb-10! leading-relaxed text-balance! text-center">
             30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.
           </p>
           <Link
