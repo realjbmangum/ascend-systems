@@ -39,9 +39,23 @@ const {
 } = Astro.props;
 
 const siteOrigin = 'https://ascendsystems.ai';
-const canonicalUrl = canonical
-  ? `${siteOrigin}${canonical.startsWith('/') ? canonical : `/${canonical}`}`
-  : `${siteOrigin}${Astro.url.pathname}`.replace(/\/$/, '') || siteOrigin;
+
+// Canonical URLs MUST carry a trailing slash.
+//
+// Cloudflare Pages serves the directory form (/about/) and 308-redirects the
+// bare path (/about). @astrojs/sitemap emits the trailing-slash form too. This
+// builder previously stripped trailing slashes, so every page declared a
+// canonical that was a redirect rather than a page — and Google indexes the
+// canonical, not the URL you submitted. Search Console reported it as
+// "Page with redirect" across the whole site on 27 Jul 2026.
+//
+// Keep these three in agreement: what Cloudflare serves, what the sitemap
+// lists, and what the canonical declares.
+const rawPath = canonical
+  ? (canonical.startsWith('/') ? canonical : '/' + canonical)
+  : Astro.url.pathname;
+const canonicalPath = rawPath.endsWith('/') ? rawPath : rawPath + '/';
+const canonicalUrl = siteOrigin + canonicalPath;
 
 const graphJson = JSON.stringify(SITEWIDE_GRAPH);
 ---
