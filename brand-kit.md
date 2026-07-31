@@ -173,11 +173,22 @@ Modern tech brand with authority. Sans-serif headings for clean tech energy. A s
 
 ## Logo Direction
 
-### Concept: Geometric Wordmark + Arrow Mark
+> [!warning] Corrected 31 Jul 2026
+> This section previously described a mark that was never built — a two-colour
+> abstract arrow with an Inter ExtraBold wordmark — and forbade the mountain
+> imagery the real logo is built from. The shipped artwork in
+> `public/brand-v2/` is authoritative. Brian confirmed this directly. What
+> follows describes the actual mark. Do not reintroduce the old spec.
 
-**The wordmark:** "ASCEND SYSTEMS" set in Inter ExtraBold (800), all caps, tight letter-spacing (-0.03em). Clean, modern, confident.
+### Concept: Twin Peaks, Ascending Arrow, Centred Cross
 
-**The mark:** A simple upward-pointing geometric element — could be an abstract arrow, chevron, or ascending line graph. Built from the same geometric language as the typography. Works as a standalone favicon/icon.
+**The mark:** Two interlocking charcoal mountain peaks forming a broad triangular base. An orange chevron sits above the left peak and an orange arrow rises through the right peak, breaking the silhouette on the upward diagonal. A slim white cross sits at the centre seam where the two peaks meet.
+
+The cross is a deliberate, permanent part of the mark. It is never removed, recoloured, or treated as optional.
+
+**The wordmark:** "ASCEND SYSTEMS" in all caps, set **light weight with wide letter-spacing** — open and quiet, deliberately the opposite of the mark's density. It sits centred beneath the mark in the full lockup.
+
+**The lockup:** `logo-official.png` is mark plus wordmark. `logo-mark-only.png` is the mark alone, for favicons, avatars, and any context under roughly 120px wide where the wordmark would be unreadable.
 
 **Color applications:**
 
@@ -199,12 +210,20 @@ Modern tech brand with authority. Sans-serif headings for clean tech energy. A s
 | **Icon/mark only (print)** | 0.375" |
 | **Clear space** | Equal to the height of the "A" in ASCEND on all sides |
 
-### What the Logo Should NOT Be
-- No lighthouses, mountains, or literal "ascending" imagery
-- No gradients or 3D effects
-- No circuit boards, robots, or AI cliches
-- Nothing that requires explanation
-- Nothing with more than 2 colors
+### What Must Never Be Done To The Logo
+- Never recolour it. Charcoal, orange and white are the only permitted values.
+- Never remove or alter the cross, the chevron, or the arrow.
+- Never stretch, squash, rotate, or skew it.
+- Never add gradients, shadows, glows, outlines, or 3D effects.
+- Never place it on a busy photograph or a low-contrast background.
+- Never rebuild the wordmark in a heavier weight or tighter tracking.
+- Never use the mark below its minimum size, or crowd it inside its clear space.
+
+### Design Boundaries For Future Brand Work
+These constrain *new* collateral, not the existing mark:
+- No circuit boards, robots, or AI clichés.
+- No stock imagery of handshakes, headsets, or call centres.
+- Nothing that requires explanation to read.
 
 ---
 
