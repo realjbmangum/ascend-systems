@@ -51,7 +51,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen flex bg-surface">
+    <div className="admin-kiln min-h-screen flex bg-surface">
       {/* Sidebar */}
       <aside className="w-64 bg-charcoal text-white flex-shrink-0 hidden md:flex flex-col">
         <div className="p-6 border-b border-charcoal-light">
@@ -65,6 +65,7 @@ export default function AdminLayout() {
             <Link
               key={link.to}
               to={link.to}
+              aria-current={isActive(link.to) ? 'page' : undefined}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive(link.to)
                   ? 'bg-charcoal-lighter text-orange'
@@ -104,6 +105,7 @@ export default function AdminLayout() {
               key={link.to}
               to={link.to}
               aria-label={link.label}
+              aria-current={isActive(link.to) ? 'page' : undefined}
               className={`relative p-2 rounded-lg ${isActive(link.to) ? 'text-orange' : 'text-gray-400'}`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

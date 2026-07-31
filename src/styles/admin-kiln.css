@@ -1,0 +1,40 @@
+/* ============================================================
+   Kiln — scoped to the Ascend CRM only.
+
+   Re-points the surface + gray CSS variables within `.admin-kiln` so the
+   admin gets Kiln's warm-neutral canvas while the PUBLIC marketing site keeps
+   its cool brand surface (#EDF2F7) untouched. Tailwind v4 utilities resolve
+   through var(), so redefining these custom properties on an ancestor cascades
+   to every bg-surface / border-surface-100 / text-gray-500 inside the scope.
+
+   Brand invariants (charcoal ink + burnt orange accent) are inherited from
+   globals.css @theme and deliberately NOT changed here.
+   ============================================================ */
+.admin-kiln {
+  /* warmed-surface hybrid canvas (Brian's pick — between cool #EDF2F7 and Kiln cream) */
+  --color-surface: #ECEDE9;
+  --color-surface-100: #E4E2DB;   /* card edges, hairline dividers */
+  --color-surface-200: #D2CFC5;   /* stronger dividers */
+
+  /* warm the muted grays so secondary text reads warm, not cool-slate */
+  --color-gray-400: #A8A49B;      /* decorative / placeholder only */
+  --color-gray-500: #6E6A63;      /* labels, captions — AA on the canvas */
+  --color-gray-600: #565049;      /* stronger secondary text */
+
+  /* Kiln tick ramp (light -> deep ember) for the SegmentedBar "orange" variant */
+  --kiln-tick-light: #F0C4A8;
+  --kiln-tick-dark: #B85328;      /* = orange-dark */
+}
+
+/* Accessibility baseline for the whole CRM: a visible, on-brand focus ring. */
+.admin-kiln a:focus-visible,
+.admin-kiln button:focus-visible,
+.admin-kiln input:focus-visible,
+.admin-kiln [tabindex]:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Flat by default — Kiln uses 1px warm borders, not drop shadows. */
+.admin-kiln .kiln-flat { box-shadow: none !important; }

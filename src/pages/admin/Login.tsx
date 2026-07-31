@@ -23,9 +23,24 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface px-4">
+    <div className="admin-kiln min-h-screen flex items-center justify-center bg-surface px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="bg-white rounded-2xl border border-surface-100 p-8">
+          {/* Kiln signature — the segmented tick motif as a brand accent */}
+          <div className="flex gap-[3px] h-1.5 mb-8" aria-hidden="true">
+            {Array.from({ length: 28 }, (_, i) => (
+              <div
+                key={i}
+                className="flex-1 rounded-[1px]"
+                style={{
+                  background:
+                    i < 10
+                      ? `color-mix(in srgb, var(--color-orange) ${100 - i * 6}%, var(--color-orange-dark))`
+                      : 'var(--color-surface-100)',
+                }}
+              />
+            ))}
+          </div>
           <div className="text-center mb-8">
             <img
               src="/images/logo.png"
