@@ -5,7 +5,7 @@ const projects = [
   { name: 'SCDMV Alerts', desc: 'Real-time DMV appointment monitoring service', date: 'Feb 2025' },
   { name: 'National Parks Directory', desc: 'Comprehensive guide to 63 US national parks', date: 'Mar 2025' },
   { name: 'LoveNotes', desc: 'Scheduled message delivery subscription platform', date: 'Jun 2025' },
-  { name: 'Potty Directory', desc: 'Public restroom finder with 1,400+ listings', date: 'Aug 2025' },
+  { name: 'Potty Directory', desc: 'Porta potty rental directory — 3,418 verified providers', date: 'Aug 2025' },
   { name: 'Camping Native', desc: 'Camping gear reviews and outdoor content hub', date: 'Oct 2025' },
   { name: 'Pet Health Decoder', desc: 'Pet health education and symptom guides', date: 'Dec 2025' },
   { name: 'CLT EV Dashboard', desc: 'Charlotte EV charging station analytics dashboard', date: 'Mar 2026' },

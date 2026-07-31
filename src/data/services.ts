@@ -315,7 +315,7 @@ export const SERVICE_PAGES: ServicePage[] = [
       headline: 'RecordStops — replacing a $497/month CRM with a purpose-built pipeline',
       portfolioSlug: 'recordstops',
       body: 'RecordStops needed an outreach pipeline to reach independent record stores across five states. The off-the-shelf answer was a CRM at $497 a month, priced for a sales team rather than a directory operator, and still requiring manual work to fit the actual process. We built a custom outreach and drip pipeline instead, sized to the real workflow, running on the same Astro and Cloudflare D1 stack as the site itself. The subscription went away and the process fitted the business rather than the other way round.',
-      outcome: '$497/mo CRM replaced · 296 stores across 5 states · 16 city guides · 683 organic visitors/month',
+      outcome: '$497/mo CRM replaced · 296 stores across 5 states · 16 city guides · average search position 10.3',
     },
     image: {
       src: '/images/services/legacy-modernization.jpg',

@@ -20,8 +20,8 @@ const CASES: CaseStudy[] = [
     title: 'Built the go-to directory for independent record stores — ranking in 5 states.',
     metric: '296',
     metricLabel: 'stores indexed',
-    second: '683',
-    secondLabel: 'organic visitors/mo',
+    second: '10.3',
+    secondLabel: 'avg search position',
     summary:
       'Programmatic directory with city-guide templates targeting long-tail search. Each store gets its own SEO page. Pure organic growth, zero ad spend.',
     tags: ['Astro', 'Cloudflare D1', 'Programmatic SEO'],
