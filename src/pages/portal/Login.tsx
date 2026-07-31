@@ -50,7 +50,7 @@ export default function PortalLogin() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface">
+    <div className="portal-kiln min-h-screen flex flex-col bg-surface">
       <header className="bg-charcoal text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
           <Link to="/" className="flex items-center gap-2">
@@ -63,12 +63,12 @@ export default function PortalLogin() {
       <main className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
           {status === 'verifying' ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+            <div className="bg-white rounded-2xl border border-surface-100 p-8 text-center">
               <h1 className="text-xl font-bold text-charcoal mb-2">Signing you in…</h1>
               <p className="text-gray-500 text-sm">Verifying your link.</p>
             </div>
           ) : status === 'sent' ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+            <div className="bg-white rounded-2xl border border-surface-100 p-8 text-center">
               <svg
                 className="w-12 h-12 text-green-500 mx-auto mb-4"
                 fill="none"
@@ -98,7 +98,22 @@ export default function PortalLogin() {
               </button>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-gray-200 p-8">
+            <div className="bg-white rounded-2xl border border-surface-100 p-8">
+              {/* Kiln signature — the segmented tick motif as a brand accent */}
+              <div className="flex gap-[3px] h-1.5 mb-6" aria-hidden="true">
+                {Array.from({ length: 28 }, (_, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 rounded-[1px]"
+                    style={{
+                      background:
+                        i < 10
+                          ? `color-mix(in srgb, var(--color-orange) ${100 - i * 6}%, var(--color-orange-dark))`
+                          : 'var(--color-surface-100)',
+                    }}
+                  />
+                ))}
+              </div>
               <h1 className="text-2xl font-bold text-charcoal mb-2">Sign in to your portal</h1>
               <p className="text-gray-500 text-sm mb-6">
                 Enter your email and we'll send you a secure sign-in link.
@@ -121,7 +136,7 @@ export default function PortalLogin() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoFocus
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-charcoal placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
+                    className="w-full rounded-lg border border-surface-200 px-4 py-3 text-charcoal placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange/50 focus:border-orange"
                     placeholder="you@company.com"
                   />
                 </div>
