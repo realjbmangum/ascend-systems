@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { stageAccent } from '../../components/kiln/status';
 
 interface Project {
   id: string | number;
@@ -23,45 +24,6 @@ const STATUSES = [
   'completed',
   'cancelled',
 ] as const;
-
-const columnAccent: Record<string, { header: string; badge: string; bar: string; ring: string }> = {
-  planning: {
-    header: 'text-blue-700',
-    badge: 'bg-blue-100 text-blue-700',
-    bar: 'bg-blue-500',
-    ring: 'ring-blue-400',
-  },
-  scoping: {
-    header: 'text-purple-700',
-    badge: 'bg-purple-100 text-purple-700',
-    bar: 'bg-purple-500',
-    ring: 'ring-purple-400',
-  },
-  in_progress: {
-    header: 'text-orange',
-    badge: 'bg-orange-glow text-orange-dark',
-    bar: 'bg-orange',
-    ring: 'ring-orange',
-  },
-  on_hold: {
-    header: 'text-yellow-700',
-    badge: 'bg-yellow-100 text-yellow-700',
-    bar: 'bg-yellow-500',
-    ring: 'ring-yellow-400',
-  },
-  completed: {
-    header: 'text-green-700',
-    badge: 'bg-green-100 text-green-700',
-    bar: 'bg-green-500',
-    ring: 'ring-green-400',
-  },
-  cancelled: {
-    header: 'text-gray-600',
-    badge: 'bg-gray-100 text-gray-600',
-    bar: 'bg-gray-400',
-    ring: 'ring-gray-400',
-  },
-};
 
 function formatStatus(status: string) {
   return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -117,7 +79,6 @@ export default function ProjectsKanban({ projects, onMove }: ProjectsKanbanProps
     <div className="overflow-x-auto pb-4">
       <div className="flex gap-4 min-w-min">
         {STATUSES.map((status) => {
-          const accent = columnAccent[status];
           const columnProjects = grouped[status];
           const isDragOver = dragOverColumn === status;
           return (
@@ -126,21 +87,17 @@ export default function ProjectsKanban({ projects, onMove }: ProjectsKanbanProps
               onDragOver={(e) => handleColumnDragOver(e, status)}
               onDragLeave={(e) => handleColumnDragLeave(e, status)}
               onDrop={(e) => handleColumnDrop(e, status)}
-              className={`min-w-[240px] w-[240px] flex-shrink-0 bg-gray-50 rounded-xl border border-gray-200 transition-all ${
-                isDragOver ? `ring-2 ${accent.ring} bg-white` : ''
+              className={`min-w-[240px] w-[240px] flex-shrink-0 bg-surface rounded-xl border transition-all ${
+                isDragOver ? 'ring-2 ring-orange bg-white border-orange' : 'border-surface-100'
               }`}
             >
-              <div className={`h-1 rounded-t-xl ${accent.bar}`} />
+              <div className="h-1 rounded-t-xl" style={{ background: stageAccent(status) }} />
               <div className="p-3">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className={`text-sm font-semibold ${accent.header}`}>
+                  <h3 className="text-sm font-semibold text-charcoal">
                     {formatStatus(status)}
                   </h3>
-                  <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${accent.badge}`}
-                  >
-                    {columnProjects.length}
-                  </span>
+                  <span className="k-badge k-neutral">{columnProjects.length}</span>
                 </div>
                 <div className="flex flex-col gap-2 min-h-[80px]">
                   {columnProjects.length === 0 ? (
@@ -157,7 +114,7 @@ export default function ProjectsKanban({ projects, onMove }: ProjectsKanbanProps
                           onDragStart={(e) => handleDragStart(e, project)}
                           onDragEnd={handleDragEnd}
                           onClick={() => navigate(`/admin/projects/${project.id}`)}
-                          className={`text-left bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md hover:border-orange transition-all cursor-grab active:cursor-grabbing ${
+                          className={`text-left bg-white rounded-xl border border-surface-100 p-4 hover:border-orange transition-colors cursor-grab active:cursor-grabbing ${
                             isDragging ? 'opacity-40' : ''
                           }`}
                         >
@@ -170,7 +127,7 @@ export default function ProjectsKanban({ projects, onMove }: ProjectsKanbanProps
                             </p>
                           )}
                           {project.project_type && (
-                            <span className="inline-block text-[10px] font-semibold uppercase tracking-wide bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full pointer-events-none">
+                            <span className="inline-block text-[10px] font-semibold uppercase tracking-wide bg-surface-100 text-gray-600 px-2 py-0.5 rounded-full pointer-events-none">
                               {project.project_type}
                             </span>
                           )}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { stageAccent } from '../../components/kiln/status';
 
 interface Lead {
   id: number;
@@ -26,48 +27,6 @@ const STAGES = [
   'won',
   'lost',
 ] as const;
-
-const accent: Record<
-  string,
-  { header: string; badge: string; bar: string; ring: string }
-> = {
-  new: {
-    header: 'text-blue-700',
-    badge: 'bg-blue-100 text-blue-700',
-    bar: 'bg-blue-500',
-    ring: 'ring-blue-400',
-  },
-  contacted: {
-    header: 'text-yellow-700',
-    badge: 'bg-yellow-100 text-yellow-700',
-    bar: 'bg-yellow-500',
-    ring: 'ring-yellow-400',
-  },
-  qualified: {
-    header: 'text-purple-700',
-    badge: 'bg-purple-100 text-purple-700',
-    bar: 'bg-purple-500',
-    ring: 'ring-purple-400',
-  },
-  proposal_sent: {
-    header: 'text-orange',
-    badge: 'bg-orange-glow text-orange-dark',
-    bar: 'bg-orange',
-    ring: 'ring-orange',
-  },
-  won: {
-    header: 'text-green-700',
-    badge: 'bg-green-100 text-green-700',
-    bar: 'bg-green-500',
-    ring: 'ring-green-400',
-  },
-  lost: {
-    header: 'text-red-700',
-    badge: 'bg-red-100 text-red-700',
-    bar: 'bg-red-500',
-    ring: 'ring-red-400',
-  },
-};
 
 function formatStage(s: string) {
   return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -109,7 +68,6 @@ export default function LeadsKanban({ leads, onMove, onClick }: LeadsKanbanProps
     <div className="overflow-x-auto pb-4">
       <div className="flex gap-4 min-w-min">
         {STAGES.map((stage) => {
-          const a = accent[stage];
           const columnLeads = grouped[stage];
           const isDragOver = dragOverColumn === stage;
           const total = columnValue(stage);
@@ -131,21 +89,17 @@ export default function LeadsKanban({ leads, onMove, onClick }: LeadsKanbanProps
                   setDragOverColumn(null);
               }}
               onDrop={(e) => handleDrop(e, stage)}
-              className={`min-w-[270px] w-[270px] flex-shrink-0 bg-gray-50 rounded-xl border border-gray-200 transition-all ${
-                isDragOver ? `ring-2 ${a.ring} bg-white` : ''
+              className={`min-w-[270px] w-[270px] flex-shrink-0 bg-surface rounded-xl border transition-all ${
+                isDragOver ? 'ring-2 ring-orange bg-white border-orange' : 'border-surface-100'
               }`}
             >
-              <div className={`h-1 rounded-t-xl ${a.bar}`} />
+              <div className="h-1 rounded-t-xl" style={{ background: stageAccent(stage) }} />
               <div className="p-3">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className={`text-sm font-semibold ${a.header}`}>
+                  <h3 className="text-sm font-semibold text-charcoal">
                     {formatStage(stage)}
                   </h3>
-                  <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${a.badge}`}
-                  >
-                    {columnLeads.length}
-                  </span>
+                  <span className="k-badge k-neutral">{columnLeads.length}</span>
                 </div>
                 {total && (
                   <p className="text-xs text-gray-400 mb-2">{total} in stage</p>
@@ -176,7 +130,7 @@ export default function LeadsKanban({ leads, onMove, onClick }: LeadsKanbanProps
                             setDragOverColumn(null);
                           }}
                           onClick={() => onClick?.(lead)}
-                          className={`text-left bg-white rounded-xl border border-gray-200 p-3 shadow-sm hover:shadow-md hover:border-orange transition-all ${
+                          className={`text-left bg-white rounded-xl border border-surface-100 p-3 hover:border-orange transition-colors ${
                             onMove
                               ? 'cursor-grab active:cursor-grabbing'
                               : 'cursor-pointer'
@@ -191,12 +145,12 @@ export default function LeadsKanban({ leads, onMove, onClick }: LeadsKanbanProps
                           </p>
                           <div className="flex items-center gap-1.5 flex-wrap mt-2 pointer-events-none">
                             {value && (
-                              <span className="text-[11px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded">
+                              <span className="text-[11px] font-bold px-1.5 py-0.5 rounded" style={{ color: '#3E6B48', background: '#E6EFE7' }}>
                                 {value}
                               </span>
                             )}
                             {lead.expected_close_date && (
-                              <span className="text-[10px] text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">
+                              <span className="text-[10px] text-gray-500 px-1.5 py-0.5 rounded border border-surface-100">
                                 {new Date(
                                   lead.expected_close_date
                                 ).toLocaleDateString(undefined, {
@@ -206,7 +160,7 @@ export default function LeadsKanban({ leads, onMove, onClick }: LeadsKanbanProps
                               </span>
                             )}
                             {lead.owner && (
-                              <span className="text-[10px] font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] font-semibold text-gray-600 bg-surface-100 px-1.5 py-0.5 rounded">
                                 {lead.owner}
                               </span>
                             )}

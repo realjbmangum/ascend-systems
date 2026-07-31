@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { stageAccent, priorityClass } from '../../components/kiln/status';
 
 interface Task {
   id: number;
@@ -22,34 +23,6 @@ interface TasksKanbanProps {
 }
 
 const STATUSES = ['open', 'in_progress', 'done'] as const;
-
-const columnAccent: Record<string, { header: string; badge: string; bar: string; ring: string }> = {
-  open: {
-    header: 'text-blue-700',
-    badge: 'bg-blue-100 text-blue-700',
-    bar: 'bg-blue-500',
-    ring: 'ring-blue-400',
-  },
-  in_progress: {
-    header: 'text-orange',
-    badge: 'bg-orange-glow text-orange-dark',
-    bar: 'bg-orange',
-    ring: 'ring-orange',
-  },
-  done: {
-    header: 'text-green-700',
-    badge: 'bg-green-100 text-green-700',
-    bar: 'bg-green-500',
-    ring: 'ring-green-400',
-  },
-};
-
-const priorityStyles: Record<string, string> = {
-  urgent: 'bg-red-100 text-red-700',
-  high: 'bg-orange-glow text-orange-dark',
-  medium: 'bg-blue-100 text-blue-700',
-  low: 'bg-gray-100 text-gray-600',
-};
 
 function formatStatus(s: string) {
   return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -103,7 +76,6 @@ export default function TasksKanban({ tasks, onMove, onClick, hideProjectChip }:
     <div className="overflow-x-auto pb-4">
       <div className="flex gap-4 min-w-min">
         {STATUSES.map((status) => {
-          const accent = columnAccent[status];
           const columnTasks = grouped[status];
           const isDragOver = dragOverColumn === status;
           return (
@@ -112,21 +84,17 @@ export default function TasksKanban({ tasks, onMove, onClick, hideProjectChip }:
               onDragOver={(e) => handleColumnDragOver(e, status)}
               onDragLeave={(e) => handleColumnDragLeave(e, status)}
               onDrop={(e) => handleColumnDrop(e, status)}
-              className={`min-w-[300px] w-[300px] flex-shrink-0 bg-gray-50 rounded-xl border border-gray-200 transition-all ${
-                isDragOver ? `ring-2 ${accent.ring} bg-white` : ''
+              className={`min-w-[300px] w-[300px] flex-shrink-0 bg-surface rounded-xl border transition-all ${
+                isDragOver ? 'ring-2 ring-orange bg-white border-orange' : 'border-surface-100'
               }`}
             >
-              <div className={`h-1 rounded-t-xl ${accent.bar}`} />
+              <div className="h-1 rounded-t-xl" style={{ background: stageAccent(status) }} />
               <div className="p-3">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className={`text-sm font-semibold ${accent.header}`}>
+                  <h3 className="text-sm font-semibold text-charcoal">
                     {formatStatus(status)}
                   </h3>
-                  <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${accent.badge}`}
-                  >
-                    {columnTasks.length}
-                  </span>
+                  <span className="k-badge k-neutral">{columnTasks.length}</span>
                 </div>
                 <div className="flex flex-col gap-2 min-h-[80px]">
                   {columnTasks.length === 0 ? (
@@ -143,7 +111,7 @@ export default function TasksKanban({ tasks, onMove, onClick, hideProjectChip }:
                           onDragStart={(e) => handleDragStart(e, task)}
                           onDragEnd={handleDragEnd}
                           onClick={() => onClick?.(task)}
-                          className={`text-left bg-white rounded-xl border border-gray-200 p-3 shadow-sm hover:shadow-md hover:border-orange transition-all ${
+                          className={`text-left bg-white rounded-xl border border-surface-100 p-3 hover:border-orange transition-colors ${
                             onMove ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'
                           } ${isDragging ? 'opacity-40' : ''}`}
                         >
@@ -157,11 +125,7 @@ export default function TasksKanban({ tasks, onMove, onClick, hideProjectChip }:
                           )}
                           <div className="flex items-center gap-1.5 flex-wrap pointer-events-none">
                             {task.priority && task.priority !== 'medium' && (
-                              <span
-                                className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${
-                                  priorityStyles[task.priority] || 'bg-gray-100 text-gray-600'
-                                }`}
-                              >
+                              <span className={`${priorityClass(task.priority)} !text-[10px] !font-bold uppercase tracking-wide !px-1.5 !py-0.5 !rounded`}>
                                 {task.priority}
                               </span>
                             )}
@@ -174,7 +138,7 @@ export default function TasksKanban({ tasks, onMove, onClick, hideProjectChip }:
                               <span className="text-[10px] text-gray-400 italic">No project</span>
                             )}
                             {task.type && task.type !== 'manual' && (
-                              <span className="text-[10px] text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">
+                              <span className="text-[10px] text-gray-500 px-1.5 py-0.5 rounded border border-surface-100">
                                 {task.type.replace(/_/g, ' ')}
                               </span>
                             )}

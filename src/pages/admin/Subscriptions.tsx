@@ -4,14 +4,14 @@ import { api } from '../../lib/api';
 import DataTable, { type Column } from '../../components/DataTable';
 
 const statusStyles: Record<string, string> = {
-  active: 'bg-green-100 text-green-700',
-  trialing: 'bg-blue-100 text-blue-700',
-  incomplete: 'bg-yellow-100 text-yellow-700',
-  incomplete_expired: 'bg-gray-100 text-gray-600',
-  past_due: 'bg-red-100 text-red-700',
-  canceled: 'bg-gray-100 text-gray-500',
-  cancelled: 'bg-gray-100 text-gray-500',
-  unpaid: 'bg-red-100 text-red-700',
+  active: 'k-good',
+  trialing: 'k-pending',
+  incomplete: 'k-pending',
+  incomplete_expired: 'k-neutral',
+  past_due: 'k-bad',
+  canceled: 'k-neutral',
+  cancelled: 'k-neutral',
+  unpaid: 'k-bad',
 };
 
 function formatMoney(cents: number) {
@@ -103,7 +103,7 @@ export default function Subscriptions() {
       render: (row) => (
         <span
           className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${
-            statusStyles[row.status] || 'bg-gray-100 text-gray-600'
+            statusStyles[row.status] || 'k-neutral'
           }`}
         >
           {row.status || 'unknown'}
