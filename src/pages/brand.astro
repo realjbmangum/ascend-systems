@@ -1,0 +1,722 @@
+---
+/**
+ * Public brand standards — /brand/
+ *
+ * Audience is partners who need the mark for their own materials, and
+ * clients checking that Ascend Systems is a real firm.
+ *
+ * THE COLOUR VALUES ON THIS PAGE ARE READ FROM src/styles/globals.css AT
+ * BUILD TIME. Do not hardcode hex values here. globals.css is what the live
+ * site renders, so parsing it is the only way this page cannot drift from the
+ * brand it documents. A partner shipping the wrong orange is the specific
+ * failure this page exists to prevent.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import Layout from '../layouts/Layout.astro';
+
+const title = 'Brand Standards | Ascend Systems';
+const description =
+  'Logo files, colour values, typography and usage rules for Ascend Systems. Everything a partner needs to represent the brand correctly.';
+
+// --- Read the design tokens from the live stylesheet -----------------------
+const cssPath = path.join(process.cwd(), 'src/styles/globals.css');
+const css = fs.readFileSync(cssPath, 'utf8');
+const themeMatch = css.match(/@theme\s*\{([\s\S]*?)\n\}/);
+const themeBody = themeMatch ? themeMatch[1] : '';
+
+const colorTokens = Array.from(
+  themeBody.matchAll(/--color-([a-z0-9-]+):\s*(#[0-9A-Fa-f]{3,8})\s*;/g)
+).map((m) => ({ token: '--color-' + m[1], key: m[1], hex: m[2].toUpperCase() }));
+
+const fontMatch = themeBody.match(/--font-sans:\s*([^;]+);/);
+const monoMatch = themeBody.match(/--font-mono:\s*([^;]+);/);
+const fontSans = fontMatch ? fontMatch[1].trim() : '';
+const fontMono = monoMatch ? monoMatch[1].trim() : '';
+
+const primaryName = (n: string) => n === 'charcoal' || n === 'orange';
+const find = (k: string) => colorTokens.find((c) => c.key === k);
+
+const primary = colorTokens.filter((c) => primaryName(c.key));
+const charcoalFamily = colorTokens.filter(
+  (c) => c.key.startsWith('charcoal') && !primaryName(c.key)
+);
+const orangeFamily = colorTokens.filter(
+  (c) => c.key.startsWith('orange') && !primaryName(c.key)
+);
+const surfaceFamily = colorTokens.filter((c) => c.key.startsWith('surface'));
+const semantic = colorTokens.filter((c) => c.key === 'success' || c.key === 'error');
+
+const charcoalHex = find('charcoal')?.hex ?? '';
+const orangeHex = find('orange')?.hex ?? '';
+
+const groups = [
+  { label: 'Core', note: 'The two colours the brand is built from.', items: primary },
+  { label: 'Charcoal', note: 'Surfaces and depth on dark layouts.', items: charcoalFamily },
+  { label: 'Orange', note: 'Accent only. It works because it is rare.', items: orangeFamily },
+  { label: 'Surface', note: 'Light backgrounds and borders.', items: surfaceFamily },
+  { label: 'Semantic', note: 'State only. Never decorative.', items: semantic },
+];
+
+const assets = [
+  {
+    file: '/brand-v2/logo-official.png',
+    name: 'Light-background lockup',
+    use: 'The default. Use on white, on surface, or on any light background. The wordmark is charcoal.',
+    px: '2000 × 2000 PNG',
+    bg: 'light',
+  },
+  {
+    file: '/brand-v2/logo-mark-only.png',
+    name: 'Dark-background lockup',
+    use: 'Use on charcoal or dark photography. The wordmark is white. Despite its filename this is not a mark-only file — it is the same lockup with the wordmark reversed.',
+    px: '2000 × 2000 PNG',
+    bg: 'dark',
+  },
+];
+
+const neverDo = [
+  'Recolour it. Charcoal, orange and white are the only permitted values.',
+  'Remove or alter the cross, the chevron, or the arrow.',
+  'Stretch, squash, rotate, or skew it.',
+  'Add gradients, shadows, glows, outlines, or 3D effects.',
+  'Place it on a busy photograph or a low-contrast background.',
+  'Rebuild the wordmark in a heavier weight or tighter tracking.',
+  'Crowd it. Respect the clear space on every side.',
+];
+
+const wordsWeUse = ['handled', 'covered', 'managed', 'built', 'running', 'automated', 'set up', 'configured', 'monitored'];
+const wordsWeDont = ['leverage', 'synergy', 'ecosystem', 'paradigm', 'disrupt', 'revolutionary', 'cutting-edge', 'game-changing'];
+
+const typeScale = [
+  { el: 'Display', size: '3.5rem', weight: '800', track: '-0.03em' },
+  { el: 'H1', size: '2.75rem', weight: '700', track: '-0.025em' },
+  { el: 'H2', size: '2.25rem', weight: '700', track: '-0.02em' },
+  { el: 'H3', size: '1.75rem', weight: '600', track: '-0.015em' },
+  { el: 'Body', size: '1rem', weight: '400', track: '0' },
+  { el: 'Caption', size: '0.75rem', weight: '500', track: '0.02em' },
+];
+---
+
+<Layout title={title} description={description} canonical="/brand">
+  <main class="bs">
+    <!-- Masthead -->
+    <header class="bs-mast">
+      <div class="bs-mast-inner">
+        <p class="bs-eyebrow">Ascend Systems — Lighthouse 27 LLC</p>
+        <h1 class="bs-title">Brand<br />Standards</h1>
+        <p class="bs-lede">
+          Everything you need to represent Ascend Systems correctly. Files,
+          values and the rules that go with them. If something you need is
+          missing, ask before improvising.
+        </p>
+        <p class="bs-updated">
+          Colour values on this page are read from the live stylesheet at build
+          time. They cannot drift from the site.
+        </p>
+      </div>
+      <div class="bs-mast-mark">
+        <div class="bs-mast-plate">
+          <img
+            src="/brand-v2/logo-official.png"
+            alt="The Ascend Systems logo: two charcoal peaks with an orange chevron and ascending arrow above the ASCEND SYSTEMS wordmark"
+            width="480"
+            height="480"
+            loading="eager"
+          />
+        </div>
+        <p class="bs-mono bs-dim bs-mast-plate-note">Shown on surface. See 01.</p>
+      </div>
+    </header>
+
+    <!-- Assets -->
+    <section class="bs-section" id="assets" aria-labelledby="assets-h">
+      <div class="bs-head">
+        <span class="bs-num">01</span>
+        <h2 id="assets-h">The mark</h2>
+      </div>
+
+      <div class="bs-assets">
+        {assets.map((a) => (
+          <article class="bs-asset">
+            <div class="bs-asset-previews">
+              <div class:list={['bs-swatchbg', 'bs-swatchbg--light', a.bg === 'light' ? 'is-ok' : 'is-no']}>
+                <img src={a.file} alt="" width="200" height="200" loading="lazy" />
+                <span class="bs-mono bs-swatchbg-label">
+                  {a.bg === 'light' ? 'Correct — on surface' : 'Do not — wordmark disappears'}
+                </span>
+              </div>
+              <div class:list={['bs-swatchbg', 'bs-swatchbg--dark', a.bg === 'dark' ? 'is-ok' : 'is-no']}>
+                <img src={a.file} alt="" width="200" height="200" loading="lazy" />
+                <span class="bs-mono bs-swatchbg-label">
+                  {a.bg === 'dark' ? 'Correct — on charcoal' : 'Do not — wordmark disappears'}
+                </span>
+              </div>
+            </div>
+            <div class="bs-asset-meta">
+              <h3>{a.name}</h3>
+              <p>{a.use}</p>
+              <p class="bs-mono bs-dim">{a.px}</p>
+              <a class="bs-dl" href={a.file} download>
+                Download PNG
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="bs-notice">
+        <p>
+          <strong>Pick the file that matches your background.</strong> The two
+          lockups differ only in the wordmark: charcoal on one, white on the
+          other. Put the charcoal wordmark on a dark surface and it vanishes.
+          That is the failure shown above, and it is the most common way this
+          logo gets used wrongly.
+        </p>
+        <p>
+          <strong>The filename “logo-mark-only” is misleading.</strong> It is
+          not a mark-only file. It is the same full lockup with the wordmark
+          reversed to white. There is currently <em>no</em> icon-only asset, so
+          for favicons and avatars, crop the mark yourself or ask.
+        </p>
+        <p>
+          <strong>The peaks are charcoal in both files.</strong> On pure black
+          they lose definition. Prefer the brand charcoal
+          <span class="bs-mono">{charcoalHex}</span> or a mid-dark surface over
+          true black.
+        </p>
+        <p>
+          <strong>Neither is vector.</strong> Both PNGs are
+          2000&nbsp;×&nbsp;2000, which holds up in decks, on the web and in
+          moderate print. For large-format print, ask before scaling one up.
+        </p>
+      </div>
+    </section>
+
+    <!-- Clear space + sizing -->
+    <section class="bs-section" aria-labelledby="space-h">
+      <div class="bs-head">
+        <span class="bs-num">02</span>
+        <h2 id="space-h">Clear space &amp; minimum size</h2>
+      </div>
+
+      <div class="bs-spec">
+        <div class="bs-clearspace">
+          <div class="bs-clearspace-box">
+            <img src="/brand-v2/logo-mark-only.png" alt="" width="140" height="140" loading="lazy" />
+          </div>
+          <p class="bs-mono bs-dim">
+            Clear space on all sides = the height of the “A” in ASCEND
+          </p>
+        </div>
+
+        <dl class="bs-sizes">
+          <div><dt>Full lockup, web</dt><dd class="bs-mono">160px min width</dd></div>
+          <div><dt>Full lockup, print</dt><dd class="bs-mono">1.75in min width</dd></div>
+          <div><dt>Cropped mark, web</dt><dd class="bs-mono">24px min width</dd></div>
+          <div><dt>Cropped mark, print</dt><dd class="bs-mono">0.375in min width</dd></div>
+        </dl>
+        <p class="bs-sizes-note">
+          Below roughly 120px the wordmark stops being readable and you should
+          crop to the peaks alone. There is no packaged icon asset for this yet,
+          so crop from the lockup that matches your background.
+        </p>
+      </div>
+    </section>
+
+    <!-- Usage -->
+    <section class="bs-section" aria-labelledby="usage-h">
+      <div class="bs-head">
+        <span class="bs-num">03</span>
+        <h2 id="usage-h">Never</h2>
+      </div>
+      <ol class="bs-never">
+        {neverDo.map((rule, i) => (
+          <li>
+            <span class="bs-mono bs-never-n">{String(i + 1).padStart(2, '0')}</span>
+            <span>{rule}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- Colour -->
+    <section class="bs-section" aria-labelledby="color-h">
+      <div class="bs-head">
+        <span class="bs-num">04</span>
+        <h2 id="color-h">Colour</h2>
+      </div>
+
+      {groups.filter((g) => g.items.length > 0).map((g) => (
+        <div class="bs-cgroup">
+          <div class="bs-cgroup-head">
+            <h3>{g.label}</h3>
+            <p>{g.note}</p>
+          </div>
+          <div class="bs-chips">
+            {g.items.map((c) => (
+              <button class="bs-chip" type="button" data-hex={c.hex} title={'Copy ' + c.hex}>
+                <span class="bs-chip-sw" style={'background:' + c.hex}></span>
+                <span class="bs-chip-meta">
+                  <span class="bs-chip-name">{c.key}</span>
+                  <span class="bs-mono bs-chip-hex">{c.hex}</span>
+                  <span class="bs-mono bs-chip-token">{c.token}</span>
+                </span>
+                <span class="bs-chip-copy bs-mono" aria-hidden="true">copy</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <!-- Typography -->
+    <section class="bs-section" aria-labelledby="type-h">
+      <div class="bs-head">
+        <span class="bs-num">05</span>
+        <h2 id="type-h">Typography</h2>
+      </div>
+
+      <div class="bs-typespec">
+        <div class="bs-face">
+          <p class="bs-mono bs-dim">Headings &amp; body</p>
+          <p class="bs-face-name">Inter</p>
+          <p class="bs-face-sample">ABCDEFGHIJKLM<br />abcdefghijklm 0123456789</p>
+          <p class="bs-mono bs-dim bs-face-stack">{fontSans}</p>
+        </div>
+        <div class="bs-face">
+          <p class="bs-mono bs-dim">Data &amp; technical values</p>
+          <p class="bs-face-name bs-mono">JetBrains Mono</p>
+          <p class="bs-face-sample bs-mono">ABCDEFGHIJKLM<br />abcdefghijklm 0123456789</p>
+          <p class="bs-mono bs-dim bs-face-stack">{fontMono}</p>
+        </div>
+      </div>
+
+      <table class="bs-table">
+        <thead>
+          <tr><th>Element</th><th>Size</th><th>Weight</th><th>Tracking</th></tr>
+        </thead>
+        <tbody>
+          {typeScale.map((t) => (
+            <tr>
+              <td>{t.el}</td>
+              <td class="bs-mono">{t.size}</td>
+              <td class="bs-mono">{t.weight}</td>
+              <td class="bs-mono">{t.track}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Name + voice -->
+    <section class="bs-section" aria-labelledby="name-h">
+      <div class="bs-head">
+        <span class="bs-num">06</span>
+        <h2 id="name-h">Name &amp; voice</h2>
+      </div>
+
+      <div class="bs-name">
+        <p class="bs-name-right">Ascend Systems</p>
+        <p class="bs-name-wrong">Ascend</p>
+        <p class="bs-name-note">
+          Always the full name. Never “Ascend” on its own, in body copy,
+          headlines, or a URL slug you are writing by hand.
+        </p>
+      </div>
+
+      <div class="bs-words">
+        <div>
+          <p class="bs-mono bs-dim">Words we use</p>
+          <ul>{wordsWeUse.map((w) => <li>{w}</li>)}</ul>
+        </div>
+        <div>
+          <p class="bs-mono bs-dim">Words we don’t</p>
+          <ul class="bs-words--no">{wordsWeDont.map((w) => <li>{w}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bs-foot">
+      <p>
+        Questions, or need something that isn’t here?
+        <a href="/contact/">Get in touch</a> before improvising.
+      </p>
+    </footer>
+  </main>
+</Layout>
+
+<style define:vars={{ charcoalHex, orangeHex }}>
+  .bs {
+    --bs-bg: #101a20;
+    --bs-panel: var(--charcoalHex);
+    --bs-line: #2a3a45;
+    --bs-ink: #e8eef2;
+    --bs-ink-dim: #8fa3b0;
+    --bs-accent: var(--orangeHex);
+
+    --bs-s1: 0.5rem;
+    --bs-s2: 0.75rem;
+    --bs-s3: 1rem;
+    --bs-s4: 1.5rem;
+    --bs-s5: 2rem;
+    --bs-s6: 3rem;
+    --bs-s7: 4rem;
+    --bs-s8: 6rem;
+
+    background: var(--bs-bg);
+    color: var(--bs-ink);
+    font-family: var(--font-sans);
+  }
+
+  .bs-mono { font-family: var(--font-mono); font-variant-ligatures: none; }
+  .bs-dim { color: var(--bs-ink-dim); }
+
+  /* ---------- Masthead ---------- */
+  .bs-mast {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: var(--bs-s6);
+    align-items: center;
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: clamp(3rem, 8vw, var(--bs-s8)) var(--bs-s4) var(--bs-s7);
+  }
+  .bs-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bs-accent);
+    margin-bottom: var(--bs-s4);
+  }
+  .bs-title {
+    font-size: clamp(2.75rem, 8vw, 5.25rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    margin: 0 0 var(--bs-s4);
+  }
+  .bs-lede {
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+    line-height: 1.7;
+    max-width: 46ch;
+    color: var(--bs-ink);
+    margin: 0 0 var(--bs-s3);
+  }
+  .bs-updated {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    max-width: 46ch;
+    color: var(--bs-ink-dim);
+    margin: 0;
+  }
+  .bs-mast-mark { justify-self: center; }
+  .bs-mast-plate {
+    background: #edf2f7;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    display: grid;
+    place-items: center;
+  }
+  .bs-mast-plate img {
+    width: min(100%, 20rem);
+    height: auto;
+    display: block;
+  }
+  .bs-mast-plate-note {
+    margin: var(--bs-s2) 0 0;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-align: right;
+  }
+
+  /* ---------- Section scaffolding ---------- */
+  .bs-section {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: var(--bs-s7) var(--bs-s4);
+    border-top: 1px solid var(--bs-line);
+    /* The site nav is sticky at 5rem; without this an anchored jump hides the heading. */
+    scroll-margin-top: 6rem;
+  }
+  .bs-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--bs-s3);
+    margin-bottom: var(--bs-s6);
+  }
+  .bs-num {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--bs-accent);
+    letter-spacing: 0.08em;
+  }
+  .bs-head h2 {
+    font-size: clamp(1.5rem, 3vw, 2.125rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  /* ---------- Assets ---------- */
+  .bs-assets { display: grid; gap: var(--bs-s6); }
+  .bs-asset {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--bs-s5);
+    align-items: center;
+  }
+  .bs-asset-previews { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bs-s2); }
+  .bs-swatchbg {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    padding: var(--bs-s4);
+    border: 1px solid var(--bs-line);
+  }
+  .bs-swatchbg--dark { background: var(--charcoalHex); }
+  .bs-swatchbg--light { background: #edf2f7; border-color: transparent; }
+  .bs-swatchbg img { width: 68%; height: auto; }
+  .bs-swatchbg-label {
+    position: absolute;
+    bottom: var(--bs-s2);
+    left: var(--bs-s2);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--bs-ink-dim);
+  }
+  .bs-swatchbg--light .bs-swatchbg-label { color: #64748b; }
+  .bs-swatchbg.is-no { border-color: var(--bs-accent); }
+  .bs-swatchbg.is-no .bs-swatchbg-label { color: var(--bs-accent); }
+  .bs-swatchbg--light.is-ok .bs-swatchbg-label { color: #2f6f4f; }
+  .bs-swatchbg--dark.is-ok .bs-swatchbg-label { color: #7fbf9a; }
+  .bs-asset-meta h3 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--bs-s2);
+  }
+  .bs-asset-meta p { margin: 0 0 var(--bs-s2); line-height: 1.65; max-width: 38ch; }
+  .bs-dl {
+    display: inline-block;
+    margin-top: var(--bs-s3);
+    padding: 0.6875rem 1.25rem;
+    background: var(--bs-accent);
+    color: #fff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    transition: background 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bs-dl:hover { background: #b85328; }
+  .bs-dl:focus-visible { outline: 2px solid var(--bs-ink); outline-offset: 3px; }
+
+  .bs-notice {
+    margin-top: var(--bs-s6);
+    padding: var(--bs-s4);
+    background: #16232b;
+    border: 1px solid var(--bs-line);
+  }
+  .bs-notice p { margin: 0 0 var(--bs-s3); line-height: 1.7; max-width: 70ch; color: var(--bs-ink-dim); }
+  .bs-notice p:last-child { margin-bottom: 0; }
+  .bs-notice strong { color: var(--bs-ink); font-weight: 600; }
+
+  /* ---------- Clear space ---------- */
+  .bs-spec {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--bs-s6);
+    align-items: start;
+  }
+  .bs-clearspace-box {
+    display: grid;
+    place-items: center;
+    padding: var(--bs-s7);
+    background: var(--charcoalHex);
+    outline: 1px dashed var(--bs-line);
+    outline-offset: -3rem;
+  }
+  .bs-clearspace-box img { width: 45%; height: auto; }
+  .bs-clearspace p { margin-top: var(--bs-s3); font-size: 0.8125rem; }
+  .bs-sizes { margin: 0; display: grid; gap: 0; }
+  .bs-sizes > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--bs-s4);
+    padding: var(--bs-s3) 0;
+    border-bottom: 1px solid var(--bs-line);
+  }
+  .bs-sizes dt { color: var(--bs-ink); }
+  .bs-sizes dd { margin: 0; color: var(--bs-accent); font-size: 0.9375rem; }
+  .bs-sizes-note {
+    margin: var(--bs-s4) 0 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--bs-ink-dim);
+    max-width: 46ch;
+  }
+
+  /* ---------- Never ---------- */
+  .bs-never { list-style: none; margin: 0; padding: 0; max-width: 62ch; }
+  .bs-never li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--bs-s3);
+    align-items: baseline;
+    padding: var(--bs-s3) 0;
+    border-bottom: 1px solid var(--bs-line);
+    line-height: 1.65;
+  }
+  .bs-never-n { color: var(--bs-accent); font-size: 0.8125rem; }
+
+  /* ---------- Colour ---------- */
+  .bs-cgroup { margin-bottom: var(--bs-s6); }
+  .bs-cgroup-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--bs-s3);
+    flex-wrap: wrap;
+    margin-bottom: var(--bs-s3);
+  }
+  .bs-cgroup-head h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .bs-cgroup-head p { margin: 0; color: var(--bs-ink-dim); font-size: 0.9375rem; }
+  .bs-chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--bs-s2); }
+  .bs-chip {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr auto;
+    align-items: center;
+    gap: var(--bs-s3);
+    padding: var(--bs-s2);
+    background: #16232b;
+    border: 1px solid var(--bs-line);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+  .bs-chip:hover { border-color: var(--bs-accent); background: #1a2933; }
+  .bs-chip:focus-visible { outline: 2px solid var(--bs-accent); outline-offset: 2px; }
+  .bs-chip-sw { display: block; width: 3.25rem; height: 3.25rem; border: 1px solid rgba(255,255,255,0.14); }
+  .bs-chip-meta { display: grid; gap: 0.125rem; min-width: 0; }
+  .bs-chip-name { font-size: 0.9375rem; font-weight: 600; }
+  .bs-chip-hex { font-size: 0.8125rem; color: var(--bs-accent); }
+  .bs-chip-token { font-size: 0.6875rem; color: var(--bs-ink-dim); overflow: hidden; text-overflow: ellipsis; }
+  .bs-chip-copy { font-size: 0.6875rem; color: var(--bs-ink-dim); letter-spacing: 0.08em; }
+  .bs-chip[data-copied='true'] .bs-chip-copy { color: var(--bs-accent); }
+
+  /* ---------- Typography ---------- */
+  .bs-typespec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--bs-s5);
+    margin-bottom: var(--bs-s6);
+  }
+  .bs-face { padding: var(--bs-s4); border: 1px solid var(--bs-line); }
+  .bs-face > p { margin: 0; }
+  .bs-face-name { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; margin: var(--bs-s2) 0 var(--bs-s3) !important; }
+  .bs-face-sample { font-size: 1.0625rem; line-height: 1.6; color: var(--bs-ink); }
+  .bs-face-stack { font-size: 0.6875rem; margin-top: var(--bs-s3) !important; }
+
+  .bs-table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+  .bs-table th {
+    text-align: left;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bs-ink-dim);
+    font-weight: 500;
+    padding: 0 var(--bs-s3) var(--bs-s2) 0;
+    border-bottom: 1px solid var(--bs-line);
+  }
+  .bs-table td { padding: var(--bs-s2) var(--bs-s3) var(--bs-s2) 0; border-bottom: 1px solid var(--bs-line); }
+  .bs-table td.bs-mono { color: var(--bs-ink-dim); }
+
+  /* ---------- Name & voice ---------- */
+  .bs-name { margin-bottom: var(--bs-s6); }
+  .bs-name-right {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0 0 var(--bs-s2);
+  }
+  .bs-name-wrong {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--bs-ink-dim);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    margin: 0 0 var(--bs-s3);
+  }
+  .bs-name-note { margin: 0; line-height: 1.7; max-width: 56ch; color: var(--bs-ink-dim); }
+
+  .bs-words { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--bs-s5); }
+  .bs-words p { margin: 0 0 var(--bs-s3); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .bs-words ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--bs-s1); }
+  .bs-words li {
+    padding: 0.3125rem 0.625rem;
+    border: 1px solid var(--bs-line);
+    font-size: 0.875rem;
+  }
+  .bs-words--no li { color: var(--bs-ink-dim); text-decoration: line-through; }
+
+  /* ---------- Foot ---------- */
+  .bs-foot {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: var(--bs-s6) var(--bs-s4) var(--bs-s8);
+    border-top: 1px solid var(--bs-line);
+  }
+  .bs-foot p { margin: 0; color: var(--bs-ink-dim); }
+  .bs-foot a { color: var(--bs-accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .bs-mast { grid-template-columns: 1fr; gap: var(--bs-s5); }
+    .bs-mast-mark { order: -1; justify-self: start; }
+    .bs-mast-mark img { width: min(60%, 14rem); }
+    .bs-asset { grid-template-columns: 1fr; }
+    .bs-spec { grid-template-columns: 1fr; }
+    .bs-clearspace-box { padding: var(--bs-s5); outline-offset: -1.75rem; }
+  }
+  @media (max-width: 520px) {
+    .bs-asset-previews { grid-template-columns: 1fr; }
+    .bs-never li { grid-template-columns: 2rem 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bs-dl, .bs-chip { transition: none; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    document.querySelectorAll('.bs-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var hex = chip.getAttribute('data-hex');
+        if (!hex || !navigator.clipboard) return;
+        navigator.clipboard.writeText(hex).then(function () {
+          var label = chip.querySelector('.bs-chip-copy');
+          if (!label) return;
+          var prev = label.textContent;
+          chip.setAttribute('data-copied', 'true');
+          label.textContent = 'copied';
+          setTimeout(function () {
+            chip.removeAttribute('data-copied');
+            label.textContent = prev;
+          }, 1400);
+        });
+      });
+    });
+  })();
+</script>
