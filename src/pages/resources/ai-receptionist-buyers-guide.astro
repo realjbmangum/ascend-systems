@@ -1,0 +1,622 @@
+---
+/**
+ * Buyer's guide resource — `/resources/ai-receptionist-buyers-guide`
+ *
+ * Evergreen, ungated lead-magnet page. Aimed UP-market: the buyer is a
+ * multi-location / multi-truck services operator with a front desk that's
+ * drowning, NOT the solo operator shopping the cheapest $29 bot. (See the
+ * mid-market ICP decision — Ascend's voice offer is services-led and managed,
+ * not the $199–499 SMB tiers.)
+ *
+ * Rendered as plain Astro markup (like /services/[slug]) rather than through
+ * PageIsland — it's static long-form content with no React interactivity. The
+ * only JS is the native <details> FAQ, no hydration required.
+ *
+ * Content is derived from brand-strategy.md (the competitor tier map + the
+ * done-for-you / local / managed differentiation). Competitors are presented
+ * as archetypes, not named — an honest buyer's framework, not a teardown.
+ * Dollar figures are typical 2026 MARKET ranges pulled from that doc, labelled
+ * as market (not Ascend) pricing. No pricing, stat, or guarantee is invented;
+ * where a number would need sourcing it is left as a {{PLACEHOLDER}}.
+ *
+ * Schema: Article + BreadcrumbList + FAQPage, referencing the sitewide
+ * Organization and Person entities by @id rather than restating them.
+ */
+import Layout from '../../layouts/Layout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const origin = 'https://ascendsystems.ai';
+const canonical = '/resources/ai-receptionist-buyers-guide';
+
+// Title tag ≈ 62 chars, front-loads the query. H1 carries the full hook.
+const title = 'How to Choose an AI Receptionist (Buyer’s Guide) | Ascend Systems';
+const description =
+  'An honest, ungated buyer’s guide for multi-location and multi-truck operators: the real options for AI phone answering, the trade-offs, the questions to ask, and the red flags to avoid.';
+
+// --- On-this-page nav -------------------------------------------------------
+const toc = [
+  { id: 'who', label: 'Who this is for' },
+  { id: 'landscape', label: 'The five ways to cover your phones' },
+  { id: 'diy-tax', label: 'The trade-off nobody quotes you' },
+  { id: 'questions', label: 'Ten questions to ask any vendor' },
+  { id: 'red-flags', label: 'Red flags' },
+  { id: 'ascend', label: 'Where Ascend Systems fits' },
+];
+
+// --- The landscape: five archetypes -----------------------------------------
+// Ranges are typical 2026 market pricing from brand-strategy.md's tier map,
+// framed by archetype rather than by brand name.
+const tiers = [
+  {
+    n: '01',
+    name: 'Budget DIY AI',
+    price: '~$15–100 / mo',
+    model: 'Self-serve dashboard. You sign up online.',
+    good: 'Cheapest entry point. Fine for a simple, low-volume line where one person can own the setup.',
+    catch:
+      'You configure the AI, write the scripts, train it, and troubleshoot it when it mishears a caller. The software is cheap; your time is not. Nobody owns the outcome but you.',
+    fit: false,
+  },
+  {
+    n: '02',
+    name: 'Mid-tier AI platforms',
+    price: '~$50–200 / mo',
+    model: 'Semi-guided setup, email support.',
+    good: 'Better onboarding than the budget tier, more polished dashboards, more integrations on paper.',
+    catch:
+      'Still fundamentally self-serve. Support is a ticket queue, not a person who knows your business. When a call pattern changes, adjusting the AI is back on your desk.',
+    fit: false,
+  },
+  {
+    n: '03',
+    name: 'Premium human answering',
+    price: '~$300–1,600+ / mo',
+    model: 'Live human agents, managed by the vendor.',
+    good: 'Genuinely excellent quality. Real people, often bilingual, available around the clock.',
+    catch:
+      'Per-minute billing punishes exactly the growth you want — a busy month is an expensive month. Agents are remote and rotating; they don’t know your market, your neighborhoods, or your regulars.',
+    fit: false,
+  },
+  {
+    n: '04',
+    name: 'In-house receptionist',
+    price: '~$4,000–5,600 / mo',
+    model: 'You hire, you manage, you cover the desk.',
+    good: 'Full control and a familiar face. The right answer for some front offices.',
+    catch:
+      'Loaded with salary, benefits, and taxes it lands in that range for one seat that works ~40 hours a week. It calls in sick, takes vacation, eventually quits — and it doesn’t cover nights, weekends, or overflow when every line rings at once.',
+    fit: false,
+  },
+  {
+    n: '05',
+    name: 'Managed AI (done-for-you)',
+    price: 'Custom — book a call',
+    model: 'A real person sets it up, runs it, and adjusts it. You don’t touch a dashboard.',
+    good: 'AI economics with human accountability. Someone configures it on your actual call patterns, monitors it, fixes issues before you notice, and picks up the phone when you need them. This is the tier Ascend Systems operates in.',
+    catch:
+      'Not the cheapest line item, and not the right call for a one-line solo shop. The point is that running it is somebody else’s job, not yours.',
+    fit: true,
+  },
+];
+
+// --- Buyer's framework: the questions ---------------------------------------
+const questions = [
+  {
+    q: 'Who actually configures it — me, or you?',
+    a: 'If the honest answer is “you, in our dashboard,” you’ve bought software, not a service. For a multi-location operation, initial setup is the hard part, and it is exactly the part budget tiers hand back to you.',
+  },
+  {
+    q: 'When it mishears a caller, who fixes it and how fast?',
+    a: 'Every AI gets something wrong eventually. The question is whether you file a ticket and wait, or whether a person who owns your account catches it and adjusts the script the same day.',
+  },
+  {
+    q: 'What happens when a caller needs a human?',
+    a: 'Ask for the specific handoff path. Can it warm-transfer to the right person or location, or does it just take a message? “Leaves a voicemail” is not the same as “gets the customer to a human.”',
+  },
+  {
+    q: 'Does it write into my systems, or just email me?',
+    a: 'A booked job that lands in your scheduling tool, CRM, or dispatch board is worth far more than a notification you have to re-key. Ask what it integrates with and whether that integration is set up for you.',
+  },
+  {
+    q: 'Can it route by location, service line, and hours?',
+    a: 'This is the multi-location test. One number, many destinations, different after-hours rules per site — if the vendor can’t describe how that works, they’re built for the single-location buyer.',
+  },
+  {
+    q: 'Flat rate or per-minute?',
+    a: 'Per-minute and per-call billing means your bill spikes in your busy season — the exact months you can least afford a surprise. Ask what a genuinely heavy month costs before you sign.',
+  },
+  {
+    q: 'Who owns the call recordings and transcripts?',
+    a: 'Your call data is a business asset. Confirm you own it, can export it, and know how long it’s retained. A vendor that can’t answer plainly is a vendor to walk away from.',
+  },
+  {
+    q: 'Will my callers know it’s AI?',
+    a: 'You want a straight answer here, and a demo on your scenarios — an angry customer, a Spanish speaker, a caller asking something off-script — not just the vendor’s polished happy path.',
+  },
+  {
+    q: 'Is there a name and a number, or a support queue?',
+    a: 'When something breaks on a Friday afternoon, do you call a person who knows your account, or open a ticket behind a thousand others? For a service you’re trusting with your front door, this matters more than a feature list.',
+  },
+  {
+    q: 'How do we turn it off or change it later?',
+    a: 'Ask about contract length, what portability looks like, and how a change to your hours or services gets made. You want a partner you can leave, not a platform you’re stuck babysitting.',
+  },
+];
+
+// --- Red flags --------------------------------------------------------------
+const redFlags = [
+  'Per-minute pricing dressed up as “flexible.” You pay the most in the months you’re busiest.',
+  '“Set up in 15 minutes” — which quietly means you set it up.',
+  'No clear path from the AI to a human when a caller needs one.',
+  'The demo only ever runs on the vendor’s script, never on your real call scenarios.',
+  'They can’t tell you plainly who owns your call recordings and transcripts.',
+  'Support is a ticket queue in another time zone with no name attached to your account.',
+  'It emails you a notification instead of writing the booking into the tools you already use.',
+];
+
+// --- Who this is for --------------------------------------------------------
+const forYou = [
+  'You run multiple locations, or multiple trucks and crews from one number.',
+  'Your front desk or office manager is underwater at peak, and after 5pm nobody’s covering the line.',
+  'A missed call is real money — a single missed service call in your busy season can be worth hundreds.',
+  'You’d rather hand someone the problem than learn another dashboard.',
+];
+const notForYou = [
+  'You’re a one-line solo operation shopping the cheapest option — an $29-a-month DIY bot is genuinely fine for that, and this guide will talk you out of overspending.',
+  'You want to tinker. If configuring your own AI sounds fun, the self-serve tiers are built for you.',
+];
+
+// --- Genuine FAQ ------------------------------------------------------------
+const faqs = [
+  {
+    q: 'Is an AI receptionist the same as a “press 1 for sales” phone menu?',
+    a: 'No. An old IVR menu makes the caller do the work — listen, choose, wait. A modern AI receptionist has a natural conversation: it understands what the caller wants, answers questions, books the appointment, and routes to a person when needed.',
+  },
+  {
+    q: 'What happens when the AI can’t handle a call?',
+    a: 'On a well-built setup, it recognizes it’s out of its depth and hands off — warm-transferring to the right person or taking a detailed message that lands in your system. The failure mode you’re screening for is the one that just hangs up or loops the caller.',
+  },
+  {
+    q: 'Do I have to replace my current phone system?',
+    a: 'Usually not. Most setups forward your existing number or sit alongside your current lines, so you keep your number and your carrier. Ask any vendor to confirm this against your specific setup before you commit.',
+  },
+  {
+    q: 'Isn’t the cheap software basically the same thing?',
+    a: 'The software underneath is often similar. What you’re actually buying at the managed tier is the setup, the monitoring, and the person who owns the outcome — the parts the cheap tier hands back to you. For a single simple line that’s overkill; for a multi-location front desk it’s the whole point.',
+  },
+  {
+    q: 'Why would I pay more than $200 a month for this?',
+    a: 'You wouldn’t, if a $200 tool answered your phones the way you need and ran itself. The mid-market case is different: the cost isn’t the software, it’s the hours your team spends configuring and babysitting it — and the revenue that leaks out every time a call is mishandled while nobody’s watching.',
+  },
+];
+
+// --- Schema -----------------------------------------------------------------
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${origin}${canonical}#article`,
+  headline: 'How to Choose an AI Receptionist Without Getting Burned',
+  description,
+  url: `${origin}${canonical}/`,
+  mainEntityOfPage: `${origin}${canonical}/`,
+  author: { '@id': `${origin}/#brian-mangum` },
+  publisher: { '@id': `${origin}/#organization` },
+  about: {
+    '@type': 'Thing',
+    name: 'AI phone answering and virtual receptionist services',
+  },
+  audience: {
+    '@type': 'BusinessAudience',
+    audienceType: 'Multi-location and mid-market services businesses',
+  },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${origin}${canonical}#faq`,
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+    { '@type': 'ListItem', position: 2, name: 'Resources', item: `${origin}/resources` },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: 'How to Choose an AI Receptionist',
+      item: `${origin}${canonical}`,
+    },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical} ogType="article">
+  <JsonLd slot="head" data={articleSchema} />
+  <JsonLd slot="head" data={faqSchema} />
+  <JsonLd slot="head" data={breadcrumbSchema} />
+
+  <!-- Hero -->
+  <section class="bg-charcoal text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <nav aria-label="Breadcrumb" class="mb-6">
+        <ol class="flex flex-wrap items-center gap-2 text-sm text-surface-200">
+          <li><a href="/" class="hover:text-orange transition-colors">Home</a></li>
+          <li aria-hidden="true">/</li>
+          <li class="text-white" aria-current="page">Buyer&rsquo;s Guide</li>
+        </ol>
+      </nav>
+
+      <div class="grid gap-10 lg:gap-14 lg:grid-cols-12 items-start">
+        <div class="lg:col-span-7">
+          <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-4">
+            Buyer&rsquo;s Guide
+          </p>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-5 text-balance">
+            How to Choose an AI Receptionist Without Getting Burned
+          </h1>
+          <p class="text-lg text-surface-200 leading-relaxed mb-6 text-pretty">
+            An honest walk through the real options for answering your phones with AI &mdash;
+            what each one actually costs you, the questions that separate a service from a
+            dashboard, and the red flags to catch before you sign. Written for the operator
+            whose phones ring more than one person can answer.
+          </p>
+          <p class="text-sm text-surface-200/80 leading-relaxed mb-8">
+            No email required. No gate. A field guide from
+            <span class="text-white">Ascend Systems</span> &middot; Charlotte, NC.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a
+              href="/contact/"
+              class="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+            >
+              Talk through your setup
+            </a>
+            <a
+              href="/services/ai-voice-agents/"
+              class="border border-surface-200/40 hover:border-orange text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+            >
+              See how we build voice agents
+            </a>
+          </div>
+        </div>
+
+        <!-- On this page -->
+        <nav aria-label="On this page" class="lg:col-span-5 lg:pt-2">
+          <div class="rounded-xl border border-charcoal-lighter bg-charcoal-light p-5 sm:p-6">
+            <p class="text-xs font-mono uppercase tracking-[0.14em] text-orange mb-4">
+              On this page
+            </p>
+            <ol class="space-y-2.5">
+              {toc.map((t, i) => (
+                <li class="flex gap-3 text-[15px] leading-snug">
+                  <span class="font-mono text-xs text-surface-200/60 pt-0.5">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <a href={`#${t.id}`} class="text-surface-200 hover:text-orange transition-colors">
+                    {t.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who this is for -->
+  <section id="who" class="bg-white border-t border-gray-200 scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="grid gap-8 lg:grid-cols-12 lg:gap-14">
+        <div class="lg:col-span-4 lg:sticky lg:top-24 lg:self-start">
+          <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-3">Start here</p>
+          <h2 class="text-2xl sm:text-3xl font-bold text-charcoal text-balance">
+            Who this guide is for
+          </h2>
+          <p class="mt-4 text-[16px] leading-[1.7] text-charcoal-lighter text-pretty">
+            Most &ldquo;AI receptionist&rdquo; reviews are written for the solo operator picking the
+            cheapest app. This one isn&rsquo;t. It&rsquo;s for the front desk that&rsquo;s drowning.
+          </p>
+        </div>
+        <div class="lg:col-span-8">
+          <div class="grid gap-8 sm:grid-cols-2">
+            <div>
+              <h3 class="font-semibold text-charcoal mb-4">This guide is for you if&hellip;</h3>
+              <ul class="space-y-3">
+                {forYou.map((item) => (
+                  <li class="flex gap-3 text-[16px] leading-[1.65] text-charcoal-lighter">
+                    <span class="shrink-0 text-orange font-bold" aria-hidden="true">&rarr;</span>
+                    <span class="text-pretty">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-charcoal mb-4">It&rsquo;s probably not for you if&hellip;</h3>
+              <ul class="space-y-3">
+                {notForYou.map((item) => (
+                  <li class="flex gap-3 text-[16px] leading-[1.65] text-charcoal-lighter">
+                    <span class="shrink-0 text-surface-200 font-bold" aria-hidden="true">&times;</span>
+                    <span class="text-pretty">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The landscape -->
+  <section id="landscape" class="bg-surface border-t border-gray-200 scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="max-w-3xl mb-12">
+        <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-3">The landscape</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-charcoal mb-4 text-balance">
+          The five ways to cover your phones
+        </h2>
+        <p class="text-[17px] leading-[1.75] text-charcoal-lighter text-pretty">
+          Every option on the market is a version of one of these five. Knowing which one
+          you&rsquo;re actually looking at &mdash; and what it quietly hands back to you &mdash; is
+          most of the decision.
+        </p>
+        <p class="mt-4 text-sm text-charcoal-lighter/80">
+          Dollar figures are typical 2026 <strong class="font-semibold text-charcoal">market</strong>
+          ranges to orient you, not Ascend Systems prices.
+        </p>
+      </div>
+
+      <div class="grid gap-5 lg:grid-cols-2">
+        {tiers.map((t) => (
+          <article
+            class:list={[
+              'rounded-2xl border p-6 sm:p-7 h-full flex flex-col',
+              t.fit
+                ? 'border-orange/40 bg-orange-glow shadow-md'
+                : 'border-surface-200 bg-white',
+            ]}
+          >
+            <div class="flex items-baseline justify-between gap-4 mb-4">
+              <div class="flex items-baseline gap-3">
+                <span class="font-mono text-xs text-orange">{t.n}</span>
+                <h3 class="text-xl font-bold text-charcoal tracking-tight">{t.name}</h3>
+              </div>
+              <span class="shrink-0 font-mono text-sm text-charcoal-lighter">{t.price}</span>
+            </div>
+            <p class="text-sm font-medium text-charcoal mb-4">{t.model}</p>
+            <dl class="space-y-3 text-[15px] leading-[1.65]">
+              <div>
+                <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-charcoal-lighter/70 mb-1">
+                  Where it shines
+                </dt>
+                <dd class="text-charcoal-lighter text-pretty">{t.good}</dd>
+              </div>
+              <div>
+                <dt class="font-mono text-[11px] uppercase tracking-[0.12em] text-orange-dark mb-1">
+                  The catch
+                </dt>
+                <dd class="text-charcoal-lighter text-pretty">{t.catch}</dd>
+              </div>
+            </dl>
+            {t.fit && (
+              <p class="mt-5 pt-4 border-t border-orange/25 font-mono text-xs uppercase tracking-[0.12em] text-orange-dark">
+                Where Ascend Systems sits
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- The DIY tax -->
+  <section id="diy-tax" class="bg-white border-t border-gray-200 scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="grid gap-8 lg:grid-cols-12 lg:gap-14">
+        <h2 class="text-2xl sm:text-3xl font-bold text-charcoal lg:col-span-4 text-balance lg:sticky lg:top-24 lg:self-start">
+          The trade-off nobody quotes you
+        </h2>
+        <div class="lg:col-span-8">
+          <p class="text-[17px] leading-[1.75] text-charcoal-lighter mb-5 text-pretty">
+            The price on the pricing page is the software. It is not the cost. The cost of a
+            self-serve tool is the hours someone on your team spends configuring it, writing the
+            call scripts, testing it against real callers, and adjusting it every time your hours,
+            services, or staffing change. Call that the DIY tax.
+          </p>
+          <p class="text-[17px] leading-[1.75] text-charcoal-lighter mb-5 text-pretty">
+            For a single simple line, the DIY tax is small and the cheap tier wins &mdash; buy the
+            cheap tier. For a multi-location front desk, it&rsquo;s the whole ballgame. The setup is
+            harder, the scripts are longer, the routing is real, and the person who&rsquo;d own all
+            of it is the person who&rsquo;s already underwater. That&rsquo;s how a &ldquo;$99 a
+            month&rdquo; tool ends up costing a manager ten hours a week and still misdirecting
+            callers.
+          </p>
+          <div class="rounded-xl border border-orange/30 bg-orange-glow p-5 sm:p-6">
+            <p class="text-[16px] leading-[1.7] text-charcoal text-pretty">
+              The honest way to compare options isn&rsquo;t sticker price against sticker price.
+              It&rsquo;s <strong class="font-semibold">total cost to get calls answered correctly</strong>
+              &mdash; software plus the hours to run it plus the revenue that leaks out while
+              it&rsquo;s mishandled. A managed service costs more on the invoice and often less on
+              that line.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Questions to ask -->
+  <section id="questions" class="bg-charcoal text-white border-t border-charcoal-light scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="max-w-3xl mb-12">
+        <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-3">Your framework</p>
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-balance">
+          Ten questions to ask any vendor
+        </h2>
+        <p class="text-[17px] leading-[1.75] text-surface-200 text-pretty">
+          Bring these to every demo. The answers sort the services from the software faster than
+          any feature list. Watch for plain answers &mdash; hedging is its own answer.
+        </p>
+      </div>
+
+      <ol class="grid gap-x-12 gap-y-8 md:grid-cols-2">
+        {questions.map((item, i) => (
+          <li class="flex gap-4">
+            <span
+              class="shrink-0 w-8 h-8 rounded-full bg-orange text-white font-mono text-xs flex items-center justify-center"
+              aria-hidden="true"
+            >
+              {i + 1}
+            </span>
+            <div>
+              <h3 class="font-semibold text-white mb-1.5 text-balance">{item.q}</h3>
+              <p class="text-[15px] leading-[1.65] text-surface-200 text-pretty">{item.a}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Red flags -->
+  <section id="red-flags" class="bg-white border-t border-gray-200 scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="grid gap-8 lg:grid-cols-12 lg:gap-14">
+        <div class="lg:col-span-4 lg:sticky lg:top-24 lg:self-start">
+          <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-3">Watch out</p>
+          <h2 class="text-2xl sm:text-3xl font-bold text-charcoal text-balance">
+            Red flags
+          </h2>
+          <p class="mt-4 text-[16px] leading-[1.7] text-charcoal-lighter text-pretty">
+            None of these are automatically disqualifying. Every one of them is a reason to slow
+            down and get a straight answer before you sign.
+          </p>
+        </div>
+        <ol class="lg:col-span-8 border-t border-gray-200">
+          {redFlags.map((flag, i) => (
+            <li class="flex gap-4 items-baseline py-4 border-b border-gray-200 leading-[1.65]">
+              <span class="shrink-0 font-mono text-xs text-orange">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="text-[16px] text-charcoal-lighter text-pretty">{flag}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Where Ascend fits -->
+  <section id="ascend" class="bg-surface border-t border-gray-200 scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="max-w-3xl mb-10">
+        <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-3">Full disclosure</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-charcoal mb-4 text-balance">
+          Where Ascend Systems fits
+        </h2>
+        <p class="text-[17px] leading-[1.75] text-charcoal-lighter text-pretty">
+          We built this guide, so here&rsquo;s the honest placement. Ascend Systems is the managed,
+          done-for-you tier &mdash; option five. A senior engineer here in Charlotte configures your
+          voice agent on your actual call patterns, wires it into the tools you already run, monitors
+          it, and adjusts it as your business changes. You never touch a dashboard.
+        </p>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-3 mb-12">
+        <div class="rounded-xl border border-surface-200 bg-white p-6">
+          <h3 class="font-semibold text-charcoal mb-2">Done for you</h3>
+          <p class="text-[15px] leading-[1.6] text-charcoal-lighter text-pretty">
+            We do the setup, the scripts, and the upkeep. The parts the budget tiers hand back to
+            you are the parts we own.
+          </p>
+        </div>
+        <div class="rounded-xl border border-surface-200 bg-white p-6">
+          <h3 class="font-semibold text-charcoal mb-2">Built to hand off</h3>
+          <p class="text-[15px] leading-[1.6] text-charcoal-lighter text-pretty">
+            The agent knows when to get a caller to a human, and it&rsquo;s wired into your calendar
+            and systems so a booked job actually lands where your team works.
+          </p>
+        </div>
+        <div class="rounded-xl border border-surface-200 bg-white p-6">
+          <h3 class="font-semibold text-charcoal mb-2">A local name and number</h3>
+          <p class="text-[15px] leading-[1.6] text-charcoal-lighter text-pretty">
+            When something needs adjusting, you talk to the person who runs your engagement &mdash;
+            not a ticket queue in another time zone.
+          </p>
+        </div>
+      </div>
+
+      <p class="text-[16px] leading-[1.7] text-charcoal-lighter max-w-3xl mb-14 text-pretty">
+        Is it the cheapest line on the market? No &mdash; and if a single simple line is all you
+        need, we&rsquo;ll tell you to buy the cheap tier and save your money. The case for the
+        managed tier is a front desk with real volume across real locations, where the cost of a
+        mishandled call is bigger than the cost of the service.
+      </p>
+
+      <!-- FAQ -->
+      <div class="grid gap-8 lg:grid-cols-12 lg:gap-14">
+        <h2 class="text-2xl sm:text-3xl font-bold text-charcoal lg:col-span-4 text-balance">
+          Common questions
+        </h2>
+        <div class="lg:col-span-8 max-w-3xl divide-y divide-gray-200 border-t border-gray-200">
+          {faqs.map((f) => (
+            <details class="group py-6">
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-4 font-semibold text-charcoal">
+                <span class="text-pretty">{f.q}</span>
+                <span
+                  class="shrink-0 text-orange transition-transform group-open:rotate-45"
+                  aria-hidden="true"
+                >+</span>
+              </summary>
+              <p class="mt-4 text-[17px] leading-[1.75] text-charcoal-lighter text-pretty">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Soft CTA -->
+  <section class="bg-white border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="rounded-2xl bg-charcoal text-white p-8 sm:p-12">
+        <div class="max-w-2xl">
+          <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-4">
+            Not sure which tier you need?
+          </p>
+          <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-balance">
+            Talk it through with the person who&rsquo;d do the work.
+          </h2>
+          <p class="text-surface-200 leading-relaxed mb-8 text-pretty">
+            A 30-minute discovery call &mdash; no slides, no sales engineer. Walk us through how your
+            phones work today, and we&rsquo;ll give you an honest read on which of the five tiers fits.
+            If a $99 tool is genuinely all you need, we&rsquo;ll say so.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a
+              href="/contact/"
+              class="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+            >
+              Book a discovery call
+            </a>
+            <a
+              href="/services/ai-voice-agents/"
+              class="border border-surface-200/40 hover:border-orange text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+            >
+              See how we build voice agents
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
