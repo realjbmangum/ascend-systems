@@ -117,4 +117,4 @@ If you have a category that's fragmented, SEO-driven, and lacks a neutral direct
 
 The bigger lesson is that an AI-citation strategy is no longer a "later" item. AI traffic is small in volume on directory sites today but **two to three times the engagement quality** of Google organic. The work to be cited is the same work that makes the site trustworthy to humans — a methodology page, an open dataset, an `llms.txt` source of truth, schema.org markup that actually validates. Build for the engines that quote you, not just the ones that rank you.
 
-If you have a directory idea or a vendor / supply-side marketplace you want to spec, [the discovery sprint](/contact) is how it starts. Or run the numbers on the [cost calculator](/tools/cost-calculator).
+If you have a directory idea or a vendor / supply-side marketplace you want to spec, [the discovery sprint](/contact/) is how it starts. Or run the numbers on the [cost calculator](/tools/cost-calculator/).

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { siteConfig } from '../config/site';
 
 const FinalCTASection = () => {
-  const bookingHref = siteConfig.calendlyUrl || '/contact';
+  const bookingHref = siteConfig.calendlyUrl || '/contact/';
   const isExternal = bookingHref.startsWith('http');
 
   const expectations = [

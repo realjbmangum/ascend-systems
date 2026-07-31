@@ -223,7 +223,7 @@ const breadcrumbSchema = {
           )}
           {proofProject && (
             <a
-              href={`/portfolio/${proofProject.slug}`}
+              href={`/portfolio/${proofProject.slug}/`}
               class="inline-flex items-center gap-2 text-orange-dark font-semibold hover:underline underline-offset-4"
             >
               Read the {proofProject.name} case study →
@@ -293,7 +293,7 @@ const breadcrumbSchema = {
         {related.map((r) => (
           <li>
             <a
-              href={`/services/${r.slug}`}
+              href={`/services/${r.slug}/`}
               class="block h-full rounded-xl border border-surface-200 bg-white p-5 hover:border-orange transition-colors"
             >
               <span class="block font-semibold text-charcoal mb-1">{r.shortName}</span>

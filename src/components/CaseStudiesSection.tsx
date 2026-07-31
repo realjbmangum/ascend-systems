@@ -238,7 +238,7 @@ const CaseStudiesSection = () => {
           style={{ textAlign: 'center', marginTop: 48 }}
         >
           <Link
-            to="/portfolio"
+            to="/portfolio/"
             style={{
               display: 'inline-flex',
               alignItems: 'center',

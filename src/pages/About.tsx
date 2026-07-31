@@ -276,7 +276,7 @@ export default function About() {
             30 minutes, no pitch deck, no pressure. Just a conversation about what you need and whether we're the right fit.
           </p>
           <Link
-            to="/contact"
+            to="/contact/"
             className="inline-block bg-orange hover:bg-orange-dark text-white font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
           >
             Book a Free Discovery Call

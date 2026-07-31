@@ -146,4 +146,4 @@ If you have an idea that runs across a custom mobile experience, a public API in
 
 Eleven days from PRD to production with a real iOS app on a real phone. One developer. Three runtime services. No agency markup. The same Cloudflare + Supabase stack that powers most of the Lighthouse 27 portfolio. Every architecture decision in this case study — archive raw payloads to R2, gate writes behind the service-role key, ship the smallest thing that retires the biggest unknown — generalizes to whatever your version of "community-sourced, cross-platform, real-time data product" looks like.
 
-If you have a project that fits that shape, the [discovery sprint](/contact) is how it starts. Or run the numbers yourself on the [cost calculator](/tools/cost-calculator).
+If you have a project that fits that shape, the [discovery sprint](/contact/) is how it starts. Or run the numbers yourself on the [cost calculator](/tools/cost-calculator/).

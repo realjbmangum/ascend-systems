@@ -43,7 +43,7 @@ export default function CalculatorCTASection() {
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
-                to="/tools/cost-calculator"
+                to="/tools/cost-calculator/"
                 className="inline-flex items-center gap-2 bg-orange hover:bg-orange-dark text-white text-base font-semibold px-7 py-4 rounded-lg transition-colors"
               >
                 Try the Cost Calculator <span aria-hidden>→</span>

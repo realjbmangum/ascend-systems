@@ -26,11 +26,11 @@ export default function Footer() {
           <div>
             <h4 className="text-white text-sm font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
-              <li><Link to="/services" className="hover:text-white transition-colors">Services</Link></li>
-              <li><Link to="/portfolio" className="hover:text-white transition-colors">Portfolio</Link></li>
-              <li><Link to="/tools/cost-calculator" className="hover:text-white transition-colors">Free Cost Calculator</Link></li>
-              <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+              <li><Link to="/about/" className="hover:text-white transition-colors">About</Link></li>
+              <li><Link to="/services/" className="hover:text-white transition-colors">Services</Link></li>
+              <li><Link to="/portfolio/" className="hover:text-white transition-colors">Portfolio</Link></li>
+              <li><Link to="/tools/cost-calculator/" className="hover:text-white transition-colors">Free Cost Calculator</Link></li>
+              <li><Link to="/contact/" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
 
@@ -38,9 +38,9 @@ export default function Footer() {
           <div>
             <h4 className="text-white text-sm font-semibold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link to="/msa" className="hover:text-white transition-colors">Master Services Agreement</Link></li>
+              <li><Link to="/privacy/" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms/" className="hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link to="/msa/" className="hover:text-white transition-colors">Master Services Agreement</Link></li>
             </ul>
             <div className="mt-6">
               <h4 className="text-white text-sm font-semibold mb-2">Get in Touch</h4>

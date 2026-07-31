@@ -36,7 +36,7 @@ export default function InteractiveCTA() {
           Tell us what challenge you are facing. We will give you an honest assessment of timeline, cost, and approach — no strings attached.
         </p>
         <Link
-          to="/contact"
+          to="/contact/"
           className="group relative inline-block bg-orange hover:bg-orange-dark text-white text-lg font-semibold px-8 py-4 rounded-lg transition-all shadow-orange-glow hover:shadow-orange-glow-lg"
         >
           <span className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ boxShadow: '0 0 30px rgba(212, 99, 44, 0.5)' }} />
