@@ -45,7 +45,7 @@ export default function PortalProjectDetail() {
         &larr; All projects
       </Link>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-xl border border-surface-100 p-6 mb-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-bold text-charcoal">{project.name}</h1>
@@ -60,7 +60,7 @@ export default function PortalProjectDetail() {
           <p className="text-gray-700 leading-relaxed mb-4">{project.description}</p>
         )}
 
-        <dl className="grid sm:grid-cols-2 gap-4 text-sm pt-4 border-t border-gray-100">
+        <dl className="grid sm:grid-cols-2 gap-4 text-sm pt-4 border-t border-surface-100">
           <div>
             <dt className="text-gray-400 text-xs uppercase tracking-wide">Started</dt>
             <dd className="text-charcoal mt-1">
@@ -80,7 +80,7 @@ export default function PortalProjectDetail() {
         </dl>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-surface-100 p-6">
         <h2 className="text-lg font-bold text-charcoal mb-4">Updates</h2>
         {notes.length === 0 ? (
           <p className="text-sm text-gray-500">No updates posted yet.</p>

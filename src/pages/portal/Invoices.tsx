@@ -44,13 +44,13 @@ export default function PortalInvoices() {
       )}
 
       {invoices.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+        <div className="bg-white rounded-xl border border-surface-100 p-12 text-center">
           <p className="text-gray-500">No invoices yet.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-surface-100 overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+            <thead className="bg-surface text-xs text-gray-500 uppercase tracking-wide">
               <tr>
                 <th className="text-left px-6 py-3 font-medium">Invoice</th>
                 <th className="text-left px-6 py-3 font-medium">Status</th>
@@ -59,9 +59,9 @@ export default function PortalInvoices() {
                 <th className="px-6 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-surface-100">
               {invoices.map((inv) => (
-                <tr key={inv.id} className="hover:bg-gray-50">
+                <tr key={inv.id} className="hover:bg-surface">
                   <td className="px-6 py-4 text-sm text-charcoal">
                     <div className="font-medium">#{inv.id}</div>
                     {inv.description && (

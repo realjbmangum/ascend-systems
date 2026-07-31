@@ -38,7 +38,7 @@ export default function PortalProjects() {
       )}
 
       {projects.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+        <div className="bg-white rounded-xl border border-surface-100 p-12 text-center">
           <p className="text-gray-500">No projects yet. We'll post here once your project kicks off.</p>
         </div>
       ) : (
@@ -47,7 +47,7 @@ export default function PortalProjects() {
             <Link
               key={p.id}
               to={`/portal/projects/${p.id}`}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-orange hover:shadow-md transition-all"
+              className="bg-white rounded-xl border border-surface-100 p-6 hover:border-orange transition-colors"
             >
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h2 className="text-lg font-bold text-charcoal">{p.name}</h2>
