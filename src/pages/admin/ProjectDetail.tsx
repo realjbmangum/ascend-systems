@@ -594,7 +594,7 @@ export default function ProjectDetail() {
                           className={`text-[10px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap transition-colors ${
                             isInProgress
                               ? 'bg-orange-glow text-orange-dark hover:bg-orange/20'
-                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                              : 'bg-surface-100 text-gray-600 hover:bg-surface-200'
                           }`}
                           title={isInProgress ? 'Pause' : 'Start working'}
                         >

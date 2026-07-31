@@ -3,12 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 
 const statusStyles: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700',
-  sent: 'bg-blue-100 text-blue-700',
-  paid: 'bg-green-100 text-green-700',
-  overdue: 'bg-red-100 text-red-700',
-  void: 'bg-gray-100 text-gray-500',
-  refunded: 'bg-purple-100 text-purple-700',
+  draft: 'k-info',
+  sent: 'k-progress',
+  paid: 'k-good',
+  overdue: 'k-bad',
+  void: 'k-neutral',
+  refunded: 'k-info',
 };
 
 function formatMoney(cents: number) {

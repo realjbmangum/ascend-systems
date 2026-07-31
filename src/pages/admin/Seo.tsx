@@ -20,8 +20,8 @@ const severityStyles: Record<string, string> = {
 };
 
 const goalStyles: Record<string, string> = {
-  google: 'bg-blue-100 text-blue-700',
-  ai: 'bg-purple-100 text-purple-700',
+  google: 'k-info',
+  ai: 'k-pending',
   technical: 'bg-gray-100 text-gray-600',
 };
 

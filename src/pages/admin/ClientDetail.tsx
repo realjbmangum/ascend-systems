@@ -281,7 +281,7 @@ export default function ClientDetail() {
                 </div>
                 <div>
                   <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Paid</div>
-                  <div className="text-xl font-bold text-green-700 tabular-nums">{fmtMoney(totalPaid)}</div>
+                  <div className="text-xl font-bold tabular-nums">{fmtMoney(totalPaid)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Outstanding</div>
@@ -317,11 +317,11 @@ export default function ClientDetail() {
                         <span
                           className={`inline-block text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
                             inv.status === 'paid'
-                              ? 'bg-green-100 text-green-700'
+                              ? 'k-good'
                               : inv.status === 'sent'
-                              ? 'bg-blue-100 text-blue-700'
+                              ? 'k-progress'
                               : inv.status === 'overdue'
-                              ? 'bg-red-100 text-red-700'
+                              ? 'k-bad'
                               : 'bg-gray-100 text-gray-600'
                           }`}
                         >
