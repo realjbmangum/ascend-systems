@@ -193,7 +193,7 @@ export default function CostCalculator() {
                 I will look at your specific process with you, point out the highest-leverage fix, and give you a written next-step plan. No pitch.
               </p>
               <a
-                href="/contact"
+                href="/contact/"
                 className="inline-block bg-orange hover:bg-orange-light text-white font-semibold px-8 py-3 rounded-lg transition-colors"
               >
                 Book the audit →

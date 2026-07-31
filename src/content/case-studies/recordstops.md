@@ -107,4 +107,4 @@ If you sell B2B and your CRM bill is in the hundreds of dollars per month for wh
 
 The combination — own the dataset, build the admin, rank on long-tail queries, then sell into the audience you have already built — is the same shape across every kept project in this portfolio. RecordStops is a particularly clean example of it.
 
-If you have a directory idea, a CRM you are paying too much for, or an internal pipeline that needs a custom admin instead of another SaaS subscription, [the discovery sprint](/contact) is how the conversation starts. Or run your own numbers on the [cost calculator](/tools/cost-calculator).
+If you have a directory idea, a CRM you are paying too much for, or an internal pipeline that needs a custom admin instead of another SaaS subscription, [the discovery sprint](/contact/) is how the conversation starts. Or run your own numbers on the [cost calculator](/tools/cost-calculator/).

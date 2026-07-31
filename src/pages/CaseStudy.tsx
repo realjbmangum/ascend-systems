@@ -12,7 +12,7 @@ export default function CaseStudy() {
       <div className="min-h-screen bg-charcoal text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-400 mb-4">Project not found.</p>
-          <Link to="/portfolio" className="text-orange underline text-sm">
+          <Link to="/portfolio/" className="text-orange underline text-sm">
             Back to portfolio
           </Link>
         </div>
@@ -48,7 +48,7 @@ export default function CaseStudy() {
             transition={{ duration: 0.7 }}
           >
             <Link
-              to="/portfolio"
+              to="/portfolio/"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -136,7 +136,7 @@ export default function CaseStudy() {
                 </a>
               )}
               <Link
-                to="/contact"
+                to="/contact/"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -334,7 +334,7 @@ export default function CaseStudy() {
             {PROJECTS.filter((p) => p.slug !== project.slug).map((p) => (
               <Link
                 key={p.slug}
-                to={`/portfolio/${p.slug}`}
+                to={`/portfolio/${p.slug}/`}
                 style={{
                   fontSize: 13,
                   fontWeight: 600,

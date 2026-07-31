@@ -77,7 +77,7 @@ export default function Portfolio() {
                 transition={{ duration: 0.55, delay: i * 0.07 }}
               >
                 <Link
-                  to={`/portfolio/${project.slug}`}
+                  to={`/portfolio/${project.slug}/`}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -328,7 +328,7 @@ export default function Portfolio() {
               We move from concept to shipped product faster than most teams finish their first sprint.
             </p>
             <Link
-              to="/contact"
+              to="/contact/"
               className="mt-8 inline-flex items-center justify-center bg-orange hover:bg-orange-dark text-white font-semibold px-6 py-3 rounded-lg transition-colors text-sm"
             >
               Let's talk

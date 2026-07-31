@@ -99,7 +99,7 @@ const TestimonialsSection = () => {
               </div>
             </div>
             <Link
-              to="/portfolio"
+              to="/portfolio/"
               className="btn btn-ghost-dark"
               style={{ fontSize: 14 }}
             >

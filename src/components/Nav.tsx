@@ -9,6 +9,14 @@ const navLinks = [
   { to: '/about', label: 'About' },
 ];
 
+// Cloudflare Pages serves the trailing-slash form and 308-redirects the bare
+// path, so emitted hrefs must carry the slash. Applied only at render — the
+// navLinks entries stay bare because the active-state check below compares
+// against location.pathname, which the island receives without a slash.
+function withSlash(href: string) {
+  return href.endsWith('/') ? href : href + '/';
+}
+
 export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -30,7 +38,7 @@ export default function Nav() {
             {navLinks.map((link) => (
               <Link
                 key={link.to}
-                to={link.to}
+                to={withSlash(link.to)}
                 className={`text-sm font-medium transition-colors ${
                   location.pathname === link.to
                     ? 'text-orange'
@@ -41,7 +49,7 @@ export default function Nav() {
               </Link>
             ))}
             <Link
-              to="/contact"
+              to="/contact/"
               className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
             >
               Let's Talk
@@ -70,7 +78,7 @@ export default function Nav() {
             {navLinks.map((link) => (
               <Link
                 key={link.to}
-                to={link.to}
+                to={withSlash(link.to)}
                 onClick={() => setMobileOpen(false)}
                 className={`block py-2 text-sm font-medium ${
                   location.pathname === link.to
@@ -82,7 +90,7 @@ export default function Nav() {
               </Link>
             ))}
             <Link
-              to="/contact"
+              to="/contact/"
               onClick={() => setMobileOpen(false)}
               className="block mt-3 bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors text-center"
             >

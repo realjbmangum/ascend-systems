@@ -21,6 +21,14 @@ function isActive(href: string) {
   // "Services". Guarded against "/" matching everything.
   return href !== '/' && pathname.startsWith(`${href}/`);
 }
+
+// Cloudflare Pages serves the trailing-slash form and 308-redirects the bare
+// path, so every emitted href must carry the slash or Googlebot takes a
+// redirect hop on each link. Applied only at render — navLinks stays bare so
+// the isActive() prefix matching above keeps working for child routes.
+function withSlash(href: string) {
+  return href.endsWith('/') ? href : href + '/';
+}
 ---
 
 <nav class="sticky top-0 z-50 bg-charcoal/95 backdrop-blur-sm border-b border-charcoal-light">
@@ -36,7 +44,7 @@ function isActive(href: string) {
       <div class="hidden md:flex items-center gap-8">
         {navLinks.map((link) => (
           <a
-            href={link.to}
+            href={withSlash(link.to)}
             class:list={[
               'text-sm font-medium transition-colors',
               isActive(link.to) ? 'text-orange' : 'text-gray-300 hover:text-white',
@@ -72,7 +80,7 @@ function isActive(href: string) {
     <div id="mobile-menu" class="md:hidden pb-4 border-t border-charcoal-light pt-4 hidden">
       {navLinks.map((link) => (
         <a
-          href={link.to}
+          href={withSlash(link.to)}
           class:list={[
             'block py-2 text-sm font-medium',
             isActive(link.to) ? 'text-orange' : 'text-gray-300 hover:text-white',

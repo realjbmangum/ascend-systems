@@ -322,7 +322,7 @@ export default function Services() {
                 </div>
 
                 <Link
-                  to={`/services/${service.slug}`}
+                  to={`/services/${service.slug}/`}
                   className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold hover:underline underline-offset-4 ${
                     service.dark ? 'text-orange-light' : 'text-orange-dark'
                   }`}
@@ -382,7 +382,7 @@ export default function Services() {
             </div>
             <div className="flex md:justify-end">
               <Link
-                to="/tools/cost-calculator"
+                to="/tools/cost-calculator/"
                 className="inline-flex items-center gap-2 bg-orange hover:bg-orange-dark text-white text-base font-semibold px-7 py-4 rounded-lg transition-colors whitespace-nowrap"
               >
                 Try the Calculator <span aria-hidden>→</span>
@@ -465,7 +465,7 @@ export default function Services() {
             {SERVICE_PAGES.map((s) => (
               <li key={s.slug}>
                 <Link
-                  to={`/services/${s.slug}`}
+                  to={`/services/${s.slug}/`}
                   className="block h-full rounded-xl border border-surface-200 bg-surface p-6 hover:border-orange transition-colors"
                 >
                   <span className="block font-semibold text-charcoal mb-2">
@@ -497,7 +497,7 @@ export default function Services() {
             Tell us what you are working on and we will come back with a timeline, cost range, and recommended approach.
           </p>
           <Link
-            to="/contact"
+            to="/contact/"
             className="mt-8 inline-block bg-orange hover:bg-orange-dark text-white text-lg font-semibold px-8 py-4 rounded-lg transition-colors"
           >
             Book a Free Discovery Call

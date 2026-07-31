@@ -151,4 +151,4 @@ If you are sitting on a consumer product that *has* shipped and isn't converting
 
 And if you want the infrastructure for a small consumer subscription — Stripe Billing, JWT auth, a daily cron, transactional email, a customer dashboard — that's a two-week build on a Cloudflare stack that costs well under $10 a month to run at meaningful scale. The plumbing is not what you should be worried about. The plumbing is the easy part. The hard part is the part this case study is about.
 
-If a discovery conversation about that kind of project is on your list, [the contact page](/contact) is where it starts.
+If a discovery conversation about that kind of project is on your list, [the contact page](/contact/) is where it starts.
