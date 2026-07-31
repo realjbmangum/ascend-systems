@@ -4,10 +4,10 @@ import { api } from '../../lib/api';
 import DataTable, { type Column } from '../../components/DataTable';
 
 const statusStyles: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700',
-  sent: 'bg-blue-100 text-blue-700',
-  accepted: 'bg-green-100 text-green-700',
-  declined: 'bg-red-100 text-red-700',
+  draft: 'k-info',
+  sent: 'k-progress',
+  accepted: 'k-good',
+  declined: 'k-bad',
 };
 
 const filters = ['all', 'draft', 'sent', 'accepted', 'declined'];
@@ -73,7 +73,7 @@ export default function Proposals() {
       render: (row) => (
         <span
           className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${
-            statusStyles[row.status] || 'bg-gray-100 text-gray-600'
+            statusStyles[row.status] || 'k-neutral'
           }`}
         >
           {row.status}

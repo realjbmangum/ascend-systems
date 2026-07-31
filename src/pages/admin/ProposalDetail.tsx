@@ -7,10 +7,10 @@ import type { Tier } from '../../components/ProposalDocument';
 import TierEditor from '../../components/TierEditor';
 
 const statusStyles: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700 border-gray-200',
-  sent: 'bg-blue-50 text-blue-700 border-blue-200',
-  accepted: 'bg-green-50 text-green-700 border-green-200',
-  declined: 'bg-red-50 text-red-700 border-red-200',
+  draft: 'k-info',
+  sent: 'k-progress',
+  accepted: 'k-good',
+  declined: 'k-bad',
 };
 
 const editableStatuses = ['draft', 'sent', 'accepted', 'declined'];
@@ -233,7 +233,7 @@ export default function ProposalDetail() {
       </Link>
 
       {/* ─── Admin control bar (sticky-feeling) ───────── */}
-      <div className="bg-white border border-surface-100 rounded-2xl p-5 mb-6 shadow-sm">
+      <div className="bg-white border border-surface-100 rounded-2xl p-5 mb-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="min-w-0">
             <div className="font-mono text-[10px] text-gray-400 uppercase tracking-[0.18em] mb-1">
@@ -429,7 +429,7 @@ export default function ProposalDetail() {
               what your client sees on the sign page
             </span>
           </div>
-          <div className="rounded-2xl overflow-hidden border border-surface-100 shadow-md">
+          <div className="rounded-2xl overflow-hidden border border-surface-100">
             <ProposalDocument proposal={proposal} />
           </div>
         </div>

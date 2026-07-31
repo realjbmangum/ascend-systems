@@ -38,3 +38,21 @@
 
 /* Flat by default — Kiln uses 1px warm borders, not drop shadows. */
 .admin-kiln .kiln-flat { box-shadow: none !important; }
+
+/* ------------------------------------------------------------------
+   Status / priority badges — one warm, harmonized categorical palette.
+   Replaces the loud default Tailwind blue/purple/yellow/green-100 chips
+   scattered across the CRM. Applied via src/components/kiln/status.ts.
+   ------------------------------------------------------------------ */
+.admin-kiln .k-badge {
+  display: inline-flex; align-items: center;
+  font-size: 12px; font-weight: 600; line-height: 1.2;
+  padding: 3px 9px; border-radius: 999px; text-transform: capitalize;
+  white-space: nowrap;
+}
+.admin-kiln .k-good     { background: #E6EFE7; color: #3E6B48; } /* won, active, paid, completed */
+.admin-kiln .k-progress { background: var(--color-orange-glow); color: var(--color-orange-dark); } /* in-progress, proposal sent */
+.admin-kiln .k-pending  { background: #F3EBDB; color: #856433; } /* contacted, planning, on hold */
+.admin-kiln .k-info     { background: #E8E9EB; color: #4B555F; } /* new, qualified, draft */
+.admin-kiln .k-bad      { background: #F4E6E1; color: #9E3B22; } /* lost, cancelled, overdue */
+.admin-kiln .k-neutral  { background: var(--color-surface-100); color: var(--color-gray-600); }

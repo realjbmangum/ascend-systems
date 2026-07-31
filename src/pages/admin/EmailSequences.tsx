@@ -331,7 +331,7 @@ export default function EmailSequences() {
                   </button>
                   <span
                     className={`text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide ${
-                      seq.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                      seq.active ? 'k-good' : 'k-neutral'
                     }`}
                   >
                     {seq.active ? 'Active' : 'Paused'}

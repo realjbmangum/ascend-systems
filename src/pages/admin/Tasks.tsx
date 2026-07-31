@@ -8,25 +8,26 @@ type ViewMode = 'list' | 'kanban';
 const statuses = ['all', 'open', 'in_progress', 'done'];
 const types = ['all', 'lead_inquiry', 'intake_submitted', 'payment_received', 'payment_failed', 'manual'];
 
+// Kiln: warm, harmonized tones (see components/kiln/status.ts k-* classes).
 const typeStyles: Record<string, string> = {
-  lead_inquiry: 'bg-orange/10 text-orange-dark border-orange/30',
-  intake_submitted: 'bg-blue-100 text-blue-700 border-blue-200',
-  payment_received: 'bg-green-100 text-green-700 border-green-200',
-  payment_failed: 'bg-red-100 text-red-700 border-red-200',
-  manual: 'bg-gray-100 text-gray-700 border-gray-200',
+  lead_inquiry: 'k-progress',
+  intake_submitted: 'k-info',
+  payment_received: 'k-good',
+  payment_failed: 'k-bad',
+  manual: 'k-neutral',
 };
 
 const priorityStyles: Record<string, string> = {
   low: 'text-gray-400',
   medium: 'text-charcoal',
   high: 'text-orange',
-  urgent: 'text-red-600',
+  urgent: 'text-[#9E3B22]',
 };
 
 const statusStyles: Record<string, string> = {
-  open: 'bg-blue-100 text-blue-700',
-  in_progress: 'bg-orange-glow text-orange-dark',
-  done: 'bg-green-100 text-green-700',
+  open: 'k-info',
+  in_progress: 'k-progress',
+  done: 'k-good',
 };
 
 function formatType(t: string) {
@@ -439,7 +440,7 @@ export default function Tasks() {
                 >
                   <span
                     className={`inline-flex items-center text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded ${
-                      typeStyles[task.type] || 'bg-gray-100 text-gray-600'
+                      typeStyles[task.type] || 'k-neutral'
                     }`}
                   >
                     {formatType(task.type)}
@@ -472,7 +473,7 @@ export default function Tasks() {
                   </div>
                   <span
                     className={`text-[10px] font-semibold px-2.5 py-1 rounded-full capitalize whitespace-nowrap ${
-                      statusStyles[task.status] || 'bg-gray-100 text-gray-600'
+                      statusStyles[task.status] || 'k-neutral'
                     }`}
                   >
                     {formatType(task.status)}
