@@ -4,27 +4,33 @@ import { api } from '../../lib/api';
 import StatCard from '../../components/StatCard';
 import StatusBadge from '../../components/StatusBadge';
 import PortfolioTrafficCard from '../../components/PortfolioTrafficCard';
+import SegmentedBar from '../../components/kiln/SegmentedBar';
+import Gauge from '../../components/kiln/Gauge';
 
-const PIPELINE_STATUSES: Array<{ key: string; label: string; bar: string }> = [
-  { key: 'new', label: 'New', bar: 'bg-blue-500' },
-  { key: 'contacted', label: 'Contacted', bar: 'bg-yellow-500' },
-  { key: 'qualified', label: 'Qualified', bar: 'bg-purple-500' },
-  { key: 'proposal_sent', label: 'Proposal', bar: 'bg-orange' },
-  { key: 'won', label: 'Won', bar: 'bg-green-500' },
+type Tick = 'default' | 'orange' | 'muted';
+
+// Kiln: one rationed accent. The goal-state stage carries the orange; the rest
+// stay charcoal/muted. The tick motif does the "at a glance" work, not hue.
+const PIPELINE_STATUSES: Array<{ key: string; label: string; variant: Tick }> = [
+  { key: 'new', label: 'New', variant: 'muted' },
+  { key: 'contacted', label: 'Contacted', variant: 'muted' },
+  { key: 'qualified', label: 'Qualified', variant: 'default' },
+  { key: 'proposal_sent', label: 'Proposal', variant: 'default' },
+  { key: 'won', label: 'Won', variant: 'orange' },
 ];
 
-const PROJECT_STATUSES: Array<{ key: string; label: string; bar: string; text: string }> = [
-  { key: 'planning', label: 'Planning', bar: 'bg-blue-500', text: 'text-blue-700' },
-  { key: 'scoping', label: 'Scoping', bar: 'bg-purple-500', text: 'text-purple-700' },
-  { key: 'in_progress', label: 'In Progress', bar: 'bg-orange', text: 'text-orange' },
-  { key: 'on_hold', label: 'On Hold', bar: 'bg-yellow-500', text: 'text-yellow-700' },
-  { key: 'completed', label: 'Completed', bar: 'bg-green-500', text: 'text-green-700' },
+const PROJECT_STATUSES: Array<{ key: string; label: string; variant: Tick; text: string }> = [
+  { key: 'planning', label: 'Planning', variant: 'muted', text: 'text-gray-500' },
+  { key: 'scoping', label: 'Scoping', variant: 'muted', text: 'text-gray-500' },
+  { key: 'in_progress', label: 'In Progress', variant: 'orange', text: 'text-orange' },
+  { key: 'on_hold', label: 'On Hold', variant: 'default', text: 'text-gray-600' },
+  { key: 'completed', label: 'Completed', variant: 'default', text: 'text-charcoal' },
 ];
 
 const PRIORITY_CONFIG: Array<{ key: string; label: string; chipClass: string }> = [
   { key: 'urgent', label: 'Urgent', chipClass: 'bg-red-100 text-red-700' },
   { key: 'high', label: 'High', chipClass: 'bg-orange-glow text-orange-dark' },
-  { key: 'medium', label: 'Medium', chipClass: 'bg-blue-100 text-blue-700' },
+  { key: 'medium', label: 'Medium', chipClass: 'bg-surface-100 text-gray-600' },
   { key: 'low', label: 'Low', chipClass: 'bg-gray-100 text-gray-600' },
 ];
 
@@ -34,7 +40,7 @@ function fmtMoney(cents: number) {
 
 const priorityStyles: Record<string, string> = {
   low: 'bg-gray-100 text-gray-600',
-  medium: 'bg-blue-100 text-blue-700',
+  medium: 'bg-surface-100 text-gray-600',
   high: 'bg-orange-glow text-orange-dark',
   urgent: 'bg-red-100 text-red-700',
 };
@@ -173,31 +179,41 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Revenue strip */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="rounded-xl p-5 border bg-white border-surface-100">
-          <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Total Billed</div>
-          <div className="text-2xl font-bold text-charcoal tabular-nums">{fmtMoney(totalBilled)}</div>
-          <div className="text-xs text-gray-500 mt-1">{invoices.length} invoices</div>
+      {/* Revenue — Kiln gauge (Collected vs Billed) + breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+        <div className="lg:col-span-1 rounded-xl p-5 border bg-white border-surface-100">
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Revenue</div>
+          <Gauge
+            total={totalBilled / 100}
+            spent={totalPaid / 100}
+            remaining={totalOutstanding / 100}
+          />
         </div>
-        <div className="rounded-xl p-5 border bg-white border-surface-100">
-          <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Collected</div>
-          <div className="text-2xl font-bold text-green-700 tabular-nums">{fmtMoney(totalPaid)}</div>
-          <div className="text-xs text-gray-500 mt-1">
-            {invoices.filter((i) => i.status === 'paid').length} paid
+        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="rounded-xl p-5 border bg-white border-surface-100">
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Total Billed</div>
+            <div className="text-2xl font-bold text-charcoal tabular-nums">{fmtMoney(totalBilled)}</div>
+            <div className="text-xs text-gray-500 mt-1">{invoices.length} invoices</div>
           </div>
-        </div>
-        <div className={`rounded-xl p-5 border ${totalOutstanding > 0 ? 'bg-orange/5 border-orange/20' : 'bg-white border-surface-100'}`}>
-          <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Outstanding</div>
-          <div className={`text-2xl font-bold tabular-nums ${totalOutstanding > 0 ? 'text-orange-dark' : 'text-charcoal'}`}>
-            {fmtMoney(totalOutstanding)}
+          <div className="rounded-xl p-5 border bg-white border-surface-100">
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Collected</div>
+            <div className="text-2xl font-bold text-charcoal tabular-nums">{fmtMoney(totalPaid)}</div>
+            <div className="text-xs text-gray-500 mt-1">
+              {invoices.filter((i) => i.status === 'paid').length} paid
+            </div>
           </div>
-          <div className="text-xs text-gray-500 mt-1">
-            {overdueInvoices.length > 0 ? (
-              <span className="text-red-600 font-semibold">{overdueInvoices.length} overdue</span>
-            ) : (
-              'No overdue invoices'
-            )}
+          <div className={`rounded-xl p-5 border ${totalOutstanding > 0 ? 'bg-orange/5 border-orange/20' : 'bg-white border-surface-100'}`}>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Outstanding</div>
+            <div className={`text-2xl font-bold tabular-nums ${totalOutstanding > 0 ? 'text-orange-dark' : 'text-charcoal'}`}>
+              {fmtMoney(totalOutstanding)}
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {overdueInvoices.length > 0 ? (
+                <span className="text-error font-semibold">{overdueInvoices.length} overdue</span>
+              ) : (
+                'No overdue invoices'
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -219,12 +235,14 @@ export default function Dashboard() {
                 <span className="text-xs font-medium text-gray-500">{p.label}</span>
                 <span className="text-lg font-bold text-charcoal">{p.count}</span>
               </div>
-              <div className="h-2 rounded-full bg-surface-100 overflow-hidden">
-                <div
-                  className={`h-full ${p.bar} transition-all`}
-                  style={{ width: `${(p.count / pipelineMax) * 100}%` }}
-                />
-              </div>
+              <SegmentedBar
+                value={p.count}
+                max={pipelineMax}
+                variant={p.variant}
+                segments={14}
+                height={8}
+                label={`${p.label}: ${p.count}`}
+              />
             </div>
           ))}
         </div>
@@ -250,12 +268,14 @@ export default function Dashboard() {
                 <span className={`text-xs font-medium ${p.text}`}>{p.label}</span>
                 <span className="text-lg font-bold text-charcoal">{p.count}</span>
               </div>
-              <div className="h-2 rounded-full bg-surface-100 overflow-hidden">
-                <div
-                  className={`h-full ${p.bar} transition-all`}
-                  style={{ width: `${(p.count / projectStatusMax) * 100}%` }}
-                />
-              </div>
+              <SegmentedBar
+                value={p.count}
+                max={projectStatusMax}
+                variant={p.variant}
+                segments={14}
+                height={8}
+                label={`${p.label}: ${p.count}`}
+              />
             </div>
           ))}
         </div>
@@ -435,7 +455,7 @@ export default function Dashboard() {
                       inv.status === 'paid'
                         ? 'bg-green-100 text-green-700'
                         : inv.status === 'sent'
-                        ? 'bg-blue-100 text-blue-700'
+                        ? 'bg-surface-100 text-gray-600'
                         : inv.status === 'overdue'
                         ? 'bg-red-100 text-red-700'
                         : 'bg-gray-100 text-gray-600'

@@ -26,7 +26,7 @@ export default function StatCard({ label, value, icon, accent, sub, onClick, ton
   return (
     <div
       onClick={onClick}
-      className={`rounded-xl p-5 border ${accent && !t ? 'bg-orange/5 border-orange/20' : 'bg-white border-surface-100'} ${interactive ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+      className={`rounded-xl p-5 border ${accent && !t ? 'bg-orange/5 border-orange/20' : 'bg-white border-surface-100'} ${interactive ? 'cursor-pointer hover:border-orange/40 transition-colors' : ''}`}
     >
       <div className="flex items-center justify-between mb-3">
         <span className="flex items-center gap-1.5 text-xs font-medium text-gray-500 uppercase tracking-wide">
