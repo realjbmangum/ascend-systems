@@ -53,7 +53,7 @@ export default function PortalLayout() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
+      <div className="portal-kiln min-h-screen flex items-center justify-center bg-surface">
         <div className="text-gray-500 text-sm">Loading…</div>
       </div>
     );
@@ -62,7 +62,7 @@ export default function PortalLayout() {
   if (!session) return null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface">
+    <div className="portal-kiln min-h-screen flex flex-col bg-surface">
       <header className="bg-charcoal text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <Link to="/portal/projects" className="flex items-center gap-2">

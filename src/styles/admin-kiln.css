@@ -1,8 +1,8 @@
 /* ============================================================
-   Kiln — scoped to the Ascend CRM only.
+   Kiln — scoped to the Ascend admin CRM + client portal.
 
-   Re-points the surface + gray CSS variables within `.admin-kiln` so the
-   admin gets Kiln's warm-neutral canvas while the PUBLIC marketing site keeps
+   Re-points the surface + gray CSS variables within `.admin-kiln` / `.portal-kiln`
+   so both internal apps get Kiln's warm-neutral canvas while the PUBLIC marketing site keeps
    its cool brand surface (#EDF2F7) untouched. Tailwind v4 utilities resolve
    through var(), so redefining these custom properties on an ancestor cascades
    to every bg-surface / border-surface-100 / text-gray-500 inside the scope.
@@ -10,7 +10,7 @@
    Brand invariants (charcoal ink + burnt orange accent) are inherited from
    globals.css @theme and deliberately NOT changed here.
    ============================================================ */
-.admin-kiln {
+:is(.admin-kiln,.portal-kiln) {
   /* warmed-surface hybrid canvas (Brian's pick — between cool #EDF2F7 and Kiln cream) */
   --color-surface: #ECEDE9;
   --color-surface-100: #E4E2DB;   /* card edges, hairline dividers */
@@ -27,32 +27,32 @@
 }
 
 /* Accessibility baseline for the whole CRM: a visible, on-brand focus ring. */
-.admin-kiln a:focus-visible,
-.admin-kiln button:focus-visible,
-.admin-kiln input:focus-visible,
-.admin-kiln [tabindex]:focus-visible {
+:is(.admin-kiln,.portal-kiln) a:focus-visible,
+:is(.admin-kiln,.portal-kiln) button:focus-visible,
+:is(.admin-kiln,.portal-kiln) input:focus-visible,
+:is(.admin-kiln,.portal-kiln) [tabindex]:focus-visible {
   outline: 2px solid var(--color-orange);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
 /* Flat by default — Kiln uses 1px warm borders, not drop shadows. */
-.admin-kiln .kiln-flat { box-shadow: none !important; }
+:is(.admin-kiln,.portal-kiln) .kiln-flat { box-shadow: none !important; }
 
 /* ------------------------------------------------------------------
    Status / priority badges — one warm, harmonized categorical palette.
    Replaces the loud default Tailwind blue/purple/yellow/green-100 chips
    scattered across the CRM. Applied via src/components/kiln/status.ts.
    ------------------------------------------------------------------ */
-.admin-kiln .k-badge {
+:is(.admin-kiln,.portal-kiln) .k-badge {
   display: inline-flex; align-items: center;
   font-size: 12px; font-weight: 600; line-height: 1.2;
   padding: 3px 9px; border-radius: 999px; text-transform: capitalize;
   white-space: nowrap;
 }
-.admin-kiln .k-good     { background: #E6EFE7; color: #3E6B48; } /* won, active, paid, completed */
-.admin-kiln .k-progress { background: var(--color-orange-glow); color: var(--color-orange-dark); } /* in-progress, proposal sent */
-.admin-kiln .k-pending  { background: #F3EBDB; color: #856433; } /* contacted, planning, on hold */
-.admin-kiln .k-info     { background: #E8E9EB; color: #4B555F; } /* new, qualified, draft */
-.admin-kiln .k-bad      { background: #F4E6E1; color: #9E3B22; } /* lost, cancelled, overdue */
-.admin-kiln .k-neutral  { background: var(--color-surface-100); color: var(--color-gray-600); }
+:is(.admin-kiln,.portal-kiln) .k-good     { background: #E6EFE7; color: #3E6B48; } /* won, active, paid, completed */
+:is(.admin-kiln,.portal-kiln) .k-progress { background: var(--color-orange-glow); color: var(--color-orange-dark); } /* in-progress, proposal sent */
+:is(.admin-kiln,.portal-kiln) .k-pending  { background: #F3EBDB; color: #856433; } /* contacted, planning, on hold */
+:is(.admin-kiln,.portal-kiln) .k-info     { background: #E8E9EB; color: #4B555F; } /* new, qualified, draft */
+:is(.admin-kiln,.portal-kiln) .k-bad      { background: #F4E6E1; color: #9E3B22; } /* lost, cancelled, overdue */
+:is(.admin-kiln,.portal-kiln) .k-neutral  { background: var(--color-surface-100); color: var(--color-gray-600); }
