@@ -110,7 +110,7 @@ const services = [
     ],
     tech: ['Strangler pattern', 'Cloudflare', 'PostgreSQL', 'D1', 'Data migration', 'Reconciliation'],
     example:
-      'RecordStops replaced a $497/month CRM with a purpose-built outreach pipeline sized to the actual workflow — 296 stores across five states, 683 organic visitors a month, no subscription.',
+      'RecordStops replaced a $497/month CRM with a purpose-built outreach pipeline sized to the actual workflow — 296 stores across five states, ranking at average search position 10.3, no subscription.',
     concept: {
       src: '/images/services/concepts/legacy-modernization.jpg',
       alt:

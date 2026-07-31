@@ -99,8 +99,8 @@ export const PROJECTS: Project[] = [
     tags: ['Astro', 'Cloudflare D1', 'Tailwind', 'SEO'],
     metrics: [
       { label: 'Stores indexed', value: '296' },
-      { label: 'States covered', value: '5' },
-      { label: 'Organic visitors/mo', value: '683' },
+      { label: 'Cities covered', value: '177' },
+      { label: 'Avg search position', value: '10.3' },
     ],
     story: {
       problem:
@@ -108,7 +108,7 @@ export const PROJECTS: Project[] = [
       solution:
         'A programmatic directory built on Astro + Cloudflare D1 with city-guide templates that target long-tail search queries. Each store gets its own SEO page; each city gets a curated guide.',
       result:
-        '683 organic users/month across 16 active city guides — no ad spend, pure organic growth.',
+        '296 stores across 177 cities and 16 curated city guides, ranking at average position 10.3 — page one on the long-tail city queries it targets, with no ad spend.',
     },
   },
   {
@@ -186,25 +186,25 @@ export const PROJECTS: Project[] = [
   {
     slug: 'pottydirectory',
     name: 'PottyDirectory',
-    tagline: 'Find a public restroom, anywhere.',
+    tagline: 'Find a porta potty rental company, anywhere.',
     description:
-      'PottyDirectory is the largest crowdsourced public restroom directory online — 1,400+ listings with hours, cleanliness ratings, and accessibility notes.',
+      'PottyDirectory is a national commercial directory for portable restroom rental — 3,418 verified providers across 2,319 cities and all 50 states, with a public pricing index and city-level demand coverage.',
     url: 'https://pottydirectory.com',
     screenshot: '/images/portfolio/pottydirectory-card.svg',
     status: 'live',
-    tags: ['Astro', 'Cloudflare D1', 'AdSense', 'Directory'],
+    tags: ['Astro', 'Supabase', 'Cloudflare Pages', 'AdSense', 'Directory'],
     metrics: [
-      { label: 'Listings', value: '1,400+' },
-      { label: 'Revenue model', value: 'AdSense' },
-      { label: 'Organic sessions', value: '190/mo' },
+      { label: 'Providers', value: '3,418' },
+      { label: 'Cities covered', value: '2,319' },
+      { label: 'Search impressions', value: '170,808 / 90d' },
     ],
     story: {
       problem:
-        'Public restrooms are invisible on Google Maps. Parents, travelers, and people with medical needs waste time hunting for the nearest option.',
+        'Porta potty rental is high-intent, fragmented, and almost entirely SEO-driven. An event planner or a construction PM mid-pour needs a phone number now, and Google Maps surfaces the same three national operators in every metro.',
       solution:
-        'Programmatic directory with city-level pages, schema markup, and a submission flow so users can add missing locations themselves.',
+        'Ascend repositioned the site from informational restroom content to commercial rental intent: a national hub, de-cannibalized city pages, a public cost-by-state pricing index, and a demand map — every surface reading from one live source of truth.',
       result:
-        '1,400+ listings live. Generating organic traffic with AdSense monetization in place.',
+        '3,418 providers across 2,319 cities and all 50 states, drawing 170,808 search impressions per 90 days at average position 16.6 — a large indexed footprint still climbing toward page one.',
     },
   },
   {

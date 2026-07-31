@@ -1,5 +1,5 @@
 ---
-title: "How We Built PottyDirectory — 3,700 Vendors, Real Leads, and an AI-Citation Strategy"
+title: "How We Built PottyDirectory — 3,418 Providers and a Repositioning From Restrooms to Rentals"
 slug: pottydirectory
 client: "Self / Lighthouse 27"
 clientType: "Internal product"
@@ -9,19 +9,23 @@ engagementEnd: "ongoing"
 status: "live"
 stack: ["Astro", "Supabase Postgres + RLS", "Cloudflare Pages + Pages Functions", "SendGrid", "R2", "Mapbox GL JS"]
 metrics:
-  - "3,447 active vendors across all 50 states"
-  - "~6,000 pages indexed"
-  - "~325 real Google organic visitors/mo"
-  - "4 organic leads in the first 72 hours after launching the lead funnel"
-seoTitle: "PottyDirectory Case Study — Directory, Lead Funnel, AI Citations | Ascend Systems"
-seoDescription: "How a single developer built a 3,447-vendor portable restroom directory on Astro + Supabase + Cloudflare, shipped a real lead funnel that produced four organic leads in 72 hours, and turned the site into AI-engine source material."
+  - "3,418 verified providers across 2,319 cities and all 50 states"
+  - "170,808 search impressions per 90 days"
+  - "0.63% CTR at average position 16.6"
+  - "99 of 100 pages indexable; 75/100 AI readiness"
+seoTitle: "PottyDirectory Case Study — Repositioning a Directory to Commercial Intent | Ascend Systems"
+seoDescription: "How Ascend rebuilt PottyDirectory from an informational restroom site into a commercial rental directory: 3,418 verified providers across 2,319 cities, a public pricing index, live search telemetry, and 170,808 search impressions per 90 days."
 publishDate: "2026-05-13T21:52:36-04:00"
-updatedDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-07-31T00:00:00-04:00"
 ---
 
 ## TL;DR
 
-PottyDirectory is the largest portable-restroom rental directory in the United States — **3,447 vendors** across all 50 states, **~6,000 pages**, **~325 real Google organic visitors/month** verified after the bot floor was stripped out. It is built on Astro, Supabase (Postgres with row-level security), and Cloudflare Pages, with Pages Functions running the lead funnel and admin tools. After I shipped the Request-a-Quote flow on May 9, 2026, the site produced **four organic leads in the first 72 hours** with zero ad spend. The site is monetized through AdSense (live since Feb 9, 2026), the Amazon affiliate program, and a Verified-Badge / featured-listing program; a paid lead-priority tier is being built next. The current focus has shifted from "more pages" to **AI-engine citation** — the highest-quality real-user channel on the site, with Copilot users averaging 110 seconds of engagement versus Google's 35.
+PottyDirectory is a national commercial directory for portable restroom rental — **3,418 verified providers across 2,319 cities and all 50 states**, at a 4.62 average rating. It is built on Astro, Supabase (Postgres with row-level security), and Cloudflare Pages, with Pages Functions running the lead funnel and admin tools.
+
+The defining work of 2026 was not a redesign. It was a **product repositioning**: the site started as an informational restroom-finder and was deliberately moved to commercial rental intent. Informational content came out, internal links were repointed, a national hub was built, and overlapping city pages were de-cannibalized.
+
+Over the 90 days to July 24, 2026, the site drew **170,808 search impressions and 1,077 clicks** — a 0.63% CTR at average position 16.6. That is the honest read: a large, well-indexed footprint that is still ranking mostly on page two, with impressions far outrunning clicks. An independent audit scored the site **75/100 on AI readiness** with **99 of 100 pages indexable**. Monetization is AdSense (live since Feb 9, 2026), the Amazon affiliate program, and a Verified-Badge / featured-listing program.
 
 ## The problem
 
@@ -30,6 +34,18 @@ Porta-potty rental is a high-intent, fragmented, and almost entirely SEO-driven 
 The product hypothesis was simple: build a programmatic directory deep enough to rank for the long tail (state + city + service combinations), then monetize through AdSense first and a paid-listing / lead-routing layer second. The model already worked for record stores, public restrooms, and a dozen other "find a local X" verticals. Portable restrooms had the right shape: thousands of operators, no dominant directory, high commercial intent per search.
 
 The harder problem — the one I underestimated at launch — was that bot traffic, scraper noise, and unblocked AI crawlers were each going to change what "the site is working" actually meant. Solving each of those is what turned PottyDirectory from a vanity directory into an asset.
+
+## The repositioning
+
+The single most important decision in this project was to stop being a restroom finder.
+
+The original product was informational: where is a public restroom near me. That audience is large, has no commercial intent, and is worth almost nothing per visit. The rental market is the opposite — an event planner with 200 guests or a construction PM mid-pour has a budget, a deadline, and a phone in their hand. Same subject matter, entirely different buyer.
+
+So the informational restroom content was removed outright rather than left to rot, and internal links were repointed at commercial intent. A national "restroom near me" hub was built to consolidate the queries worth keeping, and the overlapping city guides that had been competing with it were de-cannibalized. The NYC city page was differentiated as a proof of concept; once it worked, the pattern rolled to 21 more top-metro city pages.
+
+Two new data-backed surfaces came out of the same push. A public **cost-by-state pricing index**, with question-shaped FAQ copy and `FAQPage` structured data, gives the site something to be cited for rather than merely ranked for. A **demand and coverage map** consumes a per-state search-demand snapshot pulled from Search Console, so the site can show where demand is actually growing.
+
+Underneath all of it, every statistic on every surface — homepage, cost-by-state, demand, data, methodology — now reads from a single `getStats()` query against the live Supabase table at build time. There are no hardcoded totals anywhere, and the build is drift-proofed on prebuild. That is why the numbers in this case study match the numbers on the site.
 
 ## The technical approach
 
@@ -49,9 +65,9 @@ The whole site is one Astro project deployed to Cloudflare Pages, with the data 
 
 ## What I shipped
 
-**The directory itself.** 3,447 active vendors at this writing (down from 3,584 after a Tier 1 cleanup of 137 misclassified non-porta-potty businesses), all 50 states, ~6,000 indexed pages. Vendor records were assembled from scraping, manual research, the Portable Sanitation Association International (PSAI) operator roster, and a self-serve submission flow.
+**The directory itself.** 3,418 verified providers at this writing across 2,319 cities and all 50 states, at a 4.62 average rating — down from a 3,584 peak after a Tier 1 cleanup of 137 misclassified non-porta-potty businesses. Provider records were assembled from scraping, manual research, the Portable Sanitation Association International (PSAI) operator roster, and a self-serve submission flow.
 
-**Programmatic city pages.** 2,924 city pages, each with a vendor list, an interactive Mapbox map with clustering, top-cities cross-links, and a unique SEO-content block for the 249 highest-traffic cities.
+**Programmatic city pages.** 2,319 city pages, each with a vendor list, an interactive Mapbox map with clustering, top-cities cross-links, and a unique SEO-content block for the 249 highest-traffic cities.
 
 **Vendor detail pages.** Every vendor gets a full page with map, hours, services, social links, schema.org markup, and — when we have an email on file — a Request-a-Quote form. Vendors without an email see a Call/Visit-website fallback instead of a form that would go nowhere. This gate was added after a real customer's request was misrouted through the form to a vendor that couldn't act on it.
 
@@ -69,13 +85,15 @@ The whole site is one Astro project deployed to Cloudflare Pages, with the data 
 
 ## Outcome
 
+**Search performance.** Over the 90 days to July 24, 2026, PottyDirectory drew **170,808 impressions and 1,077 clicks** from Google — a 0.63% CTR at average position 16.6. Five days earlier the same window read 164,826 impressions and 1,062 clicks, so the impression base is still growing. Those numbers are not smoothed: a 0.63% CTR at position 16.6 means the site is well-indexed and ranking on page two, with impressions far outrunning clicks. The indexed footprint is real; the ranking is the work that remains. This data is not a screenshot — Ascend's own `gsc-cron` ingests Search Console into the `seo_metrics` table in `ascend-db` on a rolling 90-day window, which is what makes the claim auditable.
+
 **Real-traffic baseline.** Before May 5, GA4 was reporting ~7,200 sessions/month. A diagnosis on May 5 — filtering for `Average engagement time > 10s` — showed that **~92% of pre-fix sessions were bots or non-engaged drive-bys**. The real-human floor is approximately **570 sessions/month**, of which **~325/month is Google organic**, **~63/month is AI engines (ChatGPT + Copilot)**, and the rest is Bing, DuckDuckGo, Yahoo, and small referrals. That's the number the strategy is now planned against — not the inflated total.
 
 **AI is the highest-quality channel.** Copilot users average **110 seconds** of engagement per session — three times the Google organic average of 35 seconds. Bing organic averages 66 seconds. AI referrals are small in volume (~63/month) but qualitatively the best users on the site.
 
 **Lead funnel works.** Four organic leads landed in the first 72 hours after the funnel went live on May 9, with zero ad spend. The fourth lead exposed the misclassified-vendor problem (a medical supply company got routed a porta-potty quote), which became the forcing function for the Tier 1 cleanup that purged 137 junk rows.
 
-**AI-citation audit baseline locked.** Run 1 of the citation audit on May 6 returned **0 / 100 citations** across 20 queries × 5 engines (Bing Copilot, ChatGPT, Perplexity, Gemini, Claude). That zero isn't despair — it's a baseline taken seconds after I discovered that Cloudflare's "Block AI bots" rule had been silently 403'ing GPTBot, ClaudeBot, PerplexityBot, and anthropic-ai across the entire zone for the site's whole crawl history. The bots never had access. Run 2 in June 2026 will be the first real measurement.
+**AI-citation audit baseline locked.** Run 1 of the citation audit on May 6 returned **0 / 100 citations** across 20 queries × 5 engines (Bing Copilot, ChatGPT, Perplexity, Gemini, Claude). That zero isn't despair — it's a baseline taken seconds after I discovered that Cloudflare's "Block AI bots" rule had been silently 403'ing GPTBot, ClaudeBot, PerplexityBot, and anthropic-ai across the entire zone for the site's whole crawl history. The bots never had access. The crawler block has since been lifted and verified — GPTBot, ClaudeBot, PerplexityBot and Googlebot all return 200 — but a second citation audit has not been run, so there is no measured citation figure to report yet. Deciding how to measure citation properly is an open item, not a solved one.
 
 **Monetization status.** AdSense impressions and clicks are accumulating; YTD revenue pull is pending [verify]. The Amazon affiliate tag `jbmangum27-20` is wired into the supplies index. The paid lead-priority tier is the next monetization line being built.
 
@@ -89,7 +107,7 @@ The whole site is one Astro project deployed to Cloudflare Pages, with the data 
 
 **Supabase RLS has silent failure modes.** Anon-key `.update()` calls on a table without an UPDATE policy return `{data: [], error: null}` — no error, just nothing changed. PostgREST's `Prefer: return=representation` runs an implicit SELECT-back that fails on anon-INSERT-only tables with a misleading "row violates RLS policy" error; the workaround is `return=minimal` and parse the new row id from the Location header. Both lessons are now saved as portfolio-wide memories.
 
-**Markdown is for prose, not state.** Several earlier sessions ended with the day's task list dropped into a `tasks/*.md` file. Within a month, those files were stale and contradicted each other. Tasks now live in the Ascend Systems CRM (Cloudflare D1, single source of truth). Markdown is for narrative, design briefs, and audit logs — not anything that has a status.
+**Markdown is for prose, not state.** Several earlier sessions ended with the day's task list dropped into a `tasks/*.md` file. Within a month, those files were stale and contradicted each other. Tasks moved into a purpose-built CRM on Cloudflare D1 — and then moved again, once that queue started drifting from the workspace where everything else was tracked. Two systems both claiming to hold the task list is the same failure as ten markdown files, just tidier. The lesson survived both moves: markdown is for narrative, design briefs, and audit logs, never for anything that has a status. And a status lives in exactly one place.
 
 **The first lead is what makes the funnel real.** Three days after Request-a-Quote shipped, four real customers had submitted quotes. Every weakness in the system surfaced inside that 72-hour window — the slug-hunt admin UX, the misclassified vendor, a Web3Forms-leftover form that bypassed the admin queue. None of those were findable in code review. The funnel had to be carrying real money for the bugs to show up.
 

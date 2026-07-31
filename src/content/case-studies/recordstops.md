@@ -1,5 +1,5 @@
 ---
-title: "How I Built RecordStops — A Vinyl Directory With 683 Organic Visitors a Month"
+title: "How I Built RecordStops — 296 Independent Record Stores, Ranking on Page One"
 slug: recordstops
 client: "Self / Lighthouse 27"
 clientType: "Internal product"
@@ -8,20 +8,24 @@ engagementStart: "2025-12-15"
 status: "live"
 stack: ["Astro", "Cloudflare D1", "Cloudflare R2", "Tailwind", "Mapbox", "SendGrid", "GA4", "Cloudflare Workers"]
 metrics:
-  - "296 independent stores indexed"
+  - "296 independent stores across 177 cities"
   - "5 states covered (NC, SC, VA, MD, DC)"
-  - "683 organic visitors / month"
+  - "Average search position 10.3 at 1.55% CTR"
   - "16 city guides live"
   - "4 production cron workers"
-seoTitle: "RecordStops Case Study — 683 Organic Visitors / Month From a Vinyl Directory"
-seoDescription: "How I built RecordStops, an independent record store directory across five states. 296 stores, 16 city guides, a custom outreach drip pipeline that replaced a $497/mo CRM, and 683 organic users a month with zero ad spend."
+seoTitle: "RecordStops Case Study — A Vinyl Directory Ranking on Page One | Ascend Systems"
+seoDescription: "How I built RecordStops, an independent record store directory across five states. 296 stores in 177 cities, 16 curated city guides, a custom outreach drip pipeline that replaced a $497/mo CRM, and page-one rankings on long-tail city queries with zero ad spend."
 publishDate: "2026-05-13T21:52:36-04:00"
-updatedDate: "2026-05-13T21:52:36-04:00"
+updatedDate: "2026-07-31T00:00:00-04:00"
 ---
 
 ## TL;DR
 
-RecordStops is the directory for independent record stores in the US Southeast — 296 stores across North Carolina, South Carolina, Virginia, Maryland, and DC. I built it on Astro and Cloudflare D1 over December 2025 and January 2026, then spent the next four months turning it from a static directory into a working B2B pipeline. The site does 683 organic visitors a month with zero ad spend, ranking on long-tail city queries like "record stores in Greenville SC." The pitch motion runs on a custom outreach admin I built inside the site after canceling a $497/month CRM that was doing the same job worse. One inbound podcast lead — Patrick Foster at Rockin' the Suburbs — came in through the contact form. The product is live, monetizing through $15/month Featured Listings, and the work that remains is sales, not engineering.
+RecordStops is the directory for independent record stores in the US Southeast — 296 stores across 177 cities in North Carolina, South Carolina, Virginia, Maryland, and DC. I built it on Astro and Cloudflare D1 over December 2025 and January 2026, then spent the next four months turning it from a static directory into a working B2B pipeline.
+
+The search results are the interesting part. Over the 90 days to July 24, 2026, the site averaged **position 10.3** on a 1.55% CTR — the top of page one on the long-tail city queries it targets, like "record stores in Greenville SC." That is a materially better ranking position than the much larger directory in the same portfolio, on a much smaller base: 3,940 impressions against PottyDirectory's 170,808. RecordStops proved the template ranks. It has not yet proved the template scales.
+
+The pitch motion runs on a custom outreach admin I built inside the site after canceling a $497/month CRM that was doing the same job worse. The product is live, monetizing through $15/month Featured Listings, and the work that remains is sales, not engineering.
 
 ## The problem
 
@@ -67,17 +71,21 @@ A handful of supporting Cloudflare Workers keep the data fresh. `recordstops-syn
 
 ## Outcome
 
-**683 organic visitors per month** on Google Analytics 4, growing month over month since the custom sitemap shipped in February. No paid traffic, no influencer pushes, no Reddit threads. The traffic is people typing city + vinyl queries into Google and finding the directory.
+**Average position 10.3 at a 1.55% CTR** over the 90 days to July 24, 2026 — 61 clicks on 3,940 impressions, per Google Search Console. That ranking is the result worth reporting: the site sits at the top of page one for the long-tail city queries it was built to win, and it earns a click rate more than twice PottyDirectory's on the same infrastructure.
+
+An earlier version of this case study led with "683 organic visitors a month" from Google Analytics 4. That number does not survive scrutiny and has been removed. GA4 on a public-NAP directory site counts bots and non-engaged drive-bys by default — the same diagnosis on PottyDirectory found roughly 92% of sessions were not real humans. Search Console counts actual clicks from actual result pages, so that is what is reported here, and it is a much smaller number. The ranking is genuinely good. The volume is genuinely small. Both are true, and only one of them was in the original writeup.
 
 **336 pages indexed** in Google Search Console, up from 21 before the custom sitemap. Most of the long-tail city + store queries now have a RecordStops page sitting in the top 10. A few are in the top three.
 
-**One inbound podcast lead** — Patrick Foster at Rockin' the Suburbs Podcast (`rock@suburbspod.com`) came in through the site's contact form. The reply is drafted in the project's pending-items list. He found the site organically, which is the validation that matters more than any of the engineering.
+**One inbound podcast lead, which did not convert.** Patrick Foster at Rockin' the Suburbs Podcast came in through the site's contact form, found organically. He was followed up with and was not interested. Worth stating plainly because the lead is often where a case study stops telling the truth: a form fill from a stranger who found you through search proves the discovery channel works, and proves nothing whatsoever about the business.
 
 **$497/month saved** by killing GoHighLevel. The built-in admin panel does verification tracking, drip stage management, and per-store template selection — the parts of GHL that were actually load-bearing for this product. Reply handling and form pipelines I rebuilt as needed; the rest was bloat I was paying for monthly.
 
 **4 production cron workers** running on Cloudflare's free tier, each handling one job and logging to its own table. The total infrastructure cost for the directory is under $5 a month — which, when the kill criteria is "five paying Featured Listings," means the unit economics are not the constraint. The constraint is that I have to actually pitch the stores.
 
-**Zero paying customers as of the latest pass.** This is the honest number. The infrastructure is built. The sales motion exists in the admin panel. What is missing — and what the project's own CLAUDE.md flags as "the hard rule" — is that I have not sent the pitch emails at the cadence needed to close listings. Building feels productive; selling feels gross. Selling is the work.
+**Zero paying customers, and the kill-criteria date has arrived.** This is the honest number. The criterion written into the project at the start was five paying Featured Listings by August 1, 2026, or the project pivots or sells. That date is here and the bar was not cleared, so the decision it was written to force is now live.
+
+The infrastructure is built. The sales motion exists in the admin panel. What is missing — and what the project's own notes flag as "the hard rule" — is that I never sent the pitch emails at the cadence needed to close listings. Building feels productive; selling feels gross. Selling is the work, and not doing it is what the criterion was designed to catch. Writing down a kill criterion is only useful if you honor it when it goes against you.
 
 ## Lessons
 
