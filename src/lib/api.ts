@@ -32,6 +32,7 @@ export interface SeoOverviewSite {
   label: string;
   domain: string;
   gsc_property: string | null;
+  site_type: string | null;
   latest: SeoLatestMetric | null;
   actions: {
     open: number;

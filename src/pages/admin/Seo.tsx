@@ -25,6 +25,16 @@ const goalStyles: Record<string, string> = {
   technical: 'bg-gray-100 text-gray-600',
 };
 
+// Site-type indicator: a small color-coded dot + a native tooltip on each tab.
+// Three distinct, accessible hues that steer clear of the page's orange accent
+// (which already signals the active tab). null falls through to a neutral gray.
+const siteTypeStyles: Record<string, { color: string; label: string }> = {
+  directory: { color: '#059669', label: 'Directory' }, // emerald
+  app: { color: '#7C3AED', label: 'App' }, // violet
+  site: { color: '#2563EB', label: 'Site' }, // blue
+};
+const NEUTRAL_TYPE = { color: '#94A3B8', label: 'Unclassified' }; // slate-400
+
 function fmtInt(n: number | null | undefined) {
   return n == null ? '—' : n.toLocaleString();
 }
@@ -185,6 +195,7 @@ export default function Seo() {
           <div className="flex flex-wrap gap-2 mb-6 border-b border-surface-100">
             {sites.map((site) => {
               const active = site.id === selectedSiteId;
+              const type = site.site_type ? siteTypeStyles[site.site_type] : null;
               return (
                 <button
                   key={site.id}
@@ -196,6 +207,16 @@ export default function Seo() {
                       : 'border-transparent text-gray-500 hover:text-charcoal'
                   }`}
                 >
+                  {/* Site-type dot — color codes directory/app/site; the tooltip
+                      spells it out. Neutral gray when unclassified/null. */}
+                  {site.site_type ? (
+                    <span
+                      title={(type ?? NEUTRAL_TYPE).label}
+                      aria-label={(type ?? NEUTRAL_TYPE).label}
+                      className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: (type ?? NEUTRAL_TYPE).color }}
+                    />
+                  ) : null}
                   <span>{site.label}</span>
                   {site.actions?.high_open > 0 && (
                     <span className="inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
