@@ -16,10 +16,12 @@ export const siteConfig: {
   company: 'Lighthouse 27 LLC',
   location: 'Charlotte, NC',
   founder: 'Brian Mangum',
-  // Charlotte (980) line. Must stay byte-identical everywhere it appears —
-  // NAP consistency (name/address/phone) across the site, schema, and any
-  // external directory listing is a direct local-ranking signal.
-  phone: '(980) 577-1231',
+  // Ascend Systems' AI agent line (704). Must stay byte-identical everywhere it
+  // appears — NAP consistency (name/address/phone) across the site, schema, and
+  // any external directory listing is a direct local-ranking signal.
+  // NOTE: (980) 577-1231 is the DEMO line (Imperial Climate Control tenant) and
+  // lives only in the buyer's guide "call the demo" callout — not here.
+  phone: '(704) 912-0876',
   email: 'hello@ascendsystems.ai',
   // TODO: replace with real booking URL when Calendly / Cal.com is set up.
   // Falsy values cause buttons to route to /contact instead.

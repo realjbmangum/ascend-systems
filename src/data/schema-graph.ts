@@ -82,9 +82,9 @@ export const SITEWIDE_GRAPH = {
       url: 'https://ascendsystems.ai',
       email: 'hello@ascendsystems.ai',
       // E.164 for schema. The human-readable form lives in siteConfig.phone
-      // as '(980) 577-1231' — keep BOTH in sync, and keep the human form
+      // as '(704) 912-0876' — keep BOTH in sync, and keep the human form
       // byte-identical anywhere it's listed externally (GBP, directories).
-      telephone: '+1-980-577-1231',
+      telephone: '+1-704-912-0876',
       priceRange: '$$$',
       address: {
         '@type': 'PostalAddress',
