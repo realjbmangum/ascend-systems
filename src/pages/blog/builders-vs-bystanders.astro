@@ -1,0 +1,194 @@
+---
+/**
+ * Blog post — `/blog/builders-vs-bystanders`
+ *
+ * Flagship post for "Insights". Copy is ported VERBATIM from the approved draft
+ * (blog-draft-builders-vs-bystanders.html); the draft's standalone HTML skeleton
+ * and inline <style> are dropped in favour of the site Layout + design tokens.
+ * The honest source/disclaimer footnote is preserved; the draft-only "notes for
+ * Brian" scaffolding is not.
+ *
+ * Schema: Article + BreadcrumbList, referencing the sitewide Organization and
+ * Person entities by @id — same pattern as the buyer's guide. ogType="article".
+ */
+import Layout from '../../layouts/Layout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { BLOG_POSTS, BLOG_NAME, formatPostDate } from '../../data/blog';
+
+const origin = 'https://ascendsystems.ai';
+const canonical = '/blog/builders-vs-bystanders';
+
+const post = BLOG_POSTS.find((p) => p.slug === 'builders-vs-bystanders')!;
+
+const title = `${post.title} | Ascend Systems`;
+const description = post.description;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${origin}${canonical}#article`,
+  headline: post.title,
+  description,
+  url: `${origin}${canonical}/`,
+  mainEntityOfPage: `${origin}${canonical}/`,
+  datePublished: post.date,
+  author: { '@id': `${origin}/#brian-mangum` },
+  publisher: { '@id': `${origin}/#organization` },
+  about: {
+    '@type': 'Thing',
+    name: 'AI adoption for small and mid-market services businesses',
+  },
+  isPartOf: { '@id': `${origin}/blog#blog` },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${origin}/blog` },
+    { '@type': 'ListItem', position: 3, name: 'Builders vs. Bystanders', item: `${origin}${canonical}` },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical} ogType="article">
+  <JsonLd slot="head" data={articleSchema} />
+  <JsonLd slot="head" data={breadcrumbSchema} />
+
+  <!-- Hero -->
+  <section class="bg-charcoal text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <nav aria-label="Breadcrumb" class="mb-6">
+        <ol class="flex flex-wrap items-center gap-2 text-sm text-surface-200">
+          <li><a href="/" class="hover:text-orange transition-colors">Home</a></li>
+          <li aria-hidden="true">/</li>
+          <li><a href="/blog/" class="hover:text-orange transition-colors">Blog</a></li>
+          <li aria-hidden="true">/</li>
+          <li class="text-white" aria-current="page">Builders vs. Bystanders</li>
+        </ol>
+      </nav>
+
+      <div class="max-w-3xl">
+        <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-4">
+          {BLOG_NAME}
+        </p>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-5 text-balance">
+          Builders vs. Bystanders: What the Enterprise AI Race Means for a Business Your Size
+        </h1>
+        <p class="text-lg text-surface-200 leading-relaxed text-pretty">
+          A 43-page report just landed on my desk about how the world's biggest companies
+          are racing to adopt AI. Here's the 2% that actually matters if you run a service
+          business — and why the gap it describes is good news for you.
+        </p>
+        <div class="mt-6 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em] text-surface-200/70">
+          <time datetime={post.date}>{formatPostDate(post.date)}</time>
+          <span aria-hidden="true">&middot;</span>
+          <span>{post.readingMinutes} min read</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Article body -->
+  <section class="bg-white border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <article class="mx-auto max-w-3xl">
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          Every few months a major tech company publishes a big, glossy report on the state of AI. The latest, from Cloudflare, surveyed more than 2,300 senior leaders at large companies and ran to 43 pages. I read all of it so you don't have to.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          Most of it doesn't apply to you. It's written for companies with more than a thousand employees — they literally excluded anyone smaller from the survey. There's a lot of talk about "application modernization roadmaps" and "multicloud consolidation," and none of that is your life.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          But buried in the middle of it is one finding that matters more to a five-truck HVAC company or a three-location dental group than to any of the giants it was written about.
+        </p>
+
+        <h2 class="text-2xl sm:text-3xl font-bold text-charcoal tracking-tight mt-12 mb-4 text-balance">
+          The real dividing line isn't money
+        </h2>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          The report sorts companies into two camps: leaders and laggards. And when it digs into what actually separates them, the answer isn't budget. Ninety-seven percent of the leaders were raising their AI spending — but so were most of the laggards. The real split was something the report calls <strong class="font-semibold text-charcoal">builders versus bystanders</strong>. Leaders are the ones confident enough to <em class="italic text-charcoal">act</em> — to put AI to work now, on a real problem, instead of waiting until conditions are perfect. Bystanders are the ones still standing at the edge of the pool, talking about it.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          The leaders in that report hold a 33-point lead on "ability to use AI" — 92% of them versus 59% of the laggards. Not because they bought something the others couldn't afford. Because they <em class="italic text-charcoal">started</em>, and starting compounds.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          Here's why that's good news for you.
+        </p>
+
+        <h2 class="text-2xl sm:text-3xl font-bold text-charcoal tracking-tight mt-12 mb-4 text-balance">
+          Big companies have it harder than you do
+        </h2>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          When you're a giant, "starting" is genuinely hard. You have legacy systems, procurement committees, and a security team that needs eight months to approve anything. Half that report is about how slow and expensive it is for a large company to untangle all of that before it can do anything useful with AI.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          You don't have any of that. You have something better: a single, obvious, high-value problem that AI is genuinely good at solving <em class="italic text-charcoal">today</em>. Your phone.
+        </p>
+
+        <blockquote class="my-8 border-l-4 border-orange bg-orange-glow rounded-r-lg py-5 px-6">
+          <p class="text-[20px] leading-[1.5] font-medium text-charcoal text-pretty">
+            Every call that rolls to voicemail is a customer who is, right now, dialing the next name on their list.
+          </p>
+        </blockquote>
+
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          In the trades, in healthcare, in law, in home services — a missed call isn't a missed message. It's a booked job that went to a competitor. You already know this. You feel it every time you come off a job and see three missed calls and not one voicemail.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          That's the whole enterprise report, translated to your scale. The leaders win by pointing AI at a real revenue problem and letting the results fund the next move. Your real revenue problem is the calls you can't get to. Answering every one of them, day and night, without hiring a receptionist or learning some dashboard — that isn't a modernization program. It's one decision.
+        </p>
+
+        <h2 class="text-2xl sm:text-3xl font-bold text-charcoal tracking-tight mt-12 mb-4 text-balance">
+          The bystander trap, at your size
+        </h2>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          It looks different than it does for the giants, but it's the same trap. At your size it sounds like: "We'll look at AI once things slow down." "I don't want some robot answering my phones." "Let me just get through the busy season first." Meanwhile the calls keep going to voicemail — and the season is busy <em class="italic text-charcoal">because</em> the phone keeps ringing. That's the whole point.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          You don't need an enterprise budget to be a builder. You don't need a roadmap, a consultant, or a six-month plan. You need to stop losing the customers who are already calling you.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          That's the one thing worth carrying out of that 43-page report: the businesses that pull ahead aren't the ones who spent the most. They're the ones who started — on the problem right in front of them.
+        </p>
+        <p class="text-[18px] leading-[1.8] text-charcoal-lighter mb-6 text-pretty">
+          For you, that problem is the phone. And it can be answered by this time next week.
+        </p>
+
+        <!-- CTA -->
+        <div class="mt-12 rounded-2xl bg-charcoal text-white p-8 sm:p-10 text-center">
+          <p class="text-surface-200 leading-relaxed mb-6 text-pretty max-w-xl mx-auto">
+            See how Ascend answers every call — booked, logged, and handled — without a new hire.
+          </p>
+          <a
+            href="/contact/"
+            class="inline-block bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-6 py-3 rounded-lg transition-colors"
+          >
+            Book a 15-minute demo &rarr;
+          </a>
+        </div>
+
+        <!-- Source / disclaimer footnote -->
+        <footer class="mt-12 pt-6 border-t border-gray-200 text-sm leading-[1.6] text-charcoal-lighter/80">
+          <p class="text-pretty">
+            <strong class="font-semibold text-charcoal">Source:</strong> Cloudflare, <em class="italic">2026 Cloudflare App Innovation Report</em> (APAC regional edition). Figures cited — leaders vs. laggards, "builders vs. bystanders," 92% vs. 59% ability to use AI, 97% raising AI budgets — describe surveyed enterprises of 1,000+ employees and are used here to illustrate a principle, not as claims about small-business results.
+          </p>
+        </footer>
+      </article>
+    </div>
+  </section>
+
+  <!-- Back to blog -->
+  <section class="bg-surface border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <a
+        href="/blog/"
+        class="inline-flex items-center gap-2 text-orange-dark font-semibold hover:underline underline-offset-4"
+      >
+        <span aria-hidden="true">&larr;</span>
+        All {BLOG_NAME}
+      </a>
+    </div>
+  </section>
+</Layout>

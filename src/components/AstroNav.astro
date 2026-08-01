@@ -4,15 +4,28 @@
  * just swapping react-router <Link> for plain <a> so the chrome ships in raw
  * HTML (no JS required for the marquee crawl). The mobile-menu toggle is a
  * tiny inline script — no React hydration needed.
+ *
+ * The "Resources" item is a dropdown (Buyer's Guide + Blog). It works with no
+ * JS via CSS group-hover / group-focus-within; the inline script only syncs
+ * aria-expanded and adds click/Escape handling for touch + keyboard users.
  */
 
 const pathname = Astro.url.pathname;
 
-const navLinks = [
+type NavChild = { to: string; label: string };
+type NavLink = { to?: string; label: string; children?: NavChild[] };
+
+const navLinks: NavLink[] = [
   { to: '/services', label: 'Services' },
   { to: '/portfolio', label: 'Portfolio' },
   { to: '/tools/cost-calculator', label: 'Free Tools' },
-  { to: '/resources/ai-receptionist-buyers-guide', label: 'Buyer’s Guide' },
+  {
+    label: 'Resources',
+    children: [
+      { to: '/resources/ai-receptionist-buyers-guide', label: 'Buyer’s Guide' },
+      { to: '/blog', label: 'Blog' },
+    ],
+  },
   { to: '/about', label: 'About' },
 ];
 
@@ -21,6 +34,11 @@ function isActive(href: string) {
   // Child routes highlight their parent — /services/internal-tools lights up
   // "Services". Guarded against "/" matching everything.
   return href !== '/' && pathname.startsWith(`${href}/`);
+}
+
+// A dropdown parent is "active" when any of its children match the route.
+function isGroupActive(children: NavChild[]) {
+  return children.some((c) => isActive(c.to));
 }
 
 // Cloudflare Pages serves the trailing-slash form and 308-redirects the bare
@@ -43,17 +61,64 @@ function withSlash(href: string) {
       </a>
 
       <div class="hidden md:flex items-center gap-8">
-        {navLinks.map((link) => (
-          <a
-            href={withSlash(link.to)}
-            class:list={[
-              'text-sm font-medium transition-colors',
-              isActive(link.to) ? 'text-orange' : 'text-gray-300 hover:text-white',
-            ]}
-          >
-            {link.label}
-          </a>
-        ))}
+        {navLinks.map((link) =>
+          link.children ? (
+            <div class="relative group" data-dropdown>
+              <button
+                type="button"
+                class:list={[
+                  'flex items-center gap-1 text-sm font-medium transition-colors',
+                  isGroupActive(link.children) ? 'text-orange' : 'text-gray-300 hover:text-white',
+                ]}
+                aria-haspopup="true"
+                aria-expanded="false"
+                data-dropdown-button
+              >
+                {link.label}
+                <svg
+                  class="w-3.5 h-3.5 transition-transform group-hover:rotate-180 group-focus-within:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <div
+                class="absolute left-0 top-full pt-3 min-w-[13rem] opacity-0 invisible translate-y-1 transition-all duration-150 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0"
+                role="menu"
+                data-dropdown-menu
+              >
+                <div class="rounded-lg border border-charcoal-lighter bg-charcoal-light shadow-lg py-2">
+                  {link.children.map((child) => (
+                    <a
+                      href={withSlash(child.to)}
+                      role="menuitem"
+                      class:list={[
+                        'block px-4 py-2 text-sm font-medium transition-colors',
+                        isActive(child.to) ? 'text-orange' : 'text-gray-300 hover:text-white hover:bg-charcoal-lighter',
+                      ]}
+                    >
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <a
+              href={withSlash(link.to!)}
+              class:list={[
+                'text-sm font-medium transition-colors',
+                isActive(link.to!) ? 'text-orange' : 'text-gray-300 hover:text-white',
+              ]}
+            >
+              {link.label}
+            </a>
+          )
+        )}
         <a
           href="/contact/"
           class="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
@@ -79,17 +144,36 @@ function withSlash(href: string) {
     </div>
 
     <div id="mobile-menu" class="md:hidden pb-4 border-t border-charcoal-light pt-4 hidden">
-      {navLinks.map((link) => (
-        <a
-          href={withSlash(link.to)}
-          class:list={[
-            'block py-2 text-sm font-medium',
-            isActive(link.to) ? 'text-orange' : 'text-gray-300 hover:text-white',
-          ]}
-        >
-          {link.label}
-        </a>
-      ))}
+      {navLinks.map((link) =>
+        link.children ? (
+          <div class="mt-1">
+            <p class="py-2 text-xs font-mono uppercase tracking-[0.14em] text-gray-500">
+              {link.label}
+            </p>
+            {link.children.map((child) => (
+              <a
+                href={withSlash(child.to)}
+                class:list={[
+                  'block py-2 pl-4 text-sm font-medium',
+                  isActive(child.to) ? 'text-orange' : 'text-gray-300 hover:text-white',
+                ]}
+              >
+                {child.label}
+              </a>
+            ))}
+          </div>
+        ) : (
+          <a
+            href={withSlash(link.to!)}
+            class:list={[
+              'block py-2 text-sm font-medium',
+              isActive(link.to!) ? 'text-orange' : 'text-gray-300 hover:text-white',
+            ]}
+          >
+            {link.label}
+          </a>
+        )
+      )}
       <a
         href="/contact/"
         class="block mt-3 bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors text-center"
@@ -102,20 +186,56 @@ function withSlash(href: string) {
 
 <script is:inline>
   (function () {
+    // Mobile menu toggle
     const btn = document.getElementById('mobile-menu-toggle');
     const menu = document.getElementById('mobile-menu');
     const open = document.getElementById('icon-open');
     const close = document.getElementById('icon-close');
-    if (!btn || !menu || !open || !close) return;
-    btn.addEventListener('click', function () {
-      const isOpen = !menu.classList.contains('hidden');
-      menu.classList.toggle('hidden');
-      open.classList.toggle('hidden', !isOpen ? false : true);
-      // simpler: re-derive after toggle
-      const nowOpen = !menu.classList.contains('hidden');
-      btn.setAttribute('aria-expanded', String(nowOpen));
-      open.classList.toggle('hidden', nowOpen);
-      close.classList.toggle('hidden', !nowOpen);
+    if (btn && menu && open && close) {
+      btn.addEventListener('click', function () {
+        menu.classList.toggle('hidden');
+        const nowOpen = !menu.classList.contains('hidden');
+        btn.setAttribute('aria-expanded', String(nowOpen));
+        open.classList.toggle('hidden', nowOpen);
+        close.classList.toggle('hidden', !nowOpen);
+      });
+    }
+
+    // Desktop dropdown(s): CSS drives visibility (hover + focus-within). JS only
+    // keeps aria-expanded honest and adds click-to-toggle + Escape for touch and
+    // keyboard users.
+    document.querySelectorAll('[data-dropdown]').forEach(function (dd) {
+      const button = dd.querySelector('[data-dropdown-button]');
+      if (!button) return;
+      const setExpanded = function (v) { button.setAttribute('aria-expanded', String(v)); };
+
+      dd.addEventListener('mouseenter', function () { setExpanded(true); });
+      dd.addEventListener('mouseleave', function () { setExpanded(false); });
+      dd.addEventListener('focusin', function () { setExpanded(true); });
+      dd.addEventListener('focusout', function (e) {
+        if (!dd.contains(e.relatedTarget)) { setExpanded(false); dd.classList.remove('dropdown-open'); }
+      });
+      button.addEventListener('click', function () {
+        const nowOpen = dd.classList.toggle('dropdown-open');
+        setExpanded(nowOpen);
+      });
+      dd.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          dd.classList.remove('dropdown-open');
+          setExpanded(false);
+          if (button.focus) button.focus();
+        }
+      });
     });
   })();
 </script>
+
+<style>
+  /* Click-to-open state for touch/keyboard users, layered on top of the
+     CSS hover/focus-within reveal. Scoped to the nav dropdown menu. */
+  [data-dropdown].dropdown-open [data-dropdown-menu] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+</style>

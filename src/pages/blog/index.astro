@@ -1,0 +1,142 @@
+---
+/**
+ * Blog index — `/blog`
+ *
+ * Landing page for "Insights", the Ascend Systems blog. Lists posts newest
+ * first from src/data/blog.ts. Rendered as plain Astro markup (like
+ * /services/[slug] and the buyer's guide) — static content, no interactivity.
+ *
+ * Schema: Blog + BreadcrumbList, referencing the sitewide Organization by @id.
+ */
+import Layout from '../../layouts/Layout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { BLOG_POSTS, BLOG_NAME, formatPostDate } from '../../data/blog';
+
+const origin = 'https://ascendsystems.ai';
+const canonical = '/blog';
+
+const title = 'Insights — The Ascend Systems Blog';
+const description =
+  'Straight, practical writing on AI phone answering and running the front desk of a growing services business — from the person who does the work.';
+
+// Newest first.
+const posts = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date));
+
+const blogSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  '@id': `${origin}${canonical}#blog`,
+  name: `${BLOG_NAME} — Ascend Systems`,
+  description,
+  url: `${origin}${canonical}/`,
+  publisher: { '@id': `${origin}/#organization` },
+  blogPost: posts.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.title,
+    description: p.description,
+    datePublished: p.date,
+    url: `${origin}/blog/${p.slug}/`,
+    author: { '@id': `${origin}/#brian-mangum` },
+  })),
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${origin}${canonical}` },
+  ],
+};
+---
+
+<Layout title={title} description={description} canonical={canonical}>
+  <JsonLd slot="head" data={blogSchema} />
+  <JsonLd slot="head" data={breadcrumbSchema} />
+
+  <!-- Hero -->
+  <section class="bg-charcoal text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <nav aria-label="Breadcrumb" class="mb-6">
+        <ol class="flex flex-wrap items-center gap-2 text-sm text-surface-200">
+          <li><a href="/" class="hover:text-orange transition-colors">Home</a></li>
+          <li aria-hidden="true">/</li>
+          <li class="text-white" aria-current="page">Blog</li>
+        </ol>
+      </nav>
+
+      <div class="max-w-3xl">
+        <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange mb-4">
+          {BLOG_NAME}
+        </p>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-5 text-balance">
+          Notes from the front desk
+        </h1>
+        <p class="text-lg text-surface-200 leading-relaxed text-pretty">
+          Straight, practical writing on answering your phones with AI and running the
+          front desk of a growing services business &mdash; from the person who does the
+          work, not a marketing team.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Posts -->
+  <section class="bg-white border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <ul class="grid gap-6 lg:grid-cols-2">
+        {posts.map((post) => (
+          <li>
+            <a
+              href={`/blog/${post.slug}/`}
+              class="group flex h-full flex-col rounded-2xl border border-surface-200 bg-white p-6 sm:p-8 transition-colors hover:border-orange"
+            >
+              <div class="flex items-center gap-3 mb-4 font-mono text-[11px] uppercase tracking-[0.12em] text-charcoal-lighter/70">
+                <span class="text-orange">{BLOG_NAME}</span>
+                <span aria-hidden="true">&middot;</span>
+                <time datetime={post.date}>{formatPostDate(post.date)}</time>
+                <span aria-hidden="true">&middot;</span>
+                <span>{post.readingMinutes} min read</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-charcoal tracking-tight mb-3 text-balance group-hover:text-orange-dark transition-colors">
+                {post.title}
+              </h2>
+              <p class="text-[16px] leading-[1.7] text-charcoal-lighter text-pretty mb-6">
+                {post.dek}
+              </p>
+              <span class="mt-auto inline-flex items-center gap-2 text-orange-dark font-semibold text-sm">
+                Read the post
+                <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">&rarr;</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Related resource -->
+      <div class="mt-14 rounded-2xl border border-orange/30 bg-orange-glow p-6 sm:p-8">
+        <p class="text-xs font-mono uppercase tracking-[0.18em] text-orange-dark mb-3">
+          Related resource
+        </p>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="max-w-2xl">
+            <h2 class="text-xl font-bold text-charcoal mb-2 text-balance">
+              How to Choose an AI Receptionist Without Getting Burned
+            </h2>
+            <p class="text-[16px] leading-[1.65] text-charcoal-lighter text-pretty">
+              Our ungated buyer&rsquo;s guide: the five ways to cover your phones, the
+              trade-off nobody quotes you, and the questions that sort a service from a
+              dashboard.
+            </p>
+          </div>
+          <a
+            href="/resources/ai-receptionist-buyers-guide/"
+            class="shrink-0 self-start bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+          >
+            Read the guide
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
