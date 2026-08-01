@@ -16,6 +16,7 @@ type SiteRow = {
   label: string;
   domain: string;
   gsc_property: string;
+  site_type: string | null;
   is_priority: number;
   created_at: string;
   updated_at: string;
@@ -102,6 +103,7 @@ seo.get("/overview", async (c) => {
         label: site.label,
         domain: site.domain,
         gsc_property: site.gsc_property,
+        site_type: site.site_type ?? null,
         latest: latest ?? null,
         actions: {
           open: counts?.open ?? 0,
