@@ -52,39 +52,60 @@ function matchReferralHost(referer) {
 export async function onRequest(context) {
   const { request, env, next } = context;
   const response = await next();
+  const debug = new URL(request.url).searchParams.has('__ai_signal_debug');
+  const dbgHeaders = {};
 
   try {
     const db = env.DB;
-    if (!db) return response; // binding not configured yet — no-op
+    dbgHeaders['x-dbg-has-db'] = String(!!db);
+    if (!db) return withDebug(response, dbgHeaders, debug);
 
     const url = new URL(request.url);
-    if (SKIP_EXT.test(url.pathname)) return response;
+    if (SKIP_EXT.test(url.pathname)) return withDebug(response, dbgHeaders, debug);
 
     const ua = request.headers.get('user-agent') || '';
     const referer = request.headers.get('referer') || '';
 
     const botName = matchCrawlerUA(ua);
     const referralHost = matchReferralHost(referer);
+    dbgHeaders['x-dbg-ua'] = ua.slice(0, 80);
+    dbgHeaders['x-dbg-referer'] = referer.slice(0, 80);
+    dbgHeaders['x-dbg-bot'] = String(botName);
+    dbgHeaders['x-dbg-referral'] = String(referralHost);
 
-    if (!botName && !referralHost) return response;
+    if (!botName && !referralHost) return withDebug(response, dbgHeaders, debug);
 
     const kind = botName ? 'crawl' : 'referral';
     const source = botName || referralHost;
 
-    context.waitUntil(
-      db
-        .prepare(
-          'INSERT INTO ai_signal_log (kind, source, path, user_agent) VALUES (?1, ?2, ?3, ?4)'
-        )
-        .bind(kind, source, url.pathname.slice(0, 512), ua.slice(0, 300))
-        .run()
-        .catch(() => {
-          // Never let logging break the response.
-        })
-    );
-  } catch {
-    // Never let logging break the response.
+    const insert = db
+      .prepare(
+        'INSERT INTO ai_signal_log (kind, source, path, user_agent) VALUES (?1, ?2, ?3, ?4)'
+      )
+      .bind(kind, source, url.pathname.slice(0, 512), ua.slice(0, 300))
+      .run()
+      .then(() => {
+        dbgHeaders['x-dbg-insert'] = 'ok';
+      })
+      .catch((e) => {
+        dbgHeaders['x-dbg-insert'] = 'error:' + String(e && e.message).slice(0, 150);
+      });
+
+    if (debug) {
+      await insert; // wait so the debug header reflects the real outcome
+    } else {
+      context.waitUntil(insert);
+    }
+  } catch (e) {
+    dbgHeaders['x-dbg-caught'] = String(e && e.message).slice(0, 150);
   }
 
-  return response;
+  return withDebug(response, dbgHeaders, debug);
+}
+
+function withDebug(response, dbgHeaders, debug) {
+  if (!debug) return response;
+  const r = new Response(response.body, response);
+  for (const [k, v] of Object.entries(dbgHeaders)) r.headers.set(k, v);
+  return r;
 }
