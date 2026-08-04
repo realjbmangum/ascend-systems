@@ -56,7 +56,7 @@ export async function onRequest(context) {
   const dbgHeaders = {};
 
   try {
-    const db = env.DB;
+    const db = env.db;
     dbgHeaders['x-dbg-has-db'] = String(!!db);
     if (!db) return withDebug(response, dbgHeaders, debug);
 
