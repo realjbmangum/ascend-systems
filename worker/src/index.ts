@@ -122,6 +122,41 @@ app.post("/api/contact", async (c) => {
   return c.json({ success: true, id: leadId });
 });
 
+// AI-signal ingest — logs AI-bot crawl hits and AI-answer-engine referrals
+// reported by the marketing site's edge middleware. The marketing site
+// (ascendsystems.ai, a separate Cloudflare Pages project) can't bind D1
+// directly — its dashboard-configured binding doesn't reach Function
+// runtime, unresolved as of 4 Aug 2026 despite three different binding
+// configs — so it POSTs here instead, reusing this Worker's binding.
+// No auth: this is anonymous telemetry, not account data.
+app.post("/api/ai-signal", async (c) => {
+  const body = await c.req
+    .json<{ kind?: string; source?: string; path?: string; user_agent?: string }>()
+    .catch(() => null);
+
+  if (
+    !body ||
+    (body.kind !== "crawl" && body.kind !== "referral") ||
+    !body.source ||
+    !body.path
+  ) {
+    return c.json({ error: "invalid payload" }, 400);
+  }
+
+  await c.env.DB.prepare(
+    `INSERT INTO ai_signal_log (kind, source, path, user_agent) VALUES (?, ?, ?, ?)`
+  )
+    .bind(
+      body.kind,
+      body.source.slice(0, 100),
+      body.path.slice(0, 512),
+      (body.user_agent ?? "").slice(0, 300)
+    )
+    .run();
+
+  return c.json({ success: true });
+});
+
 // Intake form — structured project intake with extra fields.
 app.post("/api/intake", async (c) => {
   const body = await c.req.json<{

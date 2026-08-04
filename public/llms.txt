@@ -50,6 +50,21 @@ stack decisions, and measured outcome.
   post-mortem on a consumer subscription that shipped in two weeks, delivered
   2,515 messages, and earned $0 MRR.
 
+## Resources
+
+- [How to Choose an AI Receptionist (Buyer's Guide)](https://ascendsystems.ai/resources/ai-receptionist-buyers-guide):
+  An honest, ungated buyer's guide for multi-location and multi-truck
+  operators — the real options for AI phone answering, the trade-offs, ten
+  questions to ask any vendor, and red flags to avoid.
+
+## Blog
+
+- [Builders vs. Bystanders: What the Enterprise AI Race Means for a Business Your Size](https://ascendsystems.ai/blog/builders-vs-bystanders):
+  What a 43-page enterprise AI adoption report actually means for a
+  five-truck HVAC company or a three-location dental group, and why the
+  "builders vs. bystanders" gap it describes is good news for a business
+  your size.
+
 ## About
 
 - [About Brian Mangum](https://ascendsystems.ai/about): Senior full-stack
