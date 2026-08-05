@@ -28,6 +28,11 @@ const C_BOOKINGS = '#3E93C7';
 const SURFACE = '#1E2A32';
 const POLL_MS = 3000;
 
+// Dedicated line for the AI phone agent demo — deliberately NOT
+// siteConfig.phone, which is Ascend's real business number shown in the
+// footer, Contact page, and site-wide schema.org NAP data.
+const DEMO_PHONE = '(980) 577-1231';
+
 type Lead = {
   id: number; name: string; phone: string | null; company: string | null;
   message: string | null; status: string; created_at: string;
@@ -123,8 +128,8 @@ export default function DemoPhone() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <a href={`tel:${siteConfig.phone.replace(/[^\d+]/g, '')}`}
-               className="font-mono text-lg text-orange hover:underline">{siteConfig.phone}</a>
+            <a href={`tel:${DEMO_PHONE.replace(/[^\d+]/g, '')}`}
+               className="font-mono text-lg text-orange hover:underline">{DEMO_PHONE}</a>
             <button onClick={() => setLive((v) => !v)}
               aria-pressed={live}
               className="font-mono text-[10px] tracking-[0.14em] uppercase px-3 py-2 rounded border border-white/25 hover:border-orange hover:text-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange transition">
