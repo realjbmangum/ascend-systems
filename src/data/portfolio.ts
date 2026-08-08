@@ -207,27 +207,4 @@ export const PROJECTS: Project[] = [
         '3,418 providers across 2,319 cities and all 50 states, drawing 170,808 search impressions per 90 days at average position 16.6 — a large indexed footprint still climbing toward page one.',
     },
   },
-  {
-    slug: 'heirloom',
-    name: 'Heirloom',
-    tagline: "Family stories. Preserved before they're gone.",
-    description:
-      'Heirloom helps families record, organize, and share the stories that are one generation away from being lost forever. Interview prompts, audio recording, and a private family feed.',
-    logo: '/images/portfolio/heirloom-logo.png',
-    status: 'building',
-    tags: ['iOS', 'React Native', 'Supabase', 'Consumer App'],
-    metrics: [
-      { label: 'Status', value: 'In Progress' },
-      { label: 'Co-founder', value: 'Oliver' },
-      { label: 'Landing page', value: 'Live' },
-    ],
-    story: {
-      problem:
-        "Family history dies with the person who holds it. No one records grandma's stories until it's too late — and photo albums don't capture voices.",
-      solution:
-        'Guided interview prompts that feel like a conversation. Audio + text storage in a private family vault. Searchable, shareable within the family circle.',
-      result:
-        'Building with co-founder Oliver. Landing page live. MVP in active development.',
-    },
-  },
 ]
