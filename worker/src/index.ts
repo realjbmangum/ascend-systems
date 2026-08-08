@@ -1089,24 +1089,30 @@ export default {
       ctx.waitUntil(ingestGscMetrics(env).then(() => undefined));
     }
 
-    // Voice health — hourly, on the :00 window. A voice agent that has lost its
-    // tool connection keeps answering the phone and silently captures nothing,
-    // so this is the only thing standing between that and a week of lost leads.
-    if (now.getUTCMinutes() < 15 && env.SENDGRID_API_KEY) {
-      ctx.waitUntil(
-        checkVoiceHealth(env)
-          .then(async (issues) => {
-            if (!issues.length) return;
-            console.error(`[voice-health] ${issues.length} issue(s)`, issues);
-            await sendPlainAlert(
-              env.SENDGRID_API_KEY!,
-              env.ADMIN_EMAILS ?? "bmangum1@gmail.com",
-              `Voice alert: ${issues[0].problem}${issues.length > 1 ? ` (+${issues.length - 1} more)` : ""}`,
-              formatVoiceAlert(issues)
-            );
-          })
-          .catch((err) => console.error("[voice-health] check failed", err))
-      );
-    }
+    // Voice health email alert — disabled 2026-08-08. Every active voice_agents
+    // row right now (Imperial Climate Control/Sales/Operations, Ascend Systems)
+    // is demo/pitch infrastructure, not a production tenant anyone depends on,
+    // so "quiet for a day" alerts were just noise from gaps between sales
+    // demos. Re-enable (restore the block below, or scope checkVoiceHealth to
+    // exclude demo tenants) once a real paying client is on this system —
+    // see the WHY comment on checkVoiceHealth in lib/voice-health.ts for what
+    // this catches and why it existed.
+    //
+    // if (now.getUTCMinutes() < 15 && env.SENDGRID_API_KEY) {
+    //   ctx.waitUntil(
+    //     checkVoiceHealth(env)
+    //       .then(async (issues) => {
+    //         if (!issues.length) return;
+    //         console.error(`[voice-health] ${issues.length} issue(s)`, issues);
+    //         await sendPlainAlert(
+    //           env.SENDGRID_API_KEY!,
+    //           env.ADMIN_EMAILS ?? "bmangum1@gmail.com",
+    //           `Voice alert: ${issues[0].problem}${issues.length > 1 ? ` (+${issues.length - 1} more)` : ""}`,
+    //           formatVoiceAlert(issues)
+    //         );
+    //       })
+    //       .catch((err) => console.error("[voice-health] check failed", err))
+    //   );
+    // }
   },
 };
